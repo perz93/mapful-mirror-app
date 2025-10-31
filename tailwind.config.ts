@@ -14,15 +14,17 @@ export default {
     },
     extend: {
       colors: {
+        primary: {
+          DEFAULT: "#ee9d2b",
+          foreground: "#181511",
+        },
+        "background-light": "#f8f7f6",
+        "background-dark": "#181511",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
@@ -58,10 +60,16 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
       },
+      fontFamily: {
+        display: ['Be Vietnam Pro', 'sans-serif'],
+      },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        DEFAULT: "1rem",
+        lg: "1.5rem",
+        xl: "2rem",
+        md: "calc(1rem - 2px)",
+        sm: "calc(1rem - 4px)",
+        full: "9999px",
       },
       keyframes: {
         "accordion-down": {

@@ -1,12 +1,19 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import MapView from "@/components/MapView";
+import SearchBar from "@/components/SearchBar";
+import MapControls from "@/components/MapControls";
+import EventCard from "@/components/EventCard";
+import BottomNavigation from "@/components/BottomNavigation";
 
 const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-background-light dark:bg-background-dark">
+      <div className="relative flex-1">
+        <MapView />
+        <SearchBar />
+        <MapControls />
+        <EventCard />
       </div>
+      <BottomNavigation />
     </div>
   );
 };
