@@ -22,6 +22,37 @@ const MapView = () => {
       className: 'map-tiles',
     }).addTo(map);
 
+    // Create custom marker icon
+    const createCustomIcon = (iconHtml: string) => {
+      return L.divIcon({
+        className: 'custom-marker',
+        html: `
+          <div class="marker-container">
+            <div class="marker-pin">
+              ${iconHtml}
+            </div>
+          </div>
+        `,
+        iconSize: [50, 50],
+        iconAnchor: [25, 25],
+      });
+    };
+
+    // Add event markers
+    const events = [
+      { lat: 40.7589, lng: -73.9851, icon: '🎵', type: 'music' },
+      { lat: 40.7689, lng: -73.9751, icon: '🎵', type: 'music' },
+      { lat: 40.7489, lng: -73.9951, icon: '🍔', type: 'food' },
+      { lat: 40.7789, lng: -73.9651, icon: '🏆', type: 'sports' },
+      { lat: 40.7389, lng: -73.9851, icon: '🎨', type: 'arts' },
+    ];
+
+    events.forEach(event => {
+      L.marker([event.lat, event.lng], {
+        icon: createCustomIcon(event.icon)
+      }).addTo(map);
+    });
+
     mapInstanceRef.current = map;
 
     // Cleanup

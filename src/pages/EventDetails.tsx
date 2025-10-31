@@ -29,7 +29,7 @@ const EventDetails = () => {
     <div className="min-h-screen bg-background-light dark:bg-background-dark">
       <div className="mx-auto max-w-md">
         <div 
-          className="relative h-80 bg-cover bg-center"
+          className="relative h-80 bg-cover bg-center rounded-3xl overflow-hidden mx-4 mt-4"
           style={{ backgroundImage: `url('${event.image}')` }}
         >
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
