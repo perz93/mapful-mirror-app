@@ -1,39 +1,32 @@
 import { Trophy, MapPin, Calendar, Clock, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
 const Sports = () => {
-  const events = [
-    {
-      id: 5,
-      title: "NBA Finals Game",
-      venue: "Madison Square Garden",
-      date: "Thu, Nov 21",
-      time: "7:30 PM",
-      price: "$250",
-      image: "https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=400&h=400&fit=crop"
-    },
-    {
-      id: 6,
-      title: "Soccer Championship",
-      venue: "Yankee Stadium",
-      date: "Sat, Nov 23",
-      time: "6:00 PM",
-      price: "$75",
-      image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400&h=400&fit=crop"
-    },
-    {
-      id: 7,
-      title: "Tennis Masters",
-      venue: "Arthur Ashe Stadium",
-      date: "Sun, Nov 24",
-      time: "2:00 PM",
-      price: "$120",
-      image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=400&fit=crop"
-    }
-  ];
-
-  return (
-    <div className="min-h-screen bg-background-light dark:bg-background-dark">
+  const events = [{
+    id: 5,
+    title: "NBA Finals Game",
+    venue: "Madison Square Garden",
+    date: "Thu, Nov 21",
+    time: "7:30 PM",
+    price: "$250",
+    image: "https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=400&h=400&fit=crop"
+  }, {
+    id: 6,
+    title: "Soccer Championship",
+    venue: "Yankee Stadium",
+    date: "Sat, Nov 23",
+    time: "6:00 PM",
+    price: "$75",
+    image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400&h=400&fit=crop"
+  }, {
+    id: 7,
+    title: "Tennis Masters",
+    venue: "Arthur Ashe Stadium",
+    date: "Sun, Nov 24",
+    time: "2:00 PM",
+    price: "$120",
+    image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=400&fit=crop"
+  }];
+  return <div className="min-h-screen bg-background-light dark:bg-background-dark">
       <div className="mx-auto max-w-md">
         <header className="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm border-b border-stone-200 dark:border-stone-800">
           <div className="flex items-center gap-4 px-4 py-4">
@@ -50,17 +43,11 @@ const Sports = () => {
         </header>
 
         <div className="p-4 space-y-4">
-          {events.map((event) => (
-            <Link
-              key={event.id}
-              to={`/event/${event.id}`}
-              className="block group"
-            >
+          {events.map(event => <Link key={event.id} to={`/event/${event.id}`} className="block group">
               <div className="overflow-hidden rounded-2xl bg-white dark:bg-stone-900 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
-                <div 
-                  className="h-48 bg-cover bg-center relative"
-                  style={{ backgroundImage: `url('${event.image}')` }}
-                >
+                <div className="h-48 bg-cover bg-center relative" style={{
+              backgroundImage: `url('${event.image}')`
+            }}>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   <div className="absolute bottom-4 left-4 right-4">
                     <span className="inline-block px-3 py-1 rounded-full bg-primary text-white text-sm font-medium">
@@ -74,7 +61,7 @@ const Sports = () => {
                     {event.title}
                   </h3>
                   
-                  <div className="space-y-2">
+                  <div className="space-y-2 rounded-md mx-0 my-0 px-[10px] py-[6px] bg-gray-300">
                     <div className="flex items-center gap-2 text-stone-600 dark:text-stone-400">
                       <MapPin size={16} />
                       <span className="text-sm">{event.venue}</span>
@@ -92,12 +79,9 @@ const Sports = () => {
                   </div>
                 </div>
               </div>
-            </Link>
-          ))}
+            </Link>)}
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Sports;
