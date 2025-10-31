@@ -14,9 +14,12 @@ const EventCard = () => {
               Sat, Nov 16 • 8:00 PM
             </p>
           </div>
-          <button className="flex w-fit cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-primary text-primary-foreground text-sm font-medium leading-normal hover:opacity-90 transition-opacity active:scale-95">
+          <a 
+            href="/event/1"
+            className="flex w-fit cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-primary text-primary-foreground text-sm font-medium leading-normal hover:opacity-90 transition-opacity active:scale-95"
+          >
             <span>View Details</span>
-          </button>
+          </a>
         </div>
         <div 
           className="w-24 flex-shrink-0 bg-center bg-no-repeat bg-cover rounded-lg"
