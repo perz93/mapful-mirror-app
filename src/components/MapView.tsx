@@ -61,26 +61,35 @@ const MapView = () => {
       // Create popup content
       const popupContent = `
         <div class="event-popup">
-          <div class="popup-icon">${event.icon}</div>
-          <div class="popup-content">
-            <p class="popup-venue">${event.venue}</p>
-            <h3 class="popup-title">${event.title}</h3>
-            <p class="popup-date">${event.date}</p>
+          <div>
+            <div class="popup-icon">${event.icon}</div>
+            <div class="popup-content">
+              <p class="popup-venue">${event.venue}</p>
+              <h3 class="popup-title">${event.title}</h3>
+              <p class="popup-date">${event.date}</p>
+            </div>
           </div>
         </div>
       `;
 
-      marker.bindPopup(popupContent, {
+      const popup = L.popup({
         className: 'custom-popup',
         closeButton: true,
         maxWidth: 280,
-      });
+      }).setContent(popupContent);
 
-      // Add click handler to navigate to event details
-      marker.on('click', () => {
-        setTimeout(() => {
-          navigate(`/event/${event.id}`);
-        }, 300);
+      marker.bindPopup(popup);
+
+      // Add click handler on popup button to navigate to event details
+      marker.on('popupopen', () => {
+        const popupElement = document.querySelector('.custom-popup');
+        if (popupElement) {
+          const button = document.createElement('button');
+          button.className = 'popup-details-btn';
+          button.textContent = 'Voir les détails';
+          button.onclick = () => navigate(`/event/${event.id}`);
+          popupElement.querySelector('.popup-content')?.appendChild(button);
+        }
       });
     });
 

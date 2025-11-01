@@ -101,8 +101,14 @@ body {
 
 .event-popup {
   display: flex;
-  gap: 12px;
+  flex-direction: column;
+  gap: 0;
   padding: 16px;
+}
+
+.event-popup > div:first-child {
+  display: flex;
+  gap: 12px;
   align-items: center;
 }
 
@@ -144,30 +150,35 @@ body {
   margin: 0;
 }
 
+.popup-details-btn {
+  margin-top: 12px;
+  padding: 8px 16px;
+  background: hsl(var(--primary));
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+}
+
+.popup-details-btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px hsla(var(--primary), 0.3);
+}
+
+.popup-details-btn:active {
+  transform: scale(0.98);
+}
+
 /* PWA safe area support */
 .pb-safe {
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }
 
-/* Search bar gradient background */
-.search-bar-gradient {
-  background: linear-gradient(180deg, 
-    rgba(255, 255, 255, 0.95) 0%, 
-    rgba(255, 255, 255, 0.8) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  backdrop-filter: blur(8px);
-}
-
-.dark .search-bar-gradient {
-  background: linear-gradient(180deg, 
-    rgba(15, 23, 42, 0.95) 0%, 
-    rgba(15, 23, 42, 0.8) 50%,
-    rgba(15, 23, 42, 0) 100%
-  );
-}
-
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here.
 All colors MUST be HSL.
 */
 

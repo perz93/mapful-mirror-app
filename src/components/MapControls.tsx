@@ -5,7 +5,7 @@ const MapControls = () => {
         
         
       </div>
-      <button className="flex size-10 items-center justify-center rounded-full bg-white/80 dark:bg-background-dark/80 backdrop-blur-sm shadow-lg hover:bg-white/90 dark:hover:bg-background-dark/90 transition-colors">
+      <button className="flex size-10 items-center justify-center rounded-full bg-white/95 dark:bg-stone-900/95 backdrop-blur-md shadow-2xl hover:bg-white transition-colors border border-stone-200/50 dark:border-stone-700/50">
         <Crosshair className="text-stone-900 dark:text-white" size={20} />
       </button>
     </div>;
