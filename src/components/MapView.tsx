@@ -9,12 +9,16 @@ const MapView = () => {
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
-    // Initialize map
+    // Initialize map - Centered on Abidjan, Côte d'Ivoire
     const map = L.map(mapRef.current, {
-      center: [40.7589, -73.9851],
+      center: [5.3600, -4.0083],
       zoom: 13,
       zoomControl: false,
       attributionControl: false,
+      preferCanvas: true, // Better performance
+      fadeAnimation: true,
+      zoomAnimation: true,
+      markerZoomAnimation: true,
     });
 
     // Add OpenStreetMap tile layer with grayscale filter
@@ -38,13 +42,13 @@ const MapView = () => {
       });
     };
 
-    // Add event markers
+    // Add event markers around Abidjan
     const events = [
-      { lat: 40.7589, lng: -73.9851, icon: '🎵', type: 'music' },
-      { lat: 40.7689, lng: -73.9751, icon: '🎵', type: 'music' },
-      { lat: 40.7489, lng: -73.9951, icon: '🍔', type: 'food' },
-      { lat: 40.7789, lng: -73.9651, icon: '🏆', type: 'sports' },
-      { lat: 40.7389, lng: -73.9851, icon: '🎨', type: 'arts' },
+      { lat: 5.3600, lng: -4.0083, icon: '🎵', type: 'music' },
+      { lat: 5.3700, lng: -4.0000, icon: '🎵', type: 'music' },
+      { lat: 5.3500, lng: -4.0150, icon: '🍔', type: 'food' },
+      { lat: 5.3800, lng: -3.9950, icon: '🏆', type: 'sports' },
+      { lat: 5.3400, lng: -4.0100, icon: '🎨', type: 'arts' },
     ];
 
     events.forEach(event => {
