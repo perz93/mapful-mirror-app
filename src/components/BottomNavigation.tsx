@@ -13,7 +13,7 @@ const BottomNavigation = () => {
 
   return (
     <div className="absolute bottom-0 left-0 right-0 flex-shrink-0 px-4 pb-safe z-20">
-      <div className="flex h-[72px] items-center justify-around rounded-xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-md shadow-2xl mb-4 border border-stone-200/50 dark:border-stone-700/50">
+      <div className="flex h-[72px] items-center justify-around rounded-xl bg-white dark:bg-stone-900 backdrop-blur-md shadow-2xl mb-4 border border-stone-200 dark:border-stone-700">
         {navItems.map((item, index) => {
           const isActive = location.pathname === item.path;
           return (
