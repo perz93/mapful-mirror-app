@@ -1,6 +1,6 @@
 const EventCard = () => {
-  return <div className="absolute bottom-28 left-0 right-0 p-4 pointer-events-none">
-      <div className="pointer-events-auto">
+  return <div className="fixed bottom-28 left-0 right-0 max-w-md mx-auto p-4 pointer-events-none z-10 touch-none">
+      <div className="pointer-events-auto touch-auto">
         <div className="flex items-stretch justify-between gap-4 rounded-lg bg-white/95 dark:bg-stone-900/95 backdrop-blur-sm p-4 shadow-2xl">
         <div className="flex flex-col justify-between gap-2 flex-[2_2_0px]">
           <div className="flex flex-col gap-1">

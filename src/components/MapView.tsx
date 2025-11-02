@@ -46,11 +46,11 @@ const MapView = () => {
 
     // Add event markers around Abidjan
     const events = [
-      { lat: 5.3600, lng: -4.0083, icon: '🎵', type: 'music', title: 'Indie Music Festival', venue: 'Central Park', date: 'Sat, Nov 16 • 8:00 PM', id: '1' },
-      { lat: 5.3700, lng: -4.0000, icon: '🎵', type: 'music', title: 'Jazz Night', venue: 'Blue Note', date: 'Fri, Nov 15 • 9:00 PM', id: '2' },
-      { lat: 5.3500, lng: -4.0150, icon: '🍔', type: 'food', title: 'Food Truck Festival', venue: 'Marina Bay', date: 'Sun, Nov 17 • 12:00 PM', id: '3' },
-      { lat: 5.3800, lng: -3.9950, icon: '🏆', type: 'sports', title: 'Basketball Championship', venue: 'Sports Arena', date: 'Sat, Nov 16 • 6:00 PM', id: '4' },
-      { lat: 5.3400, lng: -4.0100, icon: '🎨', type: 'arts', title: 'Art Exhibition', venue: 'Modern Gallery', date: 'Thu, Nov 14 • 10:00 AM', id: '5' },
+      { lat: 5.3600, lng: -4.0083, icon: '🎵', type: 'music', title: 'Indie Music Festival', venue: 'Central Park', date: 'Sat, Nov 16', time: '8:00 PM', price: '15,000 FCFA', capacity: '500', image: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&h=300&fit=crop', id: '1' },
+      { lat: 5.3700, lng: -4.0000, icon: '🎵', type: 'music', title: 'Jazz Night', venue: 'Blue Note', date: 'Fri, Nov 15', time: '9:00 PM', price: '12,000 FCFA', capacity: '200', image: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=400&h=300&fit=crop', id: '2' },
+      { lat: 5.3500, lng: -4.0150, icon: '🍔', type: 'food', title: 'Food Truck Festival', venue: 'Marina Bay', date: 'Sun, Nov 17', time: '12:00 PM', price: 'Gratuit', capacity: '1000', image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=300&fit=crop', id: '3' },
+      { lat: 5.3800, lng: -3.9950, icon: '🏆', type: 'sports', title: 'Basketball Championship', venue: 'Sports Arena', date: 'Sat, Nov 16', time: '6:00 PM', price: '8,000 FCFA', capacity: '300', image: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop', id: '4' },
+      { lat: 5.3400, lng: -4.0100, icon: '🎨', type: 'arts', title: 'Art Exhibition', venue: 'Modern Gallery', date: 'Thu, Nov 14', time: '10:00 AM', price: '5,000 FCFA', capacity: '150', image: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=400&h=300&fit=crop', id: '5' },
     ];
 
     events.forEach(event => {
@@ -58,37 +58,69 @@ const MapView = () => {
         icon: createCustomIcon(event.icon)
       }).addTo(map);
 
-      // Create popup content
+      // Create popup content with image and more details
       const popupContent = `
-        <div class="event-popup">
-          <div>
-            <div class="popup-icon">${event.icon}</div>
-            <div class="popup-content">
-              <p class="popup-venue">${event.venue}</p>
-              <h3 class="popup-title">${event.title}</h3>
-              <p class="popup-date">${event.date}</p>
+        <div class="event-popup-modern">
+          <div class="popup-image" style="background-image: url('${event.image}')">
+            <div class="popup-image-overlay">
+              <div class="popup-icon-modern">${event.icon}</div>
+            </div>
+          </div>
+          <div class="popup-body">
+            <p class="popup-venue-modern">${event.venue}</p>
+            <h3 class="popup-title-modern">${event.title}</h3>
+            <div class="popup-details-grid">
+              <div class="popup-detail-item">
+                <svg class="popup-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <span>${event.date}</span>
+              </div>
+              <div class="popup-detail-item">
+                <svg class="popup-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span>${event.time}</span>
+              </div>
+              <div class="popup-detail-item">
+                <svg class="popup-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                <span class="popup-price">${event.price}</span>
+              </div>
+              <div class="popup-detail-item">
+                <svg class="popup-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                <span>${event.capacity} places</span>
+              </div>
             </div>
           </div>
         </div>
       `;
 
       const popup = L.popup({
-        className: 'custom-popup',
+        className: 'custom-popup-modern',
         closeButton: true,
-        maxWidth: 280,
+        maxWidth: 340,
       }).setContent(popupContent);
 
       marker.bindPopup(popup);
 
       // Add click handler on popup button to navigate to event details
       marker.on('popupopen', () => {
-        const popupElement = document.querySelector('.custom-popup');
+        const popupElement = document.querySelector('.custom-popup-modern');
         if (popupElement) {
           const button = document.createElement('button');
-          button.className = 'popup-details-btn';
-          button.textContent = 'Voir les détails';
+          button.className = 'popup-details-btn-modern';
+          button.innerHTML = `
+            <span>Voir les détails</span>
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+            </svg>
+          `;
           button.onclick = () => navigate(`/event/${event.id}`);
-          popupElement.querySelector('.popup-content')?.appendChild(button);
+          popupElement.querySelector('.popup-body')?.appendChild(button);
         }
       });
     });
