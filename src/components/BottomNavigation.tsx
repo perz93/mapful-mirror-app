@@ -23,9 +23,9 @@ const BottomNavigation = () => {
       <div className="flex h-[72px] items-center justify-around rounded-xl bg-white dark:bg-stone-900 backdrop-blur-md shadow-2xl mb-4 border border-stone-200 dark:border-stone-700">
         {navItems.map((item, index) => {
         const isActive = location.pathname === item.path;
-        return <Link key={index} to={item.path} className={`flex h-12 w-24 flex-col items-center justify-center gap-1 rounded-lg transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 ${isActive ? 'bg-primary/20 text-primary dark:bg-primary/30' : 'text-stone-500 dark:text-stone-400'}`}>
-              <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} fill={isActive ? 'currentColor' : 'none'} className="transition-all duration-300" />
-              <p className="text-xs font-medium leading-none transition-all duration-300">{item.label}</p>
+        return <Link key={index} to={item.path} className={`flex h-12 w-24 flex-col items-center justify-center gap-1 rounded-lg transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 ${isActive ? 'bg-primary/20 text-primary dark:bg-primary/30' : 'text-stone-500 dark:text-stone-400'}`} style={{ transitionProperty: 'all' }}>
+              <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} fill={isActive ? 'currentColor' : 'none'} className="transition-all duration-300 ease-in-out" />
+              <p className="text-xs font-medium leading-none transition-all duration-300 ease-in-out">{item.label}</p>
             </Link>;
       })}
       </div>
