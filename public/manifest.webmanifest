@@ -1,10 +1,11 @@
 {
-  "name": "Mapful Events",
-  "short_name": "Mapful",
+  "name": "Discover Eventify",
+  "short_name": "Eventify",
   "description": "Discover concerts, sports, food events, and art exhibitions near you",
-  "theme_color": "#ffffff",
-  "background_color": "#181511",
+  "theme_color": "#0099FF",
+  "background_color": "#1C1C1E",
   "display": "standalone",
+  "orientation": "portrait",
   "start_url": "/",
   "scope": "/",
   "icons": [
