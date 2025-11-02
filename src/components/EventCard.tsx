@@ -1,6 +1,7 @@
 const EventCard = () => {
-  return <div className="absolute bottom-24 left-0 right-0 p-4">
-      <div className="flex items-stretch justify-between gap-4 rounded-lg bg-white/80 dark:bg-background-dark/80 backdrop-blur-sm p-4 shadow-lg my-[10px] mx-0">
+  return <div className="absolute bottom-28 left-0 right-0 p-4 pointer-events-none">
+      <div className="pointer-events-auto">
+        <div className="flex items-stretch justify-between gap-4 rounded-lg bg-white/95 dark:bg-stone-900/95 backdrop-blur-sm p-4 shadow-2xl">
         <div className="flex flex-col justify-between gap-2 flex-[2_2_0px]">
           <div className="flex flex-col gap-1">
             <p className="text-stone-500 dark:text-stone-400 text-sm font-normal leading-normal">
@@ -19,7 +20,8 @@ const EventCard = () => {
         </div>
         <div className="w-24 flex-shrink-0 bg-center bg-no-repeat bg-cover rounded-lg" style={{
         backgroundImage: "url('https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&h=400&fit=crop')"
-      }} />
+        }} />
+        </div>
       </div>
     </div>;
 };

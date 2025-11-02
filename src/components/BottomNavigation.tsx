@@ -19,8 +19,8 @@ const BottomNavigation = () => {
     label: 'Arts',
     path: '/arts'
   }];
-  return <div className="absolute bottom-0 left-0 right-0 flex-shrink-0 px-4 pb-safe z-20">
-      <div className="flex h-[72px] items-center justify-around rounded-xl bg-white dark:bg-stone-900 backdrop-blur-md shadow-2xl mb-4 border border-stone-200 dark:border-stone-700 mx-0 px-0 py-0 my-0">
+  return <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto flex-shrink-0 px-4 pb-safe z-20">
+      <div className="flex h-[72px] items-center justify-around rounded-xl bg-white dark:bg-stone-900 backdrop-blur-md shadow-2xl mb-4 border border-stone-200 dark:border-stone-700">
         {navItems.map((item, index) => {
         const isActive = location.pathname === item.path;
         return <Link key={index} to={item.path} className={`flex h-12 w-24 flex-col items-center justify-center gap-1 rounded-lg transition-all hover:scale-105 active:scale-95 ${isActive ? 'bg-primary/20 text-primary dark:bg-primary/30' : 'text-stone-500 dark:text-stone-400'}`}>
