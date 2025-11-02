@@ -2,7 +2,7 @@ import { Search } from 'lucide-react';
 
 const SearchBar = () => {
   return (
-    <div className="fixed left-0 right-0 top-0 z-30 max-w-md mx-auto bg-gradient-to-b from-white via-white/80 to-transparent dark:from-stone-900 dark:via-stone-900/80 backdrop-blur-sm">
+    <div className="fixed left-0 right-0 top-0 z-30 max-w-md mx-auto">
       <div className="p-4 pt-6">
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" size={20} />

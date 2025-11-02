@@ -17,25 +17,22 @@ export default defineConfig(({ mode }) => ({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'robots.txt'],
       manifest: {
-        name: 'Discover Eventify',
-        short_name: 'Eventify',
-        description: 'Discover concerts, sports, food events, and art exhibitions near you',
-        theme_color: '#0099FF',
-        background_color: '#1C1C1E',
+        name: 'Mapful Events',
+        short_name: 'Mapful',
+        description: 'Discover events near you',
+        theme_color: '#ee9d2b',
+        background_color: '#181511',
         display: 'standalone',
-        orientation: 'portrait',
         icons: [
           {
             src: '/icon-192.png',
             sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any maskable'
+            type: 'image/png'
           },
           {
             src: '/icon-512.png',
             sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
+            type: 'image/png'
           }
         ]
       },
@@ -49,17 +46,6 @@ export default defineConfig(({ mode }) => ({
               cacheName: 'openstreetmap-tiles',
               expiration: {
                 maxEntries: 500,
-                maxAgeSeconds: 60 * 60 * 24 * 30
-              }
-            }
-          },
-          {
-            urlPattern: /^https:\/\/images\.unsplash\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'unsplash-images',
-              expiration: {
-                maxEntries: 50,
                 maxAgeSeconds: 60 * 60 * 24 * 30
               }
             }
