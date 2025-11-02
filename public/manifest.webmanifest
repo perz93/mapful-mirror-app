@@ -2,7 +2,7 @@
   "name": "Mapful Events",
   "short_name": "Mapful",
   "description": "Discover concerts, sports, food events, and art exhibitions near you",
-  "theme_color": "#ee9d2b",
+  "theme_color": "#ffffff",
   "background_color": "#181511",
   "display": "standalone",
   "start_url": "/",
