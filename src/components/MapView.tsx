@@ -102,7 +102,7 @@ const MapView = () => {
       const popup = L.popup({
         className: 'custom-popup-modern',
         closeButton: true,
-        maxWidth: 340,
+        maxWidth: 280,
       }).setContent(popupContent);
 
       marker.bindPopup(popup);

@@ -6,7 +6,7 @@ import BottomNavigation from "@/components/BottomNavigation";
 
 const Index = () => {
   return (
-    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-background">
+    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-background animate-fade-in">
       <div className="relative flex-1 overflow-hidden">
         <MapView />
         <SearchBar />

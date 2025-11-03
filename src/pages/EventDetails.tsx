@@ -19,7 +19,7 @@ const EventDetails = () => {
     organizer: "NYC Live Events",
     category: "Music"
   };
-  return <div className="min-h-screen bg-background-light dark:bg-background-dark animate-fade-in animate-scale-in">
+  return <div className="min-h-screen bg-background-light dark:bg-background-dark animate-fade-in animate-zoom-smooth">
       <div className="mx-auto max-w-md">
         <div className="relative h-80 bg-cover bg-center rounded-3xl overflow-hidden mx-4 mt-4" style={{
         backgroundImage: `url('${event.image}')`

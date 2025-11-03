@@ -26,8 +26,8 @@ const Sports = () => {
     price: "$120",
     image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=400&fit=crop"
   }];
-  return <div className="min-h-screen bg-background-light dark:bg-background-dark">
-      <div className="mx-auto max-w-md">
+  return <div className="min-h-screen bg-background-light dark:bg-background-dark animate-fade-in">
+      <div className="mx-auto max-w-md animate-zoom-smooth">
         <header className="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm border-b border-stone-200 dark:border-stone-800">
           <div className="flex items-center gap-4 px-4 py-4">
             <Link to="/" className="text-stone-900 dark:text-white hover:opacity-70 transition-opacity">
@@ -44,7 +44,7 @@ const Sports = () => {
 
         <div className="p-4 space-y-4">
           {events.map(event => <Link key={event.id} to={`/event/${event.id}`} className="block group">
-              <div className="overflow-hidden rounded-2xl bg-white dark:bg-stone-900 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+              <div className="overflow-hidden rounded-2xl bg-white dark:bg-stone-900 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] animate-fade-in">
                 <div className="h-48 bg-cover bg-center relative" style={{
               backgroundImage: `url('${event.image}')`
             }}>
