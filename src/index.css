@@ -105,11 +105,12 @@ body {
   flex-direction: column;
   overflow: hidden;
   width: 210px;
+  max-height: 280px;
 }
 
 .popup-image {
   width: 100%;
-  height: 110px;
+  height: 90px;
   background-size: cover;
   background-position: center;
   position: relative;

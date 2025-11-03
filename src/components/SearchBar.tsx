@@ -26,13 +26,17 @@ const SearchBar = () => {
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48 animate-fade-in">
-            <DropdownMenuItem className="cursor-pointer">
-              <Calendar className="mr-2 h-4 w-4" />
-              <span>Créer un événement</span>
+            <DropdownMenuItem className="cursor-pointer" asChild>
+              <a href="/create-event" className="flex items-center">
+                <Calendar className="mr-2 h-4 w-4" />
+                <span>Créer un événement</span>
+              </a>
             </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer">
-              <User className="mr-2 h-4 w-4" />
-              <span>Mon compte</span>
+            <DropdownMenuItem className="cursor-pointer" asChild>
+              <a href="/my-account" className="flex items-center">
+                <User className="mr-2 h-4 w-4" />
+                <span>Mon compte</span>
+              </a>
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer">
               <Settings className="mr-2 h-4 w-4" />
