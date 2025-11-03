@@ -61,7 +61,7 @@ const Sports = () => {
                     {event.title}
                   </h3>
                   
-                  <div className="space-y-2 rounded-md mx-0 my-0 px-[10px] py-[6px] bg-gray-300">
+                  <div className="space-y-2 rounded-md mx-0 my-0 px-[10px] py-[6px] bg-zinc-100">
                     <div className="flex items-center gap-2 text-stone-600 dark:text-stone-400">
                       <MapPin size={16} />
                       <span className="text-sm">{event.venue}</span>
