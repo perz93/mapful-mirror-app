@@ -49,8 +49,8 @@ const EventDetails = () => {
         </div>
 
         <div className="p-6 space-y-6">
-          <div className="space-y-4 rounded-md px-[3px] bg-gray-200 py-[6px]">
-            <div className="flex items-start gap-3">
+          <div className="space-y-4 rounded-md px-[3px] py-[6px] bg-zinc-200">
+            <div className="flex items-start gap-3 px-[9px]">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 flex-shrink-0">
                 <MapPin size={20} className="text-primary" />
               </div>
@@ -60,7 +60,7 @@ const EventDetails = () => {
               </div>
             </div>
 
-            <div className="flex items-start gap-3">
+            <div className="flex items-start gap-3 my-0 mx-[9px]">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 flex-shrink-0">
                 <Calendar size={20} className="text-primary" />
               </div>
@@ -70,7 +70,7 @@ const EventDetails = () => {
               </div>
             </div>
 
-            <div className="flex items-start gap-3">
+            <div className="flex items-start gap-3 mx-[9px]">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 flex-shrink-0">
                 <Users size={20} className="text-primary" />
               </div>
