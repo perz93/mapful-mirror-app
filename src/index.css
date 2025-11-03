@@ -104,7 +104,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  width: 260px;
+  width: 210px;
 }
 
 .popup-image {
