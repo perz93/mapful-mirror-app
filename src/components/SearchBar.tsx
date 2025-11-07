@@ -25,22 +25,42 @@ const SearchBar = () => {
               <Plus size={20} />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48 animate-fade-in">
-            <DropdownMenuItem className="cursor-pointer" asChild>
-              <a href="/create-event" className="flex items-center">
-                <Calendar className="mr-2 h-4 w-4" />
-                <span>Créer un événement</span>
+          <DropdownMenuContent 
+            align="end" 
+            className="w-64 animate-fade-in backdrop-blur-xl bg-background/80 border border-border/50 shadow-2xl p-2"
+          >
+            <DropdownMenuItem className="cursor-pointer rounded-lg p-3 hover:bg-primary/10 transition-all" asChild>
+              <a href="/create-event" className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Calendar className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-foreground">Créer un événement</p>
+                  <p className="text-xs text-muted-foreground">Organiser un nouvel événement</p>
+                </div>
               </a>
             </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer" asChild>
-              <a href="/my-account" className="flex items-center">
-                <User className="mr-2 h-4 w-4" />
-                <span>Mon compte</span>
+            <DropdownMenuItem className="cursor-pointer rounded-lg p-3 hover:bg-primary/10 transition-all" asChild>
+              <a href="/my-account" className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <User className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-foreground">Mon compte</p>
+                  <p className="text-xs text-muted-foreground">Gérer votre profil</p>
+                </div>
               </a>
             </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer">
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Paramètres</span>
+            <DropdownMenuItem className="cursor-pointer rounded-lg p-3 hover:bg-primary/10 transition-all">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Settings className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-foreground">Paramètres</p>
+                  <p className="text-xs text-muted-foreground">Préférences et confidentialité</p>
+                </div>
+              </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

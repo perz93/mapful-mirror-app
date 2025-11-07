@@ -28,13 +28,13 @@ const MapView = () => {
       className: 'map-tiles',
     }).addTo(map);
 
-    // Create custom marker icon
-    const createCustomIcon = (iconHtml: string) => {
+    // Create custom marker icon with color based on event type
+    const createCustomIcon = (iconHtml: string, eventType: string) => {
       return L.divIcon({
         className: 'custom-marker',
         html: `
           <div class="marker-container">
-            <div class="marker-pin">
+            <div class="marker-pin marker-${eventType}">
               ${iconHtml}
             </div>
           </div>
@@ -55,7 +55,7 @@ const MapView = () => {
 
     events.forEach(event => {
       const marker = L.marker([event.lat, event.lng], {
-        icon: createCustomIcon(event.icon)
+        icon: createCustomIcon(event.icon, event.type)
       }).addTo(map);
 
       // Create popup content with image and more details
