@@ -49,7 +49,7 @@ const EventDetails = () => {
         </div>
 
         <div className="p-6 space-y-6">
-          <div className="space-y-4 rounded-md px-[3px] py-[6px] bg-zinc-200">
+          <div className="space-y-4 rounded-md px-[3px] py-[10px] bg-orange-50">
             <div className="flex items-start gap-3 px-[9px]">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 flex-shrink-0">
                 <MapPin size={20} className="text-primary" />
@@ -70,13 +70,13 @@ const EventDetails = () => {
               </div>
             </div>
 
-            <div className="flex items-start gap-3 mx-[9px]">
+            <div className="flex items-start gap-3 mx-[9px] py-0">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 flex-shrink-0">
                 <Users size={20} className="text-primary" />
               </div>
               <div>
                 <p className="font-semibold text-stone-900 dark:text-white">{event.capacity}</p>
-                <p className="text-sm text-stone-600 dark:text-stone-400">Organized by {event.organizer}</p>
+                <p className="text-sm text-stone-600 dark:text-stone-400 py-0">Organized by {event.organizer}</p>
               </div>
             </div>
           </div>
