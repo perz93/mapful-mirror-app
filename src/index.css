@@ -173,7 +173,12 @@ body {
 
 .popup-body {
   padding: 14px;
-  background: white;
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.dark .popup-body {
+  background: rgba(28, 25, 23, 0.9);
 }
 
 .popup-venue-modern {

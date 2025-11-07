@@ -9,9 +9,9 @@ const MyAccount = () => {
     <div className="min-h-screen bg-background pb-24 animate-fade-in">
       <div className="mx-auto max-w-md animate-zoom-smooth">
         {/* Header */}
-        <div className="bg-gradient-to-br from-primary/20 via-primary/10 to-background px-6 pt-12 pb-8">
+        <div className="backdrop-blur-xl bg-gradient-to-br from-primary/20 via-primary/10 to-background/80 px-6 pt-12 pb-8 border-b border-border/30">
           <Link to="/" className="inline-block mb-6">
-            <Button variant="ghost" size="sm" className="text-foreground/70">
+            <Button variant="ghost" size="sm" className="text-foreground/70 hover:text-foreground">
               ← Retour
             </Button>
           </Link>
@@ -31,17 +31,17 @@ const MyAccount = () => {
         {/* Stats Cards */}
         <div className="px-6 -mt-4 mb-6">
           <div className="grid grid-cols-3 gap-3">
-            <Card className="p-4 text-center">
+            <Card className="p-4 text-center backdrop-blur-xl bg-card/80 border-border/50 hover:bg-card/90 transition-all">
               <Calendar className="h-5 w-5 mx-auto mb-2 text-primary" />
               <p className="text-2xl font-bold text-foreground">12</p>
               <p className="text-xs text-muted-foreground">Événements</p>
             </Card>
-            <Card className="p-4 text-center">
+            <Card className="p-4 text-center backdrop-blur-xl bg-card/80 border-border/50 hover:bg-card/90 transition-all">
               <Heart className="h-5 w-5 mx-auto mb-2 text-primary" />
               <p className="text-2xl font-bold text-foreground">28</p>
               <p className="text-xs text-muted-foreground">Favoris</p>
             </Card>
-            <Card className="p-4 text-center">
+            <Card className="p-4 text-center backdrop-blur-xl bg-card/80 border-border/50 hover:bg-card/90 transition-all">
               <User className="h-5 w-5 mx-auto mb-2 text-primary" />
               <p className="text-2xl font-bold text-foreground">5</p>
               <p className="text-xs text-muted-foreground">Amis</p>
@@ -51,7 +51,7 @@ const MyAccount = () => {
 
         {/* Menu Options */}
         <div className="px-6 space-y-3">
-          <Card className="p-4 hover:shadow-lg transition-shadow cursor-pointer">
+          <Card className="p-4 backdrop-blur-xl bg-card/80 border-border/50 hover:shadow-lg hover:bg-card/90 transition-all cursor-pointer">
             <div className="flex items-center gap-4">
               <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                 <User className="h-5 w-5 text-primary" />
@@ -63,7 +63,7 @@ const MyAccount = () => {
             </div>
           </Card>
 
-          <Card className="p-4 hover:shadow-lg transition-shadow cursor-pointer">
+          <Card className="p-4 backdrop-blur-xl bg-card/80 border-border/50 hover:shadow-lg hover:bg-card/90 transition-all cursor-pointer">
             <div className="flex items-center gap-4">
               <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                 <Calendar className="h-5 w-5 text-primary" />
@@ -75,7 +75,7 @@ const MyAccount = () => {
             </div>
           </Card>
 
-          <Card className="p-4 hover:shadow-lg transition-shadow cursor-pointer">
+          <Card className="p-4 backdrop-blur-xl bg-card/80 border-border/50 hover:shadow-lg hover:bg-card/90 transition-all cursor-pointer">
             <div className="flex items-center gap-4">
               <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                 <Heart className="h-5 w-5 text-primary" />
@@ -87,7 +87,7 @@ const MyAccount = () => {
             </div>
           </Card>
 
-          <Card className="p-4 hover:shadow-lg transition-shadow cursor-pointer">
+          <Card className="p-4 backdrop-blur-xl bg-card/80 border-border/50 hover:shadow-lg hover:bg-card/90 transition-all cursor-pointer">
             <div className="flex items-center gap-4">
               <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                 <Bell className="h-5 w-5 text-primary" />
@@ -99,7 +99,7 @@ const MyAccount = () => {
             </div>
           </Card>
 
-          <Card className="p-4 hover:shadow-lg transition-shadow cursor-pointer">
+          <Card className="p-4 backdrop-blur-xl bg-card/80 border-border/50 hover:shadow-lg hover:bg-card/90 transition-all cursor-pointer">
             <div className="flex items-center gap-4">
               <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                 <Settings className="h-5 w-5 text-primary" />
@@ -111,7 +111,7 @@ const MyAccount = () => {
             </div>
           </Card>
 
-          <Card className="p-4 hover:shadow-lg transition-shadow cursor-pointer border-destructive/20">
+          <Card className="p-4 backdrop-blur-xl bg-destructive/5 border-destructive/20 hover:shadow-lg hover:bg-destructive/10 transition-all cursor-pointer">
             <div className="flex items-center gap-4">
               <div className="h-10 w-10 rounded-full bg-destructive/10 flex items-center justify-center">
                 <LogOut className="h-5 w-5 text-destructive" />

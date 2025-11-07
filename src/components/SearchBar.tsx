@@ -9,7 +9,7 @@ import {
 const SearchBar = () => {
   return (
     <div className="fixed left-0 right-0 top-0 z-30 max-w-md mx-auto">
-      <div className="p-4 pt-6 flex items-center gap-2 backdrop-blur-xl bg-background/30">
+      <div className="p-4 pt-6 flex items-center gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" size={18} />
           <input

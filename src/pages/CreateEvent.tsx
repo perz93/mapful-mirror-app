@@ -34,9 +34,9 @@ const CreateEvent = () => {
     <div className="min-h-screen bg-background pb-24 animate-fade-in">
       <div className="mx-auto max-w-md animate-zoom-smooth">
         {/* Header */}
-        <div className="bg-gradient-to-br from-primary/20 via-primary/10 to-background px-6 pt-12 pb-8">
+        <div className="backdrop-blur-xl bg-gradient-to-br from-primary/20 via-primary/10 to-background/80 px-6 pt-12 pb-8 border-b border-border/30">
           <Link to="/" className="inline-block mb-6">
-            <Button variant="ghost" size="sm" className="text-foreground/70">
+            <Button variant="ghost" size="sm" className="text-foreground/70 hover:text-foreground">
               ← Retour
             </Button>
           </Link>
@@ -47,7 +47,7 @@ const CreateEvent = () => {
         {/* Form */}
         <form onSubmit={handleSubmit} className="px-6 py-6 space-y-6">
           {/* Image Upload */}
-          <Card className="p-6 border-dashed border-2 hover:border-primary/50 transition-colors cursor-pointer">
+          <Card className="p-6 border-dashed border-2 backdrop-blur-xl bg-card/80 hover:border-primary/50 hover:bg-card/90 transition-all cursor-pointer">
             <div className="flex flex-col items-center justify-center text-center">
               <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                 <ImageIcon className="h-8 w-8 text-primary" />
@@ -59,25 +59,25 @@ const CreateEvent = () => {
 
           {/* Title */}
           <div className="space-y-2">
-            <Label htmlFor="title" className="text-foreground">Titre de l'événement *</Label>
+            <Label htmlFor="title" className="text-foreground font-semibold">Titre de l'événement *</Label>
             <Input
               id="title"
               placeholder="Ex: Festival de musique Jazz"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               required
-              className="h-11"
+              className="h-11 backdrop-blur-xl bg-background/80 border-border/50"
             />
           </div>
 
           {/* Category */}
           <div className="space-y-2">
-            <Label htmlFor="category" className="text-foreground">Catégorie *</Label>
+            <Label htmlFor="category" className="text-foreground font-semibold">Catégorie *</Label>
             <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-              <SelectTrigger className="h-11">
+              <SelectTrigger className="h-11 backdrop-blur-xl bg-background/80 border-border/50">
                 <SelectValue placeholder="Sélectionnez une catégorie" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="backdrop-blur-xl bg-background/95 border-border/50">
                 <SelectItem value="concerts">🎵 Concerts</SelectItem>
                 <SelectItem value="sports">🏆 Sports</SelectItem>
                 <SelectItem value="food">🍔 Food</SelectItem>
@@ -88,8 +88,8 @@ const CreateEvent = () => {
 
           {/* Venue */}
           <div className="space-y-2">
-            <Label htmlFor="venue" className="text-foreground flex items-center gap-2">
-              <MapPin className="h-4 w-4" />
+            <Label htmlFor="venue" className="text-foreground font-semibold flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-primary" />
               Lieu *
             </Label>
             <Input
@@ -98,15 +98,15 @@ const CreateEvent = () => {
               value={formData.venue}
               onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
               required
-              className="h-11"
+              className="h-11 backdrop-blur-xl bg-background/80 border-border/50"
             />
           </div>
 
           {/* Date and Time */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="date" className="text-foreground flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
+              <Label htmlFor="date" className="text-foreground font-semibold flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-primary" />
                 Date *
               </Label>
               <Input
@@ -115,12 +115,12 @@ const CreateEvent = () => {
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                 required
-                className="h-11"
+                className="h-11 backdrop-blur-xl bg-background/80 border-border/50"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="time" className="text-foreground flex items-center gap-2">
-                <Clock className="h-4 w-4" />
+              <Label htmlFor="time" className="text-foreground font-semibold flex items-center gap-2">
+                <Clock className="h-4 w-4 text-primary" />
                 Heure *
               </Label>
               <Input
@@ -129,7 +129,7 @@ const CreateEvent = () => {
                 value={formData.time}
                 onChange={(e) => setFormData({ ...formData, time: e.target.value })}
                 required
-                className="h-11"
+                className="h-11 backdrop-blur-xl bg-background/80 border-border/50"
               />
             </div>
           </div>
@@ -137,8 +137,8 @@ const CreateEvent = () => {
           {/* Price and Capacity */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="price" className="text-foreground flex items-center gap-2">
-                <DollarSign className="h-4 w-4" />
+              <Label htmlFor="price" className="text-foreground font-semibold flex items-center gap-2">
+                <DollarSign className="h-4 w-4 text-primary" />
                 Prix
               </Label>
               <Input
@@ -146,12 +146,12 @@ const CreateEvent = () => {
                 placeholder="Gratuit"
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                className="h-11"
+                className="h-11 backdrop-blur-xl bg-background/80 border-border/50"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="capacity" className="text-foreground flex items-center gap-2">
-                <Users className="h-4 w-4" />
+              <Label htmlFor="capacity" className="text-foreground font-semibold flex items-center gap-2">
+                <Users className="h-4 w-4 text-primary" />
                 Places
               </Label>
               <Input
@@ -160,26 +160,26 @@ const CreateEvent = () => {
                 placeholder="100"
                 value={formData.capacity}
                 onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
-                className="h-11"
+                className="h-11 backdrop-blur-xl bg-background/80 border-border/50"
               />
             </div>
           </div>
 
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-foreground">Description</Label>
+            <Label htmlFor="description" className="text-foreground font-semibold">Description</Label>
             <Textarea
               id="description"
               placeholder="Décrivez votre événement..."
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               rows={4}
-              className="resize-none"
+              className="resize-none backdrop-blur-xl bg-background/80 border-border/50"
             />
           </div>
 
           {/* Submit Button */}
-          <Button type="submit" className="w-full h-12 text-base font-semibold">
+          <Button type="submit" className="w-full h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all">
             Publier l'événement
           </Button>
         </form>
