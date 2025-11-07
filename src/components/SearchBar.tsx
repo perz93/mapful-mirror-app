@@ -9,13 +9,13 @@ import {
 const SearchBar = () => {
   return (
     <div className="fixed left-0 right-0 top-0 z-30 max-w-md mx-auto">
-      <div className="p-4 pt-6 flex items-center gap-2">
+      <div className="p-4 pt-6 flex items-center gap-2 backdrop-blur-xl bg-background/30">
         <div className="relative flex-1">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" size={18} />
           <input
             type="text"
             placeholder="Search events, artists, or venues"
-            className="h-10 w-full rounded-full bg-white dark:bg-stone-800 pl-11 pr-4 text-sm shadow-lg transition-all placeholder:text-stone-400 focus:bg-white dark:focus:bg-stone-700 focus:outline-none focus:ring-2 focus:ring-primary/50"
+            className="h-10 w-full rounded-full backdrop-blur-xl bg-white/80 dark:bg-stone-800/80 pl-11 pr-4 text-sm shadow-lg transition-all placeholder:text-stone-400 focus:bg-white/90 dark:focus:bg-stone-700/90 focus:outline-none focus:ring-2 focus:ring-primary/50"
           />
         </div>
         

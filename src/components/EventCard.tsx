@@ -1,7 +1,7 @@
 const EventCard = () => {
   return <div className="fixed bottom-28 left-0 right-0 max-w-md mx-auto px-4 pointer-events-none z-10 touch-none animate-slide-in-bottom">
       <div className="pointer-events-auto touch-auto">
-        <div className="flex items-stretch justify-between gap-3 rounded-lg bg-white/95 dark:bg-stone-900/95 backdrop-blur-sm p-4 shadow-2xl py-[14px] my-[23px]">
+        <div className="flex items-stretch justify-between gap-3 rounded-lg backdrop-blur-xl bg-white/80 dark:bg-stone-900/80 p-4 shadow-2xl py-[14px] my-[23px] border border-white/50 dark:border-stone-700/50">
         <div className="flex flex-col justify-between gap-1.5 flex-[2_2_0px]">
           <div className="flex flex-col gap-0.5">
             <p className="text-stone-500 dark:text-stone-400 text-xs font-normal leading-normal">

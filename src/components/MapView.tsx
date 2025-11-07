@@ -107,6 +107,14 @@ const MapView = () => {
 
       marker.bindPopup(popup);
 
+      // Center map on marker when popup opens
+      marker.on('click', () => {
+        map.flyTo([event.lat, event.lng], 15, {
+          duration: 0.5,
+          easeLinearity: 0.25
+        });
+      });
+
       // Add click handler on popup button to navigate to event details
       marker.on('popupopen', () => {
         const popupElement = document.querySelector('.custom-popup-modern');
