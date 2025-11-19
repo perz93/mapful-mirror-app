@@ -1,5 +1,5 @@
 const EventCard = () => {
-  return <div className="fixed bottom-28 left-0 right-0 max-w-md mx-auto px-4 pointer-events-none z-10 touch-none animate-slide-in-bottom">
+  return <div className="fixed bottom-36 left-0 right-0 max-w-md mx-auto px-4 pointer-events-none z-10 touch-none animate-slide-in-bottom">
       <div className="pointer-events-auto touch-auto">
         <div className="flex items-stretch justify-between gap-3 rounded-2xl backdrop-blur-xl bg-white/80 dark:bg-stone-900/80 p-4 shadow-2xl border border-white/50 dark:border-stone-700/50">
         <div className="flex flex-col justify-between gap-1.5 flex-[2_2_0px]">

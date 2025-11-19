@@ -29,10 +29,10 @@ const CreateEvent = () => {
       description: "Votre événement a été publié avec succès."
     });
   };
-  return <div className="min-h-screen bg-background pb-24 animate-fade-in">
+  return <div className="min-h-screen bg-background pb-32 animate-fade-in">
       <div className="mx-auto max-w-md">
         {/* Header */}
-        <div className="px-6 pt-16 pb-10">
+        <div className="px-4 sm:px-6 pt-12 sm:pt-16 pb-8 sm:pb-10">
           <Link to="/" className="inline-block mb-8">
             <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground -ml-2">
               ← Retour
@@ -43,7 +43,7 @@ const CreateEvent = () => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="px-6 pb-6 space-y-8">
+        <form onSubmit={handleSubmit} className="px-4 sm:px-6 pb-6 space-y-6 sm:space-y-8">
           {/* Image Upload */}
           <div className="border border-dashed border-border/50 rounded-2xl p-8 hover:border-border transition-colors cursor-pointer">
             <div className="flex flex-col items-center justify-center text-center">
@@ -94,7 +94,7 @@ const CreateEvent = () => {
           </div>
 
           {/* Date and Time */}
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <div className="space-y-3">
               <Label htmlFor="date" className="text-sm text-muted-foreground font-normal flex items-center gap-2">
                 <Calendar className="h-3.5 w-3.5" strokeWidth={1.5} />
@@ -118,7 +118,7 @@ const CreateEvent = () => {
           </div>
 
           {/* Price and Capacity */}
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <div className="space-y-3">
               <Label htmlFor="price" className="text-sm text-muted-foreground font-normal flex items-center gap-2">
                 <DollarSign className="h-3.5 w-3.5" strokeWidth={1.5} />
