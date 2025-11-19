@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const MyAccount = () => {
   return (
-    <div className="min-h-screen bg-background pb-24 animate-fade-in">
+    <div className="min-h-screen bg-background pb-24 animate-fade-in animate-zoom-smooth">
       <div className="mx-auto max-w-md">
         {/* Header */}
         <div className="px-6 pt-16 pb-12">

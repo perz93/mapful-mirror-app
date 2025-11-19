@@ -29,7 +29,7 @@ const CreateEvent = () => {
       description: "Votre événement a été publié avec succès."
     });
   };
-  return <div className="min-h-screen bg-background pb-32 animate-fade-in">
+  return <div className="min-h-screen bg-background pb-32 animate-fade-in animate-zoom-smooth">
       <div className="mx-auto max-w-md">
         {/* Header */}
         <div className="px-4 sm:px-6 pt-12 sm:pt-16 pb-8 sm:pb-10">
