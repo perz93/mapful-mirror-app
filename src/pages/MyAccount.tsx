@@ -7,121 +7,118 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 const MyAccount = () => {
   return (
     <div className="min-h-screen bg-background pb-24 animate-fade-in">
-      <div className="mx-auto max-w-md animate-zoom-smooth">
+      <div className="mx-auto max-w-md">
         {/* Header */}
-        <div className="backdrop-blur-xl bg-gradient-to-br from-primary/20 via-primary/10 to-background/80 px-6 pt-12 pb-8 border-b border-border/30">
-          <Link to="/" className="inline-block mb-6">
-            <Button variant="ghost" size="sm" className="text-foreground/70 hover:text-foreground">
+        <div className="px-6 pt-16 pb-12">
+          <Link to="/" className="inline-block mb-8">
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground -ml-2">
               ← Retour
             </Button>
           </Link>
           
-          <div className="flex items-center gap-4">
-            <Avatar className="h-20 w-20 border-4 border-background shadow-lg">
+          <div className="flex items-center gap-5">
+            <Avatar className="h-24 w-24 border border-border/50">
               <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop" />
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Jean Dupont</h1>
-              <p className="text-sm text-muted-foreground">jean.dupont@email.com</p>
+              <h1 className="text-3xl font-light text-foreground mb-1">Jean Dupont</h1>
+              <p className="text-sm text-muted-foreground font-light">jean.dupont@email.com</p>
             </div>
           </div>
         </div>
 
         {/* Stats Cards */}
-        <div className="px-6 -mt-4 mb-6">
-          <div className="grid grid-cols-3 gap-3">
-            <Card className="p-4 text-center backdrop-blur-xl bg-card/80 border-border/50 hover:bg-card/90 transition-all">
-              <Calendar className="h-5 w-5 mx-auto mb-2 text-primary" />
-              <p className="text-2xl font-bold text-foreground">12</p>
-              <p className="text-xs text-muted-foreground">Événements</p>
-            </Card>
-            <Card className="p-4 text-center backdrop-blur-xl bg-card/80 border-border/50 hover:bg-card/90 transition-all">
-              <Heart className="h-5 w-5 mx-auto mb-2 text-primary" />
-              <p className="text-2xl font-bold text-foreground">28</p>
-              <p className="text-xs text-muted-foreground">Favoris</p>
-            </Card>
-            <Card className="p-4 text-center backdrop-blur-xl bg-card/80 border-border/50 hover:bg-card/90 transition-all">
-              <User className="h-5 w-5 mx-auto mb-2 text-primary" />
-              <p className="text-2xl font-bold text-foreground">5</p>
-              <p className="text-xs text-muted-foreground">Amis</p>
-            </Card>
+        <div className="px-6 mb-12">
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center p-6 border border-border/30 rounded-2xl hover:border-border/50 transition-colors">
+              <p className="text-3xl font-light text-foreground mb-1">12</p>
+              <p className="text-xs text-muted-foreground font-light">Événements</p>
+            </div>
+            <div className="text-center p-6 border border-border/30 rounded-2xl hover:border-border/50 transition-colors">
+              <p className="text-3xl font-light text-foreground mb-1">28</p>
+              <p className="text-xs text-muted-foreground font-light">Favoris</p>
+            </div>
+            <div className="text-center p-6 border border-border/30 rounded-2xl hover:border-border/50 transition-colors">
+              <p className="text-3xl font-light text-foreground mb-1">5</p>
+              <p className="text-xs text-muted-foreground font-light">Amis</p>
+            </div>
           </div>
         </div>
 
         {/* Menu Options */}
-        <div className="px-6 space-y-3">
-          <Card className="p-4 backdrop-blur-xl bg-card/80 border-border/50 hover:shadow-lg hover:bg-card/90 transition-all cursor-pointer">
-            <div className="flex items-center gap-4">
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <User className="h-5 w-5 text-primary" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-foreground">Profil</h3>
-                <p className="text-sm text-muted-foreground">Modifier vos informations</p>
+        <div className="px-6 space-y-1">
+          <div className="py-5 border-b border-border/30 hover:border-border/50 transition-colors cursor-pointer group">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <User className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" strokeWidth={1.5} />
+                <div>
+                  <h3 className="font-normal text-foreground">Profil</h3>
+                  <p className="text-sm text-muted-foreground font-light">Modifier vos informations</p>
+                </div>
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card className="p-4 backdrop-blur-xl bg-card/80 border-border/50 hover:shadow-lg hover:bg-card/90 transition-all cursor-pointer">
-            <div className="flex items-center gap-4">
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Calendar className="h-5 w-5 text-primary" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-foreground">Mes événements</h3>
-                <p className="text-sm text-muted-foreground">Événements créés et rejoints</p>
+          <div className="py-5 border-b border-border/30 hover:border-border/50 transition-colors cursor-pointer group">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Calendar className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" strokeWidth={1.5} />
+                <div>
+                  <h3 className="font-normal text-foreground">Mes événements</h3>
+                  <p className="text-sm text-muted-foreground font-light">Événements créés et rejoints</p>
+                </div>
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card className="p-4 backdrop-blur-xl bg-card/80 border-border/50 hover:shadow-lg hover:bg-card/90 transition-all cursor-pointer">
-            <div className="flex items-center gap-4">
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Heart className="h-5 w-5 text-primary" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-foreground">Favoris</h3>
-                <p className="text-sm text-muted-foreground">Événements sauvegardés</p>
+          <div className="py-5 border-b border-border/30 hover:border-border/50 transition-colors cursor-pointer group">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Heart className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" strokeWidth={1.5} />
+                <div>
+                  <h3 className="font-normal text-foreground">Favoris</h3>
+                  <p className="text-sm text-muted-foreground font-light">Événements sauvegardés</p>
+                </div>
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card className="p-4 backdrop-blur-xl bg-card/80 border-border/50 hover:shadow-lg hover:bg-card/90 transition-all cursor-pointer">
-            <div className="flex items-center gap-4">
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Bell className="h-5 w-5 text-primary" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-foreground">Notifications</h3>
-                <p className="text-sm text-muted-foreground">Gérer vos notifications</p>
+          <div className="py-5 border-b border-border/30 hover:border-border/50 transition-colors cursor-pointer group">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Bell className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" strokeWidth={1.5} />
+                <div>
+                  <h3 className="font-normal text-foreground">Notifications</h3>
+                  <p className="text-sm text-muted-foreground font-light">Gérer vos notifications</p>
+                </div>
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card className="p-4 backdrop-blur-xl bg-card/80 border-border/50 hover:shadow-lg hover:bg-card/90 transition-all cursor-pointer">
-            <div className="flex items-center gap-4">
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Settings className="h-5 w-5 text-primary" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-foreground">Paramètres</h3>
-                <p className="text-sm text-muted-foreground">Préférences et confidentialité</p>
+          <div className="py-5 border-b border-border/30 hover:border-border/50 transition-colors cursor-pointer group">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Settings className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" strokeWidth={1.5} />
+                <div>
+                  <h3 className="font-normal text-foreground">Paramètres</h3>
+                  <p className="text-sm text-muted-foreground font-light">Préférences et confidentialité</p>
+                </div>
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card className="p-4 backdrop-blur-xl bg-destructive/5 border-destructive/20 hover:shadow-lg hover:bg-destructive/10 transition-all cursor-pointer">
-            <div className="flex items-center gap-4">
-              <div className="h-10 w-10 rounded-full bg-destructive/10 flex items-center justify-center">
-                <LogOut className="h-5 w-5 text-destructive" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-destructive">Déconnexion</h3>
-                <p className="text-sm text-muted-foreground">Se déconnecter du compte</p>
+          <div className="py-5 hover:border-border/50 transition-colors cursor-pointer group">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <LogOut className="h-5 w-5 text-destructive/70 group-hover:text-destructive transition-colors" strokeWidth={1.5} />
+                <div>
+                  <h3 className="font-normal text-destructive">Déconnexion</h3>
+                  <p className="text-sm text-muted-foreground font-light">Se déconnecter du compte</p>
+                </div>
               </div>
             </div>
-          </Card>
+          </div>
         </div>
       </div>
     </div>
