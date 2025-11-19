@@ -25,8 +25,8 @@ const MapView = () => {
       markerZoomAnimation: true,
     });
 
-    // Add OpenStreetMap tile layer with vibrant colors
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    // Add tile layer with dark streets for better visibility
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
       attribution: '© OpenStreetMap contributors © CARTO',
       maxZoom: 20,
     }).addTo(map);
