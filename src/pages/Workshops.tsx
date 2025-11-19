@@ -1,36 +1,28 @@
-import { Trophy, Calendar, Clock, ArrowLeft } from 'lucide-react';
+import { Wrench, Calendar, Clock, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const Sports = () => {
+const Workshops = () => {
   const events = [
     {
-      id: 5,
-      title: "Match de Basket",
-      venue: "Stade Municipal",
-      date: "Jeu, 21 Nov",
-      time: "19:30",
-      price: "20 000 FCFA",
-      image: "https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=400&h=400&fit=crop"
-    },
-    {
-      id: 6,
-      title: "Championnat de Football",
-      venue: "Stade Félix Houphouët",
+      id: 18,
+      title: "Atelier Coding pour Débutants",
+      venue: "Tech Academy",
       date: "Sam, 23 Nov",
-      time: "18:00",
-      price: "10 000 FCFA",
-      image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400&h=400&fit=crop"
+      time: "10:00",
+      price: "8 000 FCFA",
+      image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=400&fit=crop"
     },
     {
-      id: 7,
-      title: "Tournoi de Tennis",
-      venue: "Centre Sportif",
+      id: 19,
+      title: "Workshop Design Thinking",
+      venue: "Innovation Lab",
       date: "Dim, 24 Nov",
       time: "14:00",
-      price: "15 000 FCFA",
-      image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=400&fit=crop"
+      price: "12 000 FCFA",
+      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=400&fit=crop"
     }
   ];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-stone-50 to-white dark:from-stone-950 dark:to-stone-900 animate-fade-in">
       <div className="mx-auto max-w-md">
@@ -43,10 +35,10 @@ const Sports = () => {
               <ArrowLeft size={20} strokeWidth={2} />
             </Link>
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500/10 to-blue-500/5">
-                <Trophy size={22} className="text-blue-500" strokeWidth={1.5} />
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500/10 to-amber-500/5">
+                <Wrench size={22} className="text-amber-500" strokeWidth={1.5} />
               </div>
-              <h1 className="text-2xl font-bold text-stone-900 dark:text-white">Sports</h1>
+              <h1 className="text-2xl font-bold text-stone-900 dark:text-white">Ateliers</h1>
             </div>
           </div>
         </header>
@@ -95,4 +87,5 @@ const Sports = () => {
     </div>
   );
 };
-export default Sports;
+
+export default Workshops;

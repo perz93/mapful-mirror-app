@@ -46,8 +46,11 @@ const Concerts = () => {
       <div className="mx-auto max-w-md">
         <header className="sticky top-0 z-10 backdrop-blur-xl bg-white/80 dark:bg-stone-900/80 border-b border-stone-200/50 dark:border-stone-800/50">
           <div className="flex items-center gap-4 px-4 py-4">
-            <Link to="/" className="text-stone-900 dark:text-white hover:opacity-70 transition-opacity">
-              <ArrowLeft size={24} strokeWidth={1.5} />
+            <Link 
+              to="/" 
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-stone-100 to-stone-50 dark:from-stone-800 dark:to-stone-900 text-stone-900 dark:text-white hover:scale-105 active:scale-95 transition-all duration-200 shadow-sm hover:shadow-md border border-stone-200/50 dark:border-stone-700/50"
+            >
+              <ArrowLeft size={20} strokeWidth={2} />
             </Link>
             <div className="flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500/10 to-orange-500/5">

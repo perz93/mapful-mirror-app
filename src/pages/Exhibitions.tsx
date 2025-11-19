@@ -1,36 +1,28 @@
-import { Trophy, Calendar, Clock, ArrowLeft } from 'lucide-react';
+import { Image, Calendar, Clock, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const Sports = () => {
+const Exhibitions = () => {
   const events = [
     {
-      id: 5,
-      title: "Match de Basket",
-      venue: "Stade Municipal",
-      date: "Jeu, 21 Nov",
-      time: "19:30",
-      price: "20 000 FCFA",
-      image: "https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=400&h=400&fit=crop"
+      id: 24,
+      title: "Exposition Photo Contemporaine",
+      venue: "Galerie d'Art Moderne",
+      date: "Quotidien",
+      time: "09:00 - 19:00",
+      price: "5 000 FCFA",
+      image: "https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=400&h=400&fit=crop"
     },
     {
-      id: 6,
-      title: "Championnat de Football",
-      venue: "Stade Félix Houphouët",
-      date: "Sam, 23 Nov",
-      time: "18:00",
-      price: "10 000 FCFA",
-      image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400&h=400&fit=crop"
-    },
-    {
-      id: 7,
-      title: "Tournoi de Tennis",
-      venue: "Centre Sportif",
-      date: "Dim, 24 Nov",
-      time: "14:00",
-      price: "15 000 FCFA",
-      image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=400&fit=crop"
+      id: 25,
+      title: "Exposition Peinture Africaine",
+      venue: "Musée National",
+      date: "Quotidien",
+      time: "10:00 - 18:00",
+      price: "3 000 FCFA",
+      image: "https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=400&h=400&fit=crop"
     }
   ];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-stone-50 to-white dark:from-stone-950 dark:to-stone-900 animate-fade-in">
       <div className="mx-auto max-w-md">
@@ -43,10 +35,10 @@ const Sports = () => {
               <ArrowLeft size={20} strokeWidth={2} />
             </Link>
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500/10 to-blue-500/5">
-                <Trophy size={22} className="text-blue-500" strokeWidth={1.5} />
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500/10 to-violet-500/5">
+                <Image size={22} className="text-violet-500" strokeWidth={1.5} />
               </div>
-              <h1 className="text-2xl font-bold text-stone-900 dark:text-white">Sports</h1>
+              <h1 className="text-2xl font-bold text-stone-900 dark:text-white">Expositions</h1>
             </div>
           </div>
         </header>
@@ -95,4 +87,5 @@ const Sports = () => {
     </div>
   );
 };
-export default Sports;
+
+export default Exhibitions;

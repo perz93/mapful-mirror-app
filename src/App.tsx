@@ -8,6 +8,12 @@ import Concerts from "./pages/Concerts";
 import Sports from "./pages/Sports";
 import Food from "./pages/Food";
 import Arts from "./pages/Arts";
+import Meetups from "./pages/Meetups";
+import Conferences from "./pages/Conferences";
+import Workshops from "./pages/Workshops";
+import Festivals from "./pages/Festivals";
+import Shows from "./pages/Shows";
+import Exhibitions from "./pages/Exhibitions";
 import EventDetails from "./pages/EventDetails";
 import MyAccount from "./pages/MyAccount";
 import CreateEvent from "./pages/CreateEvent";
@@ -27,6 +33,12 @@ const App = () => (
           <Route path="/sports" element={<Sports />} />
           <Route path="/food" element={<Food />} />
           <Route path="/arts" element={<Arts />} />
+          <Route path="/meetups" element={<Meetups />} />
+          <Route path="/conferences" element={<Conferences />} />
+          <Route path="/workshops" element={<Workshops />} />
+          <Route path="/festivals" element={<Festivals />} />
+          <Route path="/shows" element={<Shows />} />
+          <Route path="/exhibitions" element={<Exhibitions />} />
           <Route path="/event/:id" element={<EventDetails />} />
           <Route path="/my-account" element={<MyAccount />} />
           <Route path="/create-event" element={<CreateEvent />} />
