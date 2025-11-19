@@ -12,7 +12,7 @@ const BottomNavigation = () => {
     path: '/sports'
   }, {
     icon: Utensils,
-    label: 'Food',
+    label: 'Restauration',
     path: '/food'
   }, {
     icon: Palette,
