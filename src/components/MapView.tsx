@@ -8,6 +8,8 @@ const MapView = () => {
   const mapInstanceRef = useRef<L.Map | null>(null);
   const navigate = useNavigate();
 
+  const userLocationRef = useRef<{ lat: number; lng: number } | null>(null);
+
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
@@ -27,6 +29,35 @@ const MapView = () => {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       className: 'map-tiles',
     }).addTo(map);
+
+    // Try to get user's location and center map on it
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          userLocationRef.current = { lat: latitude, lng: longitude };
+          
+          // Center map on user location
+          map.setView([latitude, longitude], 14);
+          
+          // Add user location marker
+          const userIcon = L.divIcon({
+            className: 'user-location-marker',
+            html: `<div class="user-location-pulse"></div>`,
+            iconSize: [20, 20],
+            iconAnchor: [10, 10],
+          });
+          
+          L.marker([latitude, longitude], { icon: userIcon })
+            .addTo(map)
+            .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
+        },
+        (error) => {
+          console.log('Géolocalisation non disponible:', error);
+          // Keep default Abidjan location
+        }
+      );
+    }
 
     // Create custom marker icon with color based on event type
     const createCustomIcon = (iconHtml: string, eventType: string) => {
@@ -135,14 +166,45 @@ const MapView = () => {
 
     mapInstanceRef.current = map;
 
+    // Listen for recenter event from MapControls
+    const handleRecenter = () => {
+      if (userLocationRef.current) {
+        map.flyTo([userLocationRef.current.lat, userLocationRef.current.lng], 15, {
+          duration: 1.5
+        });
+      } else {
+        // Request location again if not available
+        navigator.geolocation?.getCurrentPosition((position) => {
+          const { latitude, longitude } = position.coords;
+          userLocationRef.current = { lat: latitude, lng: longitude };
+          map.flyTo([latitude, longitude], 15, { duration: 1.5 });
+          
+          // Add user location marker if not already added
+          const userIcon = L.divIcon({
+            className: 'user-location-marker',
+            html: `<div class="user-location-pulse"></div>`,
+            iconSize: [20, 20],
+            iconAnchor: [10, 10],
+          });
+          
+          L.marker([latitude, longitude], { icon: userIcon })
+            .addTo(map)
+            .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
+        });
+      }
+    };
+
+    window.addEventListener('recenterMap', handleRecenter);
+
     // Cleanup
     return () => {
+      window.removeEventListener('recenterMap', handleRecenter);
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
     };
-  }, []);
+  }, [navigate]);
 
   return <div ref={mapRef} className="absolute inset-0 z-0" />;
 };
