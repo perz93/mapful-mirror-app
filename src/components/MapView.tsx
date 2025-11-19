@@ -73,8 +73,8 @@ const MapView = () => {
             </div>
           </div>
         `,
-        iconSize: [48, 48],
-        iconAnchor: [24, 48],
+        iconSize: [36, 36],
+        iconAnchor: [18, 36],
       });
     };
 

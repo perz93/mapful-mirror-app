@@ -35,8 +35,8 @@ body {
 
 .marker-container {
   position: relative;
-  width: 48px;
-  height: 48px;
+  width: 36px;
+  height: 36px;
 }
 
 .marker-pin {
@@ -44,8 +44,8 @@ body {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
   border-radius: 50% 50% 50% 0;
   transform-origin: 0% 100%;
@@ -53,14 +53,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), 0 0 0 3px rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 0 2px rgba(255, 255, 255, 0.9);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
 }
 
 .marker-pin:hover {
   transform: translateX(-50%) rotate(-45deg) scale(1.15);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35), 0 0 0 4px rgba(255, 255, 255, 1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(255, 255, 255, 1);
 }
 
 .marker-icon {
@@ -70,6 +70,11 @@ body {
   justify-content: center;
   color: white;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+
+.marker-icon svg {
+  width: 16px;
+  height: 16px;
 }
 
 
@@ -95,6 +100,45 @@ body {
 .dark .custom-popup-modern .leaflet-popup-content-wrapper {
   background: rgba(28, 25, 23, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.custom-popup-modern .leaflet-popup-close-button {
+  position: absolute !important;
+  top: 12px !important;
+  right: 12px !important;
+  width: 32px !important;
+  height: 32px !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px);
+  border-radius: 50% !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 1000 !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  font-size: 20px !important;
+  font-weight: 400 !important;
+  color: #1c1917 !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+
+.dark .custom-popup-modern .leaflet-popup-close-button {
+  background: rgba(28, 25, 23, 0.95) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.custom-popup-modern .leaflet-popup-close-button:hover {
+  background: rgba(255, 255, 255, 1) !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2) !important;
+  transform: scale(1.05) !important;
+}
+
+.dark .custom-popup-modern .leaflet-popup-close-button:hover {
+  background: rgba(28, 25, 23, 1) !important;
 }
 
 .custom-popup-modern .leaflet-popup-tip {
@@ -133,38 +177,38 @@ body {
 /* Marker colors by event type */
 .marker-music {
   background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%) !important;
-  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.35), 0 0 0 3px rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3), 0 0 0 2px rgba(255, 255, 255, 0.9) !important;
 }
 
 .marker-food {
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
-  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.35), 0 0 0 3px rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3), 0 0 0 2px rgba(255, 255, 255, 0.9) !important;
 }
 
 .marker-sports {
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35), 0 0 0 3px rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3), 0 0 0 2px rgba(255, 255, 255, 0.9) !important;
 }
 
 .marker-arts {
   background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
-  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35), 0 0 0 3px rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3), 0 0 0 2px rgba(255, 255, 255, 0.9) !important;
 }
 
 .marker-music:hover {
-  box-shadow: 0 8px 30px rgba(245, 158, 11, 0.5), 0 0 0 4px rgba(255, 255, 255, 1) !important;
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.45), 0 0 0 3px rgba(255, 255, 255, 1) !important;
 }
 
 .marker-food:hover {
-  box-shadow: 0 8px 30px rgba(239, 68, 68, 0.5), 0 0 0 4px rgba(255, 255, 255, 1) !important;
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.45), 0 0 0 3px rgba(255, 255, 255, 1) !important;
 }
 
 .marker-sports:hover {
-  box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5), 0 0 0 4px rgba(255, 255, 255, 1) !important;
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.45), 0 0 0 3px rgba(255, 255, 255, 1) !important;
 }
 
 .marker-arts:hover {
-  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.5), 0 0 0 4px rgba(255, 255, 255, 1) !important;
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.45), 0 0 0 3px rgba(255, 255, 255, 1) !important;
 }
 
 /* User location marker styles */
