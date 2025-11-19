@@ -8,9 +8,10 @@ import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-
 const CreateEvent = () => {
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const [formData, setFormData] = useState({
     title: '',
     category: '',
@@ -19,19 +20,16 @@ const CreateEvent = () => {
     time: '',
     price: '',
     capacity: '',
-    description: '',
+    description: ''
   });
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     toast({
       title: "Événement créé !",
-      description: "Votre événement a été publié avec succès.",
+      description: "Votre événement a été publié avec succès."
     });
   };
-
-  return (
-    <div className="min-h-screen bg-background pb-24 animate-fade-in">
+  return <div className="min-h-screen bg-background pb-24 animate-fade-in">
       <div className="mx-auto max-w-md">
         {/* Header */}
         <div className="px-6 pt-16 pb-10">
@@ -40,8 +38,8 @@ const CreateEvent = () => {
               ← Retour
             </Button>
           </Link>
-          <h1 className="text-4xl font-light text-foreground mb-3">Créer un événement</h1>
-          <p className="text-muted-foreground font-light">Partagez votre événement avec la communauté</p>
+          <h1 className="text-4xl font-light text-foreground mb-3 text-center">Créer un événement</h1>
+          <p className="text-muted-foreground font-light text-center">Partagez votre événement avec la communauté</p>
         </div>
 
         {/* Form */}
@@ -58,20 +56,19 @@ const CreateEvent = () => {
           {/* Title */}
           <div className="space-y-3">
             <Label htmlFor="title" className="text-sm text-muted-foreground font-normal">Titre de l'événement *</Label>
-            <Input
-              id="title"
-              placeholder="Festival de musique Jazz"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              required
-              className="h-12 border-border/50 bg-transparent"
-            />
+            <Input id="title" placeholder="Festival de musique Jazz" value={formData.title} onChange={e => setFormData({
+            ...formData,
+            title: e.target.value
+          })} required className="h-12 border-border/50 bg-transparent" />
           </div>
 
           {/* Category */}
           <div className="space-y-3">
             <Label htmlFor="category" className="text-sm text-muted-foreground font-normal">Catégorie *</Label>
-            <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+            <Select value={formData.category} onValueChange={value => setFormData({
+            ...formData,
+            category: value
+          })}>
               <SelectTrigger className="h-12 border-border/50 bg-transparent">
                 <SelectValue placeholder="Sélectionnez une catégorie" />
               </SelectTrigger>
@@ -90,14 +87,10 @@ const CreateEvent = () => {
               <MapPin className="h-3.5 w-3.5" strokeWidth={1.5} />
               Lieu *
             </Label>
-            <Input
-              id="venue"
-              placeholder="Centre culturel de Dakar"
-              value={formData.venue}
-              onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
-              required
-              className="h-12 border-border/50 bg-transparent"
-            />
+            <Input id="venue" placeholder="Centre culturel de Dakar" value={formData.venue} onChange={e => setFormData({
+            ...formData,
+            venue: e.target.value
+          })} required className="h-12 border-border/50 bg-transparent" />
           </div>
 
           {/* Date and Time */}
@@ -107,28 +100,20 @@ const CreateEvent = () => {
                 <Calendar className="h-3.5 w-3.5" strokeWidth={1.5} />
                 Date *
               </Label>
-              <Input
-                id="date"
-                type="date"
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                required
-                className="h-12 border-border/50 bg-transparent"
-              />
+              <Input id="date" type="date" value={formData.date} onChange={e => setFormData({
+              ...formData,
+              date: e.target.value
+            })} required className="h-12 border-border/50 bg-transparent" />
             </div>
             <div className="space-y-3">
               <Label htmlFor="time" className="text-sm text-muted-foreground font-normal flex items-center gap-2">
                 <Clock className="h-3.5 w-3.5" strokeWidth={1.5} />
                 Heure *
               </Label>
-              <Input
-                id="time"
-                type="time"
-                value={formData.time}
-                onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                required
-                className="h-12 border-border/50 bg-transparent"
-              />
+              <Input id="time" type="time" value={formData.time} onChange={e => setFormData({
+              ...formData,
+              time: e.target.value
+            })} required className="h-12 border-border/50 bg-transparent" />
             </div>
           </div>
 
@@ -139,41 +124,30 @@ const CreateEvent = () => {
                 <DollarSign className="h-3.5 w-3.5" strokeWidth={1.5} />
                 Prix
               </Label>
-              <Input
-                id="price"
-                placeholder="Gratuit"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                className="h-12 border-border/50 bg-transparent"
-              />
+              <Input id="price" placeholder="Gratuit" value={formData.price} onChange={e => setFormData({
+              ...formData,
+              price: e.target.value
+            })} className="h-12 border-border/50 bg-transparent" />
             </div>
             <div className="space-y-3">
               <Label htmlFor="capacity" className="text-sm text-muted-foreground font-normal flex items-center gap-2">
                 <Users className="h-3.5 w-3.5" strokeWidth={1.5} />
                 Capacité
               </Label>
-              <Input
-                id="capacity"
-                type="number"
-                placeholder="100"
-                value={formData.capacity}
-                onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
-                className="h-12 border-border/50 bg-transparent"
-              />
+              <Input id="capacity" type="number" placeholder="100" value={formData.capacity} onChange={e => setFormData({
+              ...formData,
+              capacity: e.target.value
+            })} className="h-12 border-border/50 bg-transparent" />
             </div>
           </div>
 
           {/* Description */}
           <div className="space-y-3">
             <Label htmlFor="description" className="text-sm text-muted-foreground font-normal">Description</Label>
-            <Textarea
-              id="description"
-              placeholder="Décrivez votre événement..."
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              rows={5}
-              className="border-border/50 bg-transparent resize-none"
-            />
+            <Textarea id="description" placeholder="Décrivez votre événement..." value={formData.description} onChange={e => setFormData({
+            ...formData,
+            description: e.target.value
+          })} rows={5} className="border-border/50 bg-transparent resize-none" />
           </div>
 
           {/* Submit Button */}
@@ -182,8 +156,6 @@ const CreateEvent = () => {
           </Button>
         </form>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default CreateEvent;
