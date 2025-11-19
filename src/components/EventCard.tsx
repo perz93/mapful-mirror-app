@@ -18,9 +18,9 @@ const EventCard = () => {
             <span>Voir détails</span>
           </a>
         </div>
-        <div className="w-20 h-20 flex-shrink-0 bg-center bg-no-repeat bg-cover rounded-xl" style={{
+        <div style={{
           backgroundImage: "url('https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&h=400&fit=crop')"
-        }} />
+        }} className="w-20 h-20 flex-shrink-0 bg-center bg-no-repeat bg-cover rounded" />
         </div>
       </div>
     </div>;
