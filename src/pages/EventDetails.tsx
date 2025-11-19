@@ -27,8 +27,11 @@ const EventDetails = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
           
           <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
-            <Link to="/" className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors">
-              <ArrowLeft size={20} />
+            <Link 
+              to="/" 
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 backdrop-blur-md text-stone-900 hover:bg-white hover:scale-105 active:scale-95 transition-all duration-200 shadow-lg border border-white/50"
+            >
+              <ArrowLeft size={20} strokeWidth={2.5} />
             </Link>
             <div className="flex gap-2">
               <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors">

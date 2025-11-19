@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign } from 'lucide-react';
+import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 const CreateEvent = () => {
   const {
@@ -33,10 +33,12 @@ const CreateEvent = () => {
       <div className="mx-auto max-w-md">
         {/* Header */}
         <div className="px-4 sm:px-6 pt-12 sm:pt-16 pb-8 sm:pb-10">
-          <Link to="/" className="inline-block mb-8">
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground -ml-2">
-              ← Retour
-            </Button>
+          <Link 
+            to="/" 
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-br from-stone-100 to-stone-50 dark:from-stone-800 dark:to-stone-900 text-stone-900 dark:text-white hover:scale-105 active:scale-95 transition-all duration-200 shadow-sm hover:shadow-md border border-stone-200/50 dark:border-stone-700/50 mb-8"
+          >
+            <ArrowLeft size={18} strokeWidth={2} />
+            <span className="text-sm font-medium">Retour</span>
           </Link>
           <h1 className="text-4xl font-light text-foreground mb-3 text-center">Créer un événement</h1>
           <p className="text-muted-foreground font-light text-center">Partagez votre événement avec la communauté</p>
