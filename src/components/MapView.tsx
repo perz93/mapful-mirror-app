@@ -217,7 +217,7 @@ const MapView = () => {
     };
   }, [navigate]);
 
-  return <div ref={mapRef} className="absolute inset-0 z-0" />;
+  return <div ref={mapRef} className="absolute inset-0 z-0 brightness-110 saturate-50" />;
 };
 
 export default MapView;
