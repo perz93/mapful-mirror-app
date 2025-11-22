@@ -18,7 +18,7 @@ const SearchBar = () => {
           <input
             type="text"
             placeholder="Rechercher un événement..."
-            className="h-11 w-full rounded-2xl backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 px-4 text-sm shadow-xl transition-all placeholder:text-stone-400 focus:shadow-2xl border border-white/50 dark:border-stone-800/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className="h-11 w-full rounded-2xl backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 px-4 text-sm shadow-xl transition-all placeholder:text-stone-400 focus:shadow-2xl border border-white/50 dark:border-stone-800/50 focus:outline-none focus:ring-2 focus:ring-primary/30 text-stone-900 dark:text-white"
           />
         </div>
         
