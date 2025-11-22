@@ -1,4 +1,5 @@
 import { Search, Plus, Calendar, User, Settings } from 'lucide-react';
+import { useRef } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,15 +8,22 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const SearchBar = () => {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
   return (
     <div className="fixed left-0 right-0 top-0 z-30 max-w-md mx-auto">
       <div className="p-4 pt-6 flex items-center gap-2">
-        <button className="h-11 w-11 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-2xl text-stone-900 dark:text-white shadow-xl hover:scale-105 transition-all active:scale-95 flex items-center justify-center border border-white/50 dark:border-stone-800/50">
+        <button
+          type="button"
+          className="h-11 w-11 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-2xl text-stone-900 dark:text-white shadow-xl hover:scale-105 transition-all active:scale-95 flex items-center justify-center border border-white/50 dark:border-stone-800/50"
+          onClick={() => inputRef.current?.focus()}
+        >
           <Search size={20} strokeWidth={1.5} />
         </button>
         
         <div className="relative flex-1">
           <input
+            ref={inputRef}
             type="text"
             placeholder="Rechercher un événement..."
             autoComplete="off"
