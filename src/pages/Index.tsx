@@ -11,7 +11,7 @@ const Index = () => {
         <MapControls />
         <EventCard />
       </div>
-      <BottomNavigation />
+      <BottomNavigation className="my-0 py-0 pb-0 pt-[4px]" />
     </div>;
 };
 export default Index;
