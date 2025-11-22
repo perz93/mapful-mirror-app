@@ -120,7 +120,7 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "slide-in-bottom": "slide-in-bottom 0.3s ease-out",
+        "slide-in-bottom": "slide-in-bottom 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
         "fade-in": "fade-in 0.4s ease-out",
         "zoom-smooth": "zoom-smooth 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
       },
