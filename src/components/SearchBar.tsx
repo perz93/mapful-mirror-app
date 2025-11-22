@@ -10,12 +10,15 @@ const SearchBar = () => {
   return (
     <div className="fixed left-0 right-0 top-0 z-30 max-w-md mx-auto">
       <div className="p-4 pt-6 flex items-center gap-2">
+        <button className="h-11 w-11 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-2xl text-stone-900 dark:text-white shadow-xl hover:scale-105 transition-all active:scale-95 flex items-center justify-center border border-white/50 dark:border-stone-800/50">
+          <Search size={20} strokeWidth={1.5} />
+        </button>
+        
         <div className="relative flex-1">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" size={18} />
           <input
             type="text"
             placeholder="Rechercher un événement..."
-            className="h-11 w-full rounded-2xl backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 pl-11 pr-4 text-sm shadow-xl transition-all placeholder:text-stone-400 focus:shadow-2xl border border-white/50 dark:border-stone-800/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className="h-11 w-full rounded-2xl backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 px-4 text-sm shadow-xl transition-all placeholder:text-stone-400 focus:shadow-2xl border border-white/50 dark:border-stone-800/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
           />
         </div>
         
