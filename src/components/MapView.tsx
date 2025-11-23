@@ -25,8 +25,8 @@ const MapView = () => {
       markerZoomAnimation: true,
     });
 
-    // Add tile layer with soft, event-style colors (light streets, green parks, teal water)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    // Add tile layer with balanced colors (soft but not too white)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       attribution: '© OpenStreetMap contributors © CARTO',
       maxZoom: 20,
     }).addTo(map);
