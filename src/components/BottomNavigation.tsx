@@ -144,7 +144,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                     <Link
                       key={index}
                       to={item.path}
-                      className={`flex h-12 min-w-[90px] flex-col items-center justify-center gap-1 rounded-lg transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 ${
+                      className={`flex-shrink-0 flex h-12 min-w-[90px] flex-col items-center justify-center gap-1 rounded-lg transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 ${
                         isActive
                           ? 'bg-primary/20 text-primary dark:bg-primary/30'
                           : 'text-stone-500 dark:text-stone-400'
