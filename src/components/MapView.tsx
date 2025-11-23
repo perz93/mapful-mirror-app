@@ -25,9 +25,9 @@ const MapView = () => {
       markerZoomAnimation: true,
     });
 
-    // Add tile layer with clear streets like Google Maps
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors',
+    // Add tile layer with soft, event-style colors (light streets, green parks, teal water)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '© OpenStreetMap contributors © CARTO',
       maxZoom: 20,
     }).addTo(map);
 
