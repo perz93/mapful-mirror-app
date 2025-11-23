@@ -83,13 +83,13 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
   return (
     <>
       <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
-        <DialogContent className="max-w-md mx-auto top-[15%] translate-y-0 sm:top-[50%] sm:translate-y-[-50%]">
+        <DialogContent className="max-w-[90vw] sm:max-w-md mx-auto top-[15%] translate-y-0 sm:top-[50%] sm:translate-y-[-50%] w-[90vw] sm:w-full p-6">
           <DialogHeader>
-            <DialogTitle>Rechercher un événement</DialogTitle>
+            <DialogTitle className="text-lg">Rechercher un événement</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 pb-2">
+          <div className="space-y-3 pb-2">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
               <input
                 type="text"
                 placeholder="Nom de l'événement..."
@@ -100,14 +100,14 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                     handleSearch();
                   }
                 }}
-                className="w-full h-12 pl-10 pr-4 rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="w-full h-11 pl-10 pr-4 rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm"
                 autoFocus
               />
             </div>
             <button
               onClick={handleSearch}
               disabled={!searchQuery.trim()}
-              className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="w-full h-11 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm"
             >
               Rechercher
             </button>
