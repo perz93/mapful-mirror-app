@@ -26,6 +26,17 @@ const SearchBar = () => {
             autoCorrect="off"
             autoCapitalize="off"
             spellCheck="false"
+            onFocus={(e) => {
+              const el = e.target as HTMLInputElement;
+              const length = el.value.length;
+              requestAnimationFrame(() => {
+                try {
+                  el.setSelectionRange(length, length);
+                } catch {
+                  // ignore selection errors on some mobile browsers
+                }
+              });
+            }}
             className="h-11 w-full rounded-2xl backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 pl-10 pr-4 text-sm shadow-xl transition-all placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:shadow-2xl border border-white/50 dark:border-stone-800/50 focus:outline-none focus:ring-2 focus:ring-primary/30 text-stone-900 dark:text-white caret-stone-900 dark:caret-white"
             style={{ 
               WebkitTapHighlightColor: 'transparent',
