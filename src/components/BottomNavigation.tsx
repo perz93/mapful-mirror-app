@@ -126,10 +126,10 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
               <Search size={20} strokeWidth={2} />
             </button>
 
-            <div className="flex-1 relative h-full">
+            <div className="flex-1 relative h-full min-w-0">
               <div
                 ref={scrollRef}
-                className="flex items-center h-full overflow-x-auto scrollbar-black px-2 gap-1"
+                className="flex items-center h-full overflow-x-auto overflow-y-hidden scrollbar-black px-2 gap-1 whitespace-nowrap"
               >
                 {navItems.map((item, index) => {
                   const isActive = location.pathname === item.path;
@@ -159,7 +159,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
               </div>
 
               {indicator.visible && (
-                <div className="pointer-events-none absolute bottom-1 left-0 right-0 h-0.5 rounded-full bg-black/5 dark:bg-black/20 px-2">
+                <div className="pointer-events-none absolute bottom-1 left-10 right-10 h-0.5 rounded-full bg-black/5 dark:bg-black/20">
                   <div
                     className="h-full rounded-full bg-black"
                     style={{
