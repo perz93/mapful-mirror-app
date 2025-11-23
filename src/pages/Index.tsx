@@ -5,8 +5,10 @@ import EventCard from "@/components/EventCard";
 import BottomNavigation from "@/components/BottomNavigation";
 const Index = () => {
   return <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-background">
-      <div className="relative flex-1 overflow-hidden animate-fade-in animate-zoom-smooth">
-        <MapView />
+      <div className="relative flex-1 overflow-hidden">
+        <div className="h-full w-full animate-fade-in animate-zoom-smooth">
+          <MapView />
+        </div>
         <SearchBar />
         <MapControls />
         <EventCard />
