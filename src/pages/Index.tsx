@@ -1,5 +1,4 @@
 import MapView from "@/components/MapView";
-import SearchBar from "@/components/SearchBar";
 import MapControls from "@/components/MapControls";
 import EventCard from "@/components/EventCard";
 import BottomNavigation from "@/components/BottomNavigation";
@@ -9,7 +8,6 @@ const Index = () => {
         <div className="h-full w-full animate-fade-in animate-zoom-smooth">
           <MapView />
         </div>
-        <SearchBar />
         <MapControls />
         <EventCard />
       </div>

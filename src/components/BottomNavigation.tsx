@@ -133,35 +133,35 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                 ref={scrollRef}
                 className="flex items-center h-full overflow-x-auto scrollbar-black px-2 gap-1"
               >
-            {navItems.map((item, index) => {
-              const isActive = location.pathname === item.path;
-              return (
-                <Link
-                  key={index}
-                  to={item.path}
-                  className={`flex h-12 min-w-[90px] flex-col items-center justify-center gap-1 rounded-lg transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 ${
-                    isActive
-                      ? 'bg-primary/20 text-primary dark:bg-primary/30'
-                      : 'text-stone-500 dark:text-stone-400'
-                  }`}
-                  style={{ transitionProperty: 'all' }}
-                >
-                  <item.icon
-                    size={20}
-                    strokeWidth={isActive ? 2.5 : 1.5}
-                    fill={isActive ? 'currentColor' : 'none'}
-                    className="transition-all duration-300 ease-in-out"
-                  />
-                  <p className="text-xs font-medium leading-none transition-all duration-300 ease-in-out">
-                    {item.label}
-                  </p>
-                </Link>
-              );
-            })}
-          </div>
+                {navItems.map((item, index) => {
+                  const isActive = location.pathname === item.path;
+                  return (
+                    <Link
+                      key={index}
+                      to={item.path}
+                      className={`flex h-12 min-w-[90px] flex-col items-center justify-center gap-1 rounded-lg transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 ${
+                        isActive
+                          ? 'bg-primary/20 text-primary dark:bg-primary/30'
+                          : 'text-stone-500 dark:text-stone-400'
+                      }`}
+                      style={{ transitionProperty: 'all' }}
+                    >
+                      <item.icon
+                        size={20}
+                        strokeWidth={isActive ? 2.5 : 1.5}
+                        fill={isActive ? 'currentColor' : 'none'}
+                        className="transition-all duration-300 ease-in-out"
+                      />
+                      <p className="text-xs font-medium leading-none transition-all duration-300 ease-in-out">
+                        {item.label}
+                      </p>
+                    </Link>
+                  );
+                })}
+              </div>
 
               {indicator.visible && (
-                <div className="pointer-events-none absolute bottom-1 left-4 right-4 h-0.5 rounded-full bg-black/5 dark:bg-black/20">
+                <div className="pointer-events-none absolute bottom-1 left-2 right-2 h-0.5 rounded-full bg-black/5 dark:bg-black/20">
                   <div
                     className="h-full rounded-full"
                     style={{
