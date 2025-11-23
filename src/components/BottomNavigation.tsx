@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { useSearch } from '@/contexts/SearchContext';
 
 interface BottomNavigationProps {
   className?: string;
@@ -22,7 +23,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
   const location = useLocation();
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const { searchQuery, setSearchQuery } = useSearch();
   const [indicator, setIndicator] = useState<ScrollIndicatorState>({
     width: 100,
     left: 0,

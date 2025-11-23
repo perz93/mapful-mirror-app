@@ -2,13 +2,16 @@ import { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useNavigate } from 'react-router-dom';
+import { useSearch } from '@/contexts/SearchContext';
 
 const MapView = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const navigate = useNavigate();
+  const { searchQuery } = useSearch();
 
   const userLocationRef = useRef<{ lat: number; lng: number } | null>(null);
+  const markersRef = useRef<L.Marker[]>([]);
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
@@ -95,6 +98,7 @@ const MapView = () => {
       { lat: 5.3400, lng: -4.0100, icon: iconSvgs.arts, type: 'arts', title: 'Art Exhibition', venue: 'Modern Gallery', date: 'Thu, Nov 14', time: '10:00 AM', price: '5,000 FCFA', capacity: '150', image: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=400&h=300&fit=crop', id: '5' },
     ];
 
+    // Create and store all markers
     events.forEach(event => {
       const marker = L.marker([event.lat, event.lng], {
         icon: createCustomIcon(event.icon, event.type)
@@ -148,6 +152,10 @@ const MapView = () => {
       }).setContent(popupContent);
 
       marker.bindPopup(popup);
+      
+      // Store marker with event data
+      (marker as any).eventData = event;
+      markersRef.current.push(marker);
 
       // Center map on marker when popup opens
       marker.on('click', () => {
@@ -209,6 +217,7 @@ const MapView = () => {
 
     // Cleanup
     return () => {
+      markersRef.current = [];
       window.removeEventListener('recenterMap', handleRecenter);
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
@@ -216,6 +225,29 @@ const MapView = () => {
       }
     };
   }, [navigate]);
+
+  // Filter markers based on search query
+  useEffect(() => {
+    if (!mapInstanceRef.current) return;
+
+    const query = searchQuery.toLowerCase().trim();
+
+    markersRef.current.forEach(marker => {
+      const eventData = (marker as any).eventData;
+      if (!eventData) return;
+
+      const matchesSearch = !query || 
+        eventData.title.toLowerCase().includes(query) ||
+        eventData.venue.toLowerCase().includes(query) ||
+        eventData.type.toLowerCase().includes(query);
+
+      if (matchesSearch) {
+        marker.addTo(mapInstanceRef.current!);
+      } else {
+        marker.remove();
+      }
+    });
+  }, [searchQuery]);
 
   return <div ref={mapRef} className="absolute inset-0 z-0" />;
 };
