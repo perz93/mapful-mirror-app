@@ -35,6 +35,8 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
 
     const updateIndicator = () => {
       const { scrollWidth, clientWidth, scrollLeft } = el;
+      
+      // Toujours afficher l'indicateur s'il y a du contenu scrollable
       if (scrollWidth <= clientWidth) {
         setIndicator((prev) => ({ ...prev, visible: false }));
         return;
@@ -51,11 +53,14 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
       });
     };
 
-    updateIndicator();
+    // Petit délai pour s'assurer que le DOM est complètement chargé
+    const timer = setTimeout(updateIndicator, 100);
+    
     el.addEventListener('scroll', updateIndicator);
     window.addEventListener('resize', updateIndicator);
 
     return () => {
+      clearTimeout(timer);
       el.removeEventListener('scroll', updateIndicator);
       window.removeEventListener('resize', updateIndicator);
     };
@@ -161,13 +166,12 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
               </div>
 
               {indicator.visible && (
-                <div className="pointer-events-none absolute bottom-1 left-2 right-2 h-0.5 rounded-full bg-black/5 dark:bg-black/20">
+                <div className="pointer-events-none absolute bottom-1 left-0 right-0 h-0.5 rounded-full bg-black/5 dark:bg-black/20 px-2">
                   <div
-                    className="h-full rounded-full"
+                    className="h-full rounded-full bg-black"
                     style={{
                       width: `${indicator.width}%`,
                       transform: `translateX(${indicator.left}%)`,
-                      backgroundColor: 'hsl(var(--scroll-indicator))',
                       transition: 'transform 0.2s ease-out, width 0.2s ease-out',
                     }}
                   />
