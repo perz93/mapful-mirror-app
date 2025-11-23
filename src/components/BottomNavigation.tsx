@@ -35,15 +35,9 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
 
     const updateIndicator = () => {
       const { scrollWidth, clientWidth, scrollLeft } = el;
-      
-      // Toujours afficher l'indicateur s'il y a du contenu scrollable
-      if (scrollWidth <= clientWidth) {
-        setIndicator((prev) => ({ ...prev, visible: false }));
-        return;
-      }
 
-      const maxScroll = scrollWidth - clientWidth;
-      const widthPercent = (clientWidth / scrollWidth) * 100;
+      const maxScroll = Math.max(scrollWidth - clientWidth, 0);
+      const widthPercent = scrollWidth > 0 ? Math.min((clientWidth / scrollWidth) * 100, 100) : 100;
       const leftPercent = maxScroll > 0 ? (scrollLeft / maxScroll) * (100 - widthPercent) : 0;
 
       setIndicator({
@@ -53,10 +47,9 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
       });
     };
 
-    // Petit délai pour s'assurer que le DOM est complètement chargé
-    const timer = setTimeout(updateIndicator, 100);
-    
-    el.addEventListener('scroll', updateIndicator);
+    const timer = setTimeout(updateIndicator, 150);
+
+    el.addEventListener('scroll', updateIndicator, { passive: true } as AddEventListenerOptions);
     window.addEventListener('resize', updateIndicator);
 
     return () => {
