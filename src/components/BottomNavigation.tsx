@@ -120,10 +120,10 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
           <div className="relative h-full flex items-center">
             <button
               onClick={() => setSearchOpen(true)}
-              className="flex-shrink-0 h-12 w-12 ml-2 flex items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-all duration-300 hover:scale-105 active:scale-95"
+              className="flex-shrink-0 h-14 w-14 ml-2 flex items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-all duration-300 hover:scale-105 active:scale-95"
               aria-label="Rechercher"
             >
-              <Search size={20} strokeWidth={2} />
+              <Search size={24} strokeWidth={2} />
             </button>
 
             <div className="flex-1 relative h-full min-w-0">
