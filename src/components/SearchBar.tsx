@@ -13,15 +13,10 @@ const SearchBar = () => {
   return (
     <div className="fixed left-0 right-0 top-0 z-30 max-w-md mx-auto">
       <div className="p-4 pt-6 flex items-center gap-2">
-        <button
-          type="button"
-          className="h-11 w-11 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-2xl text-stone-900 dark:text-white shadow-xl hover:scale-105 transition-all active:scale-95 flex items-center justify-center border border-white/50 dark:border-stone-800/50"
-          onClick={() => inputRef.current?.focus()}
-        >
-          <Search size={20} strokeWidth={1.5} />
-        </button>
-        
         <div className="relative flex-1">
+          <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-stone-400 dark:text-stone-500">
+            <Search size={18} strokeWidth={1.5} />
+          </span>
           <input
             ref={inputRef}
             type="text"
@@ -31,7 +26,7 @@ const SearchBar = () => {
             autoCorrect="off"
             autoCapitalize="off"
             spellCheck="false"
-            className="h-11 w-full rounded-2xl backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 px-4 text-sm shadow-xl transition-all placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:shadow-2xl border border-white/50 dark:border-stone-800/50 focus:outline-none focus:ring-2 focus:ring-primary/30 text-stone-900 dark:text-white caret-stone-900 dark:caret-white"
+            className="h-11 w-full rounded-2xl backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 pl-10 pr-4 text-sm shadow-xl transition-all placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:shadow-2xl border border-white/50 dark:border-stone-800/50 focus:outline-none focus:ring-2 focus:ring-primary/30 text-stone-900 dark:text-white caret-stone-900 dark:caret-white"
             style={{ 
               WebkitTapHighlightColor: 'transparent',
               WebkitUserSelect: 'text',
