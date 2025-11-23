@@ -5,11 +5,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import logo from "@/assets/afrimap-logo.png";
 
 const TopMenu = () => {
   return (
     <div className="fixed left-0 right-0 top-0 z-30 max-w-md mx-auto">
-      <div className="p-4 pt-6 flex items-center justify-end">
+      <div className="p-4 pt-6 flex items-center justify-between">
+        <img 
+          src={logo} 
+          alt="AFRIMAP EVENTS" 
+          className="h-10 w-auto object-contain"
+        />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="h-11 w-11 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-2xl text-stone-900 dark:text-white shadow-xl hover:scale-105 transition-all active:scale-95 flex items-center justify-center border border-white/50 dark:border-stone-800/50">
