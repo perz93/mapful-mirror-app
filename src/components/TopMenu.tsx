@@ -14,7 +14,7 @@ const TopMenu = () => {
         <img 
           src={logo} 
           alt="AFRIMAP EVENTS" 
-          className="h-10 w-auto object-contain"
+          className="h-20 w-auto object-contain"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
