@@ -83,7 +83,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
   return (
     <>
       <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
-        <DialogContent className="max-w-[90vw] sm:max-w-md mx-auto top-[15%] translate-y-0 sm:top-[50%] sm:translate-y-[-50%] w-[90vw] sm:w-full p-6">
+        <DialogContent className="max-w-[90vw] sm:max-w-md mx-auto top-[15%] translate-y-0 sm:top-[50%] sm:translate-y-[-50%] w-[90vw] sm:w-full p-6 rounded-3xl">
           <DialogHeader>
             <DialogTitle className="text-lg">Rechercher un événement</DialogTitle>
           </DialogHeader>
@@ -100,14 +100,14 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                     handleSearch();
                   }
                 }}
-                className="w-full h-11 pl-10 pr-4 rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm"
+                className="w-full h-11 pl-10 pr-4 rounded-3xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm"
                 autoFocus
               />
             </div>
             <button
               onClick={handleSearch}
               disabled={!searchQuery.trim()}
-              className="w-full h-11 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm"
+              className="w-full h-11 rounded-3xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm"
             >
               Rechercher
             </button>
