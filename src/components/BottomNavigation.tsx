@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { Music, Trophy, Utensils, Palette, Users, Monitor, Wrench, Sparkles, Theater, Image } from 'lucide-react';
+import { Music, Trophy, Utensils, Palette, Users, Monitor, Wrench, Sparkles, Theater, Image, Search } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface BottomNavigationProps {
   className?: string;
@@ -15,6 +21,8 @@ interface ScrollIndicatorState {
 const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
   const location = useLocation();
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [indicator, setIndicator] = useState<ScrollIndicatorState>({
     width: 100,
     left: 0,
@@ -66,14 +74,65 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
     { icon: Image, label: 'Expositions', path: '/exhibitions' },
   ];
 
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      console.log('Recherche:', searchQuery);
+      // TODO: Implémenter la logique de recherche
+      setSearchOpen(false);
+    }
+  };
+
   return (
-    <div className={`fixed bottom-0 left-0 right-0 max-w-md mx-auto flex-shrink-0 px-4 pb-safe z-40 ${className}`}>
-      <div className="h-[72px] rounded-xl backdrop-blur-xl bg-white/80 dark:bg-stone-900/80 shadow-2xl mb-2 border border-stone-200/50 dark:border-stone-700/50 overflow-hidden">
-        <div className="relative h-full">
-          <div
-            ref={scrollRef}
-            className="flex items-center h-full overflow-x-auto scrollbar-black px-2 gap-1"
-          >
+    <>
+      <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
+        <DialogContent className="max-w-md mx-auto">
+          <DialogHeader>
+            <DialogTitle>Rechercher un événement</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+              <input
+                type="text"
+                placeholder="Nom de l'événement..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearch();
+                  }
+                }}
+                className="w-full h-12 pl-10 pr-4 rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                autoFocus
+              />
+            </div>
+            <button
+              onClick={handleSearch}
+              disabled={!searchQuery.trim()}
+              className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              Rechercher
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <div className={`fixed bottom-0 left-0 right-0 max-w-md mx-auto flex-shrink-0 px-4 pb-safe z-40 ${className}`}>
+        <div className="h-[72px] rounded-xl backdrop-blur-xl bg-white/80 dark:bg-stone-900/80 shadow-2xl mb-2 border border-stone-200/50 dark:border-stone-700/50 overflow-hidden">
+          <div className="relative h-full flex items-center">
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="flex-shrink-0 h-12 w-12 ml-2 flex items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-all duration-300 hover:scale-105 active:scale-95"
+              aria-label="Rechercher"
+            >
+              <Search size={20} strokeWidth={2} />
+            </button>
+
+            <div className="flex-1 relative h-full">
+              <div
+                ref={scrollRef}
+                className="flex items-center h-full overflow-x-auto scrollbar-black px-2 gap-1"
+              >
             {navItems.map((item, index) => {
               const isActive = location.pathname === item.path;
               return (
@@ -101,22 +160,24 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
             })}
           </div>
 
-          {indicator.visible && (
-            <div className="pointer-events-none absolute bottom-1 left-4 right-4 h-0.5 rounded-full bg-black/5 dark:bg-black/20">
-              <div
-                className="h-full rounded-full"
-                style={{
-                  width: `${indicator.width}%`,
-                  transform: `translateX(${indicator.left}%)`,
-                  backgroundColor: 'hsl(var(--scroll-indicator))',
-                  transition: 'transform 0.2s ease-out, width 0.2s ease-out',
-                }}
-              />
+              {indicator.visible && (
+                <div className="pointer-events-none absolute bottom-1 left-4 right-4 h-0.5 rounded-full bg-black/5 dark:bg-black/20">
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${indicator.width}%`,
+                      transform: `translateX(${indicator.left}%)`,
+                      backgroundColor: 'hsl(var(--scroll-indicator))',
+                      transition: 'transform 0.2s ease-out, width 0.2s ease-out',
+                    }}
+                  />
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
