@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Music, Trophy, Utensils, Palette, Users, Monitor, Wrench, Sparkles, Theater, Image, Search } from 'lucide-react';
+import { Music, Trophy, Utensils, Palette, Users, Monitor, Wrench, Sparkles, Theater, Image, Search, Coffee, Church } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   Dialog,
@@ -64,6 +64,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
     { icon: Music, label: 'Concerts', path: '/concerts' },
     { icon: Trophy, label: 'Sports', path: '/sports' },
     { icon: Utensils, label: 'Restauration', path: '/food' },
+    { icon: Coffee, label: 'Brunch', path: '/brunch' },
     { icon: Palette, label: 'Arts', path: '/arts' },
     { icon: Users, label: 'Meetups', path: '/meetups' },
     { icon: Monitor, label: 'Conférences', path: '/conferences' },
@@ -71,6 +72,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
     { icon: Sparkles, label: 'Festivals', path: '/festivals' },
     { icon: Theater, label: 'Spectacles', path: '/shows' },
     { icon: Image, label: 'Expositions', path: '/exhibitions' },
+    { icon: Church, label: 'Religieux', path: '/religious' },
   ];
 
   const handleSearch = () => {
