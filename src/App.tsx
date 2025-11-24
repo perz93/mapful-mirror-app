@@ -14,6 +14,8 @@ import Workshops from "./pages/Workshops";
 import Festivals from "./pages/Festivals";
 import Shows from "./pages/Shows";
 import Exhibitions from "./pages/Exhibitions";
+import Brunch from "./pages/Brunch";
+import Religious from "./pages/Religious";
 import EventDetails from "./pages/EventDetails";
 import MyAccount from "./pages/MyAccount";
 import CreateEvent from "./pages/CreateEvent";
@@ -39,6 +41,8 @@ const App = () => (
           <Route path="/festivals" element={<Festivals />} />
           <Route path="/shows" element={<Shows />} />
           <Route path="/exhibitions" element={<Exhibitions />} />
+          <Route path="/brunch" element={<Brunch />} />
+          <Route path="/religious" element={<Religious />} />
           <Route path="/event/:id" element={<EventDetails />} />
           <Route path="/my-account" element={<MyAccount />} />
           <Route path="/create-event" element={<CreateEvent />} />
