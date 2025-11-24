@@ -61,8 +61,9 @@ export default {
         },
       },
       fontFamily: {
-        display: ['Be Vietnam Pro', 'sans-serif'],
-        sans: ['Buenos Aires', 'Pulp', 'Open Sans', 'OpenSans', 'sans-serif'],
+        display: ['Righteous', 'Be Vietnam Pro', 'sans-serif'],
+        sans: ['Raleway', 'Open Sans', 'sans-serif'],
+        heading: ['Righteous', 'sans-serif'],
       },
       borderRadius: {
         DEFAULT: "1rem",
