@@ -8,10 +8,16 @@ const MyAccount = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('hello');
+  const [stats, setStats] = useState({
+    eventsCreated: 0,
+    favorites: 0,
+    friends: 0
+  });
 
   useEffect(() => {
     if (user) {
       loadProfile();
+      loadStats();
     }
   }, [user]);
 
@@ -25,6 +31,35 @@ const MyAccount = () => {
       .single();
     
     setProfile(data);
+  };
+
+  const loadStats = async () => {
+    if (!user) return;
+
+    // Count events created by user
+    const { count: eventsCount } = await supabase
+      .from('events')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id);
+
+    // Count favorites
+    const { count: favoritesCount } = await supabase
+      .from('event_favorites')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id);
+
+    // Count accepted friends
+    const { count: friendsCount } = await supabase
+      .from('user_friends')
+      .select('*', { count: 'exact', head: true })
+      .or(`user_id.eq.${user.id},friend_id.eq.${user.id}`)
+      .eq('status', 'accepted');
+
+    setStats({
+      eventsCreated: eventsCount || 0,
+      favorites: favoritesCount || 0,
+      friends: friendsCount || 0
+    });
   };
 
   const displayName = profile?.full_name || user?.email?.split('@')[0] || 'Utilisateur';
@@ -97,15 +132,15 @@ const MyAccount = () => {
           <div className="flex items-center justify-center gap-8 mb-10">
             <div className="flex items-center gap-2">
               <Users className="w-5 h-5 text-white/90" />
-              <span className="text-white text-lg font-medium">275K</span>
+              <span className="text-white text-lg font-medium">{stats.friends}</span>
             </div>
             <div className="flex items-center gap-2">
               <FileText className="w-5 h-5 text-white/90" />
-              <span className="text-white text-lg font-medium">2,963</span>
+              <span className="text-white text-lg font-medium">{stats.eventsCreated}</span>
             </div>
             <div className="flex items-center gap-2">
               <Image className="w-5 h-5 text-white/90" />
-              <span className="text-white text-lg font-medium">581</span>
+              <span className="text-white text-lg font-medium">{stats.favorites}</span>
             </div>
           </div>
 
