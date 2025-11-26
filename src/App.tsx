@@ -20,6 +20,7 @@ import Religious from "./pages/Religious";
 import EventDetails from "./pages/EventDetails";
 import MyAccount from "./pages/MyAccount";
 import CreateEvent from "./pages/CreateEvent";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 
@@ -49,6 +50,7 @@ const App = () => (
           <Route path="/event/:id" element={<EventDetails />} />
           <Route path="/my-account" element={<MyAccount />} />
           <Route path="/create-event" element={<CreateEvent />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/auth" element={<Auth />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
