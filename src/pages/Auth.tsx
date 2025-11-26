@@ -30,7 +30,7 @@ const Auth = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!isLogin && password !== confirmPassword) {
       toast.error("Les mots de passe ne correspondent pas");
       return;
@@ -42,13 +42,13 @@ const Auth = () => {
     }
 
     setLoading(true);
-    
+
     if (isLogin) {
       await signIn(email, password);
     } else {
       await signUp(email, password, fullName);
     }
-    
+
     setLoading(false);
   };
 
@@ -72,32 +72,37 @@ const Auth = () => {
   return (
     <div className="relative h-screen w-full overflow-hidden bg-stone-100 dark:bg-stone-950">
       {/* Map Background - animation permanente */}
-      <div 
-        className="absolute inset-0 opacity-40 animate-pan" 
+      <div
+        className="absolute inset-0 opacity-40 animate-pan"
         style={{
           backgroundImage: `url(${mapBackground})`,
-          backgroundSize: '150% 150%',
-          backgroundPosition: 'center'
+          backgroundSize: "150% 150%",
+          backgroundPosition: "center",
         }}
       />
-      
+      {/* Overlay sombre pour assombrir légèrement le fond */}
+      <div className="absolute inset-0 bg-background/70 dark:bg-background/80" />
+
       {/* Content Card with 3D flip */}
-      <div className="relative z-10 flex items-center justify-center h-full p-4" style={{ perspective: '1000px' }}>
-        <div 
+      <div
+        className="relative z-10 flex items-center justify-center h-full p-4"
+        style={{ perspective: "1000px" }}
+      >
+        <div
           className="relative w-full max-w-md h-auto transition-all duration-700"
           style={{
-            transformStyle: 'preserve-3d',
-            transform: isLogin ? 'rotateY(0deg)' : 'rotateY(180deg)'
+            transformStyle: "preserve-3d",
+            transform: isLogin ? "rotateY(0deg)" : "rotateY(180deg)",
           }}
         >
           {/* Login Face (Front) */}
-          <div 
+          <div
             className="bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-2xl p-6 w-full"
             style={{
-              backfaceVisibility: 'hidden',
-              WebkitBackfaceVisibility: 'hidden',
-              position: isLogin ? 'relative' : 'absolute',
-              inset: 0
+              backfaceVisibility: "hidden",
+              WebkitBackfaceVisibility: "hidden",
+              position: isLogin ? "relative" : "absolute",
+              inset: 0,
             }}
           >
             {/* Close Button */}
@@ -189,14 +194,14 @@ const Auth = () => {
           </div>
 
           {/* Signup Face (Back) */}
-          <div 
+          <div
             className="bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-2xl p-6 w-full"
             style={{
-              backfaceVisibility: 'hidden',
-              WebkitBackfaceVisibility: 'hidden',
-              transform: 'rotateY(180deg)',
-              position: isLogin ? 'absolute' : 'relative',
-              inset: 0
+              backfaceVisibility: "hidden",
+              WebkitBackfaceVisibility: "hidden",
+              transform: "rotateY(180deg)",
+              position: isLogin ? "absolute" : "relative",
+              inset: 0,
             }}
           >
             {/* Close Button */}
