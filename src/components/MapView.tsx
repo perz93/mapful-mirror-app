@@ -153,51 +153,36 @@ const MapView = () => {
       // Add to cluster group instead of directly to map
       markerClusterGroup.addLayer(marker);
 
-      // Create popup content with image and more details
+      // Create popup content with image overlay design
       const popupContent = `
-        <div class="event-popup-modern">
-          <div class="popup-image" style="background-image: url('${event.image}')">
-            <div class="popup-image-overlay">
-              <div class="popup-icon-modern">${event.icon}</div>
+        <div class="event-popup-card">
+          <div class="popup-card-image" style="background-image: url('${event.image}')">
+            <div class="popup-card-gradient">
+              <h3 class="popup-card-title">${event.title}</h3>
             </div>
           </div>
-          <div class="popup-body">
-            <p class="popup-venue-modern">${event.venue}</p>
-            <h3 class="popup-title-modern">${event.title}</h3>
-            <div class="popup-details-grid">
-              <div class="popup-detail-item">
-                <svg class="popup-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
-                <span>${event.date}</span>
+          <div class="popup-card-details">
+            <div class="popup-card-date">
+              <div class="popup-date-box">
+                <div class="popup-date-month">NOV</div>
+                <div class="popup-date-day">16</div>
+                <div class="popup-date-weekday">SAM</div>
               </div>
-              <div class="popup-detail-item">
-                <svg class="popup-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <span>${event.time}</span>
+              <div class="popup-card-info">
+                <p class="popup-card-venue">${event.venue}</p>
+                <p class="popup-card-address">${event.venue}</p>
               </div>
-              <div class="popup-detail-item">
-                <svg class="popup-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                </svg>
-                <span class="popup-price">${event.price}</span>
-              </div>
-              <div class="popup-detail-item">
-                <svg class="popup-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                </svg>
-                <span>${event.capacity} places</span>
-              </div>
+              <div class="popup-card-time">${event.time}</div>
             </div>
           </div>
         </div>
       `;
 
       const popup = L.popup({
-        className: 'custom-popup-modern',
+        className: 'custom-popup-card',
         closeButton: true,
-        maxWidth: 210,
+        maxWidth: 280,
+        minWidth: 280,
       }).setContent(popupContent);
 
       marker.bindPopup(popup);
@@ -214,20 +199,12 @@ const MapView = () => {
         });
       });
 
-      // Add click handler on popup button to navigate to event details
+      // Add click handler on popup to navigate to event details
       marker.on('popupopen', () => {
-        const popupElement = document.querySelector('.custom-popup-modern');
+        const popupElement = document.querySelector('.custom-popup-card') as HTMLElement;
         if (popupElement) {
-          const button = document.createElement('button');
-          button.className = 'popup-details-btn-modern';
-          button.innerHTML = `
-            <span>Voir les détails</span>
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-            </svg>
-          `;
-          button.onclick = () => navigate(`/event/${event.id}`);
-          popupElement.querySelector('.popup-body')?.appendChild(button);
+          popupElement.style.cursor = 'pointer';
+          popupElement.addEventListener('click', () => navigate(`/event/${event.id}`));
         }
       });
     });
