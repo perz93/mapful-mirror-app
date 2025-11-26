@@ -84,11 +84,12 @@ const Auth = () => {
       {/* Content Card */}
       <div className="relative z-10 flex items-center justify-center h-full p-4">
         <div 
-          className="bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-2xl w-full max-w-md p-6 relative transition-all duration-700"
+          className="bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-2xl w-full max-w-md p-6 relative transition-all duration-500 ease-out"
           style={{
-            transformStyle: 'preserve-3d',
-            transform: isLogin ? 'rotateY(0deg)' : 'rotateY(180deg)'
+            opacity: 1,
+            transform: 'scale(1)',
           }}
+          key={isLogin ? 'login' : 'signup'}
         >
           {/* Close Button */}
           <button
