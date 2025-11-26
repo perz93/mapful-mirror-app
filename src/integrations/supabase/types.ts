@@ -113,6 +113,9 @@ export type Database = {
           email: string
           full_name: string | null
           id: string
+          notification_email: boolean | null
+          notification_events: boolean | null
+          notification_friends: boolean | null
           updated_at: string
         }
         Insert: {
@@ -121,6 +124,9 @@ export type Database = {
           email: string
           full_name?: string | null
           id: string
+          notification_email?: boolean | null
+          notification_events?: boolean | null
+          notification_friends?: boolean | null
           updated_at?: string
         }
         Update: {
@@ -129,6 +135,9 @@ export type Database = {
           email?: string
           full_name?: string | null
           id?: string
+          notification_email?: boolean | null
+          notification_events?: boolean | null
+          notification_friends?: boolean | null
           updated_at?: string
         }
         Relationships: []
