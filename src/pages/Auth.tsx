@@ -81,7 +81,7 @@ const Auth = () => {
         }}
       />
       {/* Overlay sombre pour assombrir légèrement le fond */}
-      <div className="absolute inset-0 bg-background/70 dark:bg-background/80" />
+      <div className="absolute inset-0 bg-black/50" />
 
       {/* Content Card with 3D flip */}
       <div
