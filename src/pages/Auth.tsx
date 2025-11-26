@@ -81,39 +81,142 @@ const Auth = () => {
         }}
       />
       
-      {/* Content Card */}
-      <div className="relative z-10 flex items-center justify-center h-full p-4">
+      {/* Content Card with 3D flip */}
+      <div className="relative z-10 flex items-center justify-center h-full p-4" style={{ perspective: '1000px' }}>
         <div 
-          className="bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-2xl w-full max-w-md p-6 relative transition-all duration-500 ease-out"
+          className="relative w-full max-w-md h-auto transition-all duration-700"
           style={{
-            opacity: 1,
-            transform: 'scale(1)',
+            transformStyle: 'preserve-3d',
+            transform: isLogin ? 'rotateY(0deg)' : 'rotateY(180deg)'
           }}
-          key={isLogin ? 'login' : 'signup'}
         >
-          {/* Close Button */}
-          <button
-            onClick={() => navigate("/")}
-            className="absolute top-4 left-4 w-9 h-9 rounded-full bg-muted/50 hover:bg-muted flex items-center justify-center transition-colors"
+          {/* Login Face (Front) */}
+          <div 
+            className="bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-2xl p-6 w-full"
+            style={{
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden',
+              position: isLogin ? 'relative' : 'absolute',
+              inset: 0
+            }}
           >
-            <X className="w-4 h-4" />
-          </button>
+            {/* Close Button */}
+            <button
+              onClick={() => navigate("/")}
+              className="absolute top-4 left-4 w-9 h-9 rounded-full bg-muted/50 hover:bg-muted flex items-center justify-center transition-colors z-10"
+            >
+              <X className="w-4 h-4" />
+            </button>
 
-          {/* Header */}
-          <div className="text-center mt-6 mb-6">
-            <h1 className="text-2xl font-bold font-heading mb-2">
-              {isLogin ? "Bienvenue" : "Rejoignez-nous"}
-            </h1>
-            <p className="text-muted-foreground text-base">
-              {isLogin 
-                ? "Découvrez votre ville autrement" 
-                : "Vivez chaque instant qui compte"}
+            {/* Header */}
+            <div className="text-center mt-6 mb-6">
+              <h1 className="text-2xl font-bold font-heading mb-2">Bienvenue</h1>
+              <p className="text-muted-foreground text-base">
+                Découvrez votre ville autrement
+              </p>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-3 mb-6">
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full px-5 py-3 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all text-sm"
+              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Mot de passe"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  className="w-full px-5 py-3 pr-11 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+
+              {/* Forgot Password */}
+              <div className="flex justify-end px-2">
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  className="text-xs text-muted-foreground hover:text-foreground transition-colors underline"
+                >
+                  Mot de passe oublié ?
+                </button>
+              </div>
+            </form>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 mb-4">
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1 h-12 rounded-full text-sm font-medium border-2 bg-foreground text-background border-foreground hover:bg-foreground/90"
+                onClick={() => {
+                  setIsLogin(false);
+                  setPassword("");
+                  setConfirmPassword("");
+                }}
+                disabled={loading}
+              >
+                S&apos;inscrire
+              </Button>
+              <Button
+                type="submit"
+                className="flex-1 h-12 rounded-full text-sm font-medium bg-background text-foreground border-2 border-border hover:bg-muted"
+                onClick={handleSubmit}
+                disabled={loading}
+              >
+                {loading ? "..." : "Se connecter"}
+              </Button>
+            </div>
+
+            {/* Footer Text */}
+            <p className="text-center text-xs text-muted-foreground">
+              Explorez les événements près de chez vous
             </p>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-3 mb-6">
-            {!isLogin && (
+          {/* Signup Face (Back) */}
+          <div 
+            className="bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-2xl p-6 w-full"
+            style={{
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden',
+              transform: 'rotateY(180deg)',
+              position: isLogin ? 'absolute' : 'relative',
+              inset: 0
+            }}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => navigate("/")}
+              className="absolute top-4 left-4 w-9 h-9 rounded-full bg-muted/50 hover:bg-muted flex items-center justify-center transition-colors z-10"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            {/* Header */}
+            <div className="text-center mt-6 mb-6">
+              <h1 className="text-2xl font-bold font-heading mb-2">Rejoignez-nous</h1>
+              <p className="text-muted-foreground text-base">
+                Vivez chaque instant qui compte
+              </p>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-3 mb-6">
               <input
                 type="text"
                 placeholder="Nom complet"
@@ -121,34 +224,32 @@ const Auth = () => {
                 onChange={(e) => setFullName(e.target.value)}
                 className="w-full px-5 py-3 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all text-sm"
               />
-            )}
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-5 py-3 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all text-sm"
-            />
-            <div className="relative">
               <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Mot de passe"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
-                minLength={6}
-                className="w-full px-5 py-3 pr-11 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all text-sm"
+                className="w-full px-5 py-3 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all text-sm"
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-            {!isLogin && (
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Mot de passe"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  className="w-full px-5 py-3 pr-11 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
               <div className="relative">
                 <input
                   type={showConfirmPassword ? "text" : "password"}
@@ -167,10 +268,8 @@ const Auth = () => {
                   {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-            )}
 
-            {/* Terms and Conditions - Only for signup */}
-            {!isLogin && (
+              {/* Terms and Conditions */}
               <div className="flex items-start gap-2 px-2">
                 <Checkbox
                   id="terms"
@@ -182,9 +281,9 @@ const Auth = () => {
                   htmlFor="terms"
                   className="text-xs text-muted-foreground leading-tight cursor-pointer"
                 >
-                  J'accepte les{" "}
+                  J&apos;accepte les{" "}
                   <a href="/terms" className="text-foreground underline hover:opacity-80">
-                    conditions d'utilisation
+                    conditions d&apos;utilisation
                   </a>{" "}
                   et la{" "}
                   <a href="/privacy" className="text-foreground underline hover:opacity-80">
@@ -192,61 +291,38 @@ const Auth = () => {
                   </a>
                 </label>
               </div>
-            )}
+            </form>
 
-            {/* Forgot Password - Only for login */}
-            {isLogin && (
-              <div className="flex justify-end px-2">
-                <button
-                  type="button"
-                  onClick={handleForgotPassword}
-                  className="text-xs text-muted-foreground hover:text-foreground transition-colors underline"
-                >
-                  Mot de passe oublié ?
-                </button>
-              </div>
-            )}
-          </form>
+            {/* Action Buttons */}
+            <div className="flex gap-3 mb-4">
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1 h-12 rounded-full text-sm font-medium border-2 bg-background text-foreground border-border"
+                onClick={() => {
+                  setIsLogin(true);
+                  setPassword("");
+                  setConfirmPassword("");
+                }}
+                disabled={loading}
+              >
+                Se connecter
+              </Button>
+              <Button
+                type="submit"
+                className="flex-1 h-12 rounded-full text-sm font-medium bg-foreground text-background hover:bg-foreground/90"
+                onClick={handleSubmit}
+                disabled={loading}
+              >
+                {loading ? "..." : "S'inscrire"}
+              </Button>
+            </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-3 mb-4">
-            <Button
-              type="button"
-              variant="outline"
-              className={`flex-1 h-12 rounded-full text-sm font-medium border-2 transition-all ${
-                !isLogin 
-                  ? "bg-background text-foreground border-border" 
-                  : "bg-foreground text-background border-foreground hover:bg-foreground/90"
-              }`}
-              onClick={() => {
-                setIsLogin(!isLogin);
-                setPassword("");
-                setConfirmPassword("");
-              }}
-              disabled={loading}
-            >
-              {isLogin ? "S'inscrire" : "Se connecter"}
-            </Button>
-            <Button
-              type="submit"
-              className={`flex-1 h-12 rounded-full text-sm font-medium transition-all ${
-                isLogin 
-                  ? "bg-background text-foreground border-2 border-border hover:bg-muted" 
-                  : "bg-foreground text-background hover:bg-foreground/90"
-              }`}
-              onClick={handleSubmit}
-              disabled={loading}
-            >
-              {loading ? "..." : isLogin ? "Se connecter" : "S'inscrire"}
-            </Button>
+            {/* Footer Text */}
+            <p className="text-center text-xs text-muted-foreground">
+              Partagez vos moments avec la communauté
+            </p>
           </div>
-
-          {/* Footer Text */}
-          <p className="text-center text-xs text-muted-foreground">
-            {isLogin 
-              ? "Explorez les événements près de chez vous" 
-              : "Partagez vos moments avec la communauté"}
-          </p>
         </div>
       </div>
     </div>
