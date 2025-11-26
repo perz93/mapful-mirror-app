@@ -21,7 +21,7 @@ const TopMenu = () => {
         />
         <DropdownMenu onOpenChange={setIsOpen}>
           <DropdownMenuTrigger asChild>
-            <button className="h-12 w-12 rounded-full bg-transparent hover:bg-white/10 transition-all active:scale-95 flex items-center justify-center mt-2">
+            <button className="h-12 w-12 rounded-full bg-white/70 dark:bg-stone-900/70 backdrop-blur-md hover:bg-white/90 dark:hover:bg-stone-900/90 transition-all active:scale-95 flex items-center justify-center mt-2 shadow-lg">
               {isOpen ? (
                 <X size={24} strokeWidth={2.5} className="text-black dark:text-white" />
               ) : (
@@ -31,41 +31,40 @@ const TopMenu = () => {
           </DropdownMenuTrigger>
           <DropdownMenuContent 
             align="end" 
-            className="w-72 animate-fade-in backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 border border-white/60 dark:border-stone-800/60 shadow-2xl p-2 rounded-3xl"
+            className="animate-fade-in backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 border border-white/60 dark:border-stone-800/60 shadow-2xl p-3 rounded-3xl"
           >
-            <DropdownMenuItem className="cursor-pointer rounded-2xl p-3.5 hover:bg-stone-100/50 dark:hover:bg-stone-800/30 transition-all mb-1" asChild>
-              <a href="/create-event" className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
-                  <Calendar className="h-5 w-5 text-primary" strokeWidth={1.5} />
+            <div className="flex gap-2">
+              <DropdownMenuItem className="cursor-pointer rounded-2xl p-3 hover:bg-stone-100/50 dark:hover:bg-stone-800/30 transition-all flex-1" asChild>
+                <a href="/create-event" className="flex flex-col items-center gap-2 text-center">
+                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
+                    <Calendar className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-stone-900 dark:text-white text-xs">Créer</p>
+                  </div>
+                </a>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer rounded-2xl p-3 hover:bg-stone-100/50 dark:hover:bg-stone-800/30 transition-all flex-1" asChild>
+                <a href="/my-account" className="flex flex-col items-center gap-2 text-center">
+                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
+                    <User className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-stone-900 dark:text-white text-xs">Compte</p>
+                  </div>
+                </a>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer rounded-2xl p-3 hover:bg-stone-100/50 dark:hover:bg-stone-800/30 transition-all flex-1">
+                <div className="flex flex-col items-center gap-2 text-center">
+                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
+                    <Settings className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-stone-900 dark:text-white text-xs">Paramètres</p>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-stone-900 dark:text-white text-sm">Créer un événement</p>
-                  <p className="text-xs text-stone-500 dark:text-stone-400 font-light">Organiser un nouvel événement</p>
-                </div>
-              </a>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer rounded-2xl p-3.5 hover:bg-stone-100/50 dark:hover:bg-stone-800/30 transition-all mb-1" asChild>
-              <a href="/my-account" className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
-                  <User className="h-5 w-5 text-primary" strokeWidth={1.5} />
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-stone-900 dark:text-white text-sm">Mon compte</p>
-                  <p className="text-xs text-stone-500 dark:text-stone-400 font-light">Gérer votre profil</p>
-                </div>
-              </a>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer rounded-2xl p-3.5 hover:bg-stone-100/50 dark:hover:bg-stone-800/30 transition-all">
-              <div className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
-                  <Settings className="h-5 w-5 text-primary" strokeWidth={1.5} />
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-stone-900 dark:text-white text-sm">Paramètres</p>
-                  <p className="text-xs text-stone-500 dark:text-stone-400 font-light">Préférences et confidentialité</p>
-                </div>
-              </div>
-            </DropdownMenuItem>
+              </DropdownMenuItem>
+            </div>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
