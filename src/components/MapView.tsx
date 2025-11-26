@@ -158,7 +158,7 @@ const MapView = () => {
           <div class="popup-card-image" style="background-image: url('${event.image}')">
             <div class="popup-card-gradient">
               <h3 class="popup-card-title">${event.title}</h3>
-              <div class="popup-card-bottom">
+              <div class="popup-card-details">
                 <div class="popup-date-box">
                   <div class="popup-date-month">NOV</div>
                   <div class="popup-date-day">16</div>
@@ -166,9 +166,12 @@ const MapView = () => {
                 </div>
                 <div class="popup-card-info">
                   <p class="popup-card-venue">${event.venue}</p>
-                  <p class="popup-card-address">${event.venue}</p>
+                  <p class="popup-card-address">${event.venue}, Abidjan</p>
                 </div>
-                <div class="popup-card-time">${event.time}</div>
+                <div class="popup-card-time">
+                  <div class="popup-time-value">${event.time}</div>
+                  <div class="popup-time-zone">GMT</div>
+                </div>
               </div>
             </div>
           </div>
