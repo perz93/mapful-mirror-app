@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { X } from "lucide-react";
+import { X, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import mapBackground from "@/assets/map-background.jpg";
 
 const Auth = () => {
@@ -14,6 +17,9 @@ const Auth = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
 
   // Redirect if already logged in
   useEffect(() => {
@@ -26,7 +32,12 @@ const Auth = () => {
     e.preventDefault();
     
     if (!isLogin && password !== confirmPassword) {
-      alert("Les mots de passe ne correspondent pas");
+      toast.error("Les mots de passe ne correspondent pas");
+      return;
+    }
+
+    if (!isLogin && !acceptTerms) {
+      toast.error("Veuillez accepter les conditions d'utilisation");
       return;
     }
 
@@ -39,6 +50,23 @@ const Auth = () => {
     }
     
     setLoading(false);
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      toast.error("Veuillez entrer votre email");
+      return;
+    }
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth`,
+    });
+
+    if (error) {
+      toast.error("Erreur lors de l'envoi de l'email");
+    } else {
+      toast.success("Email de réinitialisation envoyé !");
+    }
   };
 
   return (
@@ -95,25 +123,81 @@ const Auth = () => {
               required
               className="w-full px-6 py-4 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all"
             />
-            <input
-              type="password"
-              placeholder="Mot de passe"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-              className="w-full px-6 py-4 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all"
-            />
-            {!isLogin && (
+            <div className="relative">
               <input
-                type="password"
-                placeholder="Confirmer le mot de passe"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                type={showPassword ? "text" : "password"}
+                placeholder="Mot de passe"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full px-6 py-4 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all"
+                className="w-full px-6 py-4 pr-12 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+            {!isLogin && (
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Confirmer le mot de passe"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  className="w-full px-6 py-4 pr-12 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+            )}
+
+            {/* Terms and Conditions - Only for signup */}
+            {!isLogin && (
+              <div className="flex items-start gap-3 px-2">
+                <Checkbox
+                  id="terms"
+                  checked={acceptTerms}
+                  onCheckedChange={(checked) => setAcceptTerms(checked as boolean)}
+                  className="mt-1"
+                />
+                <label
+                  htmlFor="terms"
+                  className="text-sm text-muted-foreground leading-tight cursor-pointer"
+                >
+                  J'accepte les{" "}
+                  <a href="/terms" className="text-foreground underline hover:opacity-80">
+                    conditions d'utilisation
+                  </a>{" "}
+                  et la{" "}
+                  <a href="/privacy" className="text-foreground underline hover:opacity-80">
+                    politique de confidentialité
+                  </a>
+                </label>
+              </div>
+            )}
+
+            {/* Forgot Password - Only for login */}
+            {isLogin && (
+              <div className="flex justify-end px-2">
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors underline"
+                >
+                  Mot de passe oublié ?
+                </button>
+              </div>
             )}
           </form>
 
