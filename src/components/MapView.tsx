@@ -6,12 +6,16 @@ import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import { useNavigate } from 'react-router-dom';
 import { useSearch } from '@/contexts/SearchContext';
+import { useEvents } from '@/hooks/useEvents';
+import { format, parseISO } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
 const MapView = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const navigate = useNavigate();
   const { searchQuery } = useSearch();
+  const { data: events, isLoading } = useEvents();
 
   const userLocationRef = useRef<{ lat: number; lng: number } | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
@@ -135,89 +139,6 @@ const MapView = () => {
     markerClusterGroupRef.current = markerClusterGroup;
     map.addLayer(markerClusterGroup);
 
-    // Add event markers around Abidjan
-    const events = [
-      { lat: 5.3600, lng: -4.0083, icon: iconSvgs.music, type: 'music', title: 'Indie Music Festival', venue: 'Central Park', date: 'Sat, Nov 16', time: '8:00 PM', price: '15,000 FCFA', capacity: '500', image: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&h=300&fit=crop', id: '1' },
-      { lat: 5.3700, lng: -4.0000, icon: iconSvgs.music, type: 'music', title: 'Jazz Night', venue: 'Blue Note', date: 'Fri, Nov 15', time: '9:00 PM', price: '12,000 FCFA', capacity: '200', image: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=400&h=300&fit=crop', id: '2' },
-      { lat: 5.3500, lng: -4.0150, icon: iconSvgs.food, type: 'food', title: 'Food Truck Festival', venue: 'Marina Bay', date: 'Sun, Nov 17', time: '12:00 PM', price: 'Gratuit', capacity: '1000', image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=300&fit=crop', id: '3' },
-      { lat: 5.3800, lng: -3.9950, icon: iconSvgs.sports, type: 'sports', title: 'Basketball Championship', venue: 'Sports Arena', date: 'Sat, Nov 16', time: '6:00 PM', price: '8,000 FCFA', capacity: '300', image: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop', id: '4' },
-      { lat: 5.3400, lng: -4.0100, icon: iconSvgs.arts, type: 'arts', title: 'Art Exhibition', venue: 'Modern Gallery', date: 'Thu, Nov 14', time: '10:00 AM', price: '5,000 FCFA', capacity: '150', image: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=400&h=300&fit=crop', id: '5' },
-    ];
-
-    // Create and store all markers
-    events.forEach(event => {
-      const marker = L.marker([event.lat, event.lng], {
-        icon: createCustomIcon(event.image, event.type)
-      });
-      
-      console.log('Creating marker for event:', event.title);
-
-      // Create popup content exactly like reference
-      const popupContent = `
-        <div class="event-popup-card">
-          <div class="popup-card-image" style="background-image: url('${event.image}')">
-            <div class="popup-card-gradient">
-              <h3 class="popup-card-title">${event.title}</h3>
-              <div class="popup-card-details">
-                <div class="popup-date-box">
-                  <div class="popup-date-month">NOV</div>
-                  <div class="popup-date-day">16</div>
-                  <div class="popup-date-weekday">SAM</div>
-                </div>
-                <div class="popup-card-info">
-                  <div class="popup-venue-row">
-                    <p class="popup-card-venue">${event.venue}</p>
-                    <div class="popup-card-time">
-                      <div class="popup-time-value">20h00</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <button class="popup-details-btn">Voir détails</button>
-            </div>
-          </div>
-        </div>
-      `;
-
-      const popup = L.popup({
-        className: 'custom-popup-card',
-        closeButton: true,
-        maxWidth: 220,
-        minWidth: 220,
-      }).setContent(popupContent);
-
-      marker.bindPopup(popup);
-      
-      // Store marker with event data
-      (marker as any).eventData = event;
-      markersRef.current.push(marker);
-
-      // Add to cluster group AFTER binding popup
-      markerClusterGroup.addLayer(marker);
-
-      // Center map on marker when clicked
-      marker.on('click', () => {
-        console.log('Marker clicked:', event.title);
-        map.flyTo([event.lat, event.lng], 15, {
-          duration: 0.5,
-          easeLinearity: 0.25
-        });
-      });
-
-      // Add click handler only on "Voir détails" button
-      marker.on('popupopen', () => {
-        console.log('Popup opened for:', event.title);
-        const detailsBtn = document.querySelector('.popup-details-btn') as HTMLElement;
-        if (detailsBtn) {
-          detailsBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            console.log('Navigating to event:', event.id);
-            navigate(`/event/${event.id}`);
-          });
-        }
-      });
-    });
-
     mapInstanceRef.current = map;
 
     // Listen for recenter event from MapControls
@@ -264,6 +185,143 @@ const MapView = () => {
       }
     };
   }, [navigate]);
+
+  // Add markers when events data is loaded
+  useEffect(() => {
+    if (!mapInstanceRef.current || !markerClusterGroupRef.current || !events || isLoading) return;
+
+    const map = mapInstanceRef.current;
+    const markerClusterGroup = markerClusterGroupRef.current;
+
+    // Clear existing markers
+    markersRef.current = [];
+    markerClusterGroup.clearLayers();
+
+    // Create custom marker icon with event image
+    const createCustomIcon = (imageUrl: string, eventType: string) => {
+      const defaultImage = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=300&fit=crop';
+      return L.divIcon({
+        className: 'custom-marker',
+        html: `
+          <div class="marker-image-container">
+            <div class="marker-image-wrapper marker-${eventType}">
+              <img src="${imageUrl || defaultImage}" alt="Event" class="marker-event-image" />
+            </div>
+          </div>
+        `,
+        iconSize: [50, 50],
+        iconAnchor: [25, 50],
+      });
+    };
+
+    // Format helpers
+    const formatEventDate = (dateStr: string) => {
+      try {
+        const date = parseISO(dateStr);
+        return {
+          month: format(date, 'MMM', { locale: fr }).toUpperCase(),
+          day: format(date, 'd'),
+          weekday: format(date, 'EEE', { locale: fr }).toUpperCase()
+        };
+      } catch {
+        return { month: 'NOV', day: '16', weekday: 'SAM' };
+      }
+    };
+
+    const formatEventTime = (timeStr: string) => {
+      try {
+        // timeStr is in format HH:MM:SS
+        const [hours, minutes] = timeStr.split(':');
+        return `${hours}h${minutes}`;
+      } catch {
+        return '20h00';
+      }
+    };
+
+    // Create and store all markers
+    events.forEach(event => {
+      const marker = L.marker([event.latitude, event.longitude], {
+        icon: createCustomIcon(event.image_url || '', event.category)
+      });
+      
+      console.log('Creating marker for event:', event.title);
+
+      const dateFormatted = formatEventDate(event.date);
+      const timeFormatted = formatEventTime(event.time);
+      const defaultImage = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=300&fit=crop';
+
+      // Create popup content exactly like reference
+      const popupContent = `
+        <div class="event-popup-card">
+          <div class="popup-card-image" style="background-image: url('${event.image_url || defaultImage}')">
+            <div class="popup-card-gradient">
+              <h3 class="popup-card-title">${event.title}</h3>
+              <div class="popup-card-details">
+                <div class="popup-date-box">
+                  <div class="popup-date-month">${dateFormatted.month}</div>
+                  <div class="popup-date-day">${dateFormatted.day}</div>
+                  <div class="popup-date-weekday">${dateFormatted.weekday}</div>
+                </div>
+                <div class="popup-card-info">
+                  <div class="popup-venue-row">
+                    <p class="popup-card-venue">${event.venue}</p>
+                    <div class="popup-card-time">
+                      <div class="popup-time-value">${timeFormatted}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button class="popup-details-btn">Voir détails</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const popup = L.popup({
+        className: 'custom-popup-card',
+        closeButton: true,
+        maxWidth: 220,
+        minWidth: 220,
+      }).setContent(popupContent);
+
+      marker.bindPopup(popup);
+      
+      // Store marker with event data - map category to type for filtering
+      (marker as any).eventData = {
+        ...event,
+        type: event.category, // Map category to type for compatibility
+        lat: event.latitude,
+        lng: event.longitude,
+        image: event.image_url
+      };
+      markersRef.current.push(marker);
+
+      // Add to cluster group AFTER binding popup
+      markerClusterGroup.addLayer(marker);
+
+      // Center map on marker when clicked
+      marker.on('click', () => {
+        console.log('Marker clicked:', event.title);
+        map.flyTo([event.latitude, event.longitude], 15, {
+          duration: 0.5,
+          easeLinearity: 0.25
+        });
+      });
+
+      // Add click handler only on "Voir détails" button
+      marker.on('popupopen', () => {
+        console.log('Popup opened for:', event.title);
+        const detailsBtn = document.querySelector('.popup-details-btn') as HTMLElement;
+        if (detailsBtn) {
+          detailsBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            console.log('Navigating to event:', event.id);
+            navigate(`/event/${event.id}`);
+          });
+        }
+      });
+    });
+  }, [events, isLoading, navigate]);
 
   // Filter markers based on search query
   useEffect(() => {
