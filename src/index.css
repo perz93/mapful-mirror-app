@@ -253,9 +253,8 @@ body {
 .popup-card-details {
   width: 100%;
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   gap: 10px;
-  margin-bottom: 12px;
 }
 
 .popup-date-box {
@@ -296,13 +295,11 @@ body {
   flex: 1;
   min-width: 0;
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.popup-card-address {
+.popup-card-venue {
   color: white;
   font-size: 14px;
   font-weight: 700;
@@ -311,17 +308,27 @@ body {
   line-height: 1.3;
 }
 
+.popup-card-address {
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 10px;
+  font-weight: 400;
+  margin: 0;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+  line-height: 1.4;
+}
+
 .popup-card-time {
   flex-shrink: 0;
   text-align: right;
   display: flex;
-  align-items: baseline;
-  gap: 4px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0;
 }
 
 .popup-time-value {
   color: white;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
   line-height: 1;
@@ -329,32 +336,11 @@ body {
 
 .popup-time-zone {
   color: rgba(255, 255, 255, 0.85);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 500;
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
-  line-height: 1;
-}
-
-.popup-details-button {
-  width: 100%;
-  padding: 10px 16px;
-  background: white;
-  color: #0e7490;
-  font-size: 13px;
-  font-weight: 700;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.popup-details-button:hover {
-  background: #f0f9ff;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  line-height: 1.3;
+  margin-top: 2px;
 }
 
 .event-popup-modern {
