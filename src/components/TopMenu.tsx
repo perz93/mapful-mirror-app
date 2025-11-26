@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MoreVertical, X, Calendar, User, Settings } from 'lucide-react';
+import { X, Calendar, User, Settings } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,7 +25,11 @@ const TopMenu = () => {
               {isOpen ? (
                 <X size={24} strokeWidth={2.5} className="text-black dark:text-white" />
               ) : (
-                <MoreVertical size={28} strokeWidth={2.5} className="text-black dark:text-white" />
+                <div className="flex flex-col gap-1 items-center">
+                  <div className="w-5 h-0.5 bg-black dark:bg-white rounded-full"></div>
+                  <div className="w-7 h-0.5 bg-black dark:bg-white rounded-full"></div>
+                  <div className="w-4 h-0.5 bg-black dark:bg-white rounded-full"></div>
+                </div>
               )}
             </button>
           </DropdownMenuTrigger>
