@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import 'leaflet.markercluster';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import { useNavigate } from 'react-router-dom';
 import { useSearch } from '@/contexts/SearchContext';
 
@@ -12,6 +15,7 @@ const MapView = () => {
 
   const userLocationRef = useRef<{ lat: number; lng: number } | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
+  const markerClusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
@@ -87,6 +91,50 @@ const MapView = () => {
       arts: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6"/><path d="M12 18v4"/><path d="M4.93 4.93l4.24 4.24"/><path d="M14.83 14.83l4.24 4.24"/><path d="M2 12h6"/><path d="M16 12h6"/><path d="M4.93 19.07l4.24-4.24"/><path d="M14.83 9.17l4.24-4.24"/></svg>',
     };
 
+    // Create marker cluster group with custom options
+    const markerClusterGroup = L.markerClusterGroup({
+      showCoverageOnHover: false,
+      zoomToBoundsOnClick: true,
+      spiderfyOnMaxZoom: true,
+      removeOutsideVisibleBounds: true,
+      animate: true,
+      animateAddingMarkers: true,
+      maxClusterRadius: 80,
+      iconCreateFunction: function(cluster) {
+        const count = cluster.getChildCount();
+        let sizeClass = 'small';
+        let colorClass = 'music'; // Default color
+        
+        // Determine cluster size
+        if (count >= 10) {
+          sizeClass = 'large';
+        } else if (count >= 5) {
+          sizeClass = 'medium';
+        }
+        
+        // Get dominant event type from markers in cluster
+        const markers = cluster.getAllChildMarkers();
+        const typeCount: Record<string, number> = {};
+        markers.forEach((marker: any) => {
+          const type = marker.eventData?.type || 'music';
+          typeCount[type] = (typeCount[type] || 0) + 1;
+        });
+        const dominantType = Object.keys(typeCount).reduce((a, b) => 
+          typeCount[a] > typeCount[b] ? a : b
+        );
+        colorClass = dominantType;
+        
+        return L.divIcon({
+          html: `<div class="cluster-inner cluster-${colorClass}"><span>${count}</span></div>`,
+          className: `marker-cluster marker-cluster-${sizeClass}`,
+          iconSize: L.point(50, 50),
+        });
+      },
+    });
+    
+    markerClusterGroupRef.current = markerClusterGroup;
+    map.addLayer(markerClusterGroup);
+
     // Add event markers around Abidjan
     const events = [
       { lat: 5.3600, lng: -4.0083, icon: iconSvgs.music, type: 'music', title: 'Indie Music Festival', venue: 'Central Park', date: 'Sat, Nov 16', time: '8:00 PM', price: '15,000 FCFA', capacity: '500', image: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&h=300&fit=crop', id: '1' },
@@ -100,7 +148,10 @@ const MapView = () => {
     events.forEach(event => {
       const marker = L.marker([event.lat, event.lng], {
         icon: createCustomIcon(event.image, event.type)
-      }).addTo(map);
+      });
+      
+      // Add to cluster group instead of directly to map
+      markerClusterGroup.addLayer(marker);
 
       // Create popup content with image and more details
       const popupContent = `
@@ -216,6 +267,10 @@ const MapView = () => {
     // Cleanup
     return () => {
       markersRef.current = [];
+      if (markerClusterGroupRef.current && mapInstanceRef.current) {
+        mapInstanceRef.current.removeLayer(markerClusterGroupRef.current);
+        markerClusterGroupRef.current = null;
+      }
       window.removeEventListener('recenterMap', handleRecenter);
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
@@ -226,9 +281,13 @@ const MapView = () => {
 
   // Filter markers based on search query
   useEffect(() => {
-    if (!mapInstanceRef.current) return;
+    if (!mapInstanceRef.current || !markerClusterGroupRef.current) return;
 
     const query = searchQuery.toLowerCase().trim();
+    const clusterGroup = markerClusterGroupRef.current;
+
+    // Clear and rebuild cluster
+    clusterGroup.clearLayers();
 
     markersRef.current.forEach(marker => {
       const eventData = (marker as any).eventData;
@@ -240,9 +299,7 @@ const MapView = () => {
         eventData.type.toLowerCase().includes(query);
 
       if (matchesSearch) {
-        marker.addTo(mapInstanceRef.current!);
-      } else {
-        marker.remove();
+        clusterGroup.addLayer(marker);
       }
     });
   }, [searchQuery]);
