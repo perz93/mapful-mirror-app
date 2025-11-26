@@ -153,6 +153,7 @@ export default {
         "slide-in-right": "slide-in-right 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         "fade-in": "fade-in 0.4s ease-out",
         "zoom-smooth": "zoom-smooth 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+        "pan": "pan 120s linear infinite",
       },
     },
   },
