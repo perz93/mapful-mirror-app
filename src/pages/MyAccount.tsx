@@ -67,8 +67,16 @@ const MyAccount = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-pink-700 to-orange-600" />
+      {/* Map Background */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: "url('/src/assets/map-background.jpg')",
+          filter: "blur(3px)"
+        }}
+      />
+      {/* White Transparent Blur Overlay */}
+      <div className="absolute inset-0 bg-white/30 backdrop-blur-sm" />
       
       {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col">
@@ -76,14 +84,14 @@ const MyAccount = () => {
         <div className="flex items-center justify-between p-5">
           <Link 
             to="/" 
-            className="w-11 h-11 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/20 transition-all border border-white/20"
+            className="w-11 h-11 rounded-full bg-black/70 backdrop-blur-md flex items-center justify-center hover:bg-black/90 transition-all"
           >
             <ArrowLeft className="w-5 h-5 text-white" />
           </Link>
           
-          <h1 className="text-white text-lg font-medium">Profile</h1>
+          <h1 className="text-foreground text-lg font-semibold">Profile</h1>
           
-          <button className="w-11 h-11 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/20 transition-all border border-white/20">
+          <button className="w-11 h-11 rounded-full bg-black/70 backdrop-blur-md flex items-center justify-center hover:bg-black/90 transition-all">
             <Grid3x3 className="w-5 h-5 text-white" />
           </button>
         </div>
@@ -91,11 +99,11 @@ const MyAccount = () => {
         {/* Profile Section */}
         <div className="flex-1 flex flex-col items-center px-6 pt-8">
           {/* Profile Picture with Circle Background */}
-          <div className="relative mb-8">
-            {/* Yellow Circle Background */}
-            <div className="w-56 h-56 rounded-full bg-gradient-to-br from-yellow-400 to-orange-400 flex items-center justify-center">
+          <div className="relative mb-6">
+            {/* Circle Background */}
+            <div className="w-40 h-40 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 backdrop-blur-sm flex items-center justify-center border-2 border-white/50">
               {/* Profile Image */}
-              <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-white/20">
+              <div className="w-36 h-36 rounded-full overflow-hidden">
                 {profile?.avatar_url ? (
                   <img 
                     src={profile.avatar_url} 
@@ -103,88 +111,71 @@ const MyAccount = () => {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center">
-                    <span className="text-white text-5xl font-bold">{initials}</span>
+                  <div className="w-full h-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center">
+                    <span className="text-white text-3xl font-bold">{initials}</span>
                   </div>
                 )}
               </div>
             </div>
             
-            {/* Experience Badge - Curved Text */}
-            <div className="absolute -top-2 left-1/2 -translate-x-1/2">
-              <div className="text-white text-xs font-medium tracking-wide whitespace-nowrap">
-                12 years experience
-              </div>
-            </div>
-            
             {/* Edit Button */}
-            <button className="absolute bottom-2 right-2 w-14 h-14 rounded-full bg-green-500 flex items-center justify-center shadow-lg hover:bg-green-600 transition-all border-4 border-white/20">
-              <Pencil className="w-6 h-6 text-white" />
+            <button className="absolute bottom-0 right-0 w-10 h-10 rounded-full bg-foreground flex items-center justify-center shadow-lg hover:opacity-90 transition-all border-2 border-background">
+              <Pencil className="w-4 h-4 text-background" />
             </button>
           </div>
 
           {/* Name */}
-          <h2 className="text-white text-4xl font-bold mb-8 text-center leading-tight">
+          <h2 className="text-foreground text-3xl font-bold mb-6 text-center leading-tight">
             {displayName}
           </h2>
 
           {/* Stats */}
-          <div className="flex items-center justify-center gap-8 mb-10">
+          <div className="flex items-center justify-center gap-8 mb-8">
             <div className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-white/90" />
-              <span className="text-white text-lg font-medium">{stats.friends}</span>
+              <Users className="w-5 h-5 text-muted-foreground" />
+              <span className="text-foreground text-lg font-medium">{stats.friends}</span>
             </div>
             <div className="flex items-center gap-2">
-              <FileText className="w-5 h-5 text-white/90" />
-              <span className="text-white text-lg font-medium">{stats.eventsCreated}</span>
+              <FileText className="w-5 h-5 text-muted-foreground" />
+              <span className="text-foreground text-lg font-medium">{stats.eventsCreated}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Image className="w-5 h-5 text-white/90" />
-              <span className="text-white text-lg font-medium">{stats.favorites}</span>
+              <Image className="w-5 h-5 text-muted-foreground" />
+              <span className="text-foreground text-lg font-medium">{stats.favorites}</span>
             </div>
           </div>
 
-          {/* Navigation Tabs */}
-          <div className="flex items-center gap-3 mb-8">
+          {/* Navigation Tabs - 3 buttons only */}
+          <div className="flex items-center gap-2 mb-8">
             <button
               onClick={() => setActiveTab('hello')}
-              className={`px-8 py-3 rounded-full font-medium transition-all ${
+              className={`px-6 py-2.5 rounded-full font-medium transition-all text-sm ${
                 activeTab === 'hello'
-                  ? 'bg-white text-gray-900'
-                  : 'bg-black/70 text-white hover:bg-black/90'
+                  ? 'bg-foreground text-background'
+                  : 'bg-background/80 text-foreground hover:bg-background'
               }`}
             >
               Hello
             </button>
             <button
               onClick={() => setActiveTab('stats')}
-              className={`px-8 py-3 rounded-full font-medium transition-all ${
+              className={`px-6 py-2.5 rounded-full font-medium transition-all text-sm ${
                 activeTab === 'stats'
-                  ? 'bg-white text-gray-900'
-                  : 'bg-black/70 text-white hover:bg-black/90'
+                  ? 'bg-foreground text-background'
+                  : 'bg-background/80 text-foreground hover:bg-background'
               }`}
             >
               Stats
             </button>
             <button
               onClick={() => setActiveTab('photos')}
-              className={`px-8 py-3 rounded-full font-medium transition-all ${
+              className={`px-6 py-2.5 rounded-full font-medium transition-all text-sm ${
                 activeTab === 'photos'
-                  ? 'bg-white text-gray-900'
-                  : 'bg-black/70 text-white hover:bg-black/90'
+                  ? 'bg-foreground text-background'
+                  : 'bg-background/80 text-foreground hover:bg-background'
               }`}
             >
               Photos
-            </button>
-            <button
-              onClick={() => setActiveTab('about')}
-              className={`px-8 py-3 rounded-full font-medium transition-all ${
-                activeTab === 'about'
-                  ? 'bg-white text-gray-900'
-                  : 'bg-black/70 text-white hover:bg-black/90'
-              }`}
-            >
-              About
             </button>
           </div>
         </div>
