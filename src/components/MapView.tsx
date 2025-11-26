@@ -153,26 +153,24 @@ const MapView = () => {
       // Add to cluster group instead of directly to map
       markerClusterGroup.addLayer(marker);
 
-      // Create popup content with image overlay design
+      // Create popup content with compact image overlay design
       const popupContent = `
         <div class="event-popup-card">
           <div class="popup-card-image" style="background-image: url('${event.image}')">
             <div class="popup-card-gradient">
               <h3 class="popup-card-title">${event.title}</h3>
-            </div>
-          </div>
-          <div class="popup-card-details">
-            <div class="popup-card-date">
-              <div class="popup-date-box">
-                <div class="popup-date-month">NOV</div>
-                <div class="popup-date-day">16</div>
-                <div class="popup-date-weekday">SAM</div>
+              <div class="popup-card-bottom">
+                <div class="popup-date-box">
+                  <div class="popup-date-month">NOV</div>
+                  <div class="popup-date-day">16</div>
+                  <div class="popup-date-weekday">SAM</div>
+                </div>
+                <div class="popup-card-info">
+                  <p class="popup-card-venue">${event.venue}</p>
+                  <p class="popup-card-address">${event.venue}</p>
+                </div>
+                <div class="popup-card-time">${event.time}</div>
               </div>
-              <div class="popup-card-info">
-                <p class="popup-card-venue">${event.venue}</p>
-                <p class="popup-card-address">${event.venue}</p>
-              </div>
-              <div class="popup-card-time">${event.time}</div>
             </div>
           </div>
         </div>
@@ -181,8 +179,8 @@ const MapView = () => {
       const popup = L.popup({
         className: 'custom-popup-card',
         closeButton: true,
-        maxWidth: 280,
-        minWidth: 280,
+        maxWidth: 220,
+        minWidth: 220,
       }).setContent(popupContent);
 
       marker.bindPopup(popup);
