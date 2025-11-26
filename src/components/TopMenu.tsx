@@ -13,7 +13,7 @@ const TopMenu = () => {
 
   return (
     <div className="fixed left-0 right-0 top-0 z-30 max-w-md mx-auto">
-      <div className="p-4 pt-6 flex items-center justify-between">
+      <div className="p-4 pt-4 flex items-start justify-between">
         <img 
           src={logo} 
           alt="AFRIMAP EVENTS" 
@@ -21,7 +21,7 @@ const TopMenu = () => {
         />
         <DropdownMenu onOpenChange={setIsOpen}>
           <DropdownMenuTrigger asChild>
-            <button className="h-12 w-12 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-2xl shadow-xl hover:scale-105 transition-all active:scale-95 flex items-center justify-center border border-white/50 dark:border-stone-800/50">
+            <button className="h-12 w-12 rounded-full bg-transparent hover:bg-white/10 transition-all active:scale-95 flex items-center justify-center mt-2">
               {isOpen ? (
                 <X size={24} strokeWidth={2.5} className="text-black dark:text-white" />
               ) : (
