@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import mapBackground from "@/assets/map-background.jpg";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -11,9 +12,9 @@ const Auth = () => {
     <div className="relative h-screen w-full overflow-hidden bg-stone-100 dark:bg-stone-950">
       {/* Map Background with blur effect */}
       <div 
-        className="absolute inset-0 blur-sm scale-105 opacity-30" 
+        className="absolute inset-0 blur-sm scale-105 opacity-50" 
         style={{
-          backgroundImage: `url('https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/2.3522,48.8566,11,0/1200x800@2x?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw')`,
+          backgroundImage: `url(${mapBackground})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center'
         }}
