@@ -204,13 +204,13 @@ const MapView = () => {
         });
       });
 
-      // Add click handler on popup to navigate to event details
+      // Add click handler only on "Voir détails" button
       marker.on('popupopen', () => {
         console.log('Popup opened for:', event.title);
-        const popupElement = document.querySelector('.custom-popup-card') as HTMLElement;
-        if (popupElement) {
-          popupElement.style.cursor = 'pointer';
-          popupElement.addEventListener('click', () => {
+        const detailsBtn = document.querySelector('.popup-details-btn') as HTMLElement;
+        if (detailsBtn) {
+          detailsBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
             console.log('Navigating to event:', event.id);
             navigate(`/event/${event.id}`);
           });
