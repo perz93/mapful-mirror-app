@@ -48,9 +48,26 @@ const Settings = () => {
           .eq('id', user.id)
           .single();
 
-        if (error) throw error;
-        
-        if (data) {
+        if (error) {
+          // Si le profil n'existe pas, le créer
+          if (error.code === 'PGRST116') {
+            const { error: insertError } = await supabase
+              .from('profiles')
+              .insert({
+                id: user.id,
+                email: user.email || '',
+                notification_email: true,
+                notification_events: true,
+                notification_friends: true
+              });
+            
+            if (!insertError) {
+              setNotificationEmail(true);
+              setNotificationEvents(true);
+              setNotificationFriends(true);
+            }
+          }
+        } else if (data) {
           setNotificationEmail(data.notification_email ?? true);
           setNotificationEvents(data.notification_events ?? true);
           setNotificationFriends(data.notification_friends ?? true);
