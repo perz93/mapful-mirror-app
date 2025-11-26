@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,10 +8,24 @@ import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+
 const CreateEvent = () => {
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!loading && !user) {
+      toast({
+        title: "Connexion requise",
+        description: "Vous devez être connecté pour créer un événement.",
+        variant: "destructive"
+      });
+      navigate('/auth');
+    }
+  }, [user, loading, navigate, toast]);
   const [formData, setFormData] = useState({
     title: '',
     category: '',
@@ -29,6 +43,21 @@ const CreateEvent = () => {
       description: "Votre événement a été publié avec succès."
     });
   };
+
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-muted-foreground">Chargement...</p>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated (will redirect)
+  if (!user) {
+    return null;
+  }
+
   return <div className="min-h-screen bg-background pb-32 animate-fade-in animate-zoom-smooth">
       <div className="mx-auto max-w-md">
         {/* Header */}

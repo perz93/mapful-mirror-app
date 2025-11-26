@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { X, Plus, User, Settings, LogOut } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,16 +42,16 @@ const TopMenu = () => {
             <div className="flex flex-col gap-3">
               {/* Create Event Button - Black elongated */}
               <DropdownMenuItem className="cursor-pointer rounded-full p-0 hover:opacity-90 transition-all" asChild>
-                <a href={isLoggedIn ? "/create-event" : "/auth"} className="flex items-center justify-center gap-2 bg-black dark:bg-white text-white dark:text-black py-3 px-6 rounded-full font-semibold">
+                <Link to={isLoggedIn ? "/create-event" : "/auth"} className="flex items-center justify-center gap-2 bg-black dark:bg-white text-white dark:text-black py-3 px-6 rounded-full font-semibold">
                   <Plus size={20} strokeWidth={2.5} />
                   <span>Créer un événement</span>
-                </a>
+                </Link>
               </DropdownMenuItem>
 
               {/* Account and Settings - Circular buttons side by side */}
               <div className="flex gap-3 justify-center">
                 <DropdownMenuItem className="cursor-pointer rounded-full p-0 hover:bg-stone-100/50 dark:hover:bg-stone-800/30 transition-all" asChild>
-                  <a href={isLoggedIn ? "/my-account" : "/auth"} className="flex flex-col items-center gap-2 text-center p-3">
+                  <Link to={isLoggedIn ? "/my-account" : "/auth"} className="flex flex-col items-center gap-2 text-center p-3">
                     {isLoggedIn && userProfileImage ? (
                       <Avatar className="h-12 w-12">
                         <AvatarImage src={userProfileImage} alt="Profile" />
@@ -64,16 +65,16 @@ const TopMenu = () => {
                       </div>
                     )}
                     <p className="font-medium text-stone-900 dark:text-white text-xs">Compte</p>
-                  </a>
+                  </Link>
                 </DropdownMenuItem>
 
                 <DropdownMenuItem className="cursor-pointer rounded-full p-0 hover:bg-stone-100/50 dark:hover:bg-stone-800/30 transition-all" asChild>
-                  <a href={isLoggedIn ? "/settings" : "/auth"} className="flex flex-col items-center gap-2 text-center p-3">
+                  <Link to={isLoggedIn ? "/settings" : "/auth"} className="flex flex-col items-center gap-2 text-center p-3">
                     <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
                       <Settings className="h-5 w-5 text-primary" strokeWidth={1.5} />
                     </div>
                     <p className="font-medium text-stone-900 dark:text-white text-xs">Paramètres</p>
-                  </a>
+                  </Link>
                 </DropdownMenuItem>
               </div>
 
