@@ -22,15 +22,17 @@ const TopMenu = () => {
         <DropdownMenu onOpenChange={setIsOpen}>
           <DropdownMenuTrigger asChild>
             <button className="h-12 w-12 rounded-full bg-white/70 dark:bg-stone-900/70 backdrop-blur-md hover:bg-white/90 dark:hover:bg-stone-900/90 transition-all active:scale-95 flex items-center justify-center mt-2 shadow-lg">
-              {isOpen ? (
-                <X size={24} strokeWidth={2.5} className="text-black dark:text-white" />
-              ) : (
-                <div className="flex flex-col gap-1 items-center">
-                  <div className="w-5 h-0.5 bg-black dark:bg-white rounded-full"></div>
-                  <div className="w-7 h-0.5 bg-black dark:bg-white rounded-full"></div>
-                  <div className="w-4 h-0.5 bg-black dark:bg-white rounded-full"></div>
-                </div>
-              )}
+              <div className={`transition-transform duration-500 ease-in-out ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
+                {isOpen ? (
+                  <X size={24} strokeWidth={2.5} className="text-black dark:text-white" />
+                ) : (
+                  <div className="flex flex-col gap-1 items-center">
+                    <div className="w-5 h-0.5 bg-black dark:bg-white rounded-full"></div>
+                    <div className="w-7 h-0.5 bg-black dark:bg-white rounded-full"></div>
+                    <div className="w-4 h-0.5 bg-black dark:bg-white rounded-full"></div>
+                  </div>
+                )}
+              </div>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent 
