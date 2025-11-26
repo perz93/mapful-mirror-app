@@ -1,4 +1,5 @@
-import { Plus, Calendar, User, Settings } from 'lucide-react';
+import { useState } from 'react';
+import { MoreVertical, X, Calendar, User, Settings } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,6 +9,8 @@ import {
 import logo from "@/assets/afrimap-logo.png";
 
 const TopMenu = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <div className="fixed left-0 right-0 top-0 z-30 max-w-md mx-auto">
       <div className="p-4 pt-6 flex items-center justify-between">
@@ -16,10 +19,14 @@ const TopMenu = () => {
           alt="AFRIMAP EVENTS" 
           className="h-28 w-auto object-contain"
         />
-        <DropdownMenu>
+        <DropdownMenu onOpenChange={setIsOpen}>
           <DropdownMenuTrigger asChild>
-            <button className="h-11 w-11 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-2xl text-stone-900 dark:text-white shadow-xl hover:scale-105 transition-all active:scale-95 flex items-center justify-center border border-white/50 dark:border-stone-800/50">
-              <Plus size={20} strokeWidth={1.5} />
+            <button className="h-12 w-12 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-2xl shadow-xl hover:scale-105 transition-all active:scale-95 flex items-center justify-center border border-white/50 dark:border-stone-800/50">
+              {isOpen ? (
+                <X size={24} strokeWidth={2.5} className="text-black dark:text-white" />
+              ) : (
+                <MoreVertical size={28} strokeWidth={2.5} className="text-black dark:text-white" />
+              )}
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent 
