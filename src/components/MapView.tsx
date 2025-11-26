@@ -152,7 +152,7 @@ const MapView = () => {
       
       console.log('Creating marker for event:', event.title);
 
-      // Create popup content with compact image overlay design
+      // Create popup content exactly like reference
       const popupContent = `
         <div class="event-popup-card">
           <div class="popup-card-image" style="background-image: url('${event.image}')">
