@@ -8,9 +8,16 @@ const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
 
   return (
-    <div className="relative h-screen w-full overflow-hidden">
+    <div className="relative h-screen w-full overflow-hidden bg-stone-100 dark:bg-stone-950">
       {/* Map Background with blur effect */}
-      <div className="absolute inset-0 bg-[url('https://api.mapbox.com/styles/v1/mapbox/light-v11/static/2.3522,48.8566,12,0/1200x800@2x?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw')] bg-cover bg-center blur-sm scale-105 opacity-40" />
+      <div 
+        className="absolute inset-0 blur-sm scale-105 opacity-30" 
+        style={{
+          backgroundImage: `url('https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/2.3522,48.8566,11,0/1200x800@2x?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      />
       
       {/* Content Card */}
       <div className="relative z-10 flex items-center justify-center h-full p-4">
