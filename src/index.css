@@ -131,6 +131,43 @@ body {
   }
 }
 
+/* Marker colors by event type */
+.marker-music {
+  background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%) !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3), 0 0 0 2px rgba(255, 255, 255, 0.9) !important;
+}
+
+.marker-food {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3), 0 0 0 2px rgba(255, 255, 255, 0.9) !important;
+}
+
+.marker-sports {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3), 0 0 0 2px rgba(255, 255, 255, 0.9) !important;
+}
+
+.marker-arts {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3), 0 0 0 2px rgba(255, 255, 255, 0.9) !important;
+}
+
+.marker-music:hover {
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.45), 0 0 0 3px rgba(255, 255, 255, 1) !important;
+}
+
+.marker-food:hover {
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.45), 0 0 0 3px rgba(255, 255, 255, 1) !important;
+}
+
+.marker-sports:hover {
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.45), 0 0 0 3px rgba(255, 255, 255, 1) !important;
+}
+
+.marker-arts:hover {
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.45), 0 0 0 3px rgba(255, 255, 255, 1) !important;
+}
+
 
 /* Disable map tile fade on mobile for better performance */
 @media (max-width: 768px) {
