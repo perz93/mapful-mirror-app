@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Grid3x3, Pencil, Users, FileText, Image } from 'lucide-react';
+import { ArrowLeft, Pencil, Users, Calendar, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -7,7 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 const MyAccount = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState('hello');
+  const [activeTab, setActiveTab] = useState('events');
   const [stats, setStats] = useState({
     eventsCreated: 0,
     favorites: 0,
@@ -91,9 +91,7 @@ const MyAccount = () => {
           
           <h1 className="text-foreground text-lg font-semibold">Profile</h1>
           
-          <button className="w-11 h-11 rounded-full bg-black/70 backdrop-blur-md flex items-center justify-center hover:bg-black/90 transition-all">
-            <Grid3x3 className="w-5 h-5 text-white" />
-          </button>
+          <div className="w-11 h-11" />
         </div>
 
         {/* Profile Section */}
@@ -136,46 +134,46 @@ const MyAccount = () => {
               <span className="text-foreground text-lg font-medium">{stats.friends}</span>
             </div>
             <div className="flex items-center gap-2">
-              <FileText className="w-5 h-5 text-muted-foreground" />
+              <Calendar className="w-5 h-5 text-muted-foreground" />
               <span className="text-foreground text-lg font-medium">{stats.eventsCreated}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Image className="w-5 h-5 text-muted-foreground" />
+              <Heart className="w-5 h-5 text-muted-foreground" />
               <span className="text-foreground text-lg font-medium">{stats.favorites}</span>
             </div>
           </div>
 
-          {/* Navigation Tabs - 3 buttons only */}
+          {/* Navigation Tabs - Relevant to event app */}
           <div className="flex items-center gap-2 mb-8">
             <button
-              onClick={() => setActiveTab('hello')}
+              onClick={() => setActiveTab('events')}
               className={`px-6 py-2.5 rounded-full font-medium transition-all text-sm ${
-                activeTab === 'hello'
+                activeTab === 'events'
                   ? 'bg-foreground text-background'
                   : 'bg-background/80 text-foreground hover:bg-background'
               }`}
             >
-              Hello
+              Événements
             </button>
             <button
-              onClick={() => setActiveTab('stats')}
+              onClick={() => setActiveTab('favorites')}
               className={`px-6 py-2.5 rounded-full font-medium transition-all text-sm ${
-                activeTab === 'stats'
+                activeTab === 'favorites'
                   ? 'bg-foreground text-background'
                   : 'bg-background/80 text-foreground hover:bg-background'
               }`}
             >
-              Stats
+              Favoris
             </button>
             <button
-              onClick={() => setActiveTab('photos')}
+              onClick={() => setActiveTab('friends')}
               className={`px-6 py-2.5 rounded-full font-medium transition-all text-sm ${
-                activeTab === 'photos'
+                activeTab === 'friends'
                   ? 'bg-foreground text-background'
                   : 'bg-background/80 text-foreground hover:bg-background'
               }`}
             >
-              Photos
+              Amis
             </button>
           </div>
         </div>
