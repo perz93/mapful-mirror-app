@@ -71,19 +71,21 @@ const Auth = () => {
 
   return (
     <div className="relative h-screen w-full overflow-hidden bg-stone-100 dark:bg-stone-950">
-      {/* Map Background with blur effect */}
+      {/* Map Background - animation permanente */}
       <div 
-        className="absolute inset-0 blur-sm scale-105 opacity-50" 
+        className="absolute inset-0 opacity-40 animate-[pan_120s_linear_infinite]" 
         style={{
           backgroundImage: `url(${mapBackground})`,
-          backgroundSize: 'cover',
+          backgroundSize: '150% 150%',
           backgroundPosition: 'center'
         }}
       />
       
       {/* Content Card */}
       <div className="relative z-10 flex items-center justify-center h-full p-4">
-        <div className="bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-2xl w-full max-w-md p-6 relative">
+        <div className="bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-2xl w-full max-w-md p-6 relative transition-all duration-700 [transform-style:preserve-3d]" style={{
+          transform: isLogin ? 'rotateY(0deg)' : 'rotateY(360deg)'
+        }}>
           {/* Close Button */}
           <button
             onClick={() => navigate("/")}
