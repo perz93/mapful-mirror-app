@@ -83,21 +83,21 @@ const Auth = () => {
       
       {/* Content Card */}
       <div className="relative z-10 flex items-center justify-center h-full p-4">
-        <div className="bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-2xl w-full max-w-md p-8 relative">
+        <div className="bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-2xl w-full max-w-md p-6 relative">
           {/* Close Button */}
           <button
             onClick={() => navigate("/")}
-            className="absolute top-6 left-6 w-10 h-10 rounded-full bg-muted/50 hover:bg-muted flex items-center justify-center transition-colors"
+            className="absolute top-4 left-4 w-9 h-9 rounded-full bg-muted/50 hover:bg-muted flex items-center justify-center transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
 
           {/* Header */}
-          <div className="text-center mt-8 mb-12">
-            <h1 className="text-3xl font-bold font-heading mb-3">
+          <div className="text-center mt-6 mb-6">
+            <h1 className="text-2xl font-bold font-heading mb-2">
               {isLogin ? "Bienvenue" : "Rejoignez-nous"}
             </h1>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-muted-foreground text-base">
               {isLogin 
                 ? "Découvrez votre ville autrement" 
                 : "Vivez chaque instant qui compte"}
@@ -105,14 +105,14 @@ const Auth = () => {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4 mb-8">
+          <form onSubmit={handleSubmit} className="space-y-3 mb-6">
             {!isLogin && (
               <input
                 type="text"
                 placeholder="Nom complet"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="w-full px-6 py-4 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all"
+                className="w-full px-5 py-3 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all text-sm"
               />
             )}
             <input
@@ -121,7 +121,7 @@ const Auth = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-6 py-4 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all"
+              className="w-full px-5 py-3 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all text-sm"
             />
             <div className="relative">
               <input
@@ -131,14 +131,14 @@ const Auth = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full px-6 py-4 pr-12 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all"
+                className="w-full px-5 py-3 pr-11 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all text-sm"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
               >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
             {!isLogin && (
@@ -150,30 +150,30 @@ const Auth = () => {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   minLength={6}
-                  className="w-full px-6 py-4 pr-12 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all"
+                  className="w-full px-5 py-3 pr-11 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all text-sm"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             )}
 
             {/* Terms and Conditions - Only for signup */}
             {!isLogin && (
-              <div className="flex items-start gap-3 px-2">
+              <div className="flex items-start gap-2 px-2">
                 <Checkbox
                   id="terms"
                   checked={acceptTerms}
                   onCheckedChange={(checked) => setAcceptTerms(checked as boolean)}
-                  className="mt-1"
+                  className="mt-0.5"
                 />
                 <label
                   htmlFor="terms"
-                  className="text-sm text-muted-foreground leading-tight cursor-pointer"
+                  className="text-xs text-muted-foreground leading-tight cursor-pointer"
                 >
                   J'accepte les{" "}
                   <a href="/terms" className="text-foreground underline hover:opacity-80">
@@ -193,7 +193,7 @@ const Auth = () => {
                 <button
                   type="button"
                   onClick={handleForgotPassword}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors underline"
+                  className="text-xs text-muted-foreground hover:text-foreground transition-colors underline"
                 >
                   Mot de passe oublié ?
                 </button>
@@ -202,11 +202,15 @@ const Auth = () => {
           </form>
 
           {/* Action Buttons */}
-          <div className="flex gap-3 mb-6">
+          <div className="flex gap-3 mb-4">
             <Button
               type="button"
               variant="outline"
-              className="flex-1 h-14 rounded-full text-base font-medium border-2"
+              className={`flex-1 h-12 rounded-full text-sm font-medium border-2 transition-all ${
+                !isLogin 
+                  ? "bg-background text-foreground border-border" 
+                  : "bg-foreground text-background border-foreground hover:bg-foreground/90"
+              }`}
               onClick={() => {
                 setIsLogin(!isLogin);
                 setPassword("");
@@ -218,7 +222,11 @@ const Auth = () => {
             </Button>
             <Button
               type="submit"
-              className="flex-1 h-14 rounded-full text-base font-medium bg-foreground text-background hover:bg-foreground/90"
+              className={`flex-1 h-12 rounded-full text-sm font-medium transition-all ${
+                isLogin 
+                  ? "bg-background text-foreground border-2 border-border hover:bg-muted" 
+                  : "bg-foreground text-background hover:bg-foreground/90"
+              }`}
               onClick={handleSubmit}
               disabled={loading}
             >
@@ -227,7 +235,7 @@ const Auth = () => {
           </div>
 
           {/* Footer Text */}
-          <p className="text-center text-sm text-muted-foreground">
+          <p className="text-center text-xs text-muted-foreground">
             {isLogin 
               ? "Explorez les événements près de chez vous" 
               : "Partagez vos moments avec la communauté"}
