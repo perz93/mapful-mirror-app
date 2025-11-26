@@ -66,13 +66,13 @@ const TopMenu = () => {
                   </a>
                 </DropdownMenuItem>
 
-                <DropdownMenuItem className="cursor-pointer rounded-full p-0 hover:bg-stone-100/50 dark:hover:bg-stone-800/30 transition-all">
-                  <div className="flex flex-col items-center gap-2 text-center p-3">
+                <DropdownMenuItem className="cursor-pointer rounded-full p-0 hover:bg-stone-100/50 dark:hover:bg-stone-800/30 transition-all" asChild>
+                  <a href={isLoggedIn ? "/settings" : "/auth"} className="flex flex-col items-center gap-2 text-center p-3">
                     <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
                       <Settings className="h-5 w-5 text-primary" strokeWidth={1.5} />
                     </div>
                     <p className="font-medium text-stone-900 dark:text-white text-xs">Paramètres</p>
-                  </div>
+                  </a>
                 </DropdownMenuItem>
               </div>
             </div>
