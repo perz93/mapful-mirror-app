@@ -150,8 +150,7 @@ const MapView = () => {
         icon: createCustomIcon(event.image, event.type)
       });
       
-      // Add to cluster group instead of directly to map
-      markerClusterGroup.addLayer(marker);
+      console.log('Creating marker for event:', event.title);
 
       // Create popup content with compact image overlay design
       const popupContent = `
@@ -189,8 +188,12 @@ const MapView = () => {
       (marker as any).eventData = event;
       markersRef.current.push(marker);
 
-      // Center map on marker when popup opens
+      // Add to cluster group AFTER binding popup
+      markerClusterGroup.addLayer(marker);
+
+      // Center map on marker when clicked
       marker.on('click', () => {
+        console.log('Marker clicked:', event.title);
         map.flyTo([event.lat, event.lng], 15, {
           duration: 0.5,
           easeLinearity: 0.25
@@ -199,10 +202,14 @@ const MapView = () => {
 
       // Add click handler on popup to navigate to event details
       marker.on('popupopen', () => {
+        console.log('Popup opened for:', event.title);
         const popupElement = document.querySelector('.custom-popup-card') as HTMLElement;
         if (popupElement) {
           popupElement.style.cursor = 'pointer';
-          popupElement.addEventListener('click', () => navigate(`/event/${event.id}`));
+          popupElement.addEventListener('click', () => {
+            console.log('Navigating to event:', event.id);
+            navigate(`/event/${event.id}`);
+          });
         }
       });
     });
