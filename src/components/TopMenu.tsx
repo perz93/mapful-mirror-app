@@ -17,8 +17,14 @@ const TopMenu = () => {
   const userProfileImage = "";
 
   return (
-    <div className="fixed left-0 right-0 top-0 z-30 max-w-md mx-auto">
-      <div className="p-4 pt-4 flex items-start justify-end">
+    <>
+      {/* Overlay sombre quand le menu est ouvert */}
+      {isOpen && (
+        <div className="fixed inset-0 bg-black/50 z-20 animate-fade-in" />
+      )}
+      
+      <div className="fixed left-0 right-0 top-0 z-30 max-w-md mx-auto">
+        <div className="p-4 pt-4 flex items-start justify-end">
         <DropdownMenu onOpenChange={setIsOpen}>
           <DropdownMenuTrigger asChild>
             <button className="h-12 w-12 rounded-full bg-white/70 dark:bg-stone-900/70 backdrop-blur-md hover:bg-white/90 dark:hover:bg-stone-900/90 transition-all active:scale-95 flex items-center justify-center mt-2 shadow-lg">
@@ -95,6 +101,7 @@ const TopMenu = () => {
         </DropdownMenu>
       </div>
     </div>
+    </>
   );
 };
 
