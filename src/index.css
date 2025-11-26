@@ -48,53 +48,87 @@ body {
   /* Removed grayscale filter for colorful map */
 }
 
+/* Custom marker styles with images */
 .custom-marker {
   background: transparent !important;
   border: none !important;
 }
 
-.marker-container {
-  position: relative;
-  width: 36px;
-  height: 36px;
+.marker-image-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.2s ease;
+  animation: markerDrop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.marker-pin {
+.marker-image-container:hover {
+  transform: scale(1.15);
+}
+
+.marker-image-wrapper {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 3px solid white;
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+.marker-image-wrapper::after {
+  content: '';
   position: absolute;
-  top: 0;
+  bottom: -8px;
   left: 50%;
   transform: translateX(-50%);
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
-  border-radius: 50% 50% 50% 0;
-  transform-origin: 0% 100%;
-  transform: translateX(-50%) rotate(-45deg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 0 2px rgba(255, 255, 255, 0.9);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid white;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
 }
 
-.marker-pin:hover {
-  transform: translateX(-50%) rotate(-45deg) scale(1.15);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(255, 255, 255, 1);
+.marker-image-wrapper:hover {
+  transform: scale(1.1);
+  box-shadow: 
+    0 6px 24px rgba(0, 0, 0, 0.3),
+    0 3px 12px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 
-.marker-icon {
-  transform: rotate(45deg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+.marker-event-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
 }
 
-.marker-icon svg {
-  width: 16px;
-  height: 16px;
+.marker-image-wrapper:hover .marker-event-image {
+  transform: scale(1.05);
+}
+
+@keyframes markerDrop {
+  0% {
+    transform: translateY(-100px) scale(0);
+    opacity: 0;
+  }
+  70% {
+    transform: translateY(10px) scale(1.1);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
 }
 
 
