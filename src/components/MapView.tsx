@@ -63,21 +63,19 @@ const MapView = () => {
       );
     }
 
-    // Create custom marker icon with color based on event type
-    const createCustomIcon = (iconSvg: string, eventType: string) => {
+    // Create custom marker icon with event image
+    const createCustomIcon = (imageUrl: string, eventType: string) => {
       return L.divIcon({
         className: 'custom-marker',
         html: `
-          <div class="marker-container">
-            <div class="marker-pin marker-${eventType}">
-              <div class="marker-icon">
-                ${iconSvg}
-              </div>
+          <div class="marker-image-container">
+            <div class="marker-image-wrapper marker-${eventType}">
+              <img src="${imageUrl}" alt="Event" class="marker-event-image" />
             </div>
           </div>
         `,
-        iconSize: [36, 36],
-        iconAnchor: [18, 36],
+        iconSize: [50, 50],
+        iconAnchor: [25, 50],
       });
     };
 
@@ -101,7 +99,7 @@ const MapView = () => {
     // Create and store all markers
     events.forEach(event => {
       const marker = L.marker([event.lat, event.lng], {
-        icon: createCustomIcon(event.icon, event.type)
+        icon: createCustomIcon(event.image, event.type)
       }).addTo(map);
 
       // Create popup content with image and more details
