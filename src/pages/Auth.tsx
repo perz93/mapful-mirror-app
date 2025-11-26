@@ -1,12 +1,45 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 import mapBackground from "@/assets/map-background.jpg";
 
 const Auth = () => {
   const navigate = useNavigate();
+  const { signUp, signIn, user } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!isLogin && password !== confirmPassword) {
+      alert("Les mots de passe ne correspondent pas");
+      return;
+    }
+
+    setLoading(true);
+    
+    if (isLogin) {
+      await signIn(email, password);
+    } else {
+      await signUp(email, password, fullName);
+    }
+    
+    setLoading(false);
+  };
 
   return (
     <div className="relative h-screen w-full overflow-hidden bg-stone-100 dark:bg-stone-950">
@@ -44,43 +77,68 @@ const Auth = () => {
           </div>
 
           {/* Form */}
-          <div className="space-y-4 mb-8">
+          <form onSubmit={handleSubmit} className="space-y-4 mb-8">
+            {!isLogin && (
+              <input
+                type="text"
+                placeholder="Nom complet"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                className="w-full px-6 py-4 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all"
+              />
+            )}
             <input
               type="email"
               placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
               className="w-full px-6 py-4 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all"
             />
             <input
               type="password"
               placeholder="Mot de passe"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
               className="w-full px-6 py-4 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all"
             />
             {!isLogin && (
               <input
                 type="password"
                 placeholder="Confirmer le mot de passe"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                minLength={6}
                 className="w-full px-6 py-4 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all"
               />
             )}
-          </div>
+          </form>
 
           {/* Action Buttons */}
           <div className="flex gap-3 mb-6">
             <Button
+              type="button"
               variant="outline"
               className="flex-1 h-14 rounded-full text-base font-medium border-2"
-              onClick={() => setIsLogin(!isLogin)}
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setPassword("");
+                setConfirmPassword("");
+              }}
+              disabled={loading}
             >
               {isLogin ? "S'inscrire" : "Se connecter"}
             </Button>
             <Button
+              type="submit"
               className="flex-1 h-14 rounded-full text-base font-medium bg-foreground text-background hover:bg-foreground/90"
-              onClick={() => {
-                // TODO: Handle authentication
-                console.log(isLogin ? "Login" : "Signup");
-              }}
+              onClick={handleSubmit}
+              disabled={loading}
             >
-              {isLogin ? "Se connecter" : "S'inscrire"}
+              {loading ? "..." : isLogin ? "Se connecter" : "S'inscrire"}
             </Button>
           </div>
 

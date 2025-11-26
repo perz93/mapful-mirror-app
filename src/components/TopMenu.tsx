@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Plus, User, Settings } from 'lucide-react';
+import { X, Plus, User, Settings, LogOut } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,11 +7,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useAuth } from "@/contexts/AuthContext";
 
 const TopMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
-  // TODO: Replace with actual auth state
-  const isLoggedIn = false;
+  const { user, signOut } = useAuth();
+  const isLoggedIn = !!user;
   const userProfileImage = "";
 
   return (
@@ -75,6 +76,19 @@ const TopMenu = () => {
                   </a>
                 </DropdownMenuItem>
               </div>
+
+              {/* Logout button - only show if logged in */}
+              {isLoggedIn && (
+                <DropdownMenuItem 
+                  onClick={() => signOut()}
+                  className="cursor-pointer rounded-full p-0 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all mt-2"
+                >
+                  <div className="flex items-center justify-center gap-2 text-red-600 dark:text-red-400 py-3 px-6 rounded-full font-medium w-full">
+                    <LogOut size={18} strokeWidth={2} />
+                    <span>Déconnexion</span>
+                  </div>
+                </DropdownMenuItem>
+              )}
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
