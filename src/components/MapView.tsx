@@ -165,14 +165,15 @@ const MapView = () => {
                   <div class="popup-date-weekday">SAM</div>
                 </div>
                 <div class="popup-card-info">
-                  <p class="popup-card-venue">${event.venue}</p>
-                  <p class="popup-card-address">${event.venue}, Abidjan</p>
-                </div>
-                <div class="popup-card-time">
-                  <div class="popup-time-value">${event.time}</div>
-                  <div class="popup-time-zone">GMT</div>
+                  <div class="popup-venue-row">
+                    <p class="popup-card-venue">${event.venue}</p>
+                    <div class="popup-card-time">
+                      <div class="popup-time-value">20h00</div>
+                    </div>
+                  </div>
                 </div>
               </div>
+              <button class="popup-details-btn">Voir détails</button>
             </div>
           </div>
         </div>
