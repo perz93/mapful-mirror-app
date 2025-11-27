@@ -43,12 +43,12 @@ const TopMenu = () => {
           </DropdownMenuTrigger>
           <DropdownMenuContent 
             align="end" 
-            className="animate-fade-in backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 border border-white/60 dark:border-stone-800/60 shadow-2xl p-4 rounded-3xl min-w-[280px]"
+            className="animate-fade-in backdrop-blur-2xl bg-stone-900/85 border border-stone-700/40 shadow-2xl p-4 rounded-3xl min-w-[280px]"
           >
             <div className="flex flex-col gap-3">
               {/* Create Event Button - Black elongated */}
               <DropdownMenuItem className="cursor-pointer rounded-full p-0 hover:opacity-90 transition-all" asChild>
-                <Link to={isLoggedIn ? "/create-event" : "/auth"} className="flex items-center justify-center gap-2 bg-black dark:bg-white text-white dark:text-black py-3 px-6 rounded-full font-semibold">
+                <Link to={isLoggedIn ? "/create-event" : "/auth"} className="flex items-center justify-center gap-2 bg-white text-black py-3 px-6 rounded-full font-semibold">
                   <Plus size={20} strokeWidth={2.5} />
                   <span>Créer un événement</span>
                 </Link>
@@ -56,7 +56,7 @@ const TopMenu = () => {
 
               {/* Account and Settings - Circular buttons side by side */}
               <div className="flex gap-3 justify-center">
-                <DropdownMenuItem className="cursor-pointer rounded-full p-0 hover:bg-stone-100/50 dark:hover:bg-stone-800/30 transition-all" asChild>
+                <DropdownMenuItem className="cursor-pointer rounded-full p-0 hover:bg-stone-800/30 transition-all" asChild>
                   <Link to={isLoggedIn ? "/my-account" : "/auth"} className="flex flex-col items-center gap-2 text-center p-3">
                     {isLoggedIn && userProfileImage ? (
                       <Avatar className="h-12 w-12">
@@ -70,16 +70,16 @@ const TopMenu = () => {
                         <User className="h-5 w-5 text-primary" strokeWidth={1.5} />
                       </div>
                     )}
-                    <p className="font-medium text-stone-900 dark:text-white text-xs">Compte</p>
+                    <p className="font-medium text-white text-xs">Compte</p>
                   </Link>
                 </DropdownMenuItem>
 
-                <DropdownMenuItem className="cursor-pointer rounded-full p-0 hover:bg-stone-100/50 dark:hover:bg-stone-800/30 transition-all" asChild>
+                <DropdownMenuItem className="cursor-pointer rounded-full p-0 hover:bg-stone-800/30 transition-all" asChild>
                   <Link to={isLoggedIn ? "/settings" : "/auth"} className="flex flex-col items-center gap-2 text-center p-3">
                     <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
                       <Settings className="h-5 w-5 text-primary" strokeWidth={1.5} />
                     </div>
-                    <p className="font-medium text-stone-900 dark:text-white text-xs">Paramètres</p>
+                    <p className="font-medium text-white text-xs">Paramètres</p>
                   </Link>
                 </DropdownMenuItem>
               </div>
@@ -88,9 +88,9 @@ const TopMenu = () => {
               {isLoggedIn && (
                 <DropdownMenuItem 
                   onClick={() => signOut()}
-                  className="cursor-pointer rounded-full p-0 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all mt-2"
+                  className="cursor-pointer rounded-full p-0 hover:bg-red-950/20 transition-all mt-2"
                 >
-                  <div className="flex items-center justify-center gap-2 text-red-600 dark:text-red-400 py-3 px-6 rounded-full font-medium w-full">
+                  <div className="flex items-center justify-center gap-2 text-red-400 py-3 px-6 rounded-full font-medium w-full">
                     <LogOut size={18} strokeWidth={2} />
                     <span>Déconnexion</span>
                   </div>
