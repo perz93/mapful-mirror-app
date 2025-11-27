@@ -9,6 +9,21 @@ import {
 } from '@/components/ui/dialog';
 import { useSearch } from '@/contexts/SearchContext';
 
+const CATEGORIES = [
+  { id: 'music', label: 'Musique', color: 'bg-purple-500' },
+  { id: 'sports', label: 'Sports', color: 'bg-green-500' },
+  { id: 'food', label: 'Food', color: 'bg-orange-500' },
+  { id: 'arts', label: 'Arts', color: 'bg-pink-500' },
+  { id: 'meetups', label: 'Meetups', color: 'bg-blue-500' },
+  { id: 'conferences', label: 'Conférences', color: 'bg-indigo-500' },
+  { id: 'workshops', label: 'Ateliers', color: 'bg-yellow-500' },
+  { id: 'festivals', label: 'Festivals', color: 'bg-red-500' },
+  { id: 'shows', label: 'Spectacles', color: 'bg-teal-500' },
+  { id: 'exhibitions', label: 'Expositions', color: 'bg-cyan-500' },
+  { id: 'brunch', label: 'Brunch', color: 'bg-amber-500' },
+  { id: 'religious', label: 'Religieux', color: 'bg-violet-500' },
+];
+
 interface BottomNavigationProps {
   className?: string;
 }
@@ -23,7 +38,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
   const location = useLocation();
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
-  const { searchQuery, setSearchQuery } = useSearch();
+  const { searchQuery, setSearchQuery, selectedCategories, setSelectedCategories, toggleCategory } = useSearch();
   const [indicator, setIndicator] = useState<ScrollIndicatorState>({
     width: 100,
     left: 0,
@@ -90,7 +105,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
           <DialogHeader>
             <DialogTitle className="text-lg">Rechercher un événement</DialogTitle>
           </DialogHeader>
-          <div className="space-y-3 pb-2">
+          <div className="space-y-4 pb-2">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
               <input
@@ -107,10 +122,40 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                 autoFocus
               />
             </div>
+            
+            {/* Category Filters */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold text-foreground">Catégories</p>
+                {selectedCategories.length > 0 && (
+                  <button
+                    onClick={() => setSelectedCategories([])}
+                    className="text-xs text-primary hover:underline font-medium"
+                  >
+                    Tout effacer
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-2 max-h-[200px] overflow-y-auto">
+                {CATEGORIES.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => toggleCategory(category.id)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      selectedCategories.includes(category.id)
+                        ? `${category.color} text-white shadow-lg scale-105`
+                        : 'bg-muted text-muted-foreground hover:scale-105'
+                    }`}
+                  >
+                    {category.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <button
               onClick={handleSearch}
-              disabled={!searchQuery.trim()}
-              className="w-full h-11 rounded-3xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm"
+              className="w-full h-11 rounded-3xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-all text-sm"
             >
               Rechercher
             </button>
