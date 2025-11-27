@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import MapView from '@/components/MapView';
 const Settings = () => {
   const {
     user,
@@ -149,12 +150,12 @@ const Settings = () => {
   }
   return <div className="min-h-screen relative overflow-hidden pb-32 animate-fade-in animate-zoom-smooth">
       {/* Map Background */}
-      <div className="absolute inset-0 bg-cover bg-center" style={{
-      backgroundImage: "url('/src/assets/map-background.jpg')",
-      filter: "blur(3px)"
-    }} />
-      {/* Darker Semi-Transparent Blur Overlay */}
-      <div className="absolute inset-0 bg-black/20 backdrop-blur-xl" />
+      <div className="absolute inset-0 pointer-events-none">
+        <MapView />
+      </div>
+
+      {/* Dark Overlay */}
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-xl pointer-events-none" />
       
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-2xl px-4 py-8">
