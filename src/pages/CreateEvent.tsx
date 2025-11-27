@@ -232,10 +232,9 @@ const CreateEvent = () => {
         <div className="px-4 sm:px-6 pt-12 sm:pt-16 pb-8 sm:pb-10">
           <Link 
             to="/" 
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/30 backdrop-blur-sm text-stone-900 hover:scale-105 active:scale-95 transition-all duration-200 shadow-sm hover:shadow-md mb-8"
+            className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-black/70 backdrop-blur-md hover:bg-black/90 transition-all mb-8"
           >
-            <ArrowLeft size={18} strokeWidth={2} />
-            <span className="text-sm font-medium">Retour</span>
+            <ArrowLeft className="w-5 h-5 text-white" />
           </Link>
           <h1 className="text-4xl font-light text-stone-900 mb-3 text-center">Créer un événement</h1>
           <p className="text-stone-700 font-light text-center">Partagez votre événement avec la communauté</p>
