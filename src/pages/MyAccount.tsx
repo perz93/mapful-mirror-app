@@ -275,7 +275,15 @@ const MyAccount = () => {
           {/* Content Based on Active Tab */}
           {activeTab === 'events' && (
             <div className="w-full px-6 pb-8">
-              <h3 className="text-foreground text-xl font-semibold mb-4">Mes événements créés</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-foreground text-xl font-semibold">Mes événements créés</h3>
+                <Link 
+                  to="/manage-events"
+                  className="text-primary text-sm font-medium hover:underline"
+                >
+                  Gérer
+                </Link>
+              </div>
               {userEvents.length === 0 ? (
                 <p className="text-muted-foreground text-center py-8">Vous n'avez créé aucun événement pour le moment</p>
               ) : (
