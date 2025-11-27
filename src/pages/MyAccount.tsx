@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useEvents, Event } from '@/hooks/useEvents';
 import EventListCard from '@/components/EventListCard';
+import { toast } from 'sonner';
 
 const MyAccount = () => {
   const { user } = useAuth();
@@ -17,6 +18,8 @@ const MyAccount = () => {
   });
   const { data: allEvents } = useEvents();
   const [userEvents, setUserEvents] = useState<Event[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useState<HTMLInputElement | null>(null)[0];
 
   useEffect(() => {
     if (user) {
@@ -71,6 +74,72 @@ const MyAccount = () => {
       favorites: favoritesCount || 0,
       friends: friendsCount || 0
     });
+  };
+
+  const handleAvatarClick = () => {
+    document.getElementById('avatar-upload')?.click();
+  };
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Veuillez sélectionner une image');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('L\'image ne doit pas dépasser 5MB');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      // Delete old avatar if exists
+      if (profile?.avatar_url) {
+        const oldPath = profile.avatar_url.split('/').pop();
+        if (oldPath) {
+          await supabase.storage
+            .from('avatars')
+            .remove([`${user.id}/${oldPath}`]);
+        }
+      }
+
+      // Upload new avatar
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${user.id}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // Update profile
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
+      setProfile({ ...profile, avatar_url: publicUrl });
+      toast.success('Photo de profil mise à jour !');
+    } catch (error: any) {
+      console.error('Error uploading avatar:', error);
+      toast.error('Erreur lors de la mise à jour de la photo');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const displayName = profile?.full_name || user?.email?.split('@')[0] || 'Utilisateur';
@@ -128,8 +197,23 @@ const MyAccount = () => {
             </div>
             
             {/* Edit Button */}
-            <button className="absolute bottom-0 right-0 w-10 h-10 rounded-full bg-foreground flex items-center justify-center shadow-lg hover:opacity-90 transition-all border-2 border-background">
-              <Pencil className="w-4 h-4 text-background" />
+            <input
+              id="avatar-upload"
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarUpload}
+              className="hidden"
+            />
+            <button 
+              onClick={handleAvatarClick}
+              disabled={uploading}
+              className="absolute bottom-0 right-0 w-10 h-10 rounded-full bg-foreground flex items-center justify-center shadow-lg hover:opacity-90 transition-all border-2 border-background disabled:opacity-50"
+            >
+              {uploading ? (
+                <div className="w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Pencil className="w-4 h-4 text-background" />
+              )}
             </button>
           </div>
 
