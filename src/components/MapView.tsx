@@ -9,6 +9,7 @@ import { useSearch } from '@/contexts/SearchContext';
 import { useEvents } from '@/hooks/useEvents';
 import { format, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { toast } from 'sonner';
 
 const MapView = () => {
   const mapRef = useRef<HTMLDivElement>(null);
@@ -18,6 +19,7 @@ const MapView = () => {
   const { data: events, isLoading } = useEvents();
 
   const userLocationRef = useRef<{ lat: number; lng: number } | null>(null);
+  const userMarkerRef = useRef<L.Marker | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
   const markerClusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
 
@@ -25,9 +27,20 @@ const MapView = () => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
     // Initialize map - Centered on Abidjan, Côte d'Ivoire
+    // Check if there's a saved map position
+    const savedPosition = sessionStorage.getItem('mapPosition');
+    let initialCenter: [number, number] = [5.3600, -4.0083];
+    let initialZoom = 13;
+
+    if (savedPosition) {
+      const { lat, lng, zoom } = JSON.parse(savedPosition);
+      initialCenter = [lat, lng];
+      initialZoom = zoom;
+    }
+
     const map = L.map(mapRef.current, {
-      center: [5.3600, -4.0083],
-      zoom: 13,
+      center: initialCenter,
+      zoom: initialZoom,
       zoomControl: false,
       attributionControl: false,
       preferCanvas: true, // Better performance
@@ -42,14 +55,25 @@ const MapView = () => {
       maxZoom: 20,
     }).addTo(map);
 
-    // Try to get user's location and center map on it
-    if (navigator.geolocation) {
+    // Save map position on move
+    map.on('moveend', () => {
+      const center = map.getCenter();
+      const zoom = map.getZoom();
+      sessionStorage.setItem('mapPosition', JSON.stringify({
+        lat: center.lat,
+        lng: center.lng,
+        zoom: zoom
+      }));
+    });
+
+    // Try to get user's location only on first visit
+    if (!savedPosition && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
           userLocationRef.current = { lat: latitude, lng: longitude };
           
-          // Center map on user location
+          // Center map on user location only on first visit
           map.setView([latitude, longitude], 14);
           
           // Add user location marker
@@ -60,15 +84,36 @@ const MapView = () => {
             iconAnchor: [10, 10],
           });
           
-          L.marker([latitude, longitude], { icon: userIcon })
+          const userMarker = L.marker([latitude, longitude], { icon: userIcon })
             .addTo(map)
             .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
+          
+          userMarkerRef.current = userMarker;
         },
         (error) => {
           console.log('Géolocalisation non disponible:', error);
-          // Keep default Abidjan location
+          // Show toast to ask user to enable location
+          if (error.code === error.PERMISSION_DENIED) {
+            toast.error('Veuillez activer la localisation dans les paramètres de votre navigateur pour voir votre position sur la carte', {
+              duration: 5000
+            });
+          }
         }
       );
+    } else if (savedPosition && userLocationRef.current) {
+      // Re-add user marker if position was previously obtained
+      const userIcon = L.divIcon({
+        className: 'user-location-marker',
+        html: `<div class="user-location-pulse"></div>`,
+        iconSize: [20, 20],
+        iconAnchor: [10, 10],
+      });
+      
+      const userMarker = L.marker([userLocationRef.current.lat, userLocationRef.current.lng], { icon: userIcon })
+        .addTo(map)
+        .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
+      
+      userMarkerRef.current = userMarker;
     }
 
     // Create custom marker icon with event image
@@ -147,25 +192,49 @@ const MapView = () => {
         map.flyTo([userLocationRef.current.lat, userLocationRef.current.lng], 15, {
           duration: 1.5
         });
+        
+        // Update user marker position
+        if (userMarkerRef.current) {
+          userMarkerRef.current.setLatLng([userLocationRef.current.lat, userLocationRef.current.lng]);
+        }
       } else {
         // Request location again if not available
-        navigator.geolocation?.getCurrentPosition((position) => {
-          const { latitude, longitude } = position.coords;
-          userLocationRef.current = { lat: latitude, lng: longitude };
-          map.flyTo([latitude, longitude], 15, { duration: 1.5 });
-          
-          // Add user location marker if not already added
-          const userIcon = L.divIcon({
-            className: 'user-location-marker',
-            html: `<div class="user-location-pulse"></div>`,
-            iconSize: [20, 20],
-            iconAnchor: [10, 10],
-          });
-          
-          L.marker([latitude, longitude], { icon: userIcon })
-            .addTo(map)
-            .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
-        });
+        navigator.geolocation?.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            userLocationRef.current = { lat: latitude, lng: longitude };
+            map.flyTo([latitude, longitude], 15, { duration: 1.5 });
+            
+            // Add or update user location marker
+            if (!userMarkerRef.current) {
+              const userIcon = L.divIcon({
+                className: 'user-location-marker',
+                html: `<div class="user-location-pulse"></div>`,
+                iconSize: [20, 20],
+                iconAnchor: [10, 10],
+              });
+              
+              const userMarker = L.marker([latitude, longitude], { icon: userIcon })
+                .addTo(map)
+                .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
+              
+              userMarkerRef.current = userMarker;
+            } else {
+              userMarkerRef.current.setLatLng([latitude, longitude]);
+            }
+          },
+          (error) => {
+            if (error.code === error.PERMISSION_DENIED) {
+              toast.error('Veuillez activer la localisation dans les paramètres de votre navigateur', {
+                duration: 5000
+              });
+            } else {
+              toast.error('Impossible d\'obtenir votre position', {
+                duration: 3000
+              });
+            }
+          }
+        );
       }
     };
 
