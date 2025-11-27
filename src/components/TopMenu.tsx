@@ -20,7 +20,7 @@ const TopMenu = () => {
     <>
       {/* Overlay sombre quand le menu est ouvert */}
       {isOpen && (
-        <div className="fixed inset-0 bg-black/50 z-20 animate-fade-in" />
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-xl z-20 animate-fade-in" />
       )}
       
       <div className="fixed left-0 right-0 top-0 z-30 max-w-md mx-auto">
