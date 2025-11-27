@@ -85,7 +85,7 @@ const Auth = () => {
 
       {/* Content Card with 3D flip */}
       <div
-        className="relative z-10 flex items-center justify-center h-full w-full p-4"
+        className="relative z-10 flex items-center justify-center min-h-screen w-full p-4 -mt-8 sm:mt-0"
         style={{ perspective: "1000px" }}
       >
         <div
