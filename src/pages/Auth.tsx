@@ -70,7 +70,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-stone-100 dark:bg-stone-950">
+    <div className="relative h-screen w-full overflow-hidden bg-stone-100 dark:bg-stone-950 animate-fade-in">
       {/* Map Background - animation permanente */}
       <div
         className="absolute inset-0 opacity-40 animate-pan"

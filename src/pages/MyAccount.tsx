@@ -146,7 +146,7 @@ const MyAccount = () => {
   const initials = displayName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden animate-fade-in">
       {/* Map Background */}
       <div 
         className="absolute inset-0 bg-cover bg-center"
