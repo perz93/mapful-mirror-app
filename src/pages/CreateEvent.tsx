@@ -240,11 +240,11 @@ const CreateEvent = () => {
           <p className="text-stone-700 font-light text-center">Partagez votre événement avec la communauté</p>
         </div>
 
-        {/* Form Card */}
+        {/* Form Cards */}
         <div className="px-4 sm:px-6 pb-6">
-          <div className="bg-white/30 backdrop-blur-sm rounded-3xl p-6 shadow-lg">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Image Upload */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Image Upload Card */}
+            <div className="bg-white/30 backdrop-blur-sm rounded-3xl p-6 shadow-lg">
               <input
                 ref={fileInputRef}
                 type="file"
@@ -275,8 +275,12 @@ const CreateEvent = () => {
                   </div>
                 )}
               </div>
+            </div>
 
-              {/* Title */}
+            {/* Basic Information Card */}
+            <div className="bg-white/30 backdrop-blur-sm rounded-3xl p-6 shadow-lg space-y-4">
+              <h2 className="text-lg font-semibold text-stone-900 mb-4">Informations de base</h2>
+              
               <div className="space-y-3">
                 <Label htmlFor="title" className="text-sm text-stone-700 font-normal">Titre de l'événement *</Label>
                 <Input 
@@ -289,7 +293,6 @@ const CreateEvent = () => {
                 />
               </div>
 
-              {/* Category */}
               <div className="space-y-3">
                 <Label htmlFor="category" className="text-sm text-stone-700 font-normal">Catégorie *</Label>
                 <Select 
@@ -300,20 +303,32 @@ const CreateEvent = () => {
                     <SelectValue placeholder="Sélectionnez une catégorie" />
                   </SelectTrigger>
                   <SelectContent className="backdrop-blur-xl bg-white/95 border-stone-400/50">
-                    <SelectItem value="concerts">🎵 Concerts</SelectItem>
+                    <SelectItem value="music">🎵 Concerts</SelectItem>
                     <SelectItem value="sports">🏆 Sports</SelectItem>
                     <SelectItem value="food">🍔 Restauration</SelectItem>
                     <SelectItem value="arts">🎨 Arts</SelectItem>
+                    <SelectItem value="meetups">👥 Meetups</SelectItem>
+                    <SelectItem value="conferences">💻 Conférences</SelectItem>
+                    <SelectItem value="workshops">🔧 Ateliers</SelectItem>
+                    <SelectItem value="festivals">✨ Festivals</SelectItem>
+                    <SelectItem value="shows">🎭 Spectacles</SelectItem>
+                    <SelectItem value="exhibitions">🖼️ Expositions</SelectItem>
+                    <SelectItem value="brunch">☕ Brunch</SelectItem>
+                    <SelectItem value="religious">⛪ Religieux</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+            </div>
 
-              {/* Venue */}
+            {/* Location Card */}
+            <div className="bg-white/30 backdrop-blur-sm rounded-3xl p-6 shadow-lg space-y-4">
+              <h2 className="text-lg font-semibold text-stone-900 mb-4 flex items-center gap-2">
+                <MapPin className="h-5 w-5" strokeWidth={1.5} />
+                Localisation
+              </h2>
+              
               <div className="space-y-3">
-                <Label htmlFor="venue" className="text-sm text-stone-700 font-normal flex items-center gap-2">
-                  <MapPin className="h-3.5 w-3.5" strokeWidth={1.5} />
-                  Lieu *
-                </Label>
+                <Label htmlFor="venue" className="text-sm text-stone-700 font-normal">Lieu *</Label>
                 <Input 
                   id="venue" 
                   placeholder="Centre culturel de Dakar" 
@@ -324,7 +339,6 @@ const CreateEvent = () => {
                 />
               </div>
 
-              {/* Address */}
               <div className="space-y-3">
                 <Label htmlFor="address" className="text-sm text-stone-700 font-normal">Adresse complète *</Label>
                 <Input 
@@ -336,14 +350,18 @@ const CreateEvent = () => {
                   className="h-12 border-stone-400/50 bg-white/40"
                 />
               </div>
+            </div>
 
-              {/* Date and Time */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            {/* Date and Time Card */}
+            <div className="bg-white/30 backdrop-blur-sm rounded-3xl p-6 shadow-lg space-y-4">
+              <h2 className="text-lg font-semibold text-stone-900 mb-4 flex items-center gap-2">
+                <Calendar className="h-5 w-5" strokeWidth={1.5} />
+                Date et heure
+              </h2>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-3">
-                  <Label htmlFor="date" className="text-sm text-stone-700 font-normal flex items-center gap-2">
-                    <Calendar className="h-3.5 w-3.5" strokeWidth={1.5} />
-                    Date *
-                  </Label>
+                  <Label htmlFor="date" className="text-sm text-stone-700 font-normal">Date *</Label>
                   <Input 
                     id="date" 
                     type="date" 
@@ -354,10 +372,7 @@ const CreateEvent = () => {
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label htmlFor="time" className="text-sm text-stone-700 font-normal flex items-center gap-2">
-                    <Clock className="h-3.5 w-3.5" strokeWidth={1.5} />
-                    Heure *
-                  </Label>
+                  <Label htmlFor="time" className="text-sm text-stone-700 font-normal">Heure *</Label>
                   <Input 
                     id="time" 
                     type="time" 
@@ -368,14 +383,18 @@ const CreateEvent = () => {
                   />
                 </div>
               </div>
+            </div>
 
-              {/* Price and Capacity */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            {/* Price and Capacity Card */}
+            <div className="bg-white/30 backdrop-blur-sm rounded-3xl p-6 shadow-lg space-y-4">
+              <h2 className="text-lg font-semibold text-stone-900 mb-4 flex items-center gap-2">
+                <DollarSign className="h-5 w-5" strokeWidth={1.5} />
+                Prix et capacité
+              </h2>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-3">
-                  <Label htmlFor="price" className="text-sm text-stone-700 font-normal flex items-center gap-2">
-                    <DollarSign className="h-3.5 w-3.5" strokeWidth={1.5} />
-                    Prix
-                  </Label>
+                  <Label htmlFor="price" className="text-sm text-stone-700 font-normal">Prix</Label>
                   <Input 
                     id="price" 
                     placeholder="Gratuit" 
@@ -385,10 +404,7 @@ const CreateEvent = () => {
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label htmlFor="capacity" className="text-sm text-stone-700 font-normal flex items-center gap-2">
-                    <Users className="h-3.5 w-3.5" strokeWidth={1.5} />
-                    Capacité
-                  </Label>
+                  <Label htmlFor="capacity" className="text-sm text-stone-700 font-normal">Capacité</Label>
                   <Input 
                     id="capacity" 
                     type="number" 
@@ -399,10 +415,13 @@ const CreateEvent = () => {
                   />
                 </div>
               </div>
+            </div>
 
-              {/* Description */}
+            {/* Description Card */}
+            <div className="bg-white/30 backdrop-blur-sm rounded-3xl p-6 shadow-lg space-y-4">
+              <h2 className="text-lg font-semibold text-stone-900 mb-4">Description</h2>
+              
               <div className="space-y-3">
-                <Label htmlFor="description" className="text-sm text-stone-700 font-normal">Description</Label>
                 <Textarea 
                   id="description" 
                   placeholder="Décrivez votre événement..." 
@@ -412,12 +431,14 @@ const CreateEvent = () => {
                   className="border-stone-400/50 bg-white/40 resize-none"
                 />
               </div>
+            </div>
 
-              {/* Submit Button */}
+            {/* Submit Button */}
+            <div className="pt-2">
               <Button 
                 type="submit" 
                 disabled={submitting}
-                className="w-full h-12 text-base font-normal mt-10"
+                className="w-full h-12 text-base font-normal"
               >
                 {submitting ? (
                   <>
@@ -428,8 +449,8 @@ const CreateEvent = () => {
                   'Publier l\'événement'
                 )}
               </Button>
-            </form>
-          </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>
