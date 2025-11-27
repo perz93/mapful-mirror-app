@@ -3,15 +3,35 @@ import { createContext, useContext, useState, ReactNode } from 'react';
 interface SearchContextType {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  selectedCategories: string[];
+  setSelectedCategories: (categories: string[]) => void;
+  toggleCategory: (category: string) => void;
 }
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
 
 export const SearchProvider = ({ children }: { children: ReactNode }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+
+  const toggleCategory = (category: string) => {
+    setSelectedCategories(prev => {
+      if (prev.includes(category)) {
+        return prev.filter(cat => cat !== category);
+      } else {
+        return [...prev, category];
+      }
+    });
+  };
 
   return (
-    <SearchContext.Provider value={{ searchQuery, setSearchQuery }}>
+    <SearchContext.Provider value={{ 
+      searchQuery, 
+      setSearchQuery,
+      selectedCategories,
+      setSelectedCategories,
+      toggleCategory
+    }}>
       {children}
     </SearchContext.Provider>
   );

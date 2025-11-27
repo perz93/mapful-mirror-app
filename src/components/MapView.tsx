@@ -14,7 +14,7 @@ const MapView = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const navigate = useNavigate();
-  const { searchQuery } = useSearch();
+  const { searchQuery, selectedCategories } = useSearch();
   const { data: events, isLoading } = useEvents();
 
   const userLocationRef = useRef<{ lat: number; lng: number } | null>(null);
@@ -323,7 +323,7 @@ const MapView = () => {
     });
   }, [events, isLoading, navigate]);
 
-  // Filter markers based on search query
+  // Filter markers based on search query and selected categories
   useEffect(() => {
     if (!mapInstanceRef.current || !markerClusterGroupRef.current) return;
 
@@ -342,11 +342,14 @@ const MapView = () => {
         eventData.venue.toLowerCase().includes(query) ||
         eventData.type.toLowerCase().includes(query);
 
-      if (matchesSearch) {
+      const matchesCategory = selectedCategories.length === 0 || 
+        selectedCategories.includes(eventData.category);
+
+      if (matchesSearch && matchesCategory) {
         clusterGroup.addLayer(marker);
       }
     });
-  }, [searchQuery]);
+  }, [searchQuery, selectedCategories]);
 
   return <div ref={mapRef} className="absolute inset-0 z-0" />;
 };
