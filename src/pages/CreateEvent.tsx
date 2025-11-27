@@ -43,7 +43,7 @@ const CreateEvent = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [coordinates, setCoordinates] = useState<{ lat: number; lng: number }>({ lat: 14.6928, lng: -17.4467 });
+  const [coordinates, setCoordinates] = useState<{ lat: number; lng: number }>({ lat: 5.3600, lng: -4.0083 });
   const [geocoding, setGeocoding] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const mapRef = useRef<L.Map | null>(null);
@@ -84,7 +84,7 @@ const CreateEvent = () => {
       if (!mapContainerRef.current || mapRef.current) return;
 
       try {
-        mapRef.current = L.map(mapContainerRef.current).setView([14.6928, -17.4467], 12);
+        mapRef.current = L.map(mapContainerRef.current).setView([5.3600, -4.0083], 12);
 
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -99,7 +99,7 @@ const CreateEvent = () => {
           iconAnchor: [20, 20],
         });
 
-        markerRef.current = L.marker([14.6928, -17.4467], { 
+        markerRef.current = L.marker([5.3600, -4.0083], { 
           icon: customIcon,
           draggable: true 
         }).addTo(mapRef.current);
@@ -131,7 +131,11 @@ const CreateEvent = () => {
 
   const geocodeAddress = async (address: string): Promise<{ lat: number; lng: number } | null> => {
     try {
-      const query = address;
+      // Add "Abidjan, Côte d'Ivoire" if not already included to improve geocoding accuracy
+      const query = address.toLowerCase().includes('abidjan') || address.toLowerCase().includes('ivoire') 
+        ? address 
+        : `${address}, Abidjan, Côte d'Ivoire`;
+      
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`
       );
@@ -394,7 +398,7 @@ const CreateEvent = () => {
                 <Label htmlFor="address" className="text-sm text-stone-700 font-normal">Adresse / lieu de l'événement *</Label>
                 <Input 
                   id="address" 
-                  placeholder="Ex: Centre culturel de Dakar, Dakar Sénégal" 
+                  placeholder="Ex: Cocody Angré, Abidjan" 
                   value={formData.address} 
                   onChange={e => setFormData({ ...formData, address: e.target.value })} 
                   required 
