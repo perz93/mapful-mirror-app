@@ -10,6 +10,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import MapView from '@/components/MapView';
 import { supabase } from '@/integrations/supabase/client';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 const CreateEvent = () => {
   const { toast } = useToast();
@@ -42,7 +44,12 @@ const CreateEvent = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
+  const [geocoding, setGeocoding] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const markerRef = useRef<L.Marker | null>(null);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -71,6 +78,45 @@ const CreateEvent = () => {
     setImagePreview(URL.createObjectURL(file));
   };
 
+  // Initialize map
+  useEffect(() => {
+    if (!mapContainerRef.current || mapRef.current) return;
+
+    mapRef.current = L.map(mapContainerRef.current).setView([14.6928, -17.4467], 12); // Dakar center
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      maxZoom: 20,
+    }).addTo(mapRef.current);
+
+    // Add initial marker
+    const customIcon = L.divIcon({
+      className: 'custom-marker',
+      html: `<div style="width: 40px; height: 40px; background: #ef4444; border: 3px solid white; border-radius: 50%; cursor: move; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>`,
+      iconSize: [40, 40],
+      iconAnchor: [20, 20],
+    });
+
+    markerRef.current = L.marker([14.6928, -17.4467], { 
+      icon: customIcon,
+      draggable: true 
+    }).addTo(mapRef.current);
+
+    markerRef.current.on('dragend', () => {
+      const position = markerRef.current?.getLatLng();
+      if (position) {
+        setCoordinates({ lat: position.lat, lng: position.lng });
+      }
+    });
+
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
+  }, []);
+
   const geocodeAddress = async (venue: string, address: string): Promise<{ lat: number; lng: number } | null> => {
     try {
       const query = `${venue}, ${address}`;
@@ -92,6 +138,24 @@ const CreateEvent = () => {
     }
   };
 
+  // Geocode when address changes
+  useEffect(() => {
+    const geocodeTimeout = setTimeout(async () => {
+      if (formData.venue && formData.address) {
+        setGeocoding(true);
+        const coords = await geocodeAddress(formData.venue, formData.address);
+        if (coords && mapRef.current && markerRef.current) {
+          setCoordinates(coords);
+          markerRef.current.setLatLng([coords.lat, coords.lng]);
+          mapRef.current.setView([coords.lat, coords.lng], 15);
+        }
+        setGeocoding(false);
+      }
+    }, 1000); // Debounce
+
+    return () => clearTimeout(geocodeTimeout);
+  }, [formData.venue, formData.address]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -107,13 +171,11 @@ const CreateEvent = () => {
     setSubmitting(true);
 
     try {
-      // Geocode the address
-      const coordinates = await geocodeAddress(formData.venue, formData.address);
-      
+      // Use coordinates from map marker
       if (!coordinates) {
         toast({
           title: "Erreur",
-          description: "Impossible de localiser l'adresse. Veuillez vérifier le lieu et l'adresse.",
+          description: "Veuillez définir la position de l'événement sur la carte.",
           variant: "destructive"
         });
         setSubmitting(false);
@@ -349,6 +411,21 @@ const CreateEvent = () => {
                   required 
                   className="h-12 border-stone-400/50 bg-white/40"
                 />
+              </div>
+
+              {/* Map for position adjustment */}
+              <div className="space-y-3 mt-4">
+                <Label className="text-sm text-stone-700 font-normal">
+                  Position sur la carte {geocoding && <span className="text-xs text-stone-500">(localisation...)</span>}
+                </Label>
+                <div 
+                  ref={mapContainerRef}
+                  className="w-full h-64 rounded-2xl overflow-hidden border border-stone-400/50"
+                  style={{ zIndex: 1 }}
+                />
+                <p className="text-xs text-stone-600">
+                  Déplacez le marqueur rouge pour ajuster la position exacte de l'événement
+                </p>
               </div>
             </div>
 
