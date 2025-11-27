@@ -70,7 +70,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-stone-100 dark:bg-stone-950 animate-fade-in animate-zoom-smooth">
+    <div className="fixed inset-0 w-full h-screen overflow-hidden overscroll-none bg-stone-100 dark:bg-stone-950 animate-fade-in animate-zoom-smooth">
       {/* Map Background - animation permanente */}
       <div
         className="absolute inset-0 opacity-40 animate-pan"
@@ -85,7 +85,7 @@ const Auth = () => {
 
       {/* Content Card with 3D flip */}
       <div
-        className="relative z-10 flex items-center justify-center h-full p-4"
+        className="relative z-10 flex items-center justify-center h-full w-full p-4"
         style={{ perspective: "1000px" }}
       >
         <div
