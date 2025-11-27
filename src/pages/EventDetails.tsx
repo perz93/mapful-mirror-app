@@ -29,9 +29,9 @@ const EventDetails = () => {
           <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
             <Link 
               to="/" 
-              className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 backdrop-blur-md text-stone-900 hover:bg-white hover:scale-105 active:scale-95 transition-all duration-200 shadow-lg border border-white/50"
+              className="w-11 h-11 rounded-full bg-black/70 backdrop-blur-md flex items-center justify-center hover:bg-black/90 transition-all"
             >
-              <ArrowLeft size={20} strokeWidth={2.5} />
+              <ArrowLeft className="w-5 h-5 text-white" />
             </Link>
             <div className="flex gap-2">
               <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors">
