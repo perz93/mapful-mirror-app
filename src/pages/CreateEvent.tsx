@@ -44,7 +44,7 @@ const CreateEvent = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
+  const [coordinates, setCoordinates] = useState<{ lat: number; lng: number }>({ lat: 14.6928, lng: -17.4467 });
   const [geocoding, setGeocoding] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const mapRef = useRef<L.Map | null>(null);
@@ -80,36 +80,49 @@ const CreateEvent = () => {
 
   // Initialize map
   useEffect(() => {
-    if (!mapContainerRef.current || mapRef.current) return;
+    // Delay map initialization to ensure container is rendered
+    const timer = setTimeout(() => {
+      if (!mapContainerRef.current || mapRef.current) return;
 
-    mapRef.current = L.map(mapContainerRef.current).setView([14.6928, -17.4467], 12); // Dakar center
+      try {
+        mapRef.current = L.map(mapContainerRef.current).setView([14.6928, -17.4467], 12);
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      maxZoom: 20,
-    }).addTo(mapRef.current);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+          maxZoom: 20,
+        }).addTo(mapRef.current);
 
-    // Add initial marker
-    const customIcon = L.divIcon({
-      className: 'custom-marker',
-      html: `<div style="width: 40px; height: 40px; background: #ef4444; border: 3px solid white; border-radius: 50%; cursor: move; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>`,
-      iconSize: [40, 40],
-      iconAnchor: [20, 20],
-    });
+        // Add initial marker
+        const customIcon = L.divIcon({
+          className: 'custom-marker',
+          html: `<div style="width: 40px; height: 40px; background: #ef4444; border: 3px solid white; border-radius: 50%; cursor: move; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>`,
+          iconSize: [40, 40],
+          iconAnchor: [20, 20],
+        });
 
-    markerRef.current = L.marker([14.6928, -17.4467], { 
-      icon: customIcon,
-      draggable: true 
-    }).addTo(mapRef.current);
+        markerRef.current = L.marker([14.6928, -17.4467], { 
+          icon: customIcon,
+          draggable: true 
+        }).addTo(mapRef.current);
 
-    markerRef.current.on('dragend', () => {
-      const position = markerRef.current?.getLatLng();
-      if (position) {
-        setCoordinates({ lat: position.lat, lng: position.lng });
+        markerRef.current.on('dragend', () => {
+          const position = markerRef.current?.getLatLng();
+          if (position) {
+            setCoordinates({ lat: position.lat, lng: position.lng });
+          }
+        });
+
+        // Force map to resize
+        setTimeout(() => {
+          mapRef.current?.invalidateSize();
+        }, 100);
+      } catch (error) {
+        console.error('Error initializing map:', error);
       }
-    });
+    }, 300);
 
     return () => {
+      clearTimeout(timer);
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
@@ -171,17 +184,7 @@ const CreateEvent = () => {
     setSubmitting(true);
 
     try {
-      // Use coordinates from map marker
-      if (!coordinates) {
-        toast({
-          title: "Erreur",
-          description: "Veuillez définir la position de l'événement sur la carte.",
-          variant: "destructive"
-        });
-        setSubmitting(false);
-        return;
-      }
-
+      // Use coordinates from map marker (already initialized with Dakar center)
       let imageUrl = null;
 
       // Upload image if selected
@@ -420,8 +423,8 @@ const CreateEvent = () => {
                 </Label>
                 <div 
                   ref={mapContainerRef}
-                  className="w-full h-64 rounded-2xl overflow-hidden border border-stone-400/50"
-                  style={{ zIndex: 1 }}
+                  className="w-full h-64 rounded-2xl overflow-hidden border border-stone-400/50 bg-white"
+                  style={{ position: 'relative', zIndex: 1 }}
                 />
                 <p className="text-xs text-stone-600">
                   Déplacez le marqueur rouge pour ajuster la position exacte de l'événement
