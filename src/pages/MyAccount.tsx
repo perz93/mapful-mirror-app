@@ -146,7 +146,7 @@ const MyAccount = () => {
       filter: "blur(3px)"
     }} />
       {/* Darker Semi-Transparent Blur Overlay */}
-      <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-xl" />
       
       {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col">

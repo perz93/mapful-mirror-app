@@ -224,7 +224,7 @@ const CreateEvent = () => {
       </div>
 
       {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-black/20 pointer-events-none" />
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-xl pointer-events-none" />
 
       {/* Content */}
       <div className="relative mx-auto max-w-md">
