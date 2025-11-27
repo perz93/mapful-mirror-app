@@ -154,7 +154,7 @@ const Settings = () => {
       filter: "blur(3px)"
     }} />
       {/* Darker Semi-Transparent Blur Overlay */}
-      <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-xl" />
       
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-2xl px-4 py-8">
