@@ -7,9 +7,9 @@ export const useStatusBarColor = () => {
   useEffect(() => {
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     
-    // La barre d'état est toujours blanche sur toutes les pages
+    // La barre d'état est toujours transparente sur toutes les pages
     if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', '#ffffff');
+      metaThemeColor.setAttribute('content', 'transparent');
     }
   }, [location.pathname]);
 };
