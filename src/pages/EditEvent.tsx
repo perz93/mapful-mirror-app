@@ -204,7 +204,7 @@ const EditEvent = () => {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden animate-fade-in">
+    <div className="min-h-screen relative overflow-hidden animate-fade-in animate-zoom-smooth">
       {/* Map Background */}
       <div 
         className="absolute inset-0 bg-cover bg-center"

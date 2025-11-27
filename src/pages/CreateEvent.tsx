@@ -217,7 +217,7 @@ const CreateEvent = () => {
   }
 
   return (
-    <div className="relative min-h-screen pb-32 animate-fade-in">
+    <div className="relative min-h-screen pb-32 animate-fade-in animate-zoom-smooth">
       {/* Map Background */}
       <div className="absolute inset-0 pointer-events-none">
         <MapView />
