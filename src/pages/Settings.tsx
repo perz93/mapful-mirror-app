@@ -165,7 +165,7 @@ const Settings = () => {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden pb-32">
+    <div className="min-h-screen relative overflow-hidden pb-32 animate-fade-in">
       {/* Map Background */}
       <div 
         className="absolute inset-0 bg-cover bg-center"
