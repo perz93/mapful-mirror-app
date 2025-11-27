@@ -110,8 +110,7 @@ const EventDetails = () => {
             </div>
             
             <Button className="w-full h-12 text-base font-semibold">
-              <Ticket size={20} className="mr-2" />
-              Get Tickets
+              Contacter
             </Button>
           </div>
         </div>
