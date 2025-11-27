@@ -3,23 +3,20 @@ import MapControls from "@/components/MapControls";
 import EventCard from "@/components/EventCard";
 import BottomNavigation from "@/components/BottomNavigation";
 import TopMenu from "@/components/TopMenu";
-import { SearchProvider } from "@/contexts/SearchContext";
 
 const Index = () => {
   return (
-    <SearchProvider>
-      <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-background">
-        <div className="relative flex-1 overflow-hidden">
-          <div className="h-full w-full animate-fade-in animate-zoom-smooth">
-            <MapView />
-          </div>
-          <TopMenu />
-          <MapControls />
-          <EventCard />
+    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-background">
+      <div className="relative flex-1 overflow-hidden">
+        <div className="h-full w-full animate-fade-in animate-zoom-smooth">
+          <MapView />
         </div>
-        <BottomNavigation className="my-0 py-0 pb-0 pt-[4px]" />
+        <TopMenu />
+        <MapControls />
+        <EventCard />
       </div>
-    </SearchProvider>
+      <BottomNavigation className="my-0 py-0 pb-0 pt-[4px]" />
+    </div>
   );
 };
 
