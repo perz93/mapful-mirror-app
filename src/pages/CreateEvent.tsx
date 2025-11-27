@@ -32,7 +32,6 @@ const CreateEvent = () => {
   const [formData, setFormData] = useState({
     title: '',
     category: '',
-    venue: '',
     address: '',
     date: '',
     time: '',
@@ -130,9 +129,9 @@ const CreateEvent = () => {
     };
   }, []);
 
-  const geocodeAddress = async (venue: string, address: string): Promise<{ lat: number; lng: number } | null> => {
+  const geocodeAddress = async (address: string): Promise<{ lat: number; lng: number } | null> => {
     try {
-      const query = `${venue}, ${address}`;
+      const query = address;
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`
       );
@@ -154,9 +153,9 @@ const CreateEvent = () => {
   // Geocode when address changes
   useEffect(() => {
     const geocodeTimeout = setTimeout(async () => {
-      if (formData.venue && formData.address) {
+      if (formData.address) {
         setGeocoding(true);
-        const coords = await geocodeAddress(formData.venue, formData.address);
+        const coords = await geocodeAddress(formData.address);
         if (coords && mapRef.current && markerRef.current) {
           setCoordinates(coords);
           markerRef.current.setLatLng([coords.lat, coords.lng]);
@@ -167,7 +166,7 @@ const CreateEvent = () => {
     }, 1000); // Debounce
 
     return () => clearTimeout(geocodeTimeout);
-  }, [formData.venue, formData.address]);
+  }, [formData.address]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -213,7 +212,7 @@ const CreateEvent = () => {
         .insert({
           title: formData.title,
           category: formData.category,
-          venue: formData.venue,
+          venue: formData.address,
           address: formData.address,
           date: formData.date,
           time: formData.time,
@@ -241,7 +240,6 @@ const CreateEvent = () => {
       setFormData({
         title: '',
         category: '',
-        venue: '',
         address: '',
         date: '',
         time: '',
@@ -393,22 +391,10 @@ const CreateEvent = () => {
               </h2>
               
               <div className="space-y-3">
-                <Label htmlFor="venue" className="text-sm text-stone-700 font-normal">Lieu *</Label>
-                <Input 
-                  id="venue" 
-                  placeholder="Centre culturel de Dakar" 
-                  value={formData.venue} 
-                  onChange={e => setFormData({ ...formData, venue: e.target.value })} 
-                  required 
-                  className="h-12 border-stone-400/50 bg-white/40"
-                />
-              </div>
-
-              <div className="space-y-3">
-                <Label htmlFor="address" className="text-sm text-stone-700 font-normal">Adresse complète *</Label>
+                <Label htmlFor="address" className="text-sm text-stone-700 font-normal">Adresse / lieu de l'événement *</Label>
                 <Input 
                   id="address" 
-                  placeholder="Dakar, Sénégal" 
+                  placeholder="Ex: Centre culturel de Dakar, Dakar Sénégal" 
                   value={formData.address} 
                   onChange={e => setFormData({ ...formData, address: e.target.value })} 
                   required 
@@ -423,11 +409,11 @@ const CreateEvent = () => {
                 </Label>
                 <div 
                   ref={mapContainerRef}
-                  className="w-full h-64 rounded-2xl overflow-hidden border border-stone-400/50 bg-white"
+                  className="w-full h-48 rounded-2xl overflow-hidden border border-stone-400/50 bg-white"
                   style={{ position: 'relative', zIndex: 1 }}
                 />
                 <p className="text-xs text-stone-600">
-                  Déplacez le marqueur rouge pour ajuster la position exacte de l'événement
+                  Utilisez la mini-carte pour ajuster précisément la position via le marqueur rouge
                 </p>
               </div>
             </div>
