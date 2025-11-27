@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SearchProvider } from "@/contexts/SearchContext";
 import { useStatusBarColor } from "@/hooks/useStatusBarColor";
+import { usePWATheme } from "@/hooks/usePWATheme";
 import Index from "./pages/Index";
 import Concerts from "./pages/Concerts";
 import Sports from "./pages/Sports";
@@ -31,6 +32,7 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   useStatusBarColor();
+  usePWATheme();
   
   return (
     <Routes>
