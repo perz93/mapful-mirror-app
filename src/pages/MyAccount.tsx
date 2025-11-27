@@ -3,6 +3,8 @@ import { ArrowLeft, Pencil, Users, Calendar, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { useEvents, Event } from '@/hooks/useEvents';
+import EventListCard from '@/components/EventListCard';
 
 const MyAccount = () => {
   const { user } = useAuth();
@@ -13,6 +15,8 @@ const MyAccount = () => {
     favorites: 0,
     friends: 0
   });
+  const { data: allEvents } = useEvents();
+  const [userEvents, setUserEvents] = useState<Event[]>([]);
 
   useEffect(() => {
     if (user) {
@@ -20,6 +24,13 @@ const MyAccount = () => {
       loadStats();
     }
   }, [user]);
+
+  useEffect(() => {
+    if (user && allEvents) {
+      const filtered = allEvents.filter(event => event.user_id === user.id);
+      setUserEvents(filtered);
+    }
+  }, [user, allEvents]);
 
   const loadProfile = async () => {
     if (!user) return;
@@ -75,8 +86,8 @@ const MyAccount = () => {
           filter: "blur(3px)"
         }}
       />
-      {/* White Transparent Blur Overlay */}
-      <div className="absolute inset-0 bg-white/30 backdrop-blur-sm" />
+      {/* Darker Semi-Transparent Blur Overlay */}
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
       
       {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col">
@@ -153,7 +164,7 @@ const MyAccount = () => {
                   : 'bg-background/80 text-foreground hover:bg-background'
               }`}
             >
-              Événements
+              Mes événements
             </button>
             <button
               onClick={() => setActiveTab('favorites')}
@@ -176,6 +187,36 @@ const MyAccount = () => {
               Amis
             </button>
           </div>
+
+          {/* Content Based on Active Tab */}
+          {activeTab === 'events' && (
+            <div className="w-full px-6 pb-8">
+              <h3 className="text-foreground text-xl font-semibold mb-4">Mes événements créés</h3>
+              {userEvents.length === 0 ? (
+                <p className="text-muted-foreground text-center py-8">Vous n'avez créé aucun événement pour le moment</p>
+              ) : (
+                <div className="grid grid-cols-1 gap-4">
+                  {userEvents.map((event) => (
+                    <EventListCard key={event.id} event={event} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'favorites' && (
+            <div className="w-full px-6 pb-8">
+              <h3 className="text-foreground text-xl font-semibold mb-4">Mes favoris</h3>
+              <p className="text-muted-foreground text-center py-8">Vos événements favoris apparaîtront ici</p>
+            </div>
+          )}
+
+          {activeTab === 'friends' && (
+            <div className="w-full px-6 pb-8">
+              <h3 className="text-foreground text-xl font-semibold mb-4">Mes amis</h3>
+              <p className="text-muted-foreground text-center py-8">Votre liste d'amis apparaîtra ici</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

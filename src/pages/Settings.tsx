@@ -165,14 +165,27 @@ const Settings = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-32">
-      <div className="mx-auto max-w-2xl px-4 py-8">
+    <div className="min-h-screen relative overflow-hidden pb-32">
+      {/* Map Background */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: "url('/src/assets/map-background.jpg')",
+          filter: "blur(3px)"
+        }}
+      />
+      {/* Darker Semi-Transparent Blur Overlay */}
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
+      
+      {/* Content */}
+      <div className="relative z-10 mx-auto max-w-2xl px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <Link to="/">
-            <Button variant="ghost" size="icon" className="mb-4">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
+          <Link 
+            to="/" 
+            className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-black/70 backdrop-blur-md hover:bg-black/90 transition-all mb-4"
+          >
+            <ArrowLeft className="w-5 h-5 text-white" />
           </Link>
           <h1 className="text-3xl font-bold font-[Righteous] text-foreground">Paramètres</h1>
           <p className="text-muted-foreground mt-2">Gérez vos informations et préférences</p>
