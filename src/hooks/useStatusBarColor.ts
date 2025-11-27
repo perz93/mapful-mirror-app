@@ -7,16 +7,9 @@ export const useStatusBarColor = () => {
   useEffect(() => {
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     
-    // Sur la page index (map), la barre d'état est transparente
-    if (location.pathname === '/') {
-      if (metaThemeColor) {
-        metaThemeColor.setAttribute('content', 'transparent');
-      }
-    } else {
-      // Sur toutes les autres pages, la barre d'état est blanche
-      if (metaThemeColor) {
-        metaThemeColor.setAttribute('content', '#ffffff');
-      }
+    // La barre d'état est toujours blanche sur toutes les pages
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute('content', '#ffffff');
     }
   }, [location.pathname]);
 };
