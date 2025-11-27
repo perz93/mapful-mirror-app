@@ -219,12 +219,12 @@ const MyAccount = () => {
           {/* Content Based on Active Tab */}
           {activeTab === 'events' && <div className="w-full px-6 pb-8">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-semibold text-white">Mes événements créés</h3>
+                <h3 className="text-xl font-semibold text-black">Mes événements créés</h3>
                 <Link to="/manage-events" className="text-primary text-sm font-medium hover:underline">
                   Gérer
                 </Link>
               </div>
-              {userEvents.length === 0 ? <p className="text-muted-foreground text-center py-8">Vous n'avez créé aucun événement pour le moment</p> : <div className="grid grid-cols-1 gap-4">
+              {userEvents.length === 0 ? <p className="text-center py-8 text-white">Vous n'avez créé aucun événement pour le moment</p> : <div className="grid grid-cols-1 gap-4">
                   {userEvents.map(event => <EventListCard key={event.id} event={event} />)}
                 </div>}
             </div>}
