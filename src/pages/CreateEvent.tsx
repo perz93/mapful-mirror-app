@@ -408,11 +408,13 @@ const CreateEvent = () => {
                   Position sur la carte {geocoding && <span className="text-xs text-stone-500">(localisation...)</span>}
                 </Label>
                 <div 
-                  ref={mapContainerRef}
-                  className="w-full h-48 rounded-2xl overflow-hidden border border-stone-400/50 bg-white flex items-center justify-center text-xs text-stone-500"
+                  className="w-full h-48 rounded-2xl overflow-hidden border border-stone-400/50 bg-white"
                   style={{ position: 'relative', zIndex: 1 }}
                 >
-                  Carte en cours de chargement...
+                  <div
+                    ref={mapContainerRef}
+                    className="w-full h-full"
+                  />
                 </div>
                 <p className="text-xs text-stone-600">
                   Utilisez la mini-carte pour ajuster précisément la position via le marqueur rouge
