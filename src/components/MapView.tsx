@@ -370,19 +370,19 @@ const MapView = () => {
       // Add to cluster group AFTER binding popup
       markerClusterGroup.addLayer(marker);
 
-      // Center map on marker when clicked
+      // Center map on marker when clicked (no flyTo to avoid popup closing issues)
       marker.on('click', () => {
         console.log('Marker clicked:', event.title);
-        map.flyTo([event.latitude, event.longitude], 15, {
-          duration: 0.5,
-          easeLinearity: 0.25
-        });
       });
-
+ 
       // Add click handler only on "Voir détails" button
       marker.on('popupopen', () => {
         console.log('Popup opened for:', event.title);
-        const detailsBtn = document.querySelector('.popup-details-btn') as HTMLElement;
+        const popupInstance = marker.getPopup();
+        const popupElement = popupInstance?.getElement();
+        if (!popupElement) return;
+ 
+        const detailsBtn = popupElement.querySelector('.popup-details-btn') as HTMLElement | null;
         if (detailsBtn) {
           detailsBtn.addEventListener('click', (e) => {
             e.stopPropagation();
