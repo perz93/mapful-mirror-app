@@ -298,6 +298,12 @@ const MapView = () => {
     };
 
     // Create and store all markers
+    const coordCounts = new Map<string, number>();
+    events.forEach(event => {
+      const key = `${event.latitude}-${event.longitude}`;
+      coordCounts.set(key, (coordCounts.get(key) || 0) + 1);
+    });
+
     events.forEach(event => {
       const marker = L.marker([event.latitude, event.longitude], {
         icon: createCustomIcon(event.image_url || '', event.category)
@@ -358,21 +364,18 @@ const MapView = () => {
       // Add to cluster group AFTER binding popup
       markerClusterGroup.addLayer(marker);
 
-      // Center map on marker with zoom effect and keep popup open
+      // Center map on marker with zoom effect only when it is alone at this position
       marker.on('click', () => {
         console.log('Marker clicked:', event.title);
-        
-        map.flyTo([event.latitude, event.longitude], 16, {
-          duration: 0.8,
-          easeLinearity: 0.25,
-        });
+        const key = `${event.latitude}-${event.longitude}`;
+        const countAtPosition = coordCounts.get(key) || 1;
 
-        // Re-ouvrir le popup après le zoom si le cluster se réorganise
-        map.once('moveend', () => {
-          if (markerClusterGroup.hasLayer(marker)) {
-            marker.openPopup();
-          }
-        });
+        if (countAtPosition === 1) {
+          map.flyTo([event.latitude, event.longitude], 16, {
+            duration: 0.8,
+            easeLinearity: 0.25,
+          });
+        }
       });
  
       // Add click handler only on "Voir détails" button
