@@ -358,9 +358,13 @@ const MapView = () => {
       // Add to cluster group AFTER binding popup
       markerClusterGroup.addLayer(marker);
 
-      // Center map on marker when clicked (no flyTo to avoid popup closing issues)
+      // Center map on marker with zoom effect
       marker.on('click', () => {
         console.log('Marker clicked:', event.title);
+        map.flyTo([event.latitude, event.longitude], 16, {
+          duration: 0.8,
+          easeLinearity: 0.25
+        });
       });
  
       // Add click handler only on "Voir détails" button
