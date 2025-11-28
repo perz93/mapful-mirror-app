@@ -309,128 +309,61 @@ const MapView = () => {
       }
     };
 
-    // Group events by exact coordinates
-    const eventsByLocation = new Map<string, typeof events>();
+    // Create and store all markers
     events.forEach(event => {
-      const key = `${event.latitude.toFixed(6)},${event.longitude.toFixed(6)}`;
-      if (!eventsByLocation.has(key)) {
-        eventsByLocation.set(key, []);
-      }
-      eventsByLocation.get(key)!.push(event);
-    });
-
-    // Create markers for each unique location
-    eventsByLocation.forEach((locationEvents, locationKey) => {
-      const firstEvent = locationEvents[0];
-      const hasMultipleEvents = locationEvents.length > 1;
-      
-      // Create custom icon with counter badge if multiple events
-      const createLocationIcon = (imageUrl: string, category: string, count: number) => {
-        const defaultImage = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=300&fit=crop';
-        const badge = count > 1 ? `<div class="marker-count-badge">${count}</div>` : '';
-        return L.divIcon({
-          className: 'custom-marker',
-          html: `
-            <div class="marker-image-container">
-              <div class="marker-image-wrapper marker-${category}">
-                <img src="${imageUrl || defaultImage}" alt="Event" class="marker-event-image" />
-                ${badge}
-              </div>
-            </div>
-          `,
-          iconSize: [50, 50],
-          iconAnchor: [25, 50],
-        });
-      };
-
-      const marker = L.marker([firstEvent.latitude, firstEvent.longitude], {
-        icon: createLocationIcon(firstEvent.image_url || '', firstEvent.category, locationEvents.length)
+      const marker = L.marker([event.latitude, event.longitude], {
+        icon: createCustomIcon(event.image_url || '', event.category)
       });
       
-      console.log('Creating marker for event:', firstEvent.title, hasMultipleEvents ? `(+${locationEvents.length - 1} more)` : '');
+      console.log('Creating marker for event:', event.title);
 
+      const dateFormatted = formatEventDate(event.date);
+      const timeFormatted = formatEventTime(event.time);
       const defaultImage = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=300&fit=crop';
 
-      // Create popup content - different if multiple events at same location
-      let popupContent: string;
-      
-      if (hasMultipleEvents) {
-        // Multiple events at same location - show list
-        const eventsList = locationEvents.map((evt, idx) => {
-          const dateFormatted = formatEventDate(evt.date);
-          const timeFormatted = formatEventTime(evt.time);
-          return `
-            <div class="popup-event-item" data-event-id="${evt.id}">
-              <img src="${evt.image_url || defaultImage}" alt="${evt.title}" class="popup-event-thumb" />
-              <div class="popup-event-info">
-                <h4 class="popup-event-title">${evt.title}</h4>
-                <p class="popup-event-meta">${dateFormatted.day} ${dateFormatted.month} • ${timeFormatted}</p>
-                <p class="popup-event-venue">${evt.venue}</p>
-              </div>
-            </div>
-          `;
-        }).join('');
-        
-        popupContent = `
-          <div class="event-popup-card multi-events">
-            <div class="popup-header">
-              <h3 class="popup-multi-title">${locationEvents.length} événements ici</h3>
-            </div>
-            <div class="popup-events-list">
-              ${eventsList}
-            </div>
-          </div>
-        `;
-      } else {
-        // Single event - original card design
-        const event = firstEvent;
-        const dateFormatted = formatEventDate(event.date);
-        const timeFormatted = formatEventTime(event.time);
-        
-        popupContent = `
-          <div class="event-popup-card">
-            <div class="popup-card-image" style="background-image: url('${event.image_url || defaultImage}')">
-              <div class="popup-card-gradient">
-                <h3 class="popup-card-title">${event.title}</h3>
-                <div class="popup-card-details">
-                  <div class="popup-date-box">
-                    <div class="popup-date-month">${dateFormatted.month}</div>
-                    <div class="popup-date-day">${dateFormatted.day}</div>
-                    <div class="popup-date-weekday">${dateFormatted.weekday}</div>
-                  </div>
-                  <div class="popup-card-info">
-                    <div class="popup-venue-row">
-                      <p class="popup-card-venue">${event.venue}</p>
-                      <div class="popup-card-time">
-                        <div class="popup-time-value">${timeFormatted}</div>
-                      </div>
+      // Create popup content exactly like reference
+      const popupContent = `
+        <div class="event-popup-card">
+          <div class="popup-card-image" style="background-image: url('${event.image_url || defaultImage}')">
+            <div class="popup-card-gradient">
+              <h3 class="popup-card-title">${event.title}</h3>
+              <div class="popup-card-details">
+                <div class="popup-date-box">
+                  <div class="popup-date-month">${dateFormatted.month}</div>
+                  <div class="popup-date-day">${dateFormatted.day}</div>
+                  <div class="popup-date-weekday">${dateFormatted.weekday}</div>
+                </div>
+                <div class="popup-card-info">
+                  <div class="popup-venue-row">
+                    <p class="popup-card-venue">${event.venue}</p>
+                    <div class="popup-card-time">
+                      <div class="popup-time-value">${timeFormatted}</div>
                     </div>
                   </div>
                 </div>
-                <button class="popup-details-btn" data-event-id="${event.id}">Voir détails</button>
               </div>
+              <button class="popup-details-btn">Voir détails</button>
             </div>
           </div>
-        `;
-      }
+        </div>
+      `;
 
       const popup = L.popup({
-        className: hasMultipleEvents ? 'custom-popup-card multi-events-popup' : 'custom-popup-card',
+        className: 'custom-popup-card',
         closeButton: true,
-        maxWidth: hasMultipleEvents ? 280 : 220,
-        minWidth: hasMultipleEvents ? 280 : 220,
+        maxWidth: 220,
+        minWidth: 220,
       }).setContent(popupContent);
 
       marker.bindPopup(popup);
       
-      // Store marker with event data - use first event for filtering
+      // Store marker with event data - map category to type for filtering
       (marker as any).eventData = {
-        ...firstEvent,
-        type: firstEvent.category,
-        lat: firstEvent.latitude,
-        lng: firstEvent.longitude,
-        image: firstEvent.image_url,
-        multipleEvents: locationEvents
+        ...event,
+        type: event.category, // Map category to type for compatibility
+        lat: event.latitude,
+        lng: event.longitude,
+        image: event.image_url
       };
       markersRef.current.push(marker);
 
@@ -439,42 +372,23 @@ const MapView = () => {
 
       // Center map on marker when clicked (no flyTo to avoid popup closing issues)
       marker.on('click', () => {
-        console.log('Marker clicked:', firstEvent.title);
+        console.log('Marker clicked:', event.title);
       });
  
-      // Add click handlers for event items
+      // Add click handler only on "Voir détails" button
       marker.on('popupopen', () => {
-        console.log('Popup opened for:', firstEvent.title);
+        console.log('Popup opened for:', event.title);
         const popupInstance = marker.getPopup();
         const popupElement = popupInstance?.getElement();
         if (!popupElement) return;
  
-        if (hasMultipleEvents) {
-          // Multiple events - add click handler to each event item
-          const eventItems = popupElement.querySelectorAll('.popup-event-item');
-          eventItems.forEach(item => {
-            item.addEventListener('click', (e) => {
-              e.stopPropagation();
-              const eventId = (item as HTMLElement).getAttribute('data-event-id');
-              if (eventId) {
-                console.log('Navigating to event:', eventId);
-                navigate(`/event/${eventId}`);
-              }
-            });
+        const detailsBtn = popupElement.querySelector('.popup-details-btn') as HTMLElement | null;
+        if (detailsBtn) {
+          detailsBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            console.log('Navigating to event:', event.id);
+            navigate(`/event/${event.id}`);
           });
-        } else {
-          // Single event - click on details button
-          const detailsBtn = popupElement.querySelector('.popup-details-btn') as HTMLElement | null;
-          if (detailsBtn) {
-            detailsBtn.addEventListener('click', (e) => {
-              e.stopPropagation();
-              const eventId = detailsBtn.getAttribute('data-event-id');
-              if (eventId) {
-                console.log('Navigating to event:', eventId);
-                navigate(`/event/${eventId}`);
-              }
-            });
-          }
         }
       });
     });
