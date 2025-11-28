@@ -358,12 +358,20 @@ const MapView = () => {
       // Add to cluster group AFTER binding popup
       markerClusterGroup.addLayer(marker);
 
-      // Center map on marker with zoom effect
+      // Center map on marker with zoom effect and keep popup open
       marker.on('click', () => {
         console.log('Marker clicked:', event.title);
+        
         map.flyTo([event.latitude, event.longitude], 16, {
           duration: 0.8,
-          easeLinearity: 0.25
+          easeLinearity: 0.25,
+        });
+
+        // Re-ouvrir le popup après le zoom si le cluster se réorganise
+        map.once('moveend', () => {
+          if (markerClusterGroup.hasLayer(marker)) {
+            marker.openPopup();
+          }
         });
       });
  
