@@ -145,10 +145,12 @@ const MapView = () => {
       showCoverageOnHover: false,
       zoomToBoundsOnClick: true,
       spiderfyOnMaxZoom: true,
+      spiderfyDistanceMultiplier: 2,
       removeOutsideVisibleBounds: true,
       animate: true,
       animateAddingMarkers: true,
-      maxClusterRadius: 80,
+      disableClusteringAtZoom: 16,
+      maxClusterRadius: 50,
       iconCreateFunction: function(cluster) {
         const count = cluster.getChildCount();
         let sizeClass = 'small';
