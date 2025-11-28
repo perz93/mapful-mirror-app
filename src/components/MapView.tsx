@@ -66,15 +66,17 @@ const MapView = () => {
       }));
     });
 
-    // Try to get user's location only on first visit
-    if (!savedPosition && navigator.geolocation) {
+    // Try to get user's location
+    if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
           userLocationRef.current = { lat: latitude, lng: longitude };
           
           // Center map on user location only on first visit
-          map.setView([latitude, longitude], 14);
+          if (!savedPosition) {
+            map.setView([latitude, longitude], 14);
+          }
           
           // Add user location marker
           const userIcon = L.divIcon({
@@ -100,20 +102,6 @@ const MapView = () => {
           }
         }
       );
-    } else if (savedPosition && userLocationRef.current) {
-      // Re-add user marker if position was previously obtained
-      const userIcon = L.divIcon({
-        className: 'user-location-marker',
-        html: `<div class="user-location-pulse"></div>`,
-        iconSize: [20, 20],
-        iconAnchor: [10, 10],
-      });
-      
-      const userMarker = L.marker([userLocationRef.current.lat, userLocationRef.current.lng], { icon: userIcon })
-        .addTo(map)
-        .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
-      
-      userMarkerRef.current = userMarker;
     }
 
     // Create custom marker icon with event image
