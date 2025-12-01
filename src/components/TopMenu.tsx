@@ -50,7 +50,7 @@ const TopMenu = () => {
                           <User className="h-5 w-5 text-primary" strokeWidth={1.5} />
                         </AvatarFallback>
                       </Avatar> : <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center bg-secondary-foreground">
-                        <User strokeWidth={1.5} className="h-5 w-5 text-white" />
+                        <User className="h-5 w-5 text-primary" strokeWidth={1.5} />
                       </div>}
                     <p className="font-medium text-foreground text-xs">Compte</p>
                   </Link>
@@ -59,7 +59,7 @@ const TopMenu = () => {
                 <DropdownMenuItem className="cursor-pointer rounded-full p-0 hover:bg-black/10 dark:hover:bg-white/10 transition-all" asChild>
                   <Link to={isLoggedIn ? "/settings" : "/auth"} className="flex flex-col items-center gap-2 text-center p-3">
                     <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center bg-secondary-foreground">
-                      <Settings strokeWidth={1.5} className="h-5 w-5 text-white" />
+                      <Settings className="h-5 w-5 text-primary" strokeWidth={1.5} />
                     </div>
                     <p className="font-medium text-foreground text-xs">Paramètres</p>
                   </Link>
