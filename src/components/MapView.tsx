@@ -230,6 +230,21 @@ const MapView = () => {
 
     window.addEventListener('recenterMap', handleRecenter);
 
+    const handleZoomIn = () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.zoomIn();
+      }
+    };
+
+    const handleZoomOut = () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.zoomOut();
+      }
+    };
+
+    window.addEventListener('zoomIn', handleZoomIn);
+    window.addEventListener('zoomOut', handleZoomOut);
+
     // Cleanup
     return () => {
       markersRef.current = [];
@@ -238,6 +253,8 @@ const MapView = () => {
         markerClusterGroupRef.current = null;
       }
       window.removeEventListener('recenterMap', handleRecenter);
+      window.removeEventListener('zoomIn', handleZoomIn);
+      window.removeEventListener('zoomOut', handleZoomOut);
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
