@@ -1,7 +1,10 @@
 import { Plus, Minus, Crosshair } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import cartIcon from '@/assets/panier-dachat.png';
 
 const MapControls = () => {
+  const navigate = useNavigate();
+
   const handleRecenter = () => {
     window.dispatchEvent(new Event('recenterMap'));
   };
@@ -14,9 +17,8 @@ const MapControls = () => {
     window.dispatchEvent(new Event('zoomOut'));
   };
 
-  const handleCartClick = () => {
-    // TODO: Handle cart click
-    console.log('Cart clicked');
+  const handleMarketplaceClick = () => {
+    navigate('/marketplace');
   };
 
   return (
@@ -48,14 +50,14 @@ const MapControls = () => {
         </button>
       </div>
 
-      {/* Right side: Cart button */}
+      {/* Right side: Marketplace button */}
       <div className="absolute right-4 top-1/2 -translate-y-1/2">
         <button 
-          onClick={handleCartClick}
+          onClick={handleMarketplaceClick}
           className="flex size-12 items-center justify-center rounded-full shadow-2xl hover:scale-105 transition-transform overflow-hidden"
-          aria-label="Panier"
+          aria-label="Marketplace"
         >
-          <img src={cartIcon} alt="Panier" className="w-full h-full object-cover" />
+          <img src={cartIcon} alt="Marketplace" className="w-full h-full object-cover" />
         </button>
       </div>
     </>

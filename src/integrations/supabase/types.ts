@@ -106,6 +106,57 @@ export type Database = {
         }
         Relationships: []
       }
+      marketplace_listings: {
+        Row: {
+          category: Database["public"]["Enums"]["marketplace_category"]
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_published: boolean
+          location: string | null
+          price: number | null
+          price_type: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["marketplace_category"]
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_published?: boolean
+          location?: string | null
+          price?: number | null
+          price_type?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["marketplace_category"]
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_published?: boolean
+          location?: string | null
+          price?: number | null
+          price_type?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -177,7 +228,12 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      marketplace_category:
+        | "location_espaces"
+        | "traiteurs"
+        | "animation_dj"
+        | "decoration"
+        | "autre"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -304,6 +360,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      marketplace_category: [
+        "location_espaces",
+        "traiteurs",
+        "animation_dj",
+        "decoration",
+        "autre",
+      ],
+    },
   },
 } as const
