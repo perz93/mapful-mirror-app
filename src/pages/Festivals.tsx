@@ -1,13 +1,12 @@
-import { Sparkles } from 'lucide-react';
 import CategoryPage from '@/components/CategoryPage';
+import festivalIcon from '@/assets/icons/festival.png';
 
 const Festivals = () => {
   return (
     <CategoryPage
       category="festivals"
       title="Festivals"
-      icon={Sparkles}
-      iconColor="from-red-500/10 to-red-500/5 text-red-500"
+      iconSrc={festivalIcon}
     />
   );
 };
