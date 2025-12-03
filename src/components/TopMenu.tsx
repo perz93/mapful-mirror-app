@@ -68,7 +68,7 @@ const TopMenu = () => {
 
               {/* Logout button - only show if logged in */}
               {isLoggedIn && <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer rounded-full p-0 hover:bg-red-950/20 transition-all mt-2">
-                  <div className="flex items-center justify-center gap-2 py-3 px-6 rounded-full font-medium w-full text-white bg-red-500">
+                  <div className="flex items-center justify-center gap-2 py-3 px-6 rounded-full font-medium w-full text-white bg-orange-400">
                     <LogOut size={18} strokeWidth={2} />
                     <span className="bg-transparent">Déconnexion</span>
                   </div>
