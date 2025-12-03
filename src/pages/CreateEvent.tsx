@@ -13,6 +13,31 @@ import { supabase } from '@/integrations/supabase/client';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
+// Import category icons
+import atelierIcon from '@/assets/icons/atelier.png';
+import brunchIcon from '@/assets/icons/brunch.png';
+import concertIcon from '@/assets/icons/concert.png';
+import conferenceIcon from '@/assets/icons/conference.png';
+import expositionIcon from '@/assets/icons/exposition.png';
+import festivalIcon from '@/assets/icons/festival.png';
+import meetupIcon from '@/assets/icons/meetup.png';
+import religieuxIcon from '@/assets/icons/religieux.png';
+import spectacleIcon from '@/assets/icons/spectacle.png';
+import sportIcon from '@/assets/icons/sport.png';
+
+const categoryIcons: Record<string, string> = {
+  workshops: atelierIcon,
+  brunch: brunchIcon,
+  music: concertIcon,
+  conferences: conferenceIcon,
+  exhibitions: expositionIcon,
+  festivals: festivalIcon,
+  meetups: meetupIcon,
+  religious: religieuxIcon,
+  shows: spectacleIcon,
+  sports: sportIcon,
+};
+
 const CreateEvent = () => {
   const { toast } = useToast();
   const { user, loading } = useAuth();
@@ -370,18 +395,66 @@ const CreateEvent = () => {
                     <SelectValue placeholder="Sélectionnez une catégorie" />
                   </SelectTrigger>
                   <SelectContent className="backdrop-blur-xl bg-white/95 border-stone-400/50">
-                    <SelectItem value="music">🎵 Concerts</SelectItem>
-                    <SelectItem value="sports">🏆 Sports</SelectItem>
-                    <SelectItem value="food">🍔 Restauration</SelectItem>
-                    <SelectItem value="arts">🎨 Arts</SelectItem>
-                    <SelectItem value="meetups">👥 Meetups</SelectItem>
-                    <SelectItem value="conferences">💻 Conférences</SelectItem>
-                    <SelectItem value="workshops">🔧 Ateliers</SelectItem>
-                    <SelectItem value="festivals">✨ Festivals</SelectItem>
-                    <SelectItem value="shows">🎭 Spectacles</SelectItem>
-                    <SelectItem value="exhibitions">🖼️ Expositions</SelectItem>
-                    <SelectItem value="brunch">☕ Brunch</SelectItem>
-                    <SelectItem value="religious">⛪ Religieux</SelectItem>
+                    <SelectItem value="workshops">
+                      <span className="flex items-center gap-2">
+                        <img src={categoryIcons.workshops} alt="" className="w-5 h-5" />
+                        Ateliers
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="brunch">
+                      <span className="flex items-center gap-2">
+                        <img src={categoryIcons.brunch} alt="" className="w-5 h-5" />
+                        Brunch
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="music">
+                      <span className="flex items-center gap-2">
+                        <img src={categoryIcons.music} alt="" className="w-5 h-5" />
+                        Concerts
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="conferences">
+                      <span className="flex items-center gap-2">
+                        <img src={categoryIcons.conferences} alt="" className="w-5 h-5" />
+                        Conférences
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="exhibitions">
+                      <span className="flex items-center gap-2">
+                        <img src={categoryIcons.exhibitions} alt="" className="w-5 h-5" />
+                        Expositions
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="festivals">
+                      <span className="flex items-center gap-2">
+                        <img src={categoryIcons.festivals} alt="" className="w-5 h-5" />
+                        Festivals
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="meetups">
+                      <span className="flex items-center gap-2">
+                        <img src={categoryIcons.meetups} alt="" className="w-5 h-5" />
+                        Meetups
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="religious">
+                      <span className="flex items-center gap-2">
+                        <img src={categoryIcons.religious} alt="" className="w-5 h-5" />
+                        Religieux
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="shows">
+                      <span className="flex items-center gap-2">
+                        <img src={categoryIcons.shows} alt="" className="w-5 h-5" />
+                        Spectacles
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="sports">
+                      <span className="flex items-center gap-2">
+                        <img src={categoryIcons.sports} alt="" className="w-5 h-5" />
+                        Sports
+                      </span>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>

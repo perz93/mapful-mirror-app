@@ -202,7 +202,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                       <img
                         src={item.icon}
                         alt={item.label}
-                        className={`w-5 h-5 transition-all duration-300 ease-in-out ${
+                        className={`w-6 h-6 transition-all duration-300 ease-in-out ${
                           isActive ? 'opacity-100' : 'opacity-60'
                         }`}
                       />
