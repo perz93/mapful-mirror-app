@@ -54,7 +54,7 @@ const MapControls = () => {
       <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
         <button 
           onClick={handleMarketplaceClick}
-          className="flex size-12 items-center justify-center rounded-full shadow-2xl hover:scale-105 transition-transform overflow-hidden"
+          className="flex size-12 items-center justify-center rounded-full bg-white shadow-2xl hover:scale-105 transition-transform overflow-hidden"
           aria-label="Marketplace"
         >
           <img src={cartIcon} alt="Marketplace" className="w-full h-full object-cover" />
