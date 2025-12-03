@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Music, Trophy, Utensils, Palette, Users, Monitor, Wrench, Sparkles, Theater, Image, Search, Coffee, Church } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   Dialog,
@@ -9,19 +9,29 @@ import {
 } from '@/components/ui/dialog';
 import { useSearch } from '@/contexts/SearchContext';
 
+// Import custom icons
+import atelierIcon from '@/assets/icons/atelier.png';
+import brunchIcon from '@/assets/icons/brunch.png';
+import concertIcon from '@/assets/icons/concert.png';
+import conferenceIcon from '@/assets/icons/conference.png';
+import expositionIcon from '@/assets/icons/exposition.png';
+import festivalIcon from '@/assets/icons/festival.png';
+import meetupIcon from '@/assets/icons/meetup.png';
+import religieuxIcon from '@/assets/icons/religieux.png';
+import spectacleIcon from '@/assets/icons/spectacle.png';
+import sportIcon from '@/assets/icons/sport.png';
+
 const CATEGORIES = [
-  { id: 'music', label: 'Musique', color: 'bg-purple-500' },
-  { id: 'sports', label: 'Sports', color: 'bg-green-500' },
-  { id: 'food', label: 'Food', color: 'bg-orange-500' },
-  { id: 'arts', label: 'Arts', color: 'bg-pink-500' },
-  { id: 'meetups', label: 'Meetups', color: 'bg-blue-500' },
-  { id: 'conferences', label: 'Conférences', color: 'bg-indigo-500' },
   { id: 'workshops', label: 'Ateliers', color: 'bg-yellow-500' },
-  { id: 'festivals', label: 'Festivals', color: 'bg-red-500' },
-  { id: 'shows', label: 'Spectacles', color: 'bg-teal-500' },
-  { id: 'exhibitions', label: 'Expositions', color: 'bg-cyan-500' },
   { id: 'brunch', label: 'Brunch', color: 'bg-amber-500' },
+  { id: 'music', label: 'Concerts', color: 'bg-purple-500' },
+  { id: 'conferences', label: 'Conférences', color: 'bg-indigo-500' },
+  { id: 'exhibitions', label: 'Expositions', color: 'bg-cyan-500' },
+  { id: 'festivals', label: 'Festivals', color: 'bg-red-500' },
+  { id: 'meetups', label: 'Meetups', color: 'bg-blue-500' },
   { id: 'religious', label: 'Religieux', color: 'bg-violet-500' },
+  { id: 'shows', label: 'Spectacles', color: 'bg-teal-500' },
+  { id: 'sports', label: 'Sports', color: 'bg-green-500' },
 ];
 
 interface BottomNavigationProps {
@@ -76,24 +86,21 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
   }, []);
 
   const navItems = [
-    { icon: Music, label: 'Concerts', path: '/concerts' },
-    { icon: Trophy, label: 'Sports', path: '/sports' },
-    { icon: Utensils, label: 'Restauration', path: '/food' },
-    { icon: Coffee, label: 'Brunch', path: '/brunch' },
-    { icon: Palette, label: 'Arts', path: '/arts' },
-    { icon: Users, label: 'Meetups', path: '/meetups' },
-    { icon: Monitor, label: 'Conférences', path: '/conferences' },
-    { icon: Wrench, label: 'Ateliers', path: '/workshops' },
-    { icon: Sparkles, label: 'Festivals', path: '/festivals' },
-    { icon: Theater, label: 'Spectacles', path: '/shows' },
-    { icon: Image, label: 'Expositions', path: '/exhibitions' },
-    { icon: Church, label: 'Religieux', path: '/religious' },
+    { icon: atelierIcon, label: 'Ateliers', path: '/workshops' },
+    { icon: brunchIcon, label: 'Brunch', path: '/brunch' },
+    { icon: concertIcon, label: 'Concerts', path: '/concerts' },
+    { icon: conferenceIcon, label: 'Conférences', path: '/conferences' },
+    { icon: expositionIcon, label: 'Expositions', path: '/exhibitions' },
+    { icon: festivalIcon, label: 'Festivals', path: '/festivals' },
+    { icon: meetupIcon, label: 'Meetups', path: '/meetups' },
+    { icon: religieuxIcon, label: 'Religieux', path: '/religious' },
+    { icon: spectacleIcon, label: 'Spectacles', path: '/shows' },
+    { icon: sportIcon, label: 'Sports', path: '/sports' },
   ];
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
       console.log('Recherche:', searchQuery);
-      // TODO: Implémenter la logique de recherche
       setSearchOpen(false);
     }
   };
@@ -192,11 +199,12 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                       }`}
                       style={{ transitionProperty: 'all' }}
                     >
-                      <item.icon
-                        size={20}
-                        strokeWidth={isActive ? 2.5 : 1.5}
-                        fill={isActive ? 'currentColor' : 'none'}
-                        className="transition-all duration-300 ease-in-out"
+                      <img
+                        src={item.icon}
+                        alt={item.label}
+                        className={`w-5 h-5 transition-all duration-300 ease-in-out ${
+                          isActive ? 'opacity-100' : 'opacity-60'
+                        }`}
                       />
                       <p className="text-xs font-medium leading-none transition-all duration-300 ease-in-out">
                         {item.label}
