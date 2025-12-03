@@ -1,13 +1,12 @@
-import { Church } from 'lucide-react';
 import CategoryPage from '@/components/CategoryPage';
+import religieuxIcon from '@/assets/icons/religieux.png';
 
 const Religious = () => {
   return (
     <CategoryPage
       category="religious"
       title="Religieux"
-      icon={Church}
-      iconColor="from-violet-500/10 to-violet-500/5 text-violet-500"
+      iconSrc={religieuxIcon}
     />
   );
 };

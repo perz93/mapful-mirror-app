@@ -1,13 +1,12 @@
-import { Image } from 'lucide-react';
 import CategoryPage from '@/components/CategoryPage';
+import expositionIcon from '@/assets/icons/exposition.png';
 
 const Exhibitions = () => {
   return (
     <CategoryPage
       category="exhibitions"
       title="Expositions"
-      icon={Image}
-      iconColor="from-cyan-500/10 to-cyan-500/5 text-cyan-500"
+      iconSrc={expositionIcon}
     />
   );
 };

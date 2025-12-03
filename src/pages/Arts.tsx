@@ -1,13 +1,12 @@
-import { Palette } from 'lucide-react';
 import CategoryPage from '@/components/CategoryPage';
+import expositionIcon from '@/assets/icons/exposition.png';
 
 const Arts = () => {
   return (
     <CategoryPage
       category="arts"
       title="Arts"
-      icon={Palette}
-      iconColor="from-pink-500/10 to-pink-500/5 text-pink-500"
+      iconSrc={expositionIcon}
     />
   );
 };

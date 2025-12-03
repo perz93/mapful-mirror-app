@@ -1,4 +1,4 @@
-import { Calendar, Clock, ArrowLeft, LucideIcon } from 'lucide-react';
+import { Calendar, Clock, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useEventsByCategory } from '@/hooks/useEventsByCategory';
 import { format } from 'date-fns';
@@ -7,12 +7,17 @@ import { fr } from 'date-fns/locale';
 interface CategoryPageProps {
   category: string;
   title: string;
-  icon: LucideIcon;
-  iconColor: string;
+  iconSrc: string;
 }
 
-const CategoryPage = ({ category, title, icon: Icon, iconColor }: CategoryPageProps) => {
+const CategoryPage = ({ category, title, iconSrc }: CategoryPageProps) => {
   const { data: events, isLoading, error } = useEventsByCategory(category);
+
+  const HeaderIcon = () => (
+    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-100">
+      <img src={iconSrc} alt={title} className="w-6 h-6" />
+    </div>
+  );
 
   if (isLoading) {
     return (
@@ -27,9 +32,7 @@ const CategoryPage = ({ category, title, icon: Icon, iconColor }: CategoryPagePr
                 <ArrowLeft size={20} strokeWidth={2} />
               </Link>
               <div className="flex items-center gap-3">
-                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br ${iconColor}`}>
-                  <Icon size={22} strokeWidth={1.5} />
-                </div>
+                <HeaderIcon />
                 <h1 className="text-2xl font-bold text-stone-900 dark:text-white">{title}</h1>
               </div>
             </div>
@@ -55,9 +58,7 @@ const CategoryPage = ({ category, title, icon: Icon, iconColor }: CategoryPagePr
                 <ArrowLeft size={20} strokeWidth={2} />
               </Link>
               <div className="flex items-center gap-3">
-                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br ${iconColor}`}>
-                  <Icon size={22} strokeWidth={1.5} />
-                </div>
+                <HeaderIcon />
                 <h1 className="text-2xl font-bold text-stone-900 dark:text-white">{title}</h1>
               </div>
             </div>
@@ -82,9 +83,7 @@ const CategoryPage = ({ category, title, icon: Icon, iconColor }: CategoryPagePr
               <ArrowLeft size={20} strokeWidth={2} />
             </Link>
             <div className="flex items-center gap-3">
-              <div className={`flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br ${iconColor}`}>
-                <Icon size={22} strokeWidth={1.5} />
-              </div>
+              <HeaderIcon />
               <h1 className="text-2xl font-bold text-stone-900 dark:text-white">{title}</h1>
             </div>
           </div>

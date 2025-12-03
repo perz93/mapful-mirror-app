@@ -1,13 +1,12 @@
-import { Trophy } from 'lucide-react';
 import CategoryPage from '@/components/CategoryPage';
+import sportIcon from '@/assets/icons/sport.png';
 
 const Sports = () => {
   return (
     <CategoryPage
       category="sports"
       title="Sports"
-      icon={Trophy}
-      iconColor="from-blue-500/10 to-blue-500/5 text-blue-500"
+      iconSrc={sportIcon}
     />
   );
 };
