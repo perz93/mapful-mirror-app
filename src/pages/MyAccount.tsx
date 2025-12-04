@@ -272,9 +272,16 @@ const MyAccount = () => {
               {userListings.length === 0 ? (
                 <p className="text-center py-8 text-white">Vous n'avez créé aucune annonce pour le moment</p>
               ) : (
-                <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 gap-6">
                   {userListings.map(listing => (
-                    <div key={listing.id} className="bg-white/90 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg">
+                    <div 
+                      key={listing.id} 
+                      className="bg-white/95 backdrop-blur-sm rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:rotate-[0.5deg]"
+                      style={{
+                        boxShadow: '0 20px 40px -10px rgba(0,0,0,0.3), 0 10px 20px -5px rgba(0,0,0,0.2)',
+                        transform: 'perspective(1000px) rotateX(2deg)',
+                      }}
+                    >
                       {listing.image_url && (
                         <img src={listing.image_url} alt={listing.title} className="w-full h-32 object-cover" />
                       )}
