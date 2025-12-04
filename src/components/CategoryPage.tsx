@@ -18,7 +18,7 @@ const CategoryPage = ({
     isLoading,
     error
   } = useEventsByCategory(category);
-  const HeaderIcon = () => <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-100">
+  const HeaderIcon = () => <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-200">
       <img src={iconSrc} alt={title} className="w-6 h-6" />
     </div>;
   if (isLoading) {
@@ -69,7 +69,7 @@ const CategoryPage = ({
               <ArrowLeft size={20} strokeWidth={2} />
             </Link>
             <div className="flex items-center gap-3">
-              <HeaderIcon className="bg-orange-200" />
+              <HeaderIcon />
               <h1 className="text-2xl font-bold text-stone-900 dark:text-white">{title}</h1>
             </div>
           </div>
