@@ -296,7 +296,7 @@ const MyAccount = () => {
                           </div>
                           <div className="flex gap-2">
                             <button
-                              onClick={() => navigate(`/listing/${listing.id}`)}
+                              onClick={() => navigate(`/edit-listing/${listing.id}`)}
                               className="p-2 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors"
                             >
                               <Edit className="w-4 h-4 text-primary" />
