@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Pencil, Users, Calendar, Heart } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ArrowLeft, Pencil, Users, Calendar, Heart, ShoppingBag, Trash2, Edit } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useEvents, Event } from '@/hooks/useEvents';
 import EventListCard from '@/components/EventListCard';
 import { toast } from 'sonner';
 import MapView from '@/components/MapView';
+import { Tables } from '@/integrations/supabase/types';
+
+type MarketplaceListing = Tables<'marketplace_listings'>;
 const MyAccount = () => {
-  const {
-    user
-  } = useAuth();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('events');
   const [stats, setStats] = useState({
@@ -18,16 +20,16 @@ const MyAccount = () => {
     favorites: 0,
     friends: 0
   });
-  const {
-    data: allEvents
-  } = useEvents();
+  const { data: allEvents } = useEvents();
   const [userEvents, setUserEvents] = useState<Event[]>([]);
+  const [userListings, setUserListings] = useState<MarketplaceListing[]>([]);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useState<HTMLInputElement | null>(null)[0];
   useEffect(() => {
     if (user) {
       loadProfile();
       loadStats();
+      loadUserListings();
     }
   }, [user]);
   useEffect(() => {
@@ -74,6 +76,33 @@ const MyAccount = () => {
       favorites: favoritesCount || 0,
       friends: friendsCount || 0
     });
+  };
+
+  const loadUserListings = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('marketplace_listings')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+    setUserListings(data || []);
+  };
+
+  const handleDeleteListing = async (listingId: string) => {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette annonce ?')) return;
+    
+    const { error } = await supabase
+      .from('marketplace_listings')
+      .delete()
+      .eq('id', listingId);
+    
+    if (error) {
+      toast.error('Erreur lors de la suppression');
+      return;
+    }
+    
+    toast.success('Annonce supprimée');
+    loadUserListings();
   };
   const handleAvatarClick = () => {
     document.getElementById('avatar-upload')?.click();
@@ -205,14 +234,17 @@ const MyAccount = () => {
           </div>
 
           {/* Navigation Tabs - Relevant to event app */}
-          <div className="flex items-center gap-2 mb-8">
-            <button onClick={() => setActiveTab('events')} className={`px-6 py-2.5 rounded-full font-medium transition-all text-sm ${activeTab === 'events' ? 'bg-foreground text-background' : 'bg-background/80 text-foreground hover:bg-background'}`}>
-              Mes événements
+          <div className="flex items-center gap-2 mb-8 flex-wrap justify-center">
+            <button onClick={() => setActiveTab('events')} className={`px-4 py-2 rounded-full font-medium transition-all text-sm ${activeTab === 'events' ? 'bg-foreground text-background' : 'bg-background/80 text-foreground hover:bg-background'}`}>
+              Événements
             </button>
-            <button onClick={() => setActiveTab('favorites')} className={`px-6 py-2.5 rounded-full font-medium transition-all text-sm ${activeTab === 'favorites' ? 'bg-foreground text-background' : 'bg-background/80 text-foreground hover:bg-background'}`}>
+            <button onClick={() => setActiveTab('listings')} className={`px-4 py-2 rounded-full font-medium transition-all text-sm ${activeTab === 'listings' ? 'bg-foreground text-background' : 'bg-background/80 text-foreground hover:bg-background'}`}>
+              Annonces
+            </button>
+            <button onClick={() => setActiveTab('favorites')} className={`px-4 py-2 rounded-full font-medium transition-all text-sm ${activeTab === 'favorites' ? 'bg-foreground text-background' : 'bg-background/80 text-foreground hover:bg-background'}`}>
               Favoris
             </button>
-            <button onClick={() => setActiveTab('friends')} className={`px-6 py-2.5 rounded-full font-medium transition-all text-sm ${activeTab === 'friends' ? 'bg-foreground text-background' : 'bg-background/80 text-foreground hover:bg-background'}`}>
+            <button onClick={() => setActiveTab('friends')} className={`px-4 py-2 rounded-full font-medium transition-all text-sm ${activeTab === 'friends' ? 'bg-foreground text-background' : 'bg-background/80 text-foreground hover:bg-background'}`}>
               Amis
             </button>
           </div>
@@ -228,6 +260,53 @@ const MyAccount = () => {
               {userEvents.length === 0 ? <p className="text-center py-8 text-white">Vous n'avez créé aucun événement pour le moment</p> : <div className="grid grid-cols-1 gap-4">
                   {userEvents.map(event => <EventListCard key={event.id} event={event} />)}
                 </div>}
+            </div>}
+
+          {activeTab === 'listings' && <div className="w-full px-6 pb-8">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-semibold text-black">Mes annonces</h3>
+                <Link to="/create-listing" className="text-primary text-sm font-medium hover:underline">
+                  + Créer
+                </Link>
+              </div>
+              {userListings.length === 0 ? (
+                <p className="text-center py-8 text-white">Vous n'avez créé aucune annonce pour le moment</p>
+              ) : (
+                <div className="grid grid-cols-1 gap-4">
+                  {userListings.map(listing => (
+                    <div key={listing.id} className="bg-white/90 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg">
+                      {listing.image_url && (
+                        <img src={listing.image_url} alt={listing.title} className="w-full h-32 object-cover" />
+                      )}
+                      <div className="p-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-foreground">{listing.title}</h4>
+                            <p className="text-sm text-muted-foreground capitalize">{listing.category}</p>
+                            {listing.price && (
+                              <p className="text-primary font-medium mt-1">{listing.price.toLocaleString()} FCFA</p>
+                            )}
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => navigate(`/listing/${listing.id}`)}
+                              className="p-2 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors"
+                            >
+                              <Edit className="w-4 h-4 text-primary" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteListing(listing.id)}
+                              className="p-2 rounded-full bg-red-100 hover:bg-red-200 transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4 text-red-600" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>}
 
           {activeTab === 'favorites' && <div className="w-full px-6 pb-8">

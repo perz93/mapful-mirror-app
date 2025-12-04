@@ -69,7 +69,7 @@ const CategoryPage = ({
               <ArrowLeft size={20} strokeWidth={2} />
             </Link>
             <div className="flex items-center gap-3">
-              <HeaderIcon className="bg-orange-200" />
+              <HeaderIcon />
               <h1 className="text-2xl font-bold text-stone-900 dark:text-white">{title}</h1>
             </div>
           </div>
