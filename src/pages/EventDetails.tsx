@@ -1,5 +1,5 @@
 import { ArrowLeft, MapPin, Calendar, Clock, Users, Share2, Heart, Ticket } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -7,6 +7,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 const EventDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const { data: event, isLoading, error } = useQuery({
     queryKey: ['event', id],
@@ -58,12 +59,12 @@ const EventDetails = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
           
           <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
-            <Link 
-              to="/" 
+            <button 
+              onClick={() => navigate(-1)}
               className="w-11 h-11 rounded-full bg-black/70 backdrop-blur-md flex items-center justify-center hover:bg-black/90 transition-all"
             >
               <ArrowLeft className="w-5 h-5 text-white" />
-            </Link>
+            </button>
             <div className="flex gap-2">
               <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors">
                 <Share2 size={20} />
