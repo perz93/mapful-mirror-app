@@ -32,11 +32,11 @@ const MapControls = () => {
       </div>
 
       {/* Right side: Marketplace button */}
-      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
-        <button onClick={handleMarketplaceClick} className="flex size-12 items-center justify-center rounded-full bg-white shadow-2xl hover:scale-105 transition-transform overflow-hidden" aria-label="Marketplace">
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5">
+        <button onClick={handleMarketplaceClick} className="flex size-16 items-center justify-center rounded-full bg-white shadow-2xl hover:scale-105 transition-transform overflow-hidden" aria-label="Marketplace">
           <img src={cartIcon} alt="Marketplace" className="w-full h-full object-cover" />
         </button>
-        <span className="text-[10px] font-medium backdrop-blur-sm px-2 py-0.5 rounded-full bg-secondary-foreground text-white">
+        <span className="text-xs font-medium backdrop-blur-sm px-2.5 py-1 rounded-full bg-secondary-foreground text-white">
           Marketplace
         </span>
       </div>
