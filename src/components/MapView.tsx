@@ -30,7 +30,7 @@ const MapView = () => {
     // Check if there's a saved map position
     const savedPosition = sessionStorage.getItem('mapPosition');
     let initialCenter: [number, number] = [5.3600, -4.0083];
-    let initialZoom = 13;
+    let initialZoom = 12;
 
     if (savedPosition) {
       const { lat, lng, zoom } = JSON.parse(savedPosition);
@@ -75,7 +75,7 @@ const MapView = () => {
           
           // Center map on user location only on first visit
           if (!savedPosition) {
-            map.setView([latitude, longitude], 14);
+            map.setView([latitude, longitude], 12);
           }
           
           // Add user location marker
