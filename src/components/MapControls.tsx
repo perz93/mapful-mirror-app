@@ -35,7 +35,9 @@ const MapControls = () => {
         <button onClick={handleMarketplaceClick} className="flex size-14 items-center justify-center rounded-full bg-[#ee9d2b] shadow-2xl hover:scale-110 active:scale-95 transition-transform duration-200 animate-scale-in" aria-label="Marketplace">
           <ShoppingCart className="w-7 h-7 text-white" strokeWidth={2} />
         </button>
-        <span className="text-xs font-medium backdrop-blur-sm px-2.5 py-1 rounded-full bg-secondary-foreground text-white animate-fade-in" style={{ animationDelay: '0.1s' }}>
+        <span style={{
+        animationDelay: '0.1s'
+      }} className="text-xs font-medium backdrop-blur-sm px-2.5 py-1 rounded-full text-white animate-fade-in bg-muted-foreground">
           Marketplace
         </span>
       </div>
