@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign, ArrowLeft, Loader2 } from 'lucide-react';
+import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign, ArrowLeft, Loader2, Phone, Instagram, Facebook, Twitter, MessageCircle, Plus, X, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import MapView from '@/components/MapView';
@@ -62,8 +62,33 @@ const CreateEvent = () => {
     time: '',
     price: '',
     capacity: '',
-    description: ''
+    description: '',
+    contactPhone: '',
+    contactWhatsapp: '',
+    contactInstagram: '',
+    contactFacebook: '',
+    contactTwitter: ''
   });
+  
+  const [keyPoints, setKeyPoints] = useState<string[]>(['']);
+  
+  const addKeyPoint = () => {
+    if (keyPoints.length < 5) {
+      setKeyPoints([...keyPoints, '']);
+    }
+  };
+  
+  const updateKeyPoint = (index: number, value: string) => {
+    const updated = [...keyPoints];
+    updated[index] = value;
+    setKeyPoints(updated);
+  };
+  
+  const removeKeyPoint = (index: number) => {
+    if (keyPoints.length > 1) {
+      setKeyPoints(keyPoints.filter((_, i) => i !== index));
+    }
+  };
   
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -236,6 +261,9 @@ const CreateEvent = () => {
       }
 
       // Insert event into database
+      // Filter out empty key points
+      const validKeyPoints = keyPoints.filter(kp => kp.trim() !== '');
+
       const { error: insertError } = await supabase
         .from('events')
         .insert({
@@ -253,7 +281,13 @@ const CreateEvent = () => {
           longitude: coordinates.lng,
           is_paid: formData.price ? parseFloat(formData.price) > 0 : false,
           is_published: true,
-          user_id: user.id
+          user_id: user.id,
+          contact_phone: formData.contactPhone || null,
+          contact_whatsapp: formData.contactWhatsapp || null,
+          contact_instagram: formData.contactInstagram || null,
+          contact_facebook: formData.contactFacebook || null,
+          contact_twitter: formData.contactTwitter || null,
+          key_points: validKeyPoints.length > 0 ? validKeyPoints : null
         });
 
       if (insertError) {
@@ -274,8 +308,14 @@ const CreateEvent = () => {
         time: '',
         price: '',
         capacity: '',
-        description: ''
+        description: '',
+        contactPhone: '',
+        contactWhatsapp: '',
+        contactInstagram: '',
+        contactFacebook: '',
+        contactTwitter: ''
       });
+      setKeyPoints(['']);
       setImageFile(null);
       setImagePreview(null);
 
@@ -577,6 +617,128 @@ const CreateEvent = () => {
                   rows={5} 
                   className="border-stone-400/50 bg-white/40 resize-none"
                 />
+              </div>
+            </div>
+
+            {/* Key Points Card */}
+            <div className="bg-white/30 backdrop-blur-sm rounded-3xl p-6 shadow-lg space-y-4">
+              <h2 className="text-lg font-semibold text-stone-900 mb-4 flex items-center gap-2">
+                <Sparkles className="h-5 w-5" strokeWidth={1.5} />
+                Points clés de l'événement
+              </h2>
+              
+              <div className="space-y-3">
+                {keyPoints.map((point, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <Input 
+                      placeholder={`Point clé ${index + 1}`}
+                      value={point}
+                      onChange={e => updateKeyPoint(index, e.target.value)}
+                      className="h-12 border-stone-400/50 bg-white/40 flex-1"
+                    />
+                    {keyPoints.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeKeyPoint(index)}
+                        className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center hover:bg-red-200 transition-colors"
+                      >
+                        <X className="w-4 h-4 text-red-600" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                
+                {keyPoints.length < 5 && (
+                  <button
+                    type="button"
+                    onClick={addKeyPoint}
+                    className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors text-sm font-medium"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Ajouter un point clé
+                  </button>
+                )}
+                <p className="text-xs text-stone-600">Maximum 5 points clés</p>
+              </div>
+            </div>
+
+            {/* Contact Card */}
+            <div className="bg-white/30 backdrop-blur-sm rounded-3xl p-6 shadow-lg space-y-4">
+              <h2 className="text-lg font-semibold text-stone-900 mb-4 flex items-center gap-2">
+                <Phone className="h-5 w-5" strokeWidth={1.5} />
+                Contact
+              </h2>
+              
+              <div className="space-y-4">
+                <div className="space-y-3">
+                  <Label htmlFor="contactPhone" className="text-sm text-stone-700 font-normal flex items-center gap-2">
+                    <Phone className="w-4 h-4" />
+                    Numéro de téléphone
+                  </Label>
+                  <Input 
+                    id="contactPhone" 
+                    placeholder="+225 XX XX XX XX XX" 
+                    value={formData.contactPhone} 
+                    onChange={e => setFormData({ ...formData, contactPhone: e.target.value })} 
+                    className="h-12 border-stone-400/50 bg-white/40"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <Label htmlFor="contactWhatsapp" className="text-sm text-stone-700 font-normal flex items-center gap-2">
+                    <MessageCircle className="w-4 h-4" />
+                    WhatsApp
+                  </Label>
+                  <Input 
+                    id="contactWhatsapp" 
+                    placeholder="+225 XX XX XX XX XX" 
+                    value={formData.contactWhatsapp} 
+                    onChange={e => setFormData({ ...formData, contactWhatsapp: e.target.value })} 
+                    className="h-12 border-stone-400/50 bg-white/40"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <Label htmlFor="contactInstagram" className="text-sm text-stone-700 font-normal flex items-center gap-2">
+                    <Instagram className="w-4 h-4" />
+                    Instagram
+                  </Label>
+                  <Input 
+                    id="contactInstagram" 
+                    placeholder="@votre_compte" 
+                    value={formData.contactInstagram} 
+                    onChange={e => setFormData({ ...formData, contactInstagram: e.target.value })} 
+                    className="h-12 border-stone-400/50 bg-white/40"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <Label htmlFor="contactFacebook" className="text-sm text-stone-700 font-normal flex items-center gap-2">
+                    <Facebook className="w-4 h-4" />
+                    Facebook
+                  </Label>
+                  <Input 
+                    id="contactFacebook" 
+                    placeholder="Nom de votre page" 
+                    value={formData.contactFacebook} 
+                    onChange={e => setFormData({ ...formData, contactFacebook: e.target.value })} 
+                    className="h-12 border-stone-400/50 bg-white/40"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <Label htmlFor="contactTwitter" className="text-sm text-stone-700 font-normal flex items-center gap-2">
+                    <Twitter className="w-4 h-4" />
+                    Twitter / X
+                  </Label>
+                  <Input 
+                    id="contactTwitter" 
+                    placeholder="@votre_compte" 
+                    value={formData.contactTwitter} 
+                    onChange={e => setFormData({ ...formData, contactTwitter: e.target.value })} 
+                    className="h-12 border-stone-400/50 bg-white/40"
+                  />
+                </div>
               </div>
             </div>
 

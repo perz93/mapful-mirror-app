@@ -1,13 +1,17 @@
-import { ArrowLeft, MapPin, Calendar, Clock, Users, Share2, Heart, Ticket } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowLeft, MapPin, Calendar, Clock, Users, Share2, Heart, Sparkles } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import ContactModal from '@/components/ContactModal';
+
 const EventDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [showContactModal, setShowContactModal] = useState(false);
 
   const { data: event, isLoading, error } = useQuery({
     queryKey: ['event', id],
@@ -51,11 +55,14 @@ const EventDetails = () => {
 
   const formattedDate = format(new Date(event.date), "EEEE d MMMM yyyy", { locale: fr });
   const formattedTime = event.time.substring(0, 5);
-  return <div className="min-h-screen bg-background-light dark:bg-background-dark animate-fade-in animate-zoom-smooth">
+  const keyPoints = event.key_points as string[] | null;
+
+  return (
+    <div className="min-h-screen bg-background-light dark:bg-background-dark animate-fade-in animate-zoom-smooth">
       <div className="mx-auto max-w-md">
         <div className="relative h-80 bg-cover bg-center rounded-3xl overflow-hidden mx-4 mt-4" style={{
-        backgroundImage: `url('${event.image_url || 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&h=600&fit=crop'}')`
-      }}>
+          backgroundImage: `url('${event.image_url || 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&h=600&fit=crop'}')`
+        }}>
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
           
           <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
@@ -117,6 +124,29 @@ const EventDetails = () => {
             </div>
           </div>
 
+          {/* Key Points Section */}
+          {keyPoints && keyPoints.length > 0 && (
+            <div className="border-t border-stone-200 dark:border-stone-800 pt-6">
+              <h2 className="text-xl font-bold text-stone-900 dark:text-white mb-4 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-primary" />
+                Points clés
+              </h2>
+              <div className="space-y-3">
+                {keyPoints.map((point, index) => (
+                  <div 
+                    key={index}
+                    className="flex items-start gap-3 p-3 rounded-2xl bg-gradient-to-r from-primary/10 to-primary/5 border-l-4 border-primary"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-white text-xs font-bold">{index + 1}</span>
+                    </div>
+                    <p className="text-stone-800 dark:text-stone-200 font-medium">{point}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {event.description && (
             <div className="border-t border-stone-200 dark:border-stone-800 pt-6">
               <h2 className="text-xl font-bold text-stone-900 dark:text-white mb-3">À propos de cet événement</h2>
@@ -138,12 +168,27 @@ const EventDetails = () => {
               </div>
             </div>
             
-            <Button className="w-full h-12 text-base font-semibold">
+            <Button 
+              className="w-full h-12 text-base font-semibold"
+              onClick={() => setShowContactModal(true)}
+            >
               Contacter
             </Button>
           </div>
         </div>
       </div>
-    </div>;
+
+      <ContactModal
+        isOpen={showContactModal}
+        onClose={() => setShowContactModal(false)}
+        contactPhone={event.contact_phone}
+        contactWhatsapp={event.contact_whatsapp}
+        contactInstagram={event.contact_instagram}
+        contactFacebook={event.contact_facebook}
+        contactTwitter={event.contact_twitter}
+      />
+    </div>
+  );
 };
+
 export default EventDetails;

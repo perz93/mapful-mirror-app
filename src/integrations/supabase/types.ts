@@ -48,6 +48,11 @@ export type Database = {
           address: string | null
           capacity: number | null
           category: string
+          contact_facebook: string | null
+          contact_instagram: string | null
+          contact_phone: string | null
+          contact_twitter: string | null
+          contact_whatsapp: string | null
           created_at: string
           date: string
           description: string | null
@@ -55,6 +60,7 @@ export type Database = {
           image_url: string | null
           is_paid: boolean
           is_published: boolean
+          key_points: string[] | null
           latitude: number
           longitude: number
           price: number | null
@@ -68,6 +74,11 @@ export type Database = {
           address?: string | null
           capacity?: number | null
           category: string
+          contact_facebook?: string | null
+          contact_instagram?: string | null
+          contact_phone?: string | null
+          contact_twitter?: string | null
+          contact_whatsapp?: string | null
           created_at?: string
           date: string
           description?: string | null
@@ -75,6 +86,7 @@ export type Database = {
           image_url?: string | null
           is_paid?: boolean
           is_published?: boolean
+          key_points?: string[] | null
           latitude: number
           longitude: number
           price?: number | null
@@ -88,6 +100,11 @@ export type Database = {
           address?: string | null
           capacity?: number | null
           category?: string
+          contact_facebook?: string | null
+          contact_instagram?: string | null
+          contact_phone?: string | null
+          contact_twitter?: string | null
+          contact_whatsapp?: string | null
           created_at?: string
           date?: string
           description?: string | null
@@ -95,6 +112,7 @@ export type Database = {
           image_url?: string | null
           is_paid?: boolean
           is_published?: boolean
+          key_points?: string[] | null
           latitude?: number
           longitude?: number
           price?: number | null
