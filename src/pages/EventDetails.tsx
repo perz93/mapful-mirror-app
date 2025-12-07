@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { ArrowLeft, MapPin, Calendar, Clock, Users, Share2, Heart, Sparkles } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,12 +5,11 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import ContactModal from '@/components/ContactModal';
+import ContactFab from '@/components/ContactFab';
 
 const EventDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [showContactModal, setShowContactModal] = useState(false);
 
   const { data: event, isLoading, error } = useQuery({
     queryKey: ['event', id],
@@ -156,8 +154,8 @@ const EventDetails = () => {
             </div>
           )}
 
-          <div className="border-t border-stone-200 dark:border-stone-800 pt-6">
-            <div className="flex items-center justify-between mb-4">
+          <div className="border-t border-stone-200 dark:border-stone-800 pt-6 pb-20">
+            <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-stone-600 dark:text-stone-400">
                   {event.is_paid ? 'Prix' : 'Entrée'}
@@ -167,20 +165,11 @@ const EventDetails = () => {
                 </p>
               </div>
             </div>
-            
-            <Button 
-              className="w-full h-12 text-base font-semibold"
-              onClick={() => setShowContactModal(true)}
-            >
-              Contacter
-            </Button>
           </div>
         </div>
       </div>
 
-      <ContactModal
-        isOpen={showContactModal}
-        onClose={() => setShowContactModal(false)}
+      <ContactFab
         contactPhone={event.contact_phone}
         contactWhatsapp={event.contact_whatsapp}
         contactInstagram={event.contact_instagram}
