@@ -144,7 +144,13 @@ const ContactFab = ({
 
       {/* Main FAB button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          // Haptic feedback on mobile
+          if ('vibrate' in navigator) {
+            navigator.vibrate(10);
+          }
+          setIsOpen(!isOpen);
+        }}
         className={cn(
           "w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all duration-300",
           isOpen 
