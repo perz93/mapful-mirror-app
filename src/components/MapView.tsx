@@ -22,6 +22,7 @@ const MapView = () => {
   const userMarkerRef = useRef<L.Marker | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
   const markerClusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
+  const didAutoRecenterRef = useRef(false);
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
@@ -416,6 +417,27 @@ const MapView = () => {
         }
       });
     });
+
+    // If the map was previously moved far away (saved position), ensure the user still sees events.
+    // Run once per component mount to avoid fighting the user.
+    if (!didAutoRecenterRef.current) {
+      const coords = events
+        .map((e) => [Number(e.latitude), Number(e.longitude)] as [number, number])
+        .filter(([lat, lng]) => Number.isFinite(lat) && Number.isFinite(lng));
+
+      if (coords.length > 0) {
+        const bounds = L.latLngBounds(coords);
+        if (bounds.isValid() && !map.getBounds().intersects(bounds)) {
+          map.fitBounds(bounds, {
+            padding: [36, 36],
+            maxZoom: 13,
+            animate: true,
+          });
+        }
+      }
+
+      didAutoRecenterRef.current = true;
+    }
   }, [events, isLoading, navigate]);
 
   // Filter markers based on search query and selected categories
