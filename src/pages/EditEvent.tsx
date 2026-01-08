@@ -98,20 +98,34 @@ const EditEvent = () => {
     reader.readAsDataURL(file);
   };
 
-  const geocodeAddress = async (venue: string, address: string) => {
-    const query = `${venue}, ${address}`;
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`
-    );
-    const data = await response.json();
-    
-    if (data && data.length > 0) {
-      return {
-        latitude: parseFloat(data[0].lat),
-        longitude: parseFloat(data[0].lon)
-      };
+  const geocodeAddress = async (venue: string, address: string): Promise<{ latitude: number; longitude: number } | null> => {
+    try {
+      // Add "Abidjan, Côte d'Ivoire" context for better geocoding accuracy
+      const searchQuery = address.toLowerCase().includes('abidjan') || address.toLowerCase().includes('ivoire')
+        ? `${venue}, ${address}`
+        : `${venue}, ${address}, Abidjan, Côte d'Ivoire`;
+      
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1`
+      );
+      const data = await response.json();
+      
+      if (data && data.length > 0) {
+        const lat = parseFloat(data[0].lat);
+        const lon = parseFloat(data[0].lon);
+        
+        // Validate coordinates are roughly in Côte d'Ivoire region (lat: 4-11, lon: -9 to -2)
+        if (lat >= 4 && lat <= 11 && lon >= -9 && lon <= -2) {
+          return { latitude: lat, longitude: lon };
+        }
+        console.warn('Geocoded coordinates outside Côte d\'Ivoire, keeping original');
+        return null;
+      }
+      return null;
+    } catch (error) {
+      console.error('Geocoding error:', error);
+      return null;
     }
-    throw new Error('Adresse non trouvée');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -124,22 +138,24 @@ const EditEvent = () => {
 
     setSubmitting(true);
     try {
-      // Geocode address
-      const { latitude, longitude } = await geocodeAddress(formData.venue, formData.address);
+      // Get current event data to preserve coordinates if geocoding fails
+      const { data: currentEvent } = await supabase
+        .from('events')
+        .select('latitude, longitude, image_url')
+        .eq('id', id)
+        .single();
+
+      // Geocode address - keep original coordinates if geocoding fails or returns invalid results
+      const geocodedCoords = await geocodeAddress(formData.venue, formData.address);
+      const latitude = geocodedCoords?.latitude ?? currentEvent?.latitude ?? 5.3600;
+      const longitude = geocodedCoords?.longitude ?? currentEvent?.longitude ?? -4.0083;
 
       let imageUrl = imagePreview;
 
       // Upload new image if selected
       if (imageFile) {
-        // Delete old image if exists
-        const { data: eventData } = await supabase
-          .from('events')
-          .select('image_url')
-          .eq('id', id)
-          .single();
-
-        if (eventData?.image_url) {
-          const oldPath = eventData.image_url.split('/').slice(-2).join('/');
+        if (currentEvent?.image_url) {
+          const oldPath = currentEvent.image_url.split('/').slice(-2).join('/');
           await supabase.storage
             .from('event-images')
             .remove([oldPath]);
