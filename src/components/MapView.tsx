@@ -29,13 +29,18 @@ const MapView = () => {
     // Initialize map - Centered on Abidjan, Côte d'Ivoire
     // Check if there's a saved map position
     const savedPosition = sessionStorage.getItem('mapPosition');
+
+    // Lower = more zoomed out
+    const DEFAULT_INITIAL_ZOOM = 11;
+
     let initialCenter: [number, number] = [5.3600, -4.0083];
-    let initialZoom = 12;
+    let initialZoom = DEFAULT_INITIAL_ZOOM;
 
     if (savedPosition) {
       const { lat, lng, zoom } = JSON.parse(savedPosition);
       initialCenter = [lat, lng];
-      initialZoom = zoom;
+      // Prevent reopening the app too zoomed-in
+      initialZoom = Math.min(Number(zoom) || DEFAULT_INITIAL_ZOOM, DEFAULT_INITIAL_ZOOM);
     }
 
     const map = L.map(mapRef.current, {
@@ -75,9 +80,8 @@ const MapView = () => {
           
           // Center map on user location only on first visit
           if (!savedPosition) {
-            map.setView([latitude, longitude], 12);
+            map.setView([latitude, longitude], DEFAULT_INITIAL_ZOOM);
           }
-          
           // Add user location marker
           const userIcon = L.divIcon({
             className: 'user-location-marker',
