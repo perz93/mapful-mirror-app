@@ -183,6 +183,15 @@ const EventDetails = () => {
         contactFacebook={event.contact_facebook}
         contactTwitter={event.contact_twitter}
       />
+
+      {event.image_url && (
+        <ImageLightbox
+          src={event.image_url}
+          alt={event.title}
+          open={lightboxOpen}
+          onClose={() => setLightboxOpen(false)}
+        />
+      )}
     </div>
   );
 };
