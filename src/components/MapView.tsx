@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster';
@@ -10,12 +10,13 @@ import { useEvents } from '@/hooks/useEvents';
 import { format, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { toast } from 'sonner';
+import RouteInfoPanel from './RouteInfoPanel';
 
 const MapView = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const navigate = useNavigate();
-  const { searchQuery, selectedCategories } = useSearch();
+  const { searchQuery, selectedCategories, routeDestination, setRouteDestination } = useSearch();
   const { data: events, isLoading } = useEvents();
 
   const userLocationRef = useRef<{ lat: number; lng: number } | null>(null);
@@ -23,6 +24,14 @@ const MapView = () => {
   const markersRef = useRef<L.Marker[]>([]);
   const markerClusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   const didAutoRecenterRef = useRef(false);
+  const routeLayerRef = useRef<L.Polyline | null>(null);
+  const destinationMarkerRef = useRef<L.Marker | null>(null);
+  const [routeInfo, setRouteInfo] = useState<{ distanceKm: number | null; durationMin: number | null; loading: boolean; error: boolean }>({
+    distanceKm: null,
+    durationMin: null,
+    loading: false,
+    error: false,
+  });
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
