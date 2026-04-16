@@ -50,12 +50,12 @@ const Marketplace = () => {
   };
 
   return (
-    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-background">
+    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-background animate-fade-in">
       {/* Header */}
-      <div className="relative z-10 flex items-center justify-between px-4 pt-12 pb-4">
+      <div className="relative z-10 flex items-center justify-between px-4 pt-12 pb-4 animate-fade-in">
         <Link
           to="/"
-          className="flex size-10 items-center justify-center rounded-full bg-black/70 backdrop-blur-md"
+          className="flex size-10 items-center justify-center rounded-full bg-black/70 backdrop-blur-md transition-all duration-200 hover:scale-105 active:scale-95"
         >
           <ArrowLeft className="text-white" size={20} />
         </Link>
@@ -63,20 +63,20 @@ const Marketplace = () => {
         <Button
           onClick={handleCreateListing}
           size="icon"
-          className="size-10 rounded-full bg-amber-500 hover:bg-amber-600"
+          className="size-10 rounded-full bg-amber-500 hover:bg-amber-600 transition-all duration-200 hover:scale-105 active:scale-95"
         >
           <Plus className="text-white" size={20} />
         </Button>
       </div>
 
       {/* Category Filters */}
-      <div className="px-4 pb-4">
+      <div className="px-4 pb-4 animate-fade-in" style={{ animationDelay: '50ms', animationFillMode: 'backwards' }}>
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
           <button
             onClick={() => setSelectedCategory('all')}
-            className={`flex-shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+            className={`flex-shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95 ${
               selectedCategory === 'all'
-                ? 'bg-primary text-primary-foreground'
+                ? 'bg-primary text-primary-foreground shadow-md'
                 : 'bg-white/70 dark:bg-stone-800/70 backdrop-blur-md'
             }`}
           >
@@ -89,9 +89,9 @@ const Marketplace = () => {
               <button
                 key={key}
                 onClick={() => setSelectedCategory(key)}
-                className={`flex-shrink-0 flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                className={`flex-shrink-0 flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95 ${
                   selectedCategory === key
-                    ? 'bg-primary text-primary-foreground'
+                    ? 'bg-primary text-primary-foreground shadow-md'
                     : 'bg-white/70 dark:bg-stone-800/70 backdrop-blur-md'
                 }`}
               >
@@ -106,21 +106,22 @@ const Marketplace = () => {
       {/* Listings */}
       <div className="flex-1 overflow-y-auto px-4 pb-24">
         {isLoading ? (
-          <div className="grid gap-4">
+          <div className="grid gap-4 animate-fade-in">
             {[1, 2, 3].map((i) => (
               <Skeleton key={i} className="h-48 rounded-2xl" />
             ))}
           </div>
         ) : listings && listings.length > 0 ? (
-          <div className="grid gap-4">
-            {listings.map((listing) => {
+          <div key={selectedCategory} className="grid gap-4">
+            {listings.map((listing, index) => {
               const config = categoryConfig[listing.category as CategoryKey];
               const Icon = config?.icon || MoreHorizontal;
               return (
                 <Link
                   key={listing.id}
                   to={`/listing/${listing.id}`}
-                  className="group relative overflow-hidden rounded-2xl bg-white/70 dark:bg-stone-800/70 backdrop-blur-md shadow-lg"
+                  style={{ animationDelay: `${Math.min(index * 60, 360)}ms`, animationFillMode: 'backwards' }}
+                  className="group relative overflow-hidden rounded-2xl bg-white/70 dark:bg-stone-800/70 backdrop-blur-md shadow-lg animate-fade-in transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98]"
                 >
                   {listing.image_url && (
                     <div className="h-32 overflow-hidden">
