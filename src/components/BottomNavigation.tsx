@@ -184,7 +184,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
             <div className="flex-1 relative h-full min-w-0">
               <div
                 ref={scrollRef}
-                className="flex items-center h-full overflow-x-auto overflow-y-hidden scrollbar-black px-2 gap-1 whitespace-nowrap"
+                className="flex items-center h-full overflow-x-auto overflow-y-hidden scrollbar-hide px-2 gap-1 whitespace-nowrap"
               >
                 {navItems.map((item, index) => {
                   const isActive = location.pathname === item.path;
