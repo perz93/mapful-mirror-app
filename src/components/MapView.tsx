@@ -462,7 +462,97 @@ const MapView = () => {
 
       didAutoRecenterRef.current = true;
     }
-  }, [events, isLoading, navigate]);
+  }, [events, isLoading, navigate, setRouteDestination]);
+
+  // Compute and draw route via OSRM when destination changes
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+
+    // Clear previous route
+    if (routeLayerRef.current) {
+      map.removeLayer(routeLayerRef.current);
+      routeLayerRef.current = null;
+    }
+    if (destinationMarkerRef.current) {
+      map.removeLayer(destinationMarkerRef.current);
+      destinationMarkerRef.current = null;
+    }
+
+    if (!routeDestination) {
+      setRouteInfo({ distanceKm: null, durationMin: null, loading: false, error: false });
+      return;
+    }
+
+    // Add destination marker
+    const destIcon = L.divIcon({
+      className: 'route-destination-marker',
+      html: `<div style="width:28px;height:28px;border-radius:50%;background:hsl(var(--primary));border:3px solid white;box-shadow:0 4px 12px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;color:white;font-size:14px;">📍</div>`,
+      iconSize: [28, 28],
+      iconAnchor: [14, 14],
+    });
+    destinationMarkerRef.current = L.marker([routeDestination.lat, routeDestination.lng], { icon: destIcon }).addTo(map);
+
+    const ensureUserLocation = (): Promise<{ lat: number; lng: number }> =>
+      new Promise((resolve, reject) => {
+        if (userLocationRef.current) return resolve(userLocationRef.current);
+        if (!navigator.geolocation) return reject(new Error('no-geo'));
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+            userLocationRef.current = loc;
+            resolve(loc);
+          },
+          () => reject(new Error('denied')),
+          { timeout: 7000 }
+        );
+      });
+
+    setRouteInfo({ distanceKm: null, durationMin: null, loading: true, error: false });
+
+    let cancelled = false;
+
+    ensureUserLocation()
+      .then(async (origin) => {
+        const url = `https://router.project-osrm.org/route/v1/driving/${origin.lng},${origin.lat};${routeDestination.lng},${routeDestination.lat}?overview=full&geometries=geojson`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('osrm-error');
+        const data = await res.json();
+        if (cancelled) return;
+        const route = data.routes?.[0];
+        if (!route) throw new Error('no-route');
+
+        const coords: [number, number][] = route.geometry.coordinates.map((c: [number, number]) => [c[1], c[0]]);
+        const polyline = L.polyline(coords, {
+          color: 'hsl(24 95% 53%)',
+          weight: 5,
+          opacity: 0.85,
+          lineCap: 'round',
+          lineJoin: 'round',
+        }).addTo(map);
+        routeLayerRef.current = polyline;
+
+        map.fitBounds(polyline.getBounds(), { padding: [60, 60], maxZoom: 15, animate: true });
+
+        setRouteInfo({
+          distanceKm: route.distance / 1000,
+          durationMin: route.duration / 60,
+          loading: false,
+          error: false,
+        });
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        if (err.message === 'denied' || err.message === 'no-geo') {
+          toast.error('Activez la localisation pour calculer un itinéraire');
+        }
+        setRouteInfo({ distanceKm: null, durationMin: null, loading: false, error: true });
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [routeDestination]);
 
   // Filter markers based on search query and selected categories
   useEffect(() => {
@@ -492,7 +582,17 @@ const MapView = () => {
     });
   }, [searchQuery, selectedCategories]);
 
-  return <div ref={mapRef} className="absolute inset-0 z-0" />;
+  return (
+    <>
+      <div ref={mapRef} className="absolute inset-0 z-0" />
+      <RouteInfoPanel
+        distanceKm={routeInfo.distanceKm}
+        durationMin={routeInfo.durationMin}
+        loading={routeInfo.loading}
+        error={routeInfo.error}
+      />
+    </>
+  );
 };
 
 export default MapView;
