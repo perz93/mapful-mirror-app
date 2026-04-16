@@ -176,8 +176,17 @@ const ListingDetails = () => {
                 Aucune information de contact disponible
               </p>
             )}
-          </div>
-        </div>
+      </div>
+
+      {listing.image_url && (
+        <ImageLightbox
+          src={listing.image_url}
+          alt={listing.title}
+          open={lightboxOpen}
+          onClose={() => setLightboxOpen(false)}
+        />
+      )}
+    </div>
       </div>
     </div>
   );
