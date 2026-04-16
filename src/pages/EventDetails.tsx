@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { ArrowLeft, MapPin, Calendar, Clock, Users, Share2, Heart, Sparkles } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,10 +7,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import ContactFab from '@/components/ContactFab';
+import ImageLightbox from '@/components/ImageLightbox';
 
 const EventDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   const { data: event, isLoading, error } = useQuery({
     queryKey: ['event', id],
@@ -58,19 +61,23 @@ const EventDetails = () => {
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark animate-fade-in animate-zoom-smooth">
       <div className="mx-auto max-w-md">
-        <div className="relative h-80 bg-cover bg-center rounded-3xl overflow-hidden mx-4 mt-4" style={{
-          backgroundImage: `url('${event.image_url || 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&h=600&fit=crop'}')`
-        }}>
+        <div
+          onClick={() => event.image_url && setLightboxOpen(true)}
+          className="relative h-80 bg-cover bg-center rounded-3xl overflow-hidden mx-4 mt-4 cursor-zoom-in transition-transform active:scale-[0.99]"
+          style={{
+            backgroundImage: `url('${event.image_url || 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&h=600&fit=crop'}')`
+          }}
+        >
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
           
           <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
             <button 
-              onClick={() => navigate(-1)}
+              onClick={(e) => { e.stopPropagation(); navigate(-1); }}
               className="w-11 h-11 rounded-full bg-black/70 backdrop-blur-md flex items-center justify-center hover:bg-black/90 transition-all"
             >
               <ArrowLeft className="w-5 h-5 text-white" />
             </button>
-            <div className="flex gap-2">
+            <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
               <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors">
                 <Share2 size={20} />
               </button>
@@ -176,6 +183,15 @@ const EventDetails = () => {
         contactFacebook={event.contact_facebook}
         contactTwitter={event.contact_twitter}
       />
+
+      {event.image_url && (
+        <ImageLightbox
+          src={event.image_url}
+          alt={event.title}
+          open={lightboxOpen}
+          onClose={() => setLightboxOpen(false)}
+        />
+      )}
     </div>
   );
 };

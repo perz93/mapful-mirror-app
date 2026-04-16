@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, MapPin, Phone, Mail, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import ImageLightbox from '@/components/ImageLightbox';
 
 const categoryLabels: Record<string, string> = {
   location_espaces: 'Location espaces',
@@ -23,6 +25,7 @@ const priceTypeLabels: Record<string, string> = {
 const ListingDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   const { data: listing, isLoading, error } = useQuery({
     queryKey: ['listing', id],
@@ -80,7 +83,8 @@ const ListingDetails = () => {
             <img
               src={listing.image_url}
               alt={listing.title}
-              className="w-full h-64 object-cover"
+              onClick={() => setLightboxOpen(true)}
+              className="w-full h-64 object-cover cursor-zoom-in transition-transform active:scale-[0.99]"
             />
           ) : (
             <div className="w-full h-64 bg-muted flex items-center justify-center">
@@ -172,8 +176,17 @@ const ListingDetails = () => {
                 Aucune information de contact disponible
               </p>
             )}
-          </div>
-        </div>
+      </div>
+
+      {listing.image_url && (
+        <ImageLightbox
+          src={listing.image_url}
+          alt={listing.title}
+          open={lightboxOpen}
+          onClose={() => setLightboxOpen(false)}
+        />
+      )}
+    </div>
       </div>
     </div>
   );
