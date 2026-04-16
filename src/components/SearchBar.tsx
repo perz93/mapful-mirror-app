@@ -173,6 +173,7 @@ const SearchBar = () => {
         </div>
       )}
       </div>
+      {showRoute && <RouteSearchPanel onClose={() => setShowRoute(false)} />}
     </div>
   );
 };
