@@ -8,7 +8,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import ContactFab from '@/components/ContactFab';
 import ImageLightbox from '@/components/ImageLightbox';
-import DirectionsButton from '@/components/DirectionsButton';
+
 
 const EventDetails = () => {
   const { id } = useParams();
