@@ -72,7 +72,7 @@ const ListingDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background animate-fade-in animate-zoom-smooth">
       <div className="max-w-md mx-auto">
         {/* Header with image */}
         <div className="relative">

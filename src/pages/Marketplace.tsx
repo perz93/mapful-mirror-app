@@ -50,7 +50,7 @@ const Marketplace = () => {
   };
 
   return (
-    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-background animate-fade-in">
+    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-background animate-fade-in animate-zoom-smooth">
       {/* Header */}
       <div className="relative z-10 flex items-center justify-between px-4 pt-12 pb-4 animate-fade-in">
         <Link
