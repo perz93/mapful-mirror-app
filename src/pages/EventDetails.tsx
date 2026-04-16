@@ -8,7 +8,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import ContactFab from '@/components/ContactFab';
 import ImageLightbox from '@/components/ImageLightbox';
-import DirectionsButton from '@/components/DirectionsButton';
+
 
 const EventDetails = () => {
   const { id } = useParams();
@@ -105,11 +105,6 @@ const EventDetails = () => {
               <div className="flex-1">
                 <p className="font-semibold text-stone-900 dark:text-white">{event.venue}</p>
                 <p className="text-sm text-stone-600 dark:text-stone-400">{event.address || 'Adresse non spécifiée'}</p>
-                <DirectionsButton
-                  latitude={Number(event.latitude)}
-                  longitude={Number(event.longitude)}
-                  className="mt-3 h-9 px-4 text-sm rounded-full"
-                />
               </div>
             </div>
 

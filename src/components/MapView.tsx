@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster';
@@ -10,12 +10,13 @@ import { useEvents } from '@/hooks/useEvents';
 import { format, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { toast } from 'sonner';
+import RouteInfoPanel from './RouteInfoPanel';
 
 const MapView = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const navigate = useNavigate();
-  const { searchQuery, selectedCategories } = useSearch();
+  const { searchQuery, selectedCategories, routeDestination, setRouteDestination } = useSearch();
   const { data: events, isLoading } = useEvents();
 
   const userLocationRef = useRef<{ lat: number; lng: number } | null>(null);
@@ -23,6 +24,14 @@ const MapView = () => {
   const markersRef = useRef<L.Marker[]>([]);
   const markerClusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   const didAutoRecenterRef = useRef(false);
+  const routeLayerRef = useRef<L.Polyline | null>(null);
+  const destinationMarkerRef = useRef<L.Marker | null>(null);
+  const [routeInfo, setRouteInfo] = useState<{ distanceKm: number | null; durationMin: number | null; loading: boolean; error: boolean }>({
+    distanceKm: null,
+    durationMin: null,
+    loading: false,
+    error: false,
+  });
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
@@ -359,7 +368,10 @@ const MapView = () => {
                   </div>
                 </div>
               </div>
-              <button class="popup-details-btn">Voir détails</button>
+              <div class="popup-actions" style="display:flex;gap:6px;margin-top:8px;">
+                <button class="popup-route-btn" style="flex:1;background:rgba(255,255,255,0.95);color:#1c1917;border:none;border-radius:999px;padding:6px 10px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:4px;">🧭 Itinéraire</button>
+                <button class="popup-details-btn" style="flex:1;">Voir détails</button>
+              </div>
             </div>
           </div>
         </div>
@@ -401,9 +413,8 @@ const MapView = () => {
         }
       });
  
-      // Add click handler only on "Voir détails" button
+      // Add click handlers on popup buttons
       marker.on('popupopen', () => {
-        console.log('Popup opened for:', event.title);
         const popupInstance = marker.getPopup();
         const popupElement = popupInstance?.getElement();
         if (!popupElement) return;
@@ -412,8 +423,20 @@ const MapView = () => {
         if (detailsBtn) {
           detailsBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            console.log('Navigating to event:', event.id);
             navigate(`/event/${event.id}`);
+          });
+        }
+
+        const routeBtn = popupElement.querySelector('.popup-route-btn') as HTMLElement | null;
+        if (routeBtn) {
+          routeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            setRouteDestination({
+              lat: Number(event.latitude),
+              lng: Number(event.longitude),
+              label: event.title,
+            });
+            marker.closePopup();
           });
         }
       });
@@ -439,7 +462,97 @@ const MapView = () => {
 
       didAutoRecenterRef.current = true;
     }
-  }, [events, isLoading, navigate]);
+  }, [events, isLoading, navigate, setRouteDestination]);
+
+  // Compute and draw route via OSRM when destination changes
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+
+    // Clear previous route
+    if (routeLayerRef.current) {
+      map.removeLayer(routeLayerRef.current);
+      routeLayerRef.current = null;
+    }
+    if (destinationMarkerRef.current) {
+      map.removeLayer(destinationMarkerRef.current);
+      destinationMarkerRef.current = null;
+    }
+
+    if (!routeDestination) {
+      setRouteInfo({ distanceKm: null, durationMin: null, loading: false, error: false });
+      return;
+    }
+
+    // Add destination marker
+    const destIcon = L.divIcon({
+      className: 'route-destination-marker',
+      html: `<div style="width:28px;height:28px;border-radius:50%;background:hsl(var(--primary));border:3px solid white;box-shadow:0 4px 12px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;color:white;font-size:14px;">📍</div>`,
+      iconSize: [28, 28],
+      iconAnchor: [14, 14],
+    });
+    destinationMarkerRef.current = L.marker([routeDestination.lat, routeDestination.lng], { icon: destIcon }).addTo(map);
+
+    const ensureUserLocation = (): Promise<{ lat: number; lng: number }> =>
+      new Promise((resolve, reject) => {
+        if (userLocationRef.current) return resolve(userLocationRef.current);
+        if (!navigator.geolocation) return reject(new Error('no-geo'));
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+            userLocationRef.current = loc;
+            resolve(loc);
+          },
+          () => reject(new Error('denied')),
+          { timeout: 7000 }
+        );
+      });
+
+    setRouteInfo({ distanceKm: null, durationMin: null, loading: true, error: false });
+
+    let cancelled = false;
+
+    ensureUserLocation()
+      .then(async (origin) => {
+        const url = `https://router.project-osrm.org/route/v1/driving/${origin.lng},${origin.lat};${routeDestination.lng},${routeDestination.lat}?overview=full&geometries=geojson`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('osrm-error');
+        const data = await res.json();
+        if (cancelled) return;
+        const route = data.routes?.[0];
+        if (!route) throw new Error('no-route');
+
+        const coords: [number, number][] = route.geometry.coordinates.map((c: [number, number]) => [c[1], c[0]]);
+        const polyline = L.polyline(coords, {
+          color: 'hsl(24 95% 53%)',
+          weight: 5,
+          opacity: 0.85,
+          lineCap: 'round',
+          lineJoin: 'round',
+        }).addTo(map);
+        routeLayerRef.current = polyline;
+
+        map.fitBounds(polyline.getBounds(), { padding: [60, 60], maxZoom: 15, animate: true });
+
+        setRouteInfo({
+          distanceKm: route.distance / 1000,
+          durationMin: route.duration / 60,
+          loading: false,
+          error: false,
+        });
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        if (err.message === 'denied' || err.message === 'no-geo') {
+          toast.error('Activez la localisation pour calculer un itinéraire');
+        }
+        setRouteInfo({ distanceKm: null, durationMin: null, loading: false, error: true });
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [routeDestination]);
 
   // Filter markers based on search query and selected categories
   useEffect(() => {
@@ -469,7 +582,17 @@ const MapView = () => {
     });
   }, [searchQuery, selectedCategories]);
 
-  return <div ref={mapRef} className="absolute inset-0 z-0" />;
+  return (
+    <>
+      <div ref={mapRef} className="absolute inset-0 z-0" />
+      <RouteInfoPanel
+        distanceKm={routeInfo.distanceKm}
+        durationMin={routeInfo.durationMin}
+        loading={routeInfo.loading}
+        error={routeInfo.error}
+      />
+    </>
+  );
 };
 
 export default MapView;

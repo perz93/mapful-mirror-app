@@ -1,5 +1,6 @@
-import { Search, Plus, Calendar, User, Settings, Filter } from 'lucide-react';
+import { Search, Plus, Calendar, User, Settings, Filter, Navigation } from 'lucide-react';
 import { useRef, useState } from "react";
+import RouteSearchPanel from './RouteSearchPanel';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +26,7 @@ const SearchBar = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { searchQuery, setSearchQuery, selectedCategories, setSelectedCategories, toggleCategory } = useSearch();
   const [showFilters, setShowFilters] = useState(false);
+  const [showRoute, setShowRoute] = useState(false);
 
   return (
     <div className="fixed left-0 right-0 top-0 z-30 max-w-md mx-auto">
@@ -66,6 +68,14 @@ const SearchBar = () => {
           />
         </div>
         
+        <button
+          onClick={() => setShowRoute(true)}
+          aria-label="Itinéraire"
+          className="h-11 w-11 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-2xl text-primary shadow-xl hover:scale-105 transition-all active:scale-95 flex items-center justify-center border border-white/50 dark:border-stone-800/50"
+        >
+          <Navigation size={20} strokeWidth={1.5} />
+        </button>
+
         <button 
           onClick={() => setShowFilters(!showFilters)}
           className={`h-11 w-11 rounded-2xl backdrop-blur-2xl shadow-xl hover:scale-105 transition-all active:scale-95 flex items-center justify-center border relative ${
@@ -163,6 +173,7 @@ const SearchBar = () => {
         </div>
       )}
       </div>
+      {showRoute && <RouteSearchPanel onClose={() => setShowRoute(false)} />}
     </div>
   );
 };
