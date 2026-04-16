@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, MapPin, Phone, Mail, Tag } from 'lucide-react';
+import { ArrowLeft, MapPin, Phone, Mail, Tag, Navigation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import ImageLightbox from '@/components/ImageLightbox';
@@ -132,7 +132,23 @@ const ListingDetails = () => {
           {listing.location && (
             <div className="flex items-start gap-3">
               <MapPin className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-              <p className="text-foreground">{listing.location}</p>
+              <div className="flex-1">
+                <p className="text-foreground">{listing.location}</p>
+                <Button
+                  onClick={() => {
+                    const dest = encodeURIComponent(listing.location!);
+                    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                    const url = isIOS
+                      ? `https://maps.apple.com/?daddr=${dest}&dirflg=d`
+                      : `https://www.google.com/maps/dir/?api=1&destination=${dest}&travelmode=driving`;
+                    window.open(url, '_blank');
+                  }}
+                  className="mt-2 h-9 px-4 text-sm rounded-full gap-2 bg-primary text-primary-foreground hover:bg-primary/90 transition-all hover:scale-[1.02] active:scale-95"
+                >
+                  <Navigation size={16} />
+                  Itinéraire
+                </Button>
+              </div>
             </div>
           )}
 
