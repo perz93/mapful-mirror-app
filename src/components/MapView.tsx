@@ -99,8 +99,9 @@ const MapView = () => {
         },
         (error) => {
           console.log('Géolocalisation non disponible:', error);
-          // Show toast to ask user to enable location
-          if (error.code === error.PERMISSION_DENIED) {
+          // Show toast only once per session
+          if (error.code === error.PERMISSION_DENIED && !sessionStorage.getItem('locationToastShown')) {
+            sessionStorage.setItem('locationToastShown', '1');
             toast.error('Veuillez activer la localisation dans les paramètres de votre navigateur pour voir votre position sur la carte', {
               duration: 5000
             });
