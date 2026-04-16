@@ -413,9 +413,8 @@ const MapView = () => {
         }
       });
  
-      // Add click handler only on "Voir détails" button
+      // Add click handlers on popup buttons
       marker.on('popupopen', () => {
-        console.log('Popup opened for:', event.title);
         const popupInstance = marker.getPopup();
         const popupElement = popupInstance?.getElement();
         if (!popupElement) return;
@@ -424,8 +423,20 @@ const MapView = () => {
         if (detailsBtn) {
           detailsBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            console.log('Navigating to event:', event.id);
             navigate(`/event/${event.id}`);
+          });
+        }
+
+        const routeBtn = popupElement.querySelector('.popup-route-btn') as HTMLElement | null;
+        if (routeBtn) {
+          routeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            setRouteDestination({
+              lat: Number(event.latitude),
+              lng: Number(event.longitude),
+              label: event.title,
+            });
+            marker.closePopup();
           });
         }
       });
