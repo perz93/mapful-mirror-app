@@ -26,8 +26,39 @@ const RouteInfoPanel = ({ distanceKm, durationMin, loading, error }: RouteInfoPa
           0% { opacity: 0; transform: translateY(-24px) scale(0.96); filter: blur(6px); }
           100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
         }
+        @keyframes route-connector-grow {
+          0% { transform: scaleY(0); opacity: 0; }
+          100% { transform: scaleY(1); opacity: 1; }
+        }
+        @keyframes route-pulse-dot {
+          0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 hsl(var(--primary) / 0.6); }
+          50% { transform: scale(1.15); opacity: 0.85; box-shadow: 0 0 0 10px hsl(var(--primary) / 0); }
+        }
+        @keyframes route-flow {
+          0% { background-position: 0 0; }
+          100% { background-position: 0 16px; }
+        }
       `}</style>
-      <div className="pointer-events-auto rounded-3xl backdrop-blur-2xl bg-white/90 dark:bg-stone-900/90 border border-white/70 dark:border-stone-800/70 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.35)] p-4">
+      <div className="pointer-events-auto rounded-3xl backdrop-blur-2xl bg-white/90 dark:bg-stone-900/90 border border-white/70 dark:border-stone-800/70 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.35)] p-4 relative">
+        {/* Connector reliant le panneau au tracé sur la carte */}
+        <div
+          className="absolute left-1/2 -translate-x-1/2 top-full pointer-events-none flex flex-col items-center"
+          style={{ animation: 'route-connector-grow 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both', transformOrigin: 'top center' }}
+        >
+          <div
+            className="w-[3px] h-10 rounded-full"
+            style={{
+              backgroundImage: 'repeating-linear-gradient(to bottom, hsl(var(--primary)) 0 6px, transparent 6px 12px)',
+              backgroundSize: '3px 12px',
+              animation: 'route-flow 0.8s linear infinite',
+            }}
+          />
+          <div
+            className="h-3 w-3 rounded-full bg-primary mt-0.5"
+            style={{ animation: 'route-pulse-dot 1.8s ease-in-out infinite' }}
+          />
+        </div>
+
         <div className="flex items-start gap-3">
           <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
             <Navigation size={20} className="text-primary" />
