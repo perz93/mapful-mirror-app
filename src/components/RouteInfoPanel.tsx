@@ -17,13 +17,13 @@ const RouteInfoPanel = ({ distanceKm, durationMin, loading, error }: RouteInfoPa
     <div
       className="fixed left-0 right-0 z-40 px-4 max-w-md mx-auto pointer-events-none"
       style={{
-        bottom: 'calc(env(safe-area-inset-bottom, 0px) + 88px)',
+        top: 'calc(env(safe-area-inset-top, 0px) + 88px)',
         animation: 'route-panel-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both',
       }}
     >
       <style>{`
         @keyframes route-panel-in {
-          0% { opacity: 0; transform: translateY(24px) scale(0.96); filter: blur(6px); }
+          0% { opacity: 0; transform: translateY(-24px) scale(0.96); filter: blur(6px); }
           100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
         }
       `}</style>
