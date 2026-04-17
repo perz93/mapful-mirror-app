@@ -14,8 +14,20 @@ const RouteInfoPanel = ({ distanceKm, durationMin, loading, error }: RouteInfoPa
   if (!routeDestination) return null;
 
   return (
-    <div className="absolute bottom-4 left-4 right-4 z-20 animate-fade-in pointer-events-auto">
-      <div className="rounded-2xl backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 border border-white/60 dark:border-stone-800/60 shadow-2xl p-4">
+    <div
+      className="fixed left-0 right-0 z-40 px-4 max-w-md mx-auto pointer-events-none"
+      style={{
+        bottom: 'calc(env(safe-area-inset-bottom, 0px) + 88px)',
+        animation: 'route-panel-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both',
+      }}
+    >
+      <style>{`
+        @keyframes route-panel-in {
+          0% { opacity: 0; transform: translateY(24px) scale(0.96); filter: blur(6px); }
+          100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+      `}</style>
+      <div className="pointer-events-auto rounded-3xl backdrop-blur-2xl bg-white/90 dark:bg-stone-900/90 border border-white/70 dark:border-stone-800/70 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.35)] p-4">
         <div className="flex items-start gap-3">
           <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
             <Navigation size={20} className="text-primary" />
