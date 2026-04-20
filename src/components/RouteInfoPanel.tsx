@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { X, Navigation, Clock, Route as RouteIcon } from 'lucide-react';
 import { useSearch } from '@/contexts/SearchContext';
+import itineraryIcon from '@/assets/itinerary-icon.png';
 
 interface RouteInfoPanelProps {
   distanceKm: number | null;
@@ -171,7 +172,7 @@ const RouteInfoPanel = ({
             <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-border/70" />
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl bg-primary/10">
-                <Navigation size={17} className="text-primary" />
+                <img src={itineraryIcon} alt="" className="h-5 w-5 object-contain" />
               </div>
 
               <div className="min-w-0 flex-1">

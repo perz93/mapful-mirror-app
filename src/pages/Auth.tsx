@@ -167,7 +167,7 @@ const Auth = () => {
               <Button
                 type="button"
                 variant="outline"
-                className="flex-1 h-12 rounded-full text-sm font-medium border-2 bg-foreground text-background border-foreground hover:bg-foreground/90"
+                className="flex-1 h-12 rounded-full text-sm font-medium bg-background text-foreground border-2 border-border hover:bg-muted"
                 onClick={() => {
                   setIsLogin(false);
                   setPassword("");
@@ -179,7 +179,7 @@ const Auth = () => {
               </Button>
               <Button
                 type="submit"
-                className="flex-1 h-12 rounded-full text-sm font-medium bg-background text-foreground border-2 border-border hover:bg-muted"
+                className="flex-1 h-12 rounded-full text-sm font-medium bg-foreground text-background border-2 border-foreground hover:bg-foreground/90"
                 onClick={handleSubmit}
                 disabled={loading}
               >
