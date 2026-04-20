@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useFeaturedEvents } from '@/hooks/useFeaturedEvents';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { getOptimizedImageUrl } from '@/lib/imageOptimization';
 const EventCard = () => {
   const {
     data: events,
