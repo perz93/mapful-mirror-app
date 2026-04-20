@@ -81,13 +81,13 @@ const ListingDetails = () => {
         <div className="relative">
           {listing.image_url ? (
             <img
-              src={`${listing.image_url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/')}?width=900&quality=78&resize=cover`}
+              src={`${listing.image_url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/')}?width=900&quality=78&resize=contain`}
               alt={listing.title}
               onClick={() => setLightboxOpen(true)}
               loading="eager"
               decoding="async"
               fetchPriority="high"
-              className="w-full h-64 object-cover cursor-zoom-in transition-transform active:scale-[0.99]"
+              className="w-full h-64 object-contain bg-muted cursor-zoom-in transition-transform active:scale-[0.99]"
             />
           ) : (
             <div className="w-full h-64 bg-muted flex items-center justify-center">

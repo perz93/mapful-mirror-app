@@ -67,12 +67,12 @@ const EventDetails = () => {
           className="relative h-80 rounded-3xl overflow-hidden mx-4 mt-4 cursor-zoom-in transition-transform active:scale-[0.99] bg-muted"
         >
           <img
-            src={event.image_url ? `${event.image_url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/')}?width=900&quality=78&resize=cover` : 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=900&h=600&fit=crop&q=78'}
+            src={event.image_url ? `${event.image_url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/')}?width=900&quality=78&resize=contain` : 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=900&h=600&fit=crop&q=78'}
             alt={event.title}
             loading="eager"
             decoding="async"
             fetchPriority="high"
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-contain"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
           

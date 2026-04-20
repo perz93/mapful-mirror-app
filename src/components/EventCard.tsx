@@ -52,7 +52,7 @@ const EventCard = () => {
             alt={currentEvent.title}
             loading="lazy"
             decoding="async"
-            className="w-20 h-20 flex-shrink-0 object-cover rounded transition-all duration-700 ease-in-out"
+            className="w-20 h-20 flex-shrink-0 object-contain bg-muted rounded transition-all duration-700 ease-in-out"
           />
         </div>
         

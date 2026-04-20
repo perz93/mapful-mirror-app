@@ -42,7 +42,7 @@ const EventListCard = ({ event }: EventListCardProps) => {
           alt={event.title}
           loading="lazy"
           decoding="async"
-          className="w-20 h-20 flex-shrink-0 object-cover rounded"
+          className="w-20 h-20 flex-shrink-0 object-contain bg-muted rounded"
         />
       </div>
     </div>
