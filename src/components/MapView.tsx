@@ -405,11 +405,14 @@ const MapView = () => {
 
       const dateFormatted = formatEventDate(event.date);
       const timeFormatted = formatEventTime(event.time);
-      const defaultImage = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=300&fit=crop';
+      const defaultImage = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=300&fit=crop&q=70';
+      const popupImage = event.image_url
+        ? `${event.image_url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/')}?width=480&quality=72&resize=cover`
+        : defaultImage;
 
       const popupContent = `
         <div class="event-popup-card">
-          <div class="popup-card-image" style="background-image: url('${event.image_url || defaultImage}')">
+          <div class="popup-card-image" style="background-image: url('${popupImage}')">
             <div class="popup-card-gradient">
               <h3 class="popup-card-title">${event.title}</h3>
               <div class="popup-card-details">

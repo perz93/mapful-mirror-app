@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Link } from 'react-router-dom';
 import { Event } from '@/hooks/useEvents';
+import { getOptimizedImageUrl } from '@/lib/imageOptimization';
 
 interface EventListCardProps {
   event: Event;
@@ -36,11 +37,12 @@ const EventListCard = ({ event }: EventListCardProps) => {
             <span>Voir détails</span>
           </Link>
         </div>
-        <div 
-          style={{
-            backgroundImage: event.image_url ? `url('${event.image_url}')` : "url('https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&h=400&fit=crop')"
-          }} 
-          className="w-20 h-20 flex-shrink-0 bg-center bg-no-repeat bg-cover rounded" 
+        <img
+          src={event.image_url ? getOptimizedImageUrl(event.image_url, { width: 200, quality: 70 }) : 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=200&h=200&fit=crop&q=70'}
+          alt={event.title}
+          loading="lazy"
+          decoding="async"
+          className="w-20 h-20 flex-shrink-0 object-cover rounded"
         />
       </div>
     </div>

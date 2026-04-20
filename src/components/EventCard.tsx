@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useFeaturedEvents } from '@/hooks/useFeaturedEvents';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { getOptimizedImageUrl } from '@/lib/imageOptimization';
 const EventCard = () => {
   const {
     data: events,
@@ -46,9 +47,13 @@ const EventCard = () => {
               <span>Voir détails</span>
             </Link>
           </div>
-          <div style={{
-          backgroundImage: `url('${currentEvent.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=400&fit=crop'}')`
-        }} className="w-20 h-20 flex-shrink-0 bg-center bg-no-repeat bg-cover rounded transition-all duration-700 ease-in-out" />
+          <img
+            src={currentEvent.image_url ? getOptimizedImageUrl(currentEvent.image_url, { width: 200, quality: 70 }) : 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=200&h=200&fit=crop&q=70'}
+            alt={currentEvent.title}
+            loading="lazy"
+            decoding="async"
+            className="w-20 h-20 flex-shrink-0 object-cover rounded transition-all duration-700 ease-in-out"
+          />
         </div>
         
         {/* Progress indicators */}
