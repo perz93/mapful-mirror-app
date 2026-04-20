@@ -11,6 +11,7 @@ import { format, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { toast } from 'sonner';
 import RouteInfoPanel from './RouteInfoPanel';
+import itineraryIcon from '@/assets/itinerary-icon.png';
 
 const MapView = () => {
   const mapRef = useRef<HTMLDivElement>(null);
@@ -427,7 +428,7 @@ const MapView = () => {
                 </div>
               </div>
               <div class="popup-actions" style="display:flex;gap:6px;margin-top:8px;">
-                <button class="popup-route-btn" style="flex:1;background:rgba(255,255,255,0.95);color:#1c1917;border:none;border-radius:999px;padding:6px 10px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;"><img src="/src/assets/itinerary-icon.png" alt="" style="width:14px;height:14px;object-fit:contain;" />Itinéraire</button>
+                <button class="popup-route-btn" style="flex:1;background:rgba(255,255,255,0.95);color:#1c1917;border:none;border-radius:999px;padding:6px 10px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;"><img src="${itineraryIcon}" alt="" style="width:14px;height:14px;object-fit:contain;" />Itinéraire</button>
                 <button class="popup-details-btn" style="flex:1;">Voir détails</button>
               </div>
             </div>
