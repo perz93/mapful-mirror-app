@@ -82,7 +82,7 @@ const CategoryPage = ({
                 <div className="overflow-hidden rounded-3xl bg-white dark:bg-stone-900 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.01] border border-stone-200/50 dark:border-stone-800/50">
                   <div className="h-44 relative overflow-hidden bg-muted">
                     <img
-                      src={event.image_url ? `${event.image_url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/')}?width=600&quality=72&resize=cover` : 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&h=400&fit=crop&q=70'}
+                      src={event.image_url ? `${event.image_url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/')}?width=600&quality=72&resize=contain` : 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&h=400&fit=crop&q=70'}
                       alt={event.title}
                       loading="lazy"
                       decoding="async"

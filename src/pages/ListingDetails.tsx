@@ -81,7 +81,7 @@ const ListingDetails = () => {
         <div className="relative">
           {listing.image_url ? (
             <img
-              src={`${listing.image_url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/')}?width=900&quality=78&resize=cover`}
+              src={`${listing.image_url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/')}?width=900&quality=78&resize=contain`}
               alt={listing.title}
               onClick={() => setLightboxOpen(true)}
               loading="eager"

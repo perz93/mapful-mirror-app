@@ -407,7 +407,7 @@ const MapView = () => {
       const timeFormatted = formatEventTime(event.time);
       const defaultImage = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=300&fit=crop&q=70';
       const popupImage = event.image_url
-        ? `${event.image_url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/')}?width=480&quality=72&resize=cover`
+        ? `${event.image_url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/')}?width=480&quality=72&resize=contain`
         : defaultImage;
 
       const popupContent = `
