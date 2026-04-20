@@ -64,11 +64,16 @@ const EventDetails = () => {
       <div className="mx-auto max-w-md">
         <div
           onClick={() => event.image_url && setLightboxOpen(true)}
-          className="relative h-80 bg-cover bg-center rounded-3xl overflow-hidden mx-4 mt-4 cursor-zoom-in transition-transform active:scale-[0.99]"
-          style={{
-            backgroundImage: `url('${event.image_url || 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&h=600&fit=crop'}')`
-          }}
+          className="relative h-80 rounded-3xl overflow-hidden mx-4 mt-4 cursor-zoom-in transition-transform active:scale-[0.99] bg-muted"
         >
+          <img
+            src={event.image_url ? `${event.image_url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/')}?width=900&quality=78&resize=cover` : 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=900&h=600&fit=crop&q=78'}
+            alt={event.title}
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
           
           <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
