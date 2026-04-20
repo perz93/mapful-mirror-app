@@ -72,7 +72,7 @@ const EventDetails = () => {
             loading="eager"
             decoding="async"
             fetchPriority="high"
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-contain"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
           

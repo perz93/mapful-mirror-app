@@ -86,7 +86,7 @@ const CategoryPage = ({
                       alt={event.title}
                       loading="lazy"
                       decoding="async"
-                      className="absolute inset-0 w-full h-full object-cover"
+                      className="absolute inset-0 w-full h-full object-contain"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                     <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">

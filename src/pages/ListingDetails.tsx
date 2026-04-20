@@ -87,7 +87,7 @@ const ListingDetails = () => {
               loading="eager"
               decoding="async"
               fetchPriority="high"
-              className="w-full h-64 object-cover cursor-zoom-in transition-transform active:scale-[0.99]"
+              className="w-full h-64 object-contain bg-muted cursor-zoom-in transition-transform active:scale-[0.99]"
             />
           ) : (
             <div className="w-full h-64 bg-muted flex items-center justify-center">
