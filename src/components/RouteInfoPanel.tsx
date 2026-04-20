@@ -171,8 +171,8 @@ const RouteInfoPanel = ({
           <div className="relative overflow-hidden rounded-[28px] border border-border/60 bg-background/80 px-3.5 py-3 shadow-[0_22px_60px_-20px_hsl(var(--foreground)/0.35)] backdrop-blur-2xl">
             <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-border/70" />
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl bg-primary/10">
-                <img src={itineraryIcon} alt="" className="h-5 w-5 object-contain" />
+              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-primary/10">
+                <img src={itineraryIcon} alt="" className="h-8 w-8 object-contain" />
               </div>
 
               <div className="min-w-0 flex-1">
