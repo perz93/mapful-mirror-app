@@ -229,7 +229,7 @@ body {
 .custom-popup-card .leaflet-popup-content-wrapper {
   padding: 0;
   border-radius: 16px;
-  overflow: visible;
+  overflow: hidden;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   background: transparent;
 }
@@ -237,8 +237,6 @@ body {
 .custom-popup-card .leaflet-popup-content {
   margin: 0;
   width: 220px !important;
-  border-radius: 16px;
-  overflow: hidden;
 }
 
 .custom-popup-card .leaflet-popup-tip {
@@ -247,30 +245,27 @@ body {
 }
 
 .custom-popup-card .leaflet-popup-close-button {
-  color: rgba(0, 0, 0, 0.85) !important;
-  font-size: 22px !important;
-  font-weight: 400 !important;
-  width: 34px !important;
-  height: 34px !important;
+  color: rgba(0, 0, 0, 0.7) !important;
+  font-size: 24px !important;
+  font-weight: 300 !important;
+  width: 32px !important;
+  height: 32px !important;
   padding: 0 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   text-shadow: none;
-  z-index: 1000 !important;
-  background: white !important;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.7) !important;
   border-radius: 50% !important;
-  right: -10px !important;
-  top: -10px !important;
+  right: 8px !important;
+  top: 8px !important;
   transition: all 0.2s ease !important;
-  pointer-events: auto !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  cursor: pointer !important;
-  border: 2px solid white !important;
+  backdrop-filter: blur(8px);
 }
 
 .custom-popup-card .leaflet-popup-close-button:hover {
-  background: white !important;
+  background: rgba(255, 255, 255, 0.9) !important;
   transform: scale(1.1);
 }
 

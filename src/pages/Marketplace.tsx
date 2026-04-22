@@ -124,13 +124,11 @@ const Marketplace = () => {
                   className="group relative overflow-hidden rounded-2xl bg-white/70 dark:bg-stone-800/70 backdrop-blur-md shadow-lg animate-fade-in transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98]"
                 >
                   {listing.image_url && (
-                    <div className="h-32 overflow-hidden bg-muted">
+                    <div className="h-32 overflow-hidden">
                       <img
-                        src={`${listing.image_url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/')}?width=500&quality=72&resize=contain`}
+                        src={listing.image_url}
                         alt={listing.title}
-                        loading="lazy"
-                        decoding="async"
-                        className="h-full w-full object-contain transition-transform group-hover:scale-105"
+                        className="h-full w-full object-cover transition-transform group-hover:scale-105"
                       />
                     </div>
                   )}
