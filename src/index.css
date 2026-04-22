@@ -245,27 +245,30 @@ body {
 }
 
 .custom-popup-card .leaflet-popup-close-button {
-  color: rgba(0, 0, 0, 0.7) !important;
-  font-size: 24px !important;
-  font-weight: 300 !important;
-  width: 32px !important;
-  height: 32px !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+  font-size: 22px !important;
+  font-weight: 400 !important;
+  width: 34px !important;
+  height: 34px !important;
   padding: 0 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   text-shadow: none;
-  z-index: 10;
-  background: rgba(255, 255, 255, 0.7) !important;
+  z-index: 1000 !important;
+  background: rgba(255, 255, 255, 0.95) !important;
   border-radius: 50% !important;
   right: 8px !important;
   top: 8px !important;
   transition: all 0.2s ease !important;
   backdrop-filter: blur(8px);
+  pointer-events: auto !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  cursor: pointer !important;
 }
 
 .custom-popup-card .leaflet-popup-close-button:hover {
-  background: rgba(255, 255, 255, 0.9) !important;
+  background: white !important;
   transform: scale(1.1);
 }
 
