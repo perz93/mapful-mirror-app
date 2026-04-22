@@ -48,11 +48,11 @@ const EventCard = () => {
             </Link>
           </div>
           <img
-            src={currentEvent.image_url ? getOptimizedImageUrl(currentEvent.image_url, { width: 200, quality: 70 }) : 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=200&h=200&fit=crop&q=70'}
+            src={currentEvent.image_url ? getOptimizedImageUrl(currentEvent.image_url, { width: 200, quality: 70, resize: 'cover' }) : 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=200&h=200&fit=crop&q=70'}
             alt={currentEvent.title}
             loading="lazy"
             decoding="async"
-            className="w-20 h-20 flex-shrink-0 object-contain bg-muted rounded transition-all duration-700 ease-in-out"
+            className="w-20 h-20 flex-shrink-0 object-cover bg-muted rounded-xl transition-all duration-700 ease-in-out"
           />
         </div>
         
