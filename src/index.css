@@ -229,7 +229,7 @@ body {
 .custom-popup-card .leaflet-popup-content-wrapper {
   padding: 0;
   border-radius: 16px;
-  overflow: hidden;
+  overflow: visible;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   background: transparent;
 }
@@ -237,6 +237,8 @@ body {
 .custom-popup-card .leaflet-popup-content {
   margin: 0;
   width: 220px !important;
+  border-radius: 16px;
+  overflow: hidden;
 }
 
 .custom-popup-card .leaflet-popup-tip {
