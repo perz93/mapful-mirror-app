@@ -442,6 +442,8 @@ const MapView = () => {
       const popup = L.popup({
         className: 'custom-popup-card',
         closeButton: true,
+        closeOnClick: true,
+        autoClose: true,
         maxWidth: 220,
         minWidth: 220,
       }).setContent(popupContent);
