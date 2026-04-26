@@ -30,7 +30,7 @@ const EventCard = () => {
         <div className={`flex items-stretch justify-between gap-3 rounded-2xl backdrop-blur-xl bg-white/80 dark:bg-stone-900/80 p-4 shadow-2xl border border-white/50 dark:border-stone-700/50 transition-all duration-700 ease-in-out ${isTransitioning ? 'opacity-0 scale-95 translate-y-2' : 'opacity-100 scale-100 translate-y-0'}`}>
           <div className="flex flex-col justify-between gap-1.5 flex-[2_2_0px]">
             <div className="flex flex-col gap-0.5">
-              <p className="text-xs leading-normal font-semibold text-zinc-500">
+              <p className="leading-normal font-semibold text-zinc-500 font-sans text-base">
                 {currentEvent.venue}
               </p>
               <p className="text-stone-900 dark:text-white text-sm font-bold leading-tight">
