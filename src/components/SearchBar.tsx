@@ -262,7 +262,7 @@ const SearchBar = () => {
         </div>
 
         {/* Unified suggestions panel (events + addresses) */}
-        {showSuggestions && (matchingEvents.length > 0 || addressResults.length > 0 || searchingAddress) && (
+        {showSuggestions && (matchingEvents.length > 0 || addressResults.length > 0 || searchingAddress || (searchQuery.trim().length === 0 && history.length > 0)) && (
           <div className="px-4 -mt-2 animate-fade-in">
             <div className="rounded-2xl backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 border border-white/60 dark:border-stone-800/60 shadow-2xl overflow-hidden max-h-[60vh] overflow-y-auto">
               {matchingEvents.length > 0 && (
