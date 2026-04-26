@@ -108,6 +108,7 @@ const SearchBar = () => {
 
   const selectAddress = (r: AddressResult) => {
     const label = r.display_name.split(',').slice(0, 2).join(',');
+    saveHistory(searchQuery);
     setRouteDestination({
       lat: parseFloat(r.lat),
       lng: parseFloat(r.lon),
@@ -123,10 +124,17 @@ const SearchBar = () => {
     const ev = events?.find(e => e.id === eventId);
     if (ev) {
       sessionStorage.setItem('mapPosition', JSON.stringify({ lat: ev.latitude, lng: ev.longitude, zoom: 16 }));
+      saveHistory(ev.title);
       setSearchQuery(ev.title);
     }
     setFocused(false);
     inputRef.current?.blur();
+  };
+
+  const selectHistory = (term: string) => {
+    setSearchQuery(term);
+    saveHistory(term);
+    inputRef.current?.focus();
   };
 
   const clearSearch = () => {
@@ -135,7 +143,8 @@ const SearchBar = () => {
     inputRef.current?.focus();
   };
 
-  const showSuggestions = focused && searchQuery.trim().length > 0;
+  const showSuggestions = focused && (searchQuery.trim().length > 0 || history.length > 0);
+
 
   return (
     <div className="fixed left-0 right-0 top-0 z-30 max-w-md mx-auto">
