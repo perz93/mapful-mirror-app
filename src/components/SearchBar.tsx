@@ -126,6 +126,10 @@ const SearchBar = () => {
       sessionStorage.setItem('mapPosition', JSON.stringify({ lat: ev.latitude, lng: ev.longitude, zoom: 16 }));
       saveHistory(ev.title);
       setSearchQuery(ev.title);
+      // Tell the map to fly to this event immediately
+      window.dispatchEvent(new CustomEvent('map:flyto', {
+        detail: { lat: ev.latitude, lng: ev.longitude, zoom: 16, eventId: ev.id }
+      }));
     }
     setFocused(false);
     inputRef.current?.blur();
