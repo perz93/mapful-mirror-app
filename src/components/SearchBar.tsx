@@ -1,4 +1,4 @@
-import { Search, Plus, Calendar, User, Settings, Filter, MapPin, Navigation, Loader2, X } from 'lucide-react';
+import { Search, Plus, Calendar, User, Settings, Filter, MapPin, Navigation, Loader2, X, Clock } from 'lucide-react';
 import { useEffect, useRef, useState } from "react";
 import {
   DropdownMenu,
@@ -8,6 +8,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSearch } from '@/contexts/SearchContext';
 import { useEvents } from '@/hooks/useEvents';
+
+const HISTORY_KEY = 'search_history';
+const MAX_HISTORY = 8;
 
 const CATEGORIES = [
   { id: 'music', label: 'Musique', color: 'bg-purple-500' },
