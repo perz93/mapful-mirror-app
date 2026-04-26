@@ -1,4 +1,4 @@
-import { Search, Plus, Calendar, User, Settings, Filter, MapPin, Navigation, Loader2, X } from 'lucide-react';
+import { Search, Plus, Calendar, User, Settings, Filter, MapPin, Navigation, Loader2, X, Clock } from 'lucide-react';
 import { useEffect, useRef, useState } from "react";
 import {
   DropdownMenu,
@@ -8,6 +8,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSearch } from '@/contexts/SearchContext';
 import { useEvents } from '@/hooks/useEvents';
+
+const HISTORY_KEY = 'search_history';
+const MAX_HISTORY = 8;
 
 const CATEGORIES = [
   { id: 'music', label: 'Musique', color: 'bg-purple-500' },
@@ -37,6 +40,37 @@ const SearchBar = () => {
   const [focused, setFocused] = useState(false);
   const [addressResults, setAddressResults] = useState<AddressResult[]>([]);
   const [searchingAddress, setSearchingAddress] = useState(false);
+  const [history, setHistory] = useState<string[]>(() => {
+    try {
+      const raw = localStorage.getItem(HISTORY_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const saveHistory = (term: string) => {
+    const t = term.trim();
+    if (!t) return;
+    setHistory(prev => {
+      const next = [t, ...prev.filter(x => x.toLowerCase() !== t.toLowerCase())].slice(0, MAX_HISTORY);
+      try { localStorage.setItem(HISTORY_KEY, JSON.stringify(next)); } catch { /* */ }
+      return next;
+    });
+  };
+
+  const removeHistoryItem = (term: string) => {
+    setHistory(prev => {
+      const next = prev.filter(x => x !== term);
+      try { localStorage.setItem(HISTORY_KEY, JSON.stringify(next)); } catch { /* */ }
+      return next;
+    });
+  };
+
+  const clearAllHistory = () => {
+    setHistory([]);
+    try { localStorage.removeItem(HISTORY_KEY); } catch { /* */ }
+  };
 
   // Filtered events (max 5)
   const matchingEvents = (events || []).filter(e => {
@@ -74,6 +108,7 @@ const SearchBar = () => {
 
   const selectAddress = (r: AddressResult) => {
     const label = r.display_name.split(',').slice(0, 2).join(',');
+    saveHistory(searchQuery);
     setRouteDestination({
       lat: parseFloat(r.lat),
       lng: parseFloat(r.lon),
@@ -89,10 +124,17 @@ const SearchBar = () => {
     const ev = events?.find(e => e.id === eventId);
     if (ev) {
       sessionStorage.setItem('mapPosition', JSON.stringify({ lat: ev.latitude, lng: ev.longitude, zoom: 16 }));
+      saveHistory(ev.title);
       setSearchQuery(ev.title);
     }
     setFocused(false);
     inputRef.current?.blur();
+  };
+
+  const selectHistory = (term: string) => {
+    setSearchQuery(term);
+    saveHistory(term);
+    inputRef.current?.focus();
   };
 
   const clearSearch = () => {
@@ -101,7 +143,8 @@ const SearchBar = () => {
     inputRef.current?.focus();
   };
 
-  const showSuggestions = focused && searchQuery.trim().length > 0;
+  const showSuggestions = focused && (searchQuery.trim().length > 0 || history.length > 0);
+
 
   return (
     <div className="fixed left-0 right-0 top-0 z-30 max-w-md mx-auto">
@@ -219,9 +262,50 @@ const SearchBar = () => {
         </div>
 
         {/* Unified suggestions panel (events + addresses) */}
-        {showSuggestions && (matchingEvents.length > 0 || addressResults.length > 0 || searchingAddress) && (
+        {showSuggestions && (matchingEvents.length > 0 || addressResults.length > 0 || searchingAddress || (searchQuery.trim().length === 0 && history.length > 0)) && (
           <div className="px-4 -mt-2 animate-fade-in">
             <div className="rounded-2xl backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 border border-white/60 dark:border-stone-800/60 shadow-2xl overflow-hidden max-h-[60vh] overflow-y-auto">
+              {searchQuery.trim().length === 0 && history.length > 0 && (
+                <div className="p-2">
+                  <div className="flex items-center justify-between px-3 py-1.5">
+                    <p className="text-[11px] uppercase tracking-wider font-semibold text-stone-500 dark:text-stone-400 flex items-center gap-1.5">
+                      <Clock size={11} /> Recherches récentes
+                    </p>
+                    <button
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={clearAllHistory}
+                      className="text-[11px] text-primary hover:underline font-medium"
+                    >
+                      Tout effacer
+                    </button>
+                  </div>
+                  {history.map((term) => (
+                    <div
+                      key={term}
+                      className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+                    >
+                      <button
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => selectHistory(term)}
+                        className="flex items-center gap-3 flex-1 min-w-0 text-left"
+                      >
+                        <div className="h-9 w-9 rounded-lg bg-stone-100 dark:bg-stone-800 flex items-center justify-center flex-shrink-0">
+                          <Clock size={15} className="text-stone-500 dark:text-stone-400" />
+                        </div>
+                        <p className="text-sm font-medium text-stone-900 dark:text-white truncate">{term}</p>
+                      </button>
+                      <button
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={(e) => { e.stopPropagation(); removeHistoryItem(term); }}
+                        className="h-7 w-7 rounded-full hover:bg-stone-200 dark:hover:bg-stone-700 flex items-center justify-center text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-all flex-shrink-0"
+                        aria-label={`Supprimer ${term}`}
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
               {matchingEvents.length > 0 && (
                 <div className="p-2">
                   <p className="px-3 py-1.5 text-[11px] uppercase tracking-wider font-semibold text-stone-500 dark:text-stone-400">Événements</p>
