@@ -362,6 +362,23 @@ const SearchBar = () => {
         {showFilters && (
           <div className="px-4 pb-4 animate-fade-in">
             <div className="rounded-2xl backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 border border-white/60 dark:border-stone-800/60 shadow-2xl p-4">
+              {searchQuery.trim().length > 0 && (
+                <div className="mb-3">
+                  <p className="text-[11px] uppercase tracking-wider font-semibold text-stone-500 dark:text-stone-400 mb-2">Recherche active</p>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="inline-flex items-center gap-1.5 pl-3 pr-1 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium shadow-sm">
+                      {searchQuery}
+                      <button
+                        onClick={clearSearch}
+                        className="h-5 w-5 rounded-full bg-white/25 hover:bg-white/40 flex items-center justify-center transition-colors"
+                        aria-label="Effacer la recherche"
+                      >
+                        <X size={12} strokeWidth={2.5} />
+                      </button>
+                    </span>
+                  </div>
+                </div>
+              )}
               <div className="flex items-center justify-between mb-3">
                 <p className="text-sm font-semibold text-stone-900 dark:text-white">Filtrer par catégorie</p>
                 {selectedCategories.length > 0 && (
