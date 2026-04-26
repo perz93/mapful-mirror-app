@@ -20,9 +20,15 @@ const TopMenu = () => {
         <div className="p-4 pt-4 flex items-start justify-end">
         <DropdownMenu onOpenChange={setIsOpen}>
           <DropdownMenuTrigger asChild>
-            <button className="h-12 w-12 rounded-full bg-white/70 dark:bg-stone-900/70 backdrop-blur-md hover:bg-white/90 dark:hover:bg-stone-900/90 transition-all active:scale-95 flex items-center justify-center mt-2 shadow-lg">
-              <div className={`transition-transform duration-500 ease-in-out ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
-                {isOpen ? <X size={24} strokeWidth={2.5} className="text-black dark:text-white" /> : <div className="flex flex-col gap-1 items-center">
+            <button className={`relative h-12 w-12 rounded-full backdrop-blur-md transition-all duration-300 active:scale-95 flex items-center justify-center mt-2 shadow-lg group ${isOpen ? 'bg-gradient-to-br from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 shadow-red-500/50 scale-110 ring-2 ring-white/40' : 'bg-white/70 dark:bg-stone-900/70 hover:bg-white/90 dark:hover:bg-stone-900/90 hover:scale-105'}`}>
+              {isOpen && (
+                <>
+                  <span className="absolute inset-0 rounded-full bg-red-500/40 animate-ping" />
+                  <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-yellow-400 ring-2 ring-white animate-pulse" />
+                </>
+              )}
+              <div className={`relative transition-transform duration-500 ease-in-out ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
+                {isOpen ? <X size={24} strokeWidth={3} className="text-white drop-shadow-md" /> : <div className="flex flex-col gap-1 items-center">
                     <div className="w-5 h-0.5 bg-black dark:bg-white rounded-full"></div>
                     <div className="w-7 h-0.5 bg-black dark:bg-white rounded-full"></div>
                     <div className="w-4 h-0.5 bg-black dark:bg-white rounded-full"></div>
