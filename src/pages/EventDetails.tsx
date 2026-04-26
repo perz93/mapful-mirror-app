@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, MapPin, Calendar, Clock, Users, Share2, Heart, Sparkles } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, Users, Share2, Heart } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
@@ -132,24 +132,29 @@ const EventDetails = () => {
 
           {/* Key Points Section */}
           {keyPoints && keyPoints.length > 0 && (
-            <div className="border-t border-stone-200 dark:border-stone-800 pt-6">
-              <h2 className="text-xl font-bold text-stone-900 dark:text-white mb-4 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-primary" />
-                Points clés
-              </h2>
-              <div className="space-y-3">
-                {keyPoints.map((point, index) => (
-                  <div 
-                    key={index}
-                    className="flex items-start gap-3 p-3 rounded-2xl bg-gradient-to-r from-primary/10 to-primary/5 border-l-4 border-primary"
-                  >
-                    <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <span className="text-white text-xs font-bold">{index + 1}</span>
-                    </div>
-                    <p className="text-stone-800 dark:text-stone-200 font-medium">{point}</p>
-                  </div>
-                ))}
+            <div className="border-t border-stone-200 dark:border-stone-800 pt-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent to-stone-300 dark:to-stone-700" />
+                <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-500 dark:text-stone-400">
+                  Points clés
+                </h2>
+                <div className="h-px flex-1 bg-gradient-to-l from-transparent to-stone-300 dark:to-stone-700" />
               </div>
+              <ul className="space-y-4">
+                {keyPoints.map((point, index) => (
+                  <li
+                    key={index}
+                    className="group flex items-center gap-4 py-2"
+                  >
+                    <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full border border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300 text-sm font-serif italic transition-colors group-hover:border-primary group-hover:text-primary">
+                      {index + 1}
+                    </div>
+                    <p className="text-stone-800 dark:text-stone-200 text-base leading-relaxed font-light tracking-wide">
+                      {point}
+                    </p>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
 
