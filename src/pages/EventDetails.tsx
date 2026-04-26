@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, MapPin, Calendar, Clock, Users, Share2, Heart, Sparkles } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, Users, Share2, Heart } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
