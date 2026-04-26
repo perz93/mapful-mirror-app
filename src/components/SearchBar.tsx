@@ -146,10 +146,11 @@ const SearchBar = () => {
               <button
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={clearSearch}
-                className="absolute inset-y-0 right-2 flex items-center justify-center w-7 text-stone-400 hover:text-stone-600"
-                aria-label="Effacer"
+                className="absolute top-1/2 -translate-y-1/2 right-2 h-7 w-7 rounded-full bg-stone-200/90 dark:bg-stone-700/90 hover:bg-stone-300 dark:hover:bg-stone-600 text-stone-700 dark:text-stone-200 flex items-center justify-center shadow-sm transition-all active:scale-90 animate-fade-in"
+                aria-label="Effacer la recherche"
+                title="Effacer"
               >
-                <X size={16} />
+                <X size={14} strokeWidth={2.5} />
               </button>
             )}
           </div>
