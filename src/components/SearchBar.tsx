@@ -40,6 +40,37 @@ const SearchBar = () => {
   const [focused, setFocused] = useState(false);
   const [addressResults, setAddressResults] = useState<AddressResult[]>([]);
   const [searchingAddress, setSearchingAddress] = useState(false);
+  const [history, setHistory] = useState<string[]>(() => {
+    try {
+      const raw = localStorage.getItem(HISTORY_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const saveHistory = (term: string) => {
+    const t = term.trim();
+    if (!t) return;
+    setHistory(prev => {
+      const next = [t, ...prev.filter(x => x.toLowerCase() !== t.toLowerCase())].slice(0, MAX_HISTORY);
+      try { localStorage.setItem(HISTORY_KEY, JSON.stringify(next)); } catch { /* */ }
+      return next;
+    });
+  };
+
+  const removeHistoryItem = (term: string) => {
+    setHistory(prev => {
+      const next = prev.filter(x => x !== term);
+      try { localStorage.setItem(HISTORY_KEY, JSON.stringify(next)); } catch { /* */ }
+      return next;
+    });
+  };
+
+  const clearAllHistory = () => {
+    setHistory([]);
+    try { localStorage.removeItem(HISTORY_KEY); } catch { /* */ }
+  };
 
   // Filtered events (max 5)
   const matchingEvents = (events || []).filter(e => {
