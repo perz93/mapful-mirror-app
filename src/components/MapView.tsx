@@ -343,6 +343,18 @@ const MapView = () => {
     };
   }, [navigate]);
 
+  // Listen for external "fly to" requests (e.g., from search suggestions)
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { lat: number; lng: number; zoom?: number };
+      const map = mapInstanceRef.current;
+      if (!map || !detail) return;
+      map.flyTo([detail.lat, detail.lng], detail.zoom ?? 16, { duration: 0.8 });
+    };
+    window.addEventListener('map:flyto', handler);
+    return () => window.removeEventListener('map:flyto', handler);
+  }, []);
+
   useEffect(() => {
     if (!mapInstanceRef.current || !markerClusterGroupRef.current || !events || isLoading) return;
 
