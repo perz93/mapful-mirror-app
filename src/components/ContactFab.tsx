@@ -26,12 +26,19 @@ const ContactFab = ({
 }: ContactFabProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
+  const [animateIn, setAnimateIn] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setShouldRender(true);
+      // Wait one frame so initial closed transform is committed before animating
+      const raf = requestAnimationFrame(() => {
+        requestAnimationFrame(() => setAnimateIn(true));
+      });
+      return () => cancelAnimationFrame(raf);
     } else {
-      const timeout = setTimeout(() => setShouldRender(false), 400);
+      setAnimateIn(false);
+      const timeout = setTimeout(() => setShouldRender(false), 600);
       return () => clearTimeout(timeout);
     }
   }, [isOpen]);
@@ -89,13 +96,13 @@ const ContactFab = ({
   // Quarter-circle fan towards upper-left, kept compact so all icons stay on screen
   const getPosition = (index: number, total: number) => {
     if (total === 1) {
-      return { x: -10, y: -80 };
+      return { x: -10, y: -95 };
     }
 
-    const radius = 80;
-    // Angles from 100° (almost up) to 165° (towards upper-left)
+    const radius = 100;
+    // Angles from 100° (almost up) to 170° (towards left)
     const startAngle = 100;
-    const endAngle = 165;
+    const endAngle = 170;
     const angleStep = (endAngle - startAngle) / (total - 1);
     const angle = (startAngle + index * angleStep) * (Math.PI / 180);
 
@@ -128,11 +135,11 @@ const ContactFab = ({
               contact.bgColor
             )}
             style={{
-              transform: isOpen
+              transform: animateIn
                 ? `translate(${position.x}px, ${position.y}px) scale(1) rotate(0deg)`
                 : 'translate(0, 0) scale(0.3) rotate(-45deg)',
-              opacity: isOpen ? 1 : 0,
-              transition: `transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${isOpen ? openDelay : closeDelay}s, opacity 0.3s ease ${isOpen ? openDelay : closeDelay}s`,
+              opacity: animateIn ? 1 : 0,
+              transition: `transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${animateIn ? openDelay : closeDelay}s, opacity 0.35s ease ${animateIn ? openDelay : closeDelay}s`,
               bottom: 0,
               right: 0
             }}
