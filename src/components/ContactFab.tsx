@@ -115,8 +115,9 @@ const ContactFab = ({
       {/* Contact icons in semi-circle */}
       {shouldRender && contacts.map((contact, index) => {
         const position = getPosition(index, contacts.length);
-        const delay = index * 0.05;
-        
+        const openDelay = index * 0.07;
+        const closeDelay = (contacts.length - index - 1) * 0.05;
+
         return (
           <a
             key={index}
@@ -124,17 +125,15 @@ const ContactFab = ({
             target={contact.href.startsWith('tel:') ? '_self' : '_blank'}
             rel="noopener noreferrer"
             className={cn(
-              "absolute w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all",
-              contact.bgColor,
-              isOpen 
-                ? "opacity-100 scale-100" 
-                : "opacity-0 scale-0"
+              "absolute w-12 h-12 rounded-full flex items-center justify-center shadow-lg",
+              contact.bgColor
             )}
             style={{
-              transform: isOpen 
-                ? `translate(${position.x}px, ${position.y}px) scale(1)` 
-                : 'translate(0, 0) scale(0)',
-              transition: `all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${isOpen ? delay : (contacts.length - index - 1) * 0.05}s`,
+              transform: isOpen
+                ? `translate(${position.x}px, ${position.y}px) scale(1) rotate(0deg)`
+                : 'translate(0, 0) scale(0.3) rotate(-45deg)',
+              opacity: isOpen ? 1 : 0,
+              transition: `transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${isOpen ? openDelay : closeDelay}s, opacity 0.3s ease ${isOpen ? openDelay : closeDelay}s`,
               bottom: 0,
               right: 0
             }}
