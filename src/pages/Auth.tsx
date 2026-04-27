@@ -108,9 +108,10 @@ const Auth = () => {
             {/* Close Button */}
             <button
               onClick={() => navigate("/")}
-              className="absolute top-4 left-4 w-9 h-9 rounded-full bg-muted/50 hover:bg-muted flex items-center justify-center transition-colors z-10"
+              className="absolute top-4 left-4 w-11 h-11 rounded-full bg-white/80 dark:bg-stone-900/80 backdrop-blur-md hover:bg-white dark:hover:bg-stone-900 flex items-center justify-center shadow-[0_8px_24px_-6px_rgba(0,0,0,0.25)] hover:shadow-[0_12px_32px_-6px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-95 transition-all duration-300 z-10"
+              aria-label="Fermer"
             >
-              <X className="w-4 h-4" />
+              <X className="w-4 h-4 text-stone-800 dark:text-stone-100" strokeWidth={2.5} />
             </button>
 
             {/* Header */}
@@ -207,9 +208,10 @@ const Auth = () => {
             {/* Close Button */}
             <button
               onClick={() => navigate("/")}
-              className="absolute top-4 left-4 w-9 h-9 rounded-full bg-muted/50 hover:bg-muted flex items-center justify-center transition-colors z-10"
+              className="absolute top-4 left-4 w-11 h-11 rounded-full bg-white/80 dark:bg-stone-900/80 backdrop-blur-md hover:bg-white dark:hover:bg-stone-900 flex items-center justify-center shadow-[0_8px_24px_-6px_rgba(0,0,0,0.25)] hover:shadow-[0_12px_32px_-6px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-95 transition-all duration-300 z-10"
+              aria-label="Fermer"
             >
-              <X className="w-4 h-4" />
+              <X className="w-4 h-4 text-stone-800 dark:text-stone-100" strokeWidth={2.5} />
             </button>
 
             {/* Header */}
