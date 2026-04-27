@@ -26,12 +26,19 @@ const ContactFab = ({
 }: ContactFabProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
+  const [animateIn, setAnimateIn] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setShouldRender(true);
+      // Wait one frame so initial closed transform is committed before animating
+      const raf = requestAnimationFrame(() => {
+        requestAnimationFrame(() => setAnimateIn(true));
+      });
+      return () => cancelAnimationFrame(raf);
     } else {
-      const timeout = setTimeout(() => setShouldRender(false), 400);
+      setAnimateIn(false);
+      const timeout = setTimeout(() => setShouldRender(false), 600);
       return () => clearTimeout(timeout);
     }
   }, [isOpen]);
