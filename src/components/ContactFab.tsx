@@ -96,13 +96,13 @@ const ContactFab = ({
   // Quarter-circle fan towards upper-left, kept compact so all icons stay on screen
   const getPosition = (index: number, total: number) => {
     if (total === 1) {
-      return { x: -10, y: -80 };
+      return { x: -10, y: -95 };
     }
 
-    const radius = 80;
-    // Angles from 100° (almost up) to 165° (towards upper-left)
+    const radius = 100;
+    // Angles from 100° (almost up) to 170° (towards left)
     const startAngle = 100;
-    const endAngle = 165;
+    const endAngle = 170;
     const angleStep = (endAngle - startAngle) / (total - 1);
     const angle = (startAngle + index * angleStep) * (Math.PI / 180);
 
