@@ -114,8 +114,8 @@ const ContactFab = ({
       {/* Contact icons in semi-circle */}
       {shouldRender && contacts.map((contact, index) => {
         const position = getPosition(index, contacts.length);
-        const openDelay = index * 0.07;
-        const closeDelay = (contacts.length - index - 1) * 0.05;
+        const openDelay = index * 0.13;
+        const closeDelay = (contacts.length - index - 1) * 0.08;
 
         return (
           <a
