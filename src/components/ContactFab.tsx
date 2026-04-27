@@ -99,10 +99,11 @@ const ContactFab = ({
       return { x: -10, y: -95 };
     }
 
-    const radius = 100;
-    // Angles from 100° (almost up) to 170° (towards left)
-    const startAngle = 100;
-    const endAngle = 170;
+    // Adaptive radius so each icon (48px) has a real gap on the arc
+    const radius = 70 + total * 18;
+    // Angles from 95° (almost up) to 175° (towards left)
+    const startAngle = 95;
+    const endAngle = 175;
     const angleStep = (endAngle - startAngle) / (total - 1);
     const angle = (startAngle + index * angleStep) * (Math.PI / 180);
 
