@@ -130,33 +130,62 @@ const EventDetails = () => {
             </div>
           </div>
 
-          {/* Key Points Section */}
-          {keyPoints && keyPoints.length > 0 && (
-            <div className="border-t border-stone-200 dark:border-stone-800 pt-8">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent to-stone-300 dark:to-stone-700" />
-                <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-500 dark:text-stone-400">
-                  Points clés
-                </h2>
-                <div className="h-px flex-1 bg-gradient-to-l from-transparent to-stone-300 dark:to-stone-700" />
+          {/* Key Points Section - Infographic Style */}
+          {keyPoints && keyPoints.length > 0 && (() => {
+            const stepColors = [
+              { bg: 'bg-[#3B82F6]', text: 'text-[#3B82F6]', shadow: 'shadow-[#3B82F6]/30' },
+              { bg: 'bg-[#F59E0B]', text: 'text-[#F59E0B]', shadow: 'shadow-[#F59E0B]/30' },
+              { bg: 'bg-[#EF4444]', text: 'text-[#EF4444]', shadow: 'shadow-[#EF4444]/30' },
+              { bg: 'bg-[#10B981]', text: 'text-[#10B981]', shadow: 'shadow-[#10B981]/30' },
+              { bg: 'bg-[#8B5CF6]', text: 'text-[#8B5CF6]', shadow: 'shadow-[#8B5CF6]/30' },
+            ];
+            return (
+              <div className="border-t border-stone-200 dark:border-stone-800 pt-8">
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="h-px flex-1 bg-gradient-to-r from-transparent to-stone-300 dark:to-stone-700" />
+                  <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-500 dark:text-stone-400">
+                    Points clés
+                  </h2>
+                  <div className="h-px flex-1 bg-gradient-to-l from-transparent to-stone-300 dark:to-stone-700" />
+                </div>
+
+                <div className="relative">
+                  {/* Vertical connecting line */}
+                  <div className="absolute left-[27px] top-6 bottom-6 w-0.5 bg-gradient-to-b from-stone-200 via-stone-300 to-stone-200 dark:from-stone-800 dark:via-stone-700 dark:to-stone-800" />
+
+                  <ul className="space-y-5">
+                    {keyPoints.map((point, index) => {
+                      const color = stepColors[index % stepColors.length];
+                      return (
+                        <li key={index} className="group relative flex items-center gap-4">
+                          {/* Circle with number */}
+                          <div className={`relative flex-shrink-0 w-14 h-14 rounded-full ${color.bg} flex items-center justify-center shadow-lg ${color.shadow} ring-4 ring-white dark:ring-background-dark transition-transform group-hover:scale-110`}>
+                            <span className="text-white font-bold text-lg">
+                              {String(index + 1).padStart(2, '0')}
+                            </span>
+                          </div>
+
+                          {/* Content card */}
+                          <div className="flex-1 relative">
+                            {/* Connector dot */}
+                            <div className={`absolute -left-2 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full ${color.bg}`} />
+                            <div className="bg-white dark:bg-stone-900 rounded-xl px-4 py-3 shadow-sm border border-stone-100 dark:border-stone-800 transition-all group-hover:shadow-md group-hover:border-stone-200 dark:group-hover:border-stone-700">
+                              <p className={`text-[10px] font-bold uppercase tracking-[0.15em] ${color.text} mb-1`}>
+                                Étape {String(index + 1).padStart(2, '0')}
+                              </p>
+                              <p className="text-stone-800 dark:text-stone-200 text-sm leading-relaxed font-medium">
+                                {point}
+                              </p>
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
               </div>
-              <ul className="space-y-4">
-                {keyPoints.map((point, index) => (
-                  <li
-                    key={index}
-                    className="group flex items-center gap-4 py-2"
-                  >
-                    <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full border border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300 text-sm font-serif italic transition-colors group-hover:border-primary group-hover:text-primary">
-                      {index + 1}
-                    </div>
-                    <p className="text-stone-800 dark:text-stone-200 text-base leading-relaxed font-light tracking-wide">
-                      {point}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+            );
+          })()}
 
           {event.description && (
             <div className="border-t border-stone-200 dark:border-stone-800 pt-6">
