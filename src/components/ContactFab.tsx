@@ -86,17 +86,16 @@ const ContactFab = ({
 
   const hasContacts = contacts.length > 0;
 
-  // Quarter-circle fan towards upper-left with comfortable spacing
+  // Quarter-circle fan towards upper-left, kept compact so all icons stay on screen
   const getPosition = (index: number, total: number) => {
     if (total === 1) {
-      return { x: -10, y: -90 };
+      return { x: -10, y: -80 };
     }
 
-    // Adaptive radius — more icons need more room to avoid overlap
-    const radius = 95 + (total - 2) * 12;
-    // Angles from 95° (almost up) to 175° (almost left)
-    const startAngle = 95;
-    const endAngle = 175;
+    const radius = 80;
+    // Angles from 100° (almost up) to 165° (towards upper-left)
+    const startAngle = 100;
+    const endAngle = 165;
     const angleStep = (endAngle - startAngle) / (total - 1);
     const angle = (startAngle + index * angleStep) * (Math.PI / 180);
 
@@ -115,8 +114,8 @@ const ContactFab = ({
       {/* Contact icons in semi-circle */}
       {shouldRender && contacts.map((contact, index) => {
         const position = getPosition(index, contacts.length);
-        const openDelay = index * 0.07;
-        const closeDelay = (contacts.length - index - 1) * 0.05;
+        const openDelay = index * 0.13;
+        const closeDelay = (contacts.length - index - 1) * 0.08;
 
         return (
           <a
