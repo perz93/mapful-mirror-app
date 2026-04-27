@@ -135,11 +135,11 @@ const ContactFab = ({
               contact.bgColor
             )}
             style={{
-              transform: isOpen
+              transform: animateIn
                 ? `translate(${position.x}px, ${position.y}px) scale(1) rotate(0deg)`
                 : 'translate(0, 0) scale(0.3) rotate(-45deg)',
-              opacity: isOpen ? 1 : 0,
-              transition: `transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${isOpen ? openDelay : closeDelay}s, opacity 0.3s ease ${isOpen ? openDelay : closeDelay}s`,
+              opacity: animateIn ? 1 : 0,
+              transition: `transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${animateIn ? openDelay : closeDelay}s, opacity 0.35s ease ${animateIn ? openDelay : closeDelay}s`,
               bottom: 0,
               right: 0
             }}
