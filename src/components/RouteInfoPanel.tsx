@@ -161,11 +161,11 @@ const RouteInfoPanel = ({
         >
           <button
             onClick={() => setRouteDestination(null)}
-            className="absolute -top-2 -right-2 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-primary/25 bg-background/95 text-primary shadow-lg transition-all active:scale-90"
+            className="absolute -top-3 -right-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 backdrop-blur-md text-stone-900 shadow-[0_8px_24px_-6px_rgba(0,0,0,0.3)] hover:bg-white hover:scale-105 hover:shadow-[0_12px_32px_-6px_rgba(0,0,0,0.35)] transition-all duration-300 active:scale-95"
             style={{ animation: 'close-btn-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.18s both' }}
             aria-label="Fermer l'itinéraire"
           >
-            <X size={15} strokeWidth={2.5} />
+            <X size={16} strokeWidth={2.5} />
           </button>
 
           <div className="relative overflow-hidden rounded-[28px] border border-border/60 bg-background/80 px-3.5 py-3 shadow-[0_22px_60px_-20px_hsl(var(--foreground)/0.35)] backdrop-blur-2xl">

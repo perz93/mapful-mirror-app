@@ -61,9 +61,10 @@ const ContactModal = ({
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center hover:bg-stone-200 transition-colors"
+          className="absolute top-4 right-4 w-11 h-11 rounded-full bg-white/80 backdrop-blur-md hover:bg-white flex items-center justify-center shadow-[0_8px_24px_-6px_rgba(0,0,0,0.25)] hover:shadow-[0_12px_32px_-6px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-95 transition-all duration-300"
+          aria-label="Fermer"
         >
-          <X className="w-4 h-4 text-stone-600" />
+          <X className="w-4 h-4 text-stone-800" strokeWidth={2.5} />
         </button>
 
         <h3 className="text-xl font-semibold text-stone-900 mb-6 text-center">Contacter l'organisateur</h3>
