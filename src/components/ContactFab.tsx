@@ -86,18 +86,19 @@ const ContactFab = ({
 
   const hasContacts = contacts.length > 0;
 
-  // Quarter-circle fan towards upper-left so all icons stay on screen
+  // Quarter-circle fan towards upper-left with comfortable spacing
   const getPosition = (index: number, total: number) => {
     if (total === 1) {
-      return { x: -10, y: -75 };
+      return { x: -10, y: -90 };
     }
 
-    // Angles from 90° (straight up) to 180° (straight left)
+    // Adaptive radius — more icons need more room to avoid overlap
+    const radius = 95 + (total - 2) * 12;
+    // Angles from 95° (almost up) to 175° (almost left)
     const startAngle = 95;
-    const endAngle = 180;
+    const endAngle = 175;
     const angleStep = (endAngle - startAngle) / (total - 1);
     const angle = (startAngle + index * angleStep) * (Math.PI / 180);
-    const radius = 85;
 
     return {
       x: Math.cos(angle) * radius,
