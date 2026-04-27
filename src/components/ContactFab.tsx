@@ -86,20 +86,22 @@ const ContactFab = ({
 
   const hasContacts = contacts.length > 0;
 
-  // Calculate positions for semi-circle (from -90deg to 90deg, expanding upward)
+  // Quarter-circle fan towards upper-left so all icons stay on screen
   const getPosition = (index: number, total: number) => {
     if (total === 1) {
-      return { x: 0, y: -70 };
+      return { x: -10, y: -75 };
     }
-    
-    const startAngle = -90 + (90 - (total - 1) * 22.5);
-    const angleStep = total > 1 ? 180 / (total - 1) : 0;
+
+    // Angles from 90° (straight up) to 180° (straight left)
+    const startAngle = 95;
+    const endAngle = 180;
+    const angleStep = (endAngle - startAngle) / (total - 1);
     const angle = (startAngle + index * angleStep) * (Math.PI / 180);
-    const radius = 75;
-    
+    const radius = 85;
+
     return {
       x: Math.cos(angle) * radius,
-      y: -Math.sin(angle) * radius - 10
+      y: -Math.sin(angle) * radius
     };
   };
 
