@@ -1,14 +1,22 @@
 import { createRoot } from "react-dom/client";
+import { registerSW } from "virtual:pwa-register";
 import App from "./App.tsx";
 import "./index.css";
 
-// Register PWA service worker
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {
-      // Service worker registration failed, app will work without offline support
-    });
-  });
-}
+let updateServiceWorker: ((reloadPage?: boolean) => Promise<void>) | undefined;
+
+updateServiceWorker = registerSW({
+  immediate: true,
+  onNeedRefresh() {
+    void updateServiceWorker?.(true);
+  },
+  onRegisteredSW(_swUrl, registration) {
+    if (!registration) return;
+
+    window.setInterval(() => {
+      void registration.update();
+    }, 60_000);
+  },
+});
 
 createRoot(document.getElementById("root")!).render(<App />);
