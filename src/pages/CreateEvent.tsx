@@ -38,9 +38,9 @@ const categoryIcons: Record<string, string> = {
   sports: sportIcon,
 };
 
-const inputClass = "h-11 rounded-xl bg-white/10 border border-white/15 text-white placeholder:text-white/30 text-sm focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50 [&]:ring-0 [&]:outline-none";
+const inputClass = "h-10 rounded-xl bg-white/10 border border-white/15 text-white placeholder:text-white/30 text-sm focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50 [&]:ring-0 [&]:outline-none";
 const labelClass = "text-sm text-white/70 font-normal";
-const cardClass = "rounded-2xl backdrop-blur-2xl bg-white/10 border border-white/15 p-5 space-y-4";
+const cardClass = "rounded-2xl backdrop-blur-2xl bg-white/10 border border-white/15 p-4 space-y-3";
 const sectionTitleClass = "text-lg italic text-white mb-4 flex items-center gap-2";
 
 const CreateEvent = () => {
