@@ -151,9 +151,9 @@ const SearchBar = () => {
 
 
   return (
-    <div className="fixed left-0 right-0 top-0 z-30 max-w-md mx-auto">
+    <div className="fixed left-0 right-0 top-0 z-30 max-w-md mx-auto" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
       <div className="flex flex-col">
-        <div className="p-4 pt-6 flex items-center gap-2">
+        <div className="p-4 pt-2 flex items-center gap-2">
           <div className="relative flex-1">
             <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-stone-400 dark:text-stone-500">
               <Search size={18} strokeWidth={1.5} />

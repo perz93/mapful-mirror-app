@@ -73,7 +73,7 @@ const EventDetails = () => {
         >
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
           
-          <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+          <div className="absolute left-4 right-4 flex items-center justify-between" style={{ top: 'calc(env(safe-area-inset-top, 0px) + 12px)' }}>
             <button 
               onClick={(e) => { e.stopPropagation(); navigate(-1); }}
               className="w-11 h-11 rounded-full bg-black/70 backdrop-blur-md flex items-center justify-center hover:bg-black/90 transition-all"

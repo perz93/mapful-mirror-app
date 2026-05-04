@@ -7,17 +7,15 @@ import TonightSection from "@/components/TonightSection";
 
 const Index = () => {
   return (
-    <div className="relative mx-auto flex h-full max-w-md flex-col overflow-hidden bg-[#e8e4d8]" style={{ height: '100dvh', maxHeight: '100dvh' }}>
-      <div className="relative flex-1 overflow-hidden">
-        <div className="h-full w-full animate-fade-in animate-zoom-smooth">
-          <MapView />
-        </div>
-        <TopMenu />
-        <MapControls />
-        <TonightSection />
-        <EventCard />
+    <div className="fixed inset-0 overflow-hidden bg-[#e8e4d8]">
+      <div className="absolute inset-0">
+        <MapView />
       </div>
-      <BottomNavigation className="my-0 py-0 pb-0 pt-[4px]" />
+      <TopMenu />
+      <MapControls />
+      <TonightSection />
+      <EventCard />
+      <BottomNavigation />
     </div>
   );
 };

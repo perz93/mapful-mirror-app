@@ -25,7 +25,7 @@ const CategoryPage = ({
     return <div className="min-h-screen bg-gradient-to-b from-stone-50 to-white dark:from-stone-950 dark:to-stone-900 animate-fade-in animate-zoom-smooth">
         <div className="mx-auto max-w-md">
           <header className="sticky top-0 z-10 backdrop-blur-xl bg-white/80 dark:bg-stone-900/80 border-b border-stone-200/50 dark:border-stone-800/50">
-            <div className="flex items-center gap-4 px-4 py-4">
+            <div className="flex items-center gap-4 px-4 py-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}
               <Link to="/" className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-stone-100 to-stone-50 dark:from-stone-800 dark:to-stone-900 text-stone-900 dark:text-white hover:scale-105 active:scale-95 transition-all duration-200 shadow-sm hover:shadow-md border border-stone-200/50 dark:border-stone-700/50">
                 <ArrowLeft size={20} strokeWidth={2} />
               </Link>
@@ -45,7 +45,7 @@ const CategoryPage = ({
     return <div className="min-h-screen bg-gradient-to-b from-stone-50 to-white dark:from-stone-950 dark:to-stone-900 animate-fade-in animate-zoom-smooth">
         <div className="mx-auto max-w-md">
           <header className="sticky top-0 z-10 backdrop-blur-xl bg-white/80 dark:bg-stone-900/80 border-b border-stone-200/50 dark:border-stone-800/50">
-            <div className="flex items-center gap-4 px-4 py-4">
+            <div className="flex items-center gap-4 px-4 py-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}
               <Link to="/" className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-stone-100 to-stone-50 dark:from-stone-800 dark:to-stone-900 text-stone-900 dark:text-white hover:scale-105 active:scale-95 transition-all duration-200 shadow-sm hover:shadow-md border border-stone-200/50 dark:border-stone-700/50">
                 <ArrowLeft size={20} strokeWidth={2} />
               </Link>
@@ -64,7 +64,7 @@ const CategoryPage = ({
   return <div className="min-h-screen bg-gradient-to-b from-stone-50 to-white dark:from-stone-950 dark:to-stone-900 animate-fade-in animate-zoom-smooth">
       <div className="mx-auto max-w-md">
         <header className="sticky top-0 z-10 backdrop-blur-xl bg-white/80 dark:bg-stone-900/80 border-b border-stone-200/50 dark:border-stone-800/50">
-          <div className="flex items-center gap-4 px-4 py-4">
+          <div className="flex items-center gap-4 px-4 py-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}
             <Link to="/" className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-stone-100 to-stone-50 dark:from-stone-800 dark:to-stone-900 text-stone-900 dark:text-white hover:scale-105 active:scale-95 transition-all duration-200 shadow-sm hover:shadow-md border border-stone-200/50 dark:border-stone-700/50">
               <ArrowLeft size={20} strokeWidth={2} />
             </Link>

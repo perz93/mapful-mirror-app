@@ -16,8 +16,8 @@ const TopMenu = () => {
       {/* Overlay sombre quand le menu est ouvert */}
       {isOpen && <div className="fixed inset-0 bg-black/50 backdrop-blur-xl z-20 animate-fade-in" />}
       
-      <div className="fixed left-0 right-0 top-0 z-30 max-w-md mx-auto">
-        <div className="p-4 pt-4 flex items-start justify-end">
+      <div className="fixed left-0 right-0 top-0 z-30 max-w-md mx-auto" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+        <div className="p-4 pt-2 flex items-start justify-end">
         <DropdownMenu onOpenChange={setIsOpen}>
           <DropdownMenuTrigger asChild>
             <button className="relative h-12 w-12 rounded-full bg-white/70 dark:bg-stone-900/70 backdrop-blur-md hover:bg-white/90 dark:hover:bg-stone-900/90 transition-all duration-300 active:scale-95 hover:scale-105 flex items-center justify-center mt-2 shadow-lg">
