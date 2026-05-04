@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => ({
         short_name: 'Mapful',
         description: 'Discover events near you',
         theme_color: '#ee9d2b',
-        background_color: '#181511',
+        background_color: '#e8e4d8',
         display: 'standalone',
         icons: [
           {

@@ -38,7 +38,7 @@ const categoryIcons: Record<string, string> = {
   sports: sportIcon,
 };
 
-const inputClass = "h-11 rounded-xl bg-white/10 border border-white/15 text-white placeholder:text-white/30 text-sm focus:outline-none focus:ring-2 focus:ring-[#ee9d2b]/30";
+const inputClass = "h-11 rounded-xl bg-white/10 border border-white/15 text-white placeholder:text-white/30 text-sm focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50 [&]:ring-0 [&]:outline-none";
 const labelClass = "text-sm text-white/70 font-normal";
 const cardClass = "rounded-2xl backdrop-blur-2xl bg-white/10 border border-white/15 p-5 space-y-4";
 const sectionTitleClass = "text-lg italic text-white mb-4 flex items-center gap-2";
@@ -559,7 +559,7 @@ const CreateEvent = () => {
                 Date et heure
               </h2>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-3">
                   <Label htmlFor="date" className={labelClass}>Date *</Label>
                   <Input
@@ -588,11 +588,10 @@ const CreateEvent = () => {
             {/* Price and Capacity Card */}
             <div className={cardClass}>
               <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
-                <DollarSign className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
                 Prix et capacité
               </h2>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-3">
                   <Label htmlFor="price" className={labelClass}>Prix (FCFA)</Label>
                   <Input
