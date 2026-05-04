@@ -194,11 +194,8 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
         </DialogContent>
       </Dialog>
 
-      <div className={`fixed bottom-0 left-0 right-0 z-40 ${className}`}>
-        {/* Full-width backdrop that covers safe area */}
-        <div className="absolute inset-0 top-auto backdrop-blur-xl bg-white/60 dark:bg-stone-900/60" style={{ height: 'calc(100% + env(safe-area-inset-bottom, 0px))', bottom: 'calc(-1 * env(safe-area-inset-bottom, 0px))' }} />
-        <div className="relative max-w-md mx-auto px-3 pb-[2px]" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 4px) + 2px)' }}>
-        <div className="h-[68px] rounded-xl backdrop-blur-xl bg-white/80 dark:bg-stone-900/80 shadow-2xl border border-stone-200/50 dark:border-stone-700/50 overflow-hidden">
+      <div className={`fixed bottom-0 left-0 right-0 max-w-md mx-auto flex-shrink-0 px-4 pb-safe z-40 ${className}`}>
+        <div className="h-[72px] rounded-xl backdrop-blur-xl bg-white/80 dark:bg-stone-900/80 shadow-2xl mb-2 border border-stone-200/50 dark:border-stone-700/50 overflow-hidden">
           <div className="relative h-full flex items-center">
             <button
               onClick={() => setSearchOpen(true)}
@@ -255,7 +252,6 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
               )}
             </div>
           </div>
-        </div>
         </div>
       </div>
     </>

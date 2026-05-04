@@ -7,15 +7,17 @@ import TonightSection from "@/components/TonightSection";
 
 const Index = () => {
   return (
-    <div className="fixed inset-0 overflow-hidden bg-[#e8e4d8]" style={{ top: 0, bottom: 0, left: 0, right: 0, height: '100%', minHeight: '-webkit-fill-available' }}>
-      <div className="absolute inset-0">
-        <MapView />
+    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-background">
+      <div className="relative flex-1 overflow-hidden">
+        <div className="h-full w-full animate-fade-in animate-zoom-smooth">
+          <MapView />
+        </div>
+        <TopMenu />
+        <MapControls />
+        <TonightSection />
+        <EventCard />
       </div>
-      <TopMenu />
-      <MapControls />
-      <TonightSection />
-      <EventCard />
-      <BottomNavigation />
+      <BottomNavigation className="my-0 py-0 pb-0 pt-[4px]" />
     </div>
   );
 };

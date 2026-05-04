@@ -16,7 +16,7 @@ const MapControls = () => {
   };
   return <>
       {/* Left side controls: Zoom + Position */}
-      <div className="absolute left-4 top-[40%] -translate-y-1/2 flex flex-col items-start gap-3">
+      <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col items-start gap-3">
         <div className="flex flex-col gap-0 shadow-lg rounded-full overflow-hidden">
           <button onClick={handleZoomIn} className="flex size-10 items-center justify-center bg-white/95 dark:bg-stone-900/95 backdrop-blur-md hover:bg-white dark:hover:bg-stone-800 transition-colors border-b border-stone-200/50 dark:border-stone-700/50" aria-label="Zoom in">
             <Plus className="text-stone-900 dark:text-white" size={20} />
@@ -31,7 +31,7 @@ const MapControls = () => {
       </div>
 
       {/* Right side: Marketplace button */}
-      <div className="absolute right-4 top-[40%] -translate-y-1/2 flex flex-col items-center gap-1.5 animate-fade-in">
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5 animate-fade-in">
         <button onClick={handleMarketplaceClick} className="flex size-14 items-center justify-center rounded-full bg-[#ee9d2b] shadow-2xl hover:scale-110 active:scale-95 transition-transform duration-200 animate-scale-in" aria-label="Marketplace">
           <ShoppingCart className="w-7 h-7 text-white" strokeWidth={2} />
         </button>
