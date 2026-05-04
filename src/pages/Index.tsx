@@ -7,7 +7,7 @@ import TonightSection from "@/components/TonightSection";
 
 const Index = () => {
   return (
-    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-background">
+    <div className="relative mx-auto flex h-[100dvh] max-w-md flex-col overflow-hidden bg-[#e8e4d8]">
       <div className="relative flex-1 overflow-hidden">
         <div className="h-full w-full animate-fade-in animate-zoom-smooth">
           <MapView />
