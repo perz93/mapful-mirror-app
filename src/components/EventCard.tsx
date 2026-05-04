@@ -34,12 +34,12 @@ const EventCard = () => {
         <div className={`flex items-stretch justify-between gap-4 rounded-3xl backdrop-blur-2xl bg-white/40 dark:bg-stone-900/40 p-4 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] border border-white/60 dark:border-stone-700/30 transition-all duration-700 ease-in-out ${isTransitioning ? 'opacity-0 scale-95 translate-y-2' : 'opacity-100 scale-100 translate-y-0'}`}>
           <div className="flex flex-col justify-between gap-1.5 flex-[2_2_0px]">
             <div className="flex flex-col gap-1">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-base backdrop-blur-xl bg-stone-500/15 text-stone-600 dark:bg-white/10 dark:text-stone-300 border border-stone-300/30 dark:border-white/10 shadow-sm w-fit italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif", fontWeight: 600 }}>
+              <p className="text-stone-900 dark:text-white text-base font-bold leading-tight">
                 {currentEvent.venue}
-              </span>
-              <p className="text-stone-900 dark:text-white text-[15px] font-bold leading-tight">
-                {currentEvent.title}
               </p>
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm backdrop-blur-xl bg-stone-500/15 text-stone-600 dark:bg-white/10 dark:text-stone-300 border border-stone-300/30 dark:border-white/10 shadow-sm w-fit italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif", fontWeight: 600 }}>
+                {currentEvent.title}
+              </span>
               <p className="text-stone-500 dark:text-stone-400 text-xs font-normal leading-normal">
                 {format(new Date(currentEvent.date), 'EEE, dd MMM', {
                 locale: fr
