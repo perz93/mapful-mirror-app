@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSearch } from '@/contexts/SearchContext';
 import { useEvents } from '@/hooks/useEvents';
+import { fuzzyMatch } from '@/lib/fuzzyMatch';
 
 const HISTORY_KEY = 'search_history';
 const MAX_HISTORY = 8;
@@ -72,14 +73,13 @@ const SearchBar = () => {
     try { localStorage.removeItem(HISTORY_KEY); } catch { /* */ }
   };
 
-  // Filtered events (max 5)
+  // Filtered events (max 5) — fuzzy search tolerant to typos and accents
   const matchingEvents = (events || []).filter(e => {
     if (!searchQuery.trim()) return false;
-    const q = searchQuery.toLowerCase();
-    return e.title.toLowerCase().includes(q) ||
-      e.venue.toLowerCase().includes(q) ||
-      e.category.toLowerCase().includes(q);
-  }).slice(0, 5);
+    return fuzzyMatch(e.title, searchQuery) ||
+      fuzzyMatch(e.venue, searchQuery) ||
+      fuzzyMatch(e.category, searchQuery);
+  }).slice(0, 8);
 
   // Debounced address search via Nominatim
   useEffect(() => {

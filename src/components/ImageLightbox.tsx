@@ -35,7 +35,7 @@ const ImageLightbox = ({ src, alt, open, onClose }: ImageLightboxProps) => {
       <button
         onClick={onClose}
         aria-label="Fermer"
-        className="absolute top-4 right-4 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white/85 backdrop-blur-md text-stone-900 shadow-[0_10px_30px_-6px_rgba(0,0,0,0.5)] hover:bg-white hover:scale-105 hover:shadow-[0_14px_38px_-6px_rgba(0,0,0,0.55)] transition-all duration-300 active:scale-95"
+        className="absolute top-4 right-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/80 dark:bg-stone-900/80 backdrop-blur-md text-stone-800 dark:text-stone-100 shadow-[0_8px_24px_-6px_rgba(0,0,0,0.25)] hover:bg-white dark:hover:bg-stone-900 hover:shadow-[0_12px_32px_-6px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-95 transition-all duration-300"
       >
         <X size={22} strokeWidth={2.5} />
       </button>

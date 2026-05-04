@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { ArrowLeft, MapPin, Calendar, Users, Share2, Heart } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, Users, Share2, Heart, Flame } from 'lucide-react';
+import { useAttendees } from '@/hooks/useAttendees';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { toast } from 'sonner';
 import ContactFab from '@/components/ContactFab';
 import ImageLightbox from '@/components/ImageLightbox';
 
@@ -79,7 +81,21 @@ const EventDetails = () => {
               <ArrowLeft className="w-5 h-5 text-white" />
             </button>
             <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-              <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors">
+              <button
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({
+                      title: event.title,
+                      text: `${event.title} — ${formattedDate} à ${event.venue}`,
+                      url: window.location.href,
+                    }).catch(() => {});
+                  } else {
+                    navigator.clipboard.writeText(window.location.href);
+                    toast.success('Lien copié !');
+                  }
+                }}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
+              >
                 <Share2 size={20} />
               </button>
               <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors">
@@ -103,7 +119,7 @@ const EventDetails = () => {
                 <MapPin size={20} className="text-primary" />
               </div>
               <div className="flex-1">
-                <p className="font-semibold text-stone-900 dark:text-white">{event.venue}</p>
+                <p className="font-semibold text-stone-900 dark:text-white italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{event.venue}</p>
                 <p className="text-sm text-stone-600 dark:text-stone-400">{event.address || 'Adresse non spécifiée'}</p>
               </div>
             </div>
@@ -189,15 +205,16 @@ const EventDetails = () => {
 
           {event.description && (
             <div className="border-t border-stone-200 dark:border-stone-800 pt-6">
-              <h2 className="text-xl font-bold text-stone-900 dark:text-white mb-3">À propos de cet événement</h2>
-              <p className="text-stone-600 dark:text-stone-400 leading-relaxed">
+              <h2 className="text-xl font-bold text-stone-900 dark:text-white mb-3 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>À propos de cet événement</h2>
+              <p className="text-stone-600 dark:text-stone-400 leading-relaxed italic font-semibold" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
                 {event.description}
               </p>
             </div>
           )}
 
           <div className="border-t border-stone-200 dark:border-stone-800 pt-6 pb-20">
-            <div className="flex items-center justify-between">
+            <GoingSection eventId={event.id} />
+            <div className="flex items-center justify-between mt-4">
               <div>
                 <p className="text-sm text-stone-600 dark:text-stone-400">
                   {event.is_paid ? 'Prix' : 'Entrée'}
@@ -227,6 +244,34 @@ const EventDetails = () => {
           onClose={() => setLightboxOpen(false)}
         />
       )}
+    </div>
+  );
+};
+
+const GoingSection = ({ eventId }: { eventId: string }) => {
+  const { isGoing, count, toggleGoing } = useAttendees(eventId);
+
+  return (
+    <div className="flex items-center justify-between rounded-2xl bg-[#ee9d2b]/5 border border-[#ee9d2b]/15 px-4 py-3">
+      <div className="flex items-center gap-2.5">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#ee9d2b]/10">
+          <Flame size={20} className="text-[#ee9d2b]" />
+        </div>
+        <div>
+          <p className="text-sm font-bold text-stone-900 dark:text-white">{count} personnes y vont</p>
+          <p className="text-[11px] text-stone-500 dark:text-stone-400">Montre que tu seras là !</p>
+        </div>
+      </div>
+      <button
+        onClick={toggleGoing}
+        className={`px-4 py-2 rounded-full text-sm font-semibold transition-all active:scale-95 ${
+          isGoing
+            ? 'bg-[#ee9d2b] text-white shadow-md'
+            : 'bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700 hover:border-[#ee9d2b]/50'
+        }`}
+      >
+        {isGoing ? "J'y vais !" : "J'y vais"}
+      </button>
     </div>
   );
 };

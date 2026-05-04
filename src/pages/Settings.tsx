@@ -1,15 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Mail, Lock, Bell } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import MapView from '@/components/MapView';
+import mapBackground from '@/assets/map-background.jpg';
+
 const Settings = () => {
   const {
     user,
@@ -79,6 +76,7 @@ const Settings = () => {
     };
     loadPreferences();
   }, [user]);
+
   const handleUpdateEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newEmail || !user) return;
@@ -98,6 +96,7 @@ const Settings = () => {
       setUpdating(false);
     }
   };
+
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPassword || !confirmPassword) return;
@@ -126,6 +125,7 @@ const Settings = () => {
       setUpdating(false);
     }
   };
+
   const handleUpdateNotifications = async (field: string, value: boolean) => {
     if (!user) return;
     try {
@@ -140,141 +140,205 @@ const Settings = () => {
       toast.error('Erreur lors de la mise à jour des préférences');
     }
   };
+
   if (loading || loadingPreferences) {
     return <div className="min-h-screen flex items-center justify-center">
         <p className="text-muted-foreground">Chargement...</p>
       </div>;
   }
+
   if (!user) {
     return null;
   }
-  return <div className="min-h-screen relative overflow-hidden pb-32 animate-fade-in animate-zoom-smooth">
+
+  return (
+    <div className="min-h-screen relative overflow-hidden pb-32 animate-fade-in animate-zoom-smooth">
       {/* Map Background */}
       <div className="absolute inset-0 pointer-events-none">
-        <MapView />
+        <img
+          src={mapBackground}
+          alt=""
+          className="w-full h-full object-cover opacity-30"
+        />
       </div>
 
       {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-black/20 backdrop-blur-xl pointer-events-none" />
-      
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-2xl pointer-events-none" />
+
       {/* Content */}
-      <div className="relative z-10 mx-auto max-w-2xl px-4 py-8">
+      <div className="relative z-10 mx-auto max-w-md px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <Link to="/" className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-black/70 backdrop-blur-md hover:bg-black/90 transition-all mb-4">
-            <ArrowLeft className="w-5 h-5 text-white" />
+          <Link
+            to="/"
+            className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white/80 dark:bg-stone-900/80 backdrop-blur-md shadow-[0_8px_24px_-6px_rgba(0,0,0,0.25)] hover:scale-105 active:scale-95 transition-all mb-4"
+          >
+            <ArrowLeft className="w-5 h-5 text-stone-800 dark:text-white" />
           </Link>
-          <h1 className="text-3xl font-bold font-[Righteous] text-foreground">Paramètres</h1>
-          <p className="mt-2 text-white">Gérez vos informations et préférences</p>
+          <h1 className="text-3xl font-bold italic text-white" style={{ fontFamily: "'Source Serif 4', serif" }}>
+            Paramètres
+          </h1>
+          <p className="mt-2 text-white/70">Gérez vos informations et préférences</p>
         </div>
 
         <div className="space-y-6">
           {/* Email Section */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Mail className="h-5 w-5 text-primary" />
-                <CardTitle>Adresse email</CardTitle>
+          <div className="rounded-2xl backdrop-blur-2xl bg-white/10 border border-white/15 p-5">
+            <div className="flex items-center gap-2 mb-1">
+              <Mail className="h-5 w-5 text-[#ee9d2b]" />
+              <h2 className="text-lg font-semibold italic text-white" style={{ fontFamily: "'Source Serif 4', serif" }}>
+                Adresse email
+              </h2>
+            </div>
+            <p className="text-sm text-white/50 mb-4">
+              Email actuel: {user.email}
+            </p>
+            <form onSubmit={handleUpdateEmail} className="space-y-4">
+              <div>
+                <label htmlFor="new-email" className="block text-sm font-medium text-white/70 mb-1.5">
+                  Nouvelle adresse email
+                </label>
+                <input
+                  id="new-email"
+                  type="email"
+                  value={newEmail}
+                  onChange={e => setNewEmail(e.target.value)}
+                  placeholder="nouvelle@email.com"
+                  className="w-full h-11 rounded-xl bg-white/10 border border-white/15 text-white placeholder:text-white/30 text-sm px-3 focus:outline-none focus:ring-2 focus:ring-[#ee9d2b]/30"
+                />
               </div>
-              <CardDescription>
-                Email actuel: {user.email}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleUpdateEmail} className="space-y-4">
-                <div>
-                  <Label htmlFor="new-email">Nouvelle adresse email</Label>
-                  <Input id="new-email" type="email" value={newEmail} onChange={e => setNewEmail(e.target.value)} placeholder="nouvelle@email.com" />
-                </div>
-                <Button type="submit" disabled={updating || !newEmail}>
-                  {updating ? 'Mise à jour...' : 'Mettre à jour l\'email'}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+              <button
+                type="submit"
+                disabled={updating || !newEmail}
+                className="bg-[#ee9d2b] text-white rounded-full px-5 py-2.5 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {updating ? 'Mise à jour...' : 'Mettre à jour l\'email'}
+              </button>
+            </form>
+          </div>
 
           {/* Password Section */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Lock className="h-5 w-5 text-primary" />
-                <CardTitle>Mot de passe</CardTitle>
+          <div className="rounded-2xl backdrop-blur-2xl bg-white/10 border border-white/15 p-5">
+            <div className="flex items-center gap-2 mb-1">
+              <Lock className="h-5 w-5 text-[#ee9d2b]" />
+              <h2 className="text-lg font-semibold italic text-white" style={{ fontFamily: "'Source Serif 4', serif" }}>
+                Mot de passe
+              </h2>
+            </div>
+            <p className="text-sm text-white/50 mb-4">
+              Modifiez votre mot de passe
+            </p>
+            <form onSubmit={handleUpdatePassword} className="space-y-4">
+              <div>
+                <label htmlFor="new-password" className="block text-sm font-medium text-white/70 mb-1.5">
+                  Nouveau mot de passe
+                </label>
+                <input
+                  id="new-password"
+                  type="password"
+                  value={newPassword}
+                  onChange={e => setNewPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full h-11 rounded-xl bg-white/10 border border-white/15 text-white placeholder:text-white/30 text-sm px-3 focus:outline-none focus:ring-2 focus:ring-[#ee9d2b]/30"
+                />
               </div>
-              <CardDescription>
-                Modifiez votre mot de passe
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleUpdatePassword} className="space-y-4">
-                <div>
-                  <Label htmlFor="new-password">Nouveau mot de passe</Label>
-                  <Input id="new-password" type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="••••••••" />
-                </div>
-                <div>
-                  <Label htmlFor="confirm-password">Confirmer le mot de passe</Label>
-                  <Input id="confirm-password" type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} placeholder="••••••••" />
-                </div>
-                <Button type="submit" disabled={updating || !newPassword || !confirmPassword}>
-                  {updating ? 'Mise à jour...' : 'Mettre à jour le mot de passe'}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+              <div>
+                <label htmlFor="confirm-password" className="block text-sm font-medium text-white/70 mb-1.5">
+                  Confirmer le mot de passe
+                </label>
+                <input
+                  id="confirm-password"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full h-11 rounded-xl bg-white/10 border border-white/15 text-white placeholder:text-white/30 text-sm px-3 focus:outline-none focus:ring-2 focus:ring-[#ee9d2b]/30"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={updating || !newPassword || !confirmPassword}
+                className="bg-[#ee9d2b] text-white rounded-full px-5 py-2.5 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {updating ? 'Mise à jour...' : 'Mettre à jour le mot de passe'}
+              </button>
+            </form>
+          </div>
 
           {/* Notification Preferences Section */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Bell className="h-5 w-5 text-primary" />
-                <CardTitle>Préférences de notification</CardTitle>
-              </div>
-              <CardDescription>
-                Gérez vos notifications par email
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
+          <div className="rounded-2xl backdrop-blur-2xl bg-white/10 border border-white/15 p-5">
+            <div className="flex items-center gap-2 mb-1">
+              <Bell className="h-5 w-5 text-[#ee9d2b]" />
+              <h2 className="text-lg font-semibold italic text-white" style={{ fontFamily: "'Source Serif 4', serif" }}>
+                Préférences de notification
+              </h2>
+            </div>
+            <p className="text-sm text-white/50 mb-5">
+              Gérez vos notifications par email
+            </p>
+            <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="email-notifications">Notifications par email</Label>
-                  <p className="text-sm text-muted-foreground">
+                  <label htmlFor="email-notifications" className="text-sm font-medium text-white/70">
+                    Notifications par email
+                  </label>
+                  <p className="text-sm text-white/50">
                     Recevoir des emails de notification
                   </p>
                 </div>
-                <Switch id="email-notifications" checked={notificationEmail} onCheckedChange={checked => {
-                setNotificationEmail(checked);
-                handleUpdateNotifications('notification_email', checked);
-              }} />
+                <Switch
+                  id="email-notifications"
+                  checked={notificationEmail}
+                  onCheckedChange={checked => {
+                    setNotificationEmail(checked);
+                    handleUpdateNotifications('notification_email', checked);
+                  }}
+                />
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="event-notifications">Notifications d'événements</Label>
-                  <p className="text-sm text-muted-foreground">
+                  <label htmlFor="event-notifications" className="text-sm font-medium text-white/70">
+                    Notifications d'événements
+                  </label>
+                  <p className="text-sm text-white/50">
                     Recevoir des notifications sur les nouveaux événements
                   </p>
                 </div>
-                <Switch id="event-notifications" checked={notificationEvents} onCheckedChange={checked => {
-                setNotificationEvents(checked);
-                handleUpdateNotifications('notification_events', checked);
-              }} />
+                <Switch
+                  id="event-notifications"
+                  checked={notificationEvents}
+                  onCheckedChange={checked => {
+                    setNotificationEvents(checked);
+                    handleUpdateNotifications('notification_events', checked);
+                  }}
+                />
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="friend-notifications">Notifications d'amis</Label>
-                  <p className="text-sm text-muted-foreground">
+                  <label htmlFor="friend-notifications" className="text-sm font-medium text-white/70">
+                    Notifications d'amis
+                  </label>
+                  <p className="text-sm text-white/50">
                     Recevoir des notifications sur vos amis
                   </p>
                 </div>
-                <Switch id="friend-notifications" checked={notificationFriends} onCheckedChange={checked => {
-                setNotificationFriends(checked);
-                handleUpdateNotifications('notification_friends', checked);
-              }} />
+                <Switch
+                  id="friend-notifications"
+                  checked={notificationFriends}
+                  onCheckedChange={checked => {
+                    setNotificationFriends(checked);
+                    handleUpdateNotifications('notification_friends', checked);
+                  }}
+                />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Settings;

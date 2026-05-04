@@ -14,6 +14,8 @@ interface SearchContextType {
   toggleCategory: (category: string) => void;
   routeDestination: RouteDestination | null;
   setRouteDestination: (dest: RouteDestination | null) => void;
+  distanceFilter: number | null;
+  setDistanceFilter: (km: number | null) => void;
 }
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
@@ -22,6 +24,7 @@ export const SearchProvider = ({ children }: { children: ReactNode }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [routeDestination, setRouteDestination] = useState<RouteDestination | null>(null);
+  const [distanceFilter, setDistanceFilter] = useState<number | null>(null);
 
   const toggleCategory = (category: string) => {
     setSelectedCategories(prev => {
@@ -42,6 +45,8 @@ export const SearchProvider = ({ children }: { children: ReactNode }) => {
       toggleCategory,
       routeDestination,
       setRouteDestination,
+      distanceFilter,
+      setDistanceFilter,
     }}>
       {children}
     </SearchContext.Provider>

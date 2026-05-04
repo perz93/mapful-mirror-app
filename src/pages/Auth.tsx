@@ -116,7 +116,7 @@ const Auth = () => {
 
             {/* Header */}
             <div className="text-center mt-6 mb-6">
-              <h1 className="text-2xl font-bold font-heading mb-2">Bienvenue</h1>
+              <h1 className="text-2xl font-bold italic mb-2" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>Bienvenue</h1>
               <p className="text-muted-foreground text-base">
                 Découvrez votre ville autrement
               </p>
@@ -216,7 +216,7 @@ const Auth = () => {
 
             {/* Header */}
             <div className="text-center mt-6 mb-6">
-              <h1 className="text-2xl font-bold font-heading mb-2">Rejoignez-nous</h1>
+              <h1 className="text-2xl font-bold italic mb-2" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>Rejoignez-nous</h1>
               <p className="text-muted-foreground text-base">
                 Vivez chaque instant qui compte
               </p>

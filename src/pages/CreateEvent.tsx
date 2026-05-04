@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign, ArrowLeft, Loader2, Phone, Instagram, Facebook, Twitter, MessageCircle, Plus, X, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
-import MapView from '@/components/MapView';
+import mapBackground from '@/assets/map-background.jpg';
 import { supabase } from '@/integrations/supabase/client';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -37,6 +37,11 @@ const categoryIcons: Record<string, string> = {
   shows: spectacleIcon,
   sports: sportIcon,
 };
+
+const inputClass = "h-11 rounded-xl bg-white/10 border border-white/15 text-white placeholder:text-white/30 text-sm focus:outline-none focus:ring-2 focus:ring-[#ee9d2b]/30";
+const labelClass = "text-sm text-white/70 font-normal";
+const cardClass = "rounded-2xl backdrop-blur-2xl bg-white/10 border border-white/15 p-5 space-y-4";
+const sectionTitleClass = "text-lg italic text-white mb-4 flex items-center gap-2";
 
 const CreateEvent = () => {
   const { toast } = useToast();
@@ -69,27 +74,27 @@ const CreateEvent = () => {
     contactFacebook: '',
     contactTwitter: ''
   });
-  
+
   const [keyPoints, setKeyPoints] = useState<string[]>(['']);
-  
+
   const addKeyPoint = () => {
     if (keyPoints.length < 5) {
       setKeyPoints([...keyPoints, '']);
     }
   };
-  
+
   const updateKeyPoint = (index: number, value: string) => {
     const updated = [...keyPoints];
     updated[index] = value;
     setKeyPoints(updated);
   };
-  
+
   const removeKeyPoint = (index: number) => {
     if (keyPoints.length > 1) {
       setKeyPoints(keyPoints.filter((_, i) => i !== index));
     }
   };
-  
+
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -149,9 +154,9 @@ const CreateEvent = () => {
           iconAnchor: [20, 20],
         });
 
-        markerRef.current = L.marker([5.3600, -4.0083], { 
+        markerRef.current = L.marker([5.3600, -4.0083], {
           icon: customIcon,
-          draggable: true 
+          draggable: true
         }).addTo(mapRef.current);
 
         markerRef.current.on('dragend', () => {
@@ -182,15 +187,15 @@ const CreateEvent = () => {
   const geocodeAddress = async (address: string): Promise<{ lat: number; lng: number } | null> => {
     try {
       // Add "Abidjan, Côte d'Ivoire" if not already included to improve geocoding accuracy
-      const query = address.toLowerCase().includes('abidjan') || address.toLowerCase().includes('ivoire') 
-        ? address 
+      const query = address.toLowerCase().includes('abidjan') || address.toLowerCase().includes('ivoire')
+        ? address
         : `${address}, Abidjan, Côte d'Ivoire`;
-      
+
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`
       );
       const data = await response.json();
-      
+
       if (data && data.length > 0) {
         return {
           lat: parseFloat(data[0].lat),
@@ -224,7 +229,7 @@ const CreateEvent = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user) {
       toast({
         title: "Erreur",
@@ -244,7 +249,7 @@ const CreateEvent = () => {
       if (imageFile) {
         const fileExt = imageFile.name.split('.').pop();
         const fileName = `${user.id}/${Date.now()}.${fileExt}`;
-        
+
         const { error: uploadError } = await supabase.storage
           .from('event-images')
           .upload(fileName, imageFile);
@@ -350,33 +355,39 @@ const CreateEvent = () => {
 
   return (
     <div className="relative min-h-screen pb-32 animate-fade-in animate-zoom-smooth">
-      {/* Map Background */}
+      {/* Static Map Background */}
       <div className="absolute inset-0 pointer-events-none">
-        <MapView />
+        <img
+          src={mapBackground}
+          alt=""
+          className="w-full h-full object-cover opacity-30"
+        />
       </div>
 
-      {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-black/20 backdrop-blur-xl pointer-events-none" />
+      {/* Dark Overlay with blur */}
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-2xl pointer-events-none" />
 
       {/* Content */}
       <div className="relative mx-auto max-w-md">
         {/* Header */}
         <div className="px-4 sm:px-6 pt-12 sm:pt-16 pb-8 sm:pb-10">
-          <Link 
-            to="/" 
-            className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-black/70 backdrop-blur-md hover:bg-black/90 transition-all mb-8"
+          <Link
+            to="/"
+            className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white/80 dark:bg-stone-900/80 backdrop-blur-md shadow-[0_8px_24px_-6px_rgba(0,0,0,0.25)] hover:scale-105 active:scale-95 transition-all mb-8"
           >
-            <ArrowLeft className="w-5 h-5 text-white" />
+            <ArrowLeft className="w-5 h-5 text-stone-900 dark:text-white" />
           </Link>
-          <h1 className="text-4xl font-light text-stone-900 mb-3 text-center">Créer un événement</h1>
-          <p className="text-stone-700 font-light text-center">Partagez votre événement avec la communauté</p>
+          <h1 className="text-4xl italic text-white mb-3 text-center" style={{ fontFamily: '"Source Serif 4", serif' }}>
+            Créer un événement
+          </h1>
+          <p className="text-white/60 font-light text-center">Partagez votre événement avec la communauté</p>
         </div>
 
         {/* Form Cards */}
         <div className="px-4 sm:px-6 pb-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Image Upload Card */}
-            <div className="bg-white/30 backdrop-blur-sm rounded-3xl p-6 shadow-lg">
+            <div className={cardClass}>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -384,15 +395,15 @@ const CreateEvent = () => {
                 onChange={handleImageChange}
                 className="hidden"
               />
-              <div 
+              <div
                 onClick={() => fileInputRef.current?.click()}
-                className="border border-dashed border-stone-400/50 rounded-2xl p-8 hover:border-stone-500 transition-colors cursor-pointer bg-white/20"
+                className="border border-dashed border-white/20 rounded-2xl p-8 hover:border-white/40 transition-colors cursor-pointer bg-white/5"
               >
                 {imagePreview ? (
                   <div className="relative">
-                    <img 
-                      src={imagePreview} 
-                      alt="Preview" 
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
                       className="w-full h-48 object-cover rounded-lg"
                     />
                     <div className="absolute inset-0 bg-black/40 rounded-lg flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
@@ -401,40 +412,42 @@ const CreateEvent = () => {
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-center">
-                    <ImageIcon className="h-10 w-10 text-stone-700 mb-4" strokeWidth={1.5} />
-                    <h3 className="font-light text-stone-900 mb-1">Ajouter une image</h3>
-                    <p className="text-sm text-stone-700 font-light">Cliquez pour télécharger</p>
+                    <ImageIcon className="h-10 w-10 text-[#ee9d2b] mb-4" strokeWidth={1.5} />
+                    <h3 className="font-light text-white mb-1">Ajouter une image</h3>
+                    <p className="text-sm text-white/60 font-light">Cliquez pour télécharger</p>
                   </div>
                 )}
               </div>
             </div>
 
             {/* Basic Information Card */}
-            <div className="bg-white/30 backdrop-blur-sm rounded-3xl p-6 shadow-lg space-y-4">
-              <h2 className="text-lg font-semibold text-stone-900 mb-4">Informations de base</h2>
-              
+            <div className={cardClass}>
+              <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
+                Informations de base
+              </h2>
+
               <div className="space-y-3">
-                <Label htmlFor="title" className="text-sm text-stone-700 font-normal">Titre de l'événement *</Label>
-                <Input 
-                  id="title" 
-                  placeholder="Festival de musique Jazz" 
-                  value={formData.title} 
-                  onChange={e => setFormData({ ...formData, title: e.target.value })} 
-                  required 
-                  className="h-12 border-stone-400/50 bg-white/40"
+                <Label htmlFor="title" className={labelClass}>Titre de l'événement *</Label>
+                <Input
+                  id="title"
+                  placeholder="Festival de musique Jazz"
+                  value={formData.title}
+                  onChange={e => setFormData({ ...formData, title: e.target.value })}
+                  required
+                  className={inputClass}
                 />
               </div>
 
               <div className="space-y-3">
-                <Label htmlFor="category" className="text-sm text-stone-700 font-normal">Catégorie *</Label>
-                <Select 
-                  value={formData.category} 
+                <Label htmlFor="category" className={labelClass}>Catégorie *</Label>
+                <Select
+                  value={formData.category}
                   onValueChange={value => setFormData({ ...formData, category: value })}
                 >
-                  <SelectTrigger className="h-12 border-stone-400/50 bg-white/40">
+                  <SelectTrigger className={inputClass}>
                     <SelectValue placeholder="Sélectionnez une catégorie" />
                   </SelectTrigger>
-                  <SelectContent className="backdrop-blur-xl bg-white/95 border-stone-400/50">
+                  <SelectContent className="backdrop-blur-2xl bg-stone-900/95 border-white/15">
                     <SelectItem value="workshops">
                       <span className="flex items-center gap-2">
                         <img src={categoryIcons.workshops} alt="" className="w-5 h-5" />
@@ -501,31 +514,31 @@ const CreateEvent = () => {
             </div>
 
             {/* Location Card */}
-            <div className="bg-white/30 backdrop-blur-sm rounded-3xl p-6 shadow-lg space-y-4">
-              <h2 className="text-lg font-semibold text-stone-900 mb-4 flex items-center gap-2">
-                <MapPin className="h-5 w-5" strokeWidth={1.5} />
+            <div className={cardClass}>
+              <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
+                <MapPin className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
                 Localisation
               </h2>
-              
+
               <div className="space-y-3">
-                <Label htmlFor="address" className="text-sm text-stone-700 font-normal">Adresse / lieu de l'événement *</Label>
-                <Input 
-                  id="address" 
-                  placeholder="Ex: Cocody Angré, Abidjan" 
-                  value={formData.address} 
-                  onChange={e => setFormData({ ...formData, address: e.target.value })} 
-                  required 
-                  className="h-12 border-stone-400/50 bg-white/40"
+                <Label htmlFor="address" className={labelClass}>Adresse / lieu de l'événement *</Label>
+                <Input
+                  id="address"
+                  placeholder="Ex: Cocody Angré, Abidjan"
+                  value={formData.address}
+                  onChange={e => setFormData({ ...formData, address: e.target.value })}
+                  required
+                  className={inputClass}
                 />
               </div>
 
               {/* Map for position adjustment */}
               <div className="space-y-3 mt-4">
-                <Label className="text-sm text-stone-700 font-normal">
-                  Position sur la carte {geocoding && <span className="text-xs text-stone-500">(localisation...)</span>}
+                <Label className={labelClass}>
+                  Position sur la carte {geocoding && <span className="text-xs text-white/40">(localisation...)</span>}
                 </Label>
-                <div 
-                  className="w-full h-48 rounded-2xl overflow-hidden border border-stone-400/50 bg-white"
+                <div
+                  className="w-full h-48 rounded-2xl overflow-hidden border border-white/15"
                   style={{ position: 'relative', zIndex: 1 }}
                 >
                   <div
@@ -533,210 +546,212 @@ const CreateEvent = () => {
                     className="w-full h-full"
                   />
                 </div>
-                <p className="text-xs text-stone-600">
+                <p className="text-xs text-white/50">
                   Utilisez la mini-carte pour ajuster précisément la position via le marqueur rouge
                 </p>
               </div>
             </div>
 
             {/* Date and Time Card */}
-            <div className="bg-white/30 backdrop-blur-sm rounded-3xl p-6 shadow-lg space-y-4">
-              <h2 className="text-lg font-semibold text-stone-900 mb-4 flex items-center gap-2">
-                <Calendar className="h-5 w-5" strokeWidth={1.5} />
+            <div className={cardClass}>
+              <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
+                <Calendar className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
                 Date et heure
               </h2>
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-3">
-                  <Label htmlFor="date" className="text-sm text-stone-700 font-normal">Date *</Label>
-                  <Input 
-                    id="date" 
-                    type="date" 
-                    value={formData.date} 
-                    onChange={e => setFormData({ ...formData, date: e.target.value })} 
-                    required 
-                    className="h-12 border-stone-400/50 bg-white/40"
+                  <Label htmlFor="date" className={labelClass}>Date *</Label>
+                  <Input
+                    id="date"
+                    type="date"
+                    value={formData.date}
+                    onChange={e => setFormData({ ...formData, date: e.target.value })}
+                    required
+                    className={inputClass}
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label htmlFor="time" className="text-sm text-stone-700 font-normal">Heure *</Label>
-                  <Input 
-                    id="time" 
-                    type="time" 
-                    value={formData.time} 
-                    onChange={e => setFormData({ ...formData, time: e.target.value })} 
-                    required 
-                    className="h-12 border-stone-400/50 bg-white/40"
+                  <Label htmlFor="time" className={labelClass}>Heure *</Label>
+                  <Input
+                    id="time"
+                    type="time"
+                    value={formData.time}
+                    onChange={e => setFormData({ ...formData, time: e.target.value })}
+                    required
+                    className={inputClass}
                   />
                 </div>
               </div>
             </div>
 
             {/* Price and Capacity Card */}
-            <div className="bg-white/30 backdrop-blur-sm rounded-3xl p-6 shadow-lg space-y-4">
-              <h2 className="text-lg font-semibold text-stone-900 mb-4 flex items-center gap-2">
-                <DollarSign className="h-5 w-5" strokeWidth={1.5} />
+            <div className={cardClass}>
+              <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
+                <DollarSign className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
                 Prix et capacité
               </h2>
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-3">
-                  <Label htmlFor="price" className="text-sm text-stone-700 font-normal">Prix</Label>
-                  <Input 
-                    id="price" 
-                    placeholder="Gratuit" 
-                    value={formData.price} 
-                    onChange={e => setFormData({ ...formData, price: e.target.value })} 
-                    className="h-12 border-stone-400/50 bg-white/40"
+                  <Label htmlFor="price" className={labelClass}>Prix (FCFA)</Label>
+                  <Input
+                    id="price"
+                    placeholder="Ex: 5000 FCFA"
+                    value={formData.price}
+                    onChange={e => setFormData({ ...formData, price: e.target.value })}
+                    className={inputClass}
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label htmlFor="capacity" className="text-sm text-stone-700 font-normal">Capacité</Label>
-                  <Input 
-                    id="capacity" 
-                    type="number" 
-                    placeholder="100" 
-                    value={formData.capacity} 
-                    onChange={e => setFormData({ ...formData, capacity: e.target.value })} 
-                    className="h-12 border-stone-400/50 bg-white/40"
+                  <Label htmlFor="capacity" className={labelClass}>Capacité</Label>
+                  <Input
+                    id="capacity"
+                    type="number"
+                    placeholder="100"
+                    value={formData.capacity}
+                    onChange={e => setFormData({ ...formData, capacity: e.target.value })}
+                    className={inputClass}
                   />
                 </div>
               </div>
             </div>
 
             {/* Description Card */}
-            <div className="bg-white/30 backdrop-blur-sm rounded-3xl p-6 shadow-lg space-y-4">
-              <h2 className="text-lg font-semibold text-stone-900 mb-4">Description</h2>
-              
+            <div className={cardClass}>
+              <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
+                Description
+              </h2>
+
               <div className="space-y-3">
-                <Textarea 
-                  id="description" 
-                  placeholder="Décrivez votre événement..." 
-                  value={formData.description} 
-                  onChange={e => setFormData({ ...formData, description: e.target.value })} 
-                  rows={5} 
-                  className="border-stone-400/50 bg-white/40 resize-none"
+                <Textarea
+                  id="description"
+                  placeholder="Décrivez votre événement..."
+                  value={formData.description}
+                  onChange={e => setFormData({ ...formData, description: e.target.value })}
+                  rows={5}
+                  className="rounded-xl bg-white/10 border border-white/15 text-white placeholder:text-white/30 text-sm focus:outline-none focus:ring-2 focus:ring-[#ee9d2b]/30 resize-none"
                 />
               </div>
             </div>
 
             {/* Key Points Card */}
-            <div className="bg-white/30 backdrop-blur-sm rounded-3xl p-6 shadow-lg space-y-4">
-              <h2 className="text-lg font-semibold text-stone-900 mb-4 flex items-center gap-2">
-                <Sparkles className="h-5 w-5" strokeWidth={1.5} />
+            <div className={cardClass}>
+              <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
+                <Sparkles className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
                 Points clés de l'événement
               </h2>
-              
+
               <div className="space-y-3">
                 {keyPoints.map((point, index) => (
                   <div key={index} className="flex items-center gap-2">
-                    <Input 
+                    <Input
                       placeholder={`Point clé ${index + 1}`}
                       value={point}
                       onChange={e => updateKeyPoint(index, e.target.value)}
-                      className="h-12 border-stone-400/50 bg-white/40 flex-1"
+                      className={`${inputClass} flex-1`}
                     />
                     {keyPoints.length > 1 && (
                       <button
                         type="button"
                         onClick={() => removeKeyPoint(index)}
-                        className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center hover:bg-red-200 transition-colors"
+                        className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center hover:bg-red-500/30 transition-colors"
                       >
-                        <X className="w-4 h-4 text-red-600" />
+                        <X className="w-4 h-4 text-red-400" />
                       </button>
                     )}
                   </div>
                 ))}
-                
+
                 {keyPoints.length < 5 && (
                   <button
                     type="button"
                     onClick={addKeyPoint}
-                    className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors text-sm font-medium"
+                    className="flex items-center gap-2 text-[#ee9d2b] hover:text-[#ee9d2b]/80 transition-colors text-sm font-medium"
                   >
                     <Plus className="w-4 h-4" />
                     Ajouter un point clé
                   </button>
                 )}
-                <p className="text-xs text-stone-600">Maximum 5 points clés</p>
+                <p className="text-xs text-white/50">Maximum 5 points clés</p>
               </div>
             </div>
 
             {/* Contact Card */}
-            <div className="bg-white/30 backdrop-blur-sm rounded-3xl p-6 shadow-lg space-y-4">
-              <h2 className="text-lg font-semibold text-stone-900 mb-4 flex items-center gap-2">
-                <Phone className="h-5 w-5" strokeWidth={1.5} />
+            <div className={cardClass}>
+              <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
+                <Phone className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
                 Contact
               </h2>
-              
+
               <div className="space-y-4">
                 <div className="space-y-3">
-                  <Label htmlFor="contactPhone" className="text-sm text-stone-700 font-normal flex items-center gap-2">
-                    <Phone className="w-4 h-4" />
+                  <Label htmlFor="contactPhone" className={`${labelClass} flex items-center gap-2`}>
+                    <Phone className="w-4 h-4 text-[#ee9d2b]" />
                     Numéro de téléphone
                   </Label>
-                  <Input 
-                    id="contactPhone" 
-                    placeholder="+225 XX XX XX XX XX" 
-                    value={formData.contactPhone} 
-                    onChange={e => setFormData({ ...formData, contactPhone: e.target.value })} 
-                    className="h-12 border-stone-400/50 bg-white/40"
+                  <Input
+                    id="contactPhone"
+                    placeholder="+225 XX XX XX XX XX"
+                    value={formData.contactPhone}
+                    onChange={e => setFormData({ ...formData, contactPhone: e.target.value })}
+                    className={inputClass}
                   />
                 </div>
 
                 <div className="space-y-3">
-                  <Label htmlFor="contactWhatsapp" className="text-sm text-stone-700 font-normal flex items-center gap-2">
-                    <MessageCircle className="w-4 h-4" />
+                  <Label htmlFor="contactWhatsapp" className={`${labelClass} flex items-center gap-2`}>
+                    <MessageCircle className="w-4 h-4 text-[#ee9d2b]" />
                     WhatsApp
                   </Label>
-                  <Input 
-                    id="contactWhatsapp" 
-                    placeholder="+225 XX XX XX XX XX" 
-                    value={formData.contactWhatsapp} 
-                    onChange={e => setFormData({ ...formData, contactWhatsapp: e.target.value })} 
-                    className="h-12 border-stone-400/50 bg-white/40"
+                  <Input
+                    id="contactWhatsapp"
+                    placeholder="+225 XX XX XX XX XX"
+                    value={formData.contactWhatsapp}
+                    onChange={e => setFormData({ ...formData, contactWhatsapp: e.target.value })}
+                    className={inputClass}
                   />
                 </div>
 
                 <div className="space-y-3">
-                  <Label htmlFor="contactInstagram" className="text-sm text-stone-700 font-normal flex items-center gap-2">
-                    <Instagram className="w-4 h-4" />
+                  <Label htmlFor="contactInstagram" className={`${labelClass} flex items-center gap-2`}>
+                    <Instagram className="w-4 h-4 text-[#ee9d2b]" />
                     Instagram
                   </Label>
-                  <Input 
-                    id="contactInstagram" 
-                    placeholder="@votre_compte" 
-                    value={formData.contactInstagram} 
-                    onChange={e => setFormData({ ...formData, contactInstagram: e.target.value })} 
-                    className="h-12 border-stone-400/50 bg-white/40"
+                  <Input
+                    id="contactInstagram"
+                    placeholder="@votre_compte"
+                    value={formData.contactInstagram}
+                    onChange={e => setFormData({ ...formData, contactInstagram: e.target.value })}
+                    className={inputClass}
                   />
                 </div>
 
                 <div className="space-y-3">
-                  <Label htmlFor="contactFacebook" className="text-sm text-stone-700 font-normal flex items-center gap-2">
-                    <Facebook className="w-4 h-4" />
+                  <Label htmlFor="contactFacebook" className={`${labelClass} flex items-center gap-2`}>
+                    <Facebook className="w-4 h-4 text-[#ee9d2b]" />
                     Facebook
                   </Label>
-                  <Input 
-                    id="contactFacebook" 
-                    placeholder="Nom de votre page" 
-                    value={formData.contactFacebook} 
-                    onChange={e => setFormData({ ...formData, contactFacebook: e.target.value })} 
-                    className="h-12 border-stone-400/50 bg-white/40"
+                  <Input
+                    id="contactFacebook"
+                    placeholder="Nom de votre page"
+                    value={formData.contactFacebook}
+                    onChange={e => setFormData({ ...formData, contactFacebook: e.target.value })}
+                    className={inputClass}
                   />
                 </div>
 
                 <div className="space-y-3">
-                  <Label htmlFor="contactTwitter" className="text-sm text-stone-700 font-normal flex items-center gap-2">
-                    <Twitter className="w-4 h-4" />
+                  <Label htmlFor="contactTwitter" className={`${labelClass} flex items-center gap-2`}>
+                    <Twitter className="w-4 h-4 text-[#ee9d2b]" />
                     Twitter / X
                   </Label>
-                  <Input 
-                    id="contactTwitter" 
-                    placeholder="@votre_compte" 
-                    value={formData.contactTwitter} 
-                    onChange={e => setFormData({ ...formData, contactTwitter: e.target.value })} 
-                    className="h-12 border-stone-400/50 bg-white/40"
+                  <Input
+                    id="contactTwitter"
+                    placeholder="@votre_compte"
+                    value={formData.contactTwitter}
+                    onChange={e => setFormData({ ...formData, contactTwitter: e.target.value })}
+                    className={inputClass}
                   />
                 </div>
               </div>
@@ -744,10 +759,10 @@ const CreateEvent = () => {
 
             {/* Submit Button */}
             <div className="pt-2">
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={submitting}
-                className="w-full h-12 text-base font-normal"
+                className="w-full h-12 rounded-full bg-[#ee9d2b] text-white font-semibold text-base hover:opacity-90 transition-all active:scale-[0.98]"
               >
                 {submitting ? (
                   <>

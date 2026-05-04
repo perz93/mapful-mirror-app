@@ -48,7 +48,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
   const location = useLocation();
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
-  const { searchQuery, setSearchQuery, selectedCategories, setSelectedCategories, toggleCategory } = useSearch();
+  const { searchQuery, setSearchQuery, selectedCategories, setSelectedCategories, toggleCategory, distanceFilter, setDistanceFilter } = useSearch();
   const [indicator, setIndicator] = useState<ScrollIndicatorState>({
     width: 100,
     left: 0,
@@ -99,10 +99,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
   ];
 
   const handleSearch = () => {
-    if (searchQuery.trim()) {
-      console.log('Recherche:', searchQuery);
-      setSearchOpen(false);
-    }
+    setSearchOpen(false);
   };
 
   return (
@@ -160,6 +157,33 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
               </div>
             </div>
 
+            {/* Distance Filter */}
+            <div className="space-y-2">
+              <p className="text-sm font-semibold text-foreground">Autour de moi</p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { label: 'Tout', value: null },
+                  { label: '500m', value: 0.5 },
+                  { label: '1 km', value: 1 },
+                  { label: '2 km', value: 2 },
+                  { label: '5 km', value: 5 },
+                  { label: '10 km', value: 10 },
+                ].map((opt) => (
+                  <button
+                    key={opt.label}
+                    onClick={() => setDistanceFilter(opt.value)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      distanceFilter === opt.value
+                        ? 'bg-[#ee9d2b] text-white shadow-lg scale-105'
+                        : 'bg-muted text-muted-foreground hover:scale-105'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <button
               onClick={handleSearch}
               className="w-full h-11 rounded-3xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-all text-sm"
@@ -206,7 +230,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                           isActive ? 'opacity-100' : 'opacity-60'
                         }`}
                       />
-                      <p className="text-xs font-medium leading-none transition-all duration-300 ease-in-out">
+                      <p className="text-xs font-medium italic leading-none transition-all duration-300 ease-in-out" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
                         {item.label}
                       </p>
                     </Link>

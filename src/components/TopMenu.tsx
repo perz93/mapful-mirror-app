@@ -46,11 +46,11 @@ const TopMenu = () => {
                   <Link to={isLoggedIn ? "/my-account" : "/auth"} className="flex flex-col items-center gap-2 text-center p-3">
                     {isLoggedIn && userProfileImage ? <Avatar className="h-12 w-12">
                         <AvatarImage src={userProfileImage} alt="Profile" />
-                        <AvatarFallback className="bg-gradient-to-br from-primary/10 to-primary/5">
-                          <User className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                        <AvatarFallback className="bg-black dark:bg-white">
+                          <User className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
                         </AvatarFallback>
-                      </Avatar> : <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center bg-secondary-foreground">
-                        <User className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                      </Avatar> : <div className="h-12 w-12 rounded-full bg-black dark:bg-white flex items-center justify-center">
+                        <User className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
                       </div>}
                     <p className="font-medium text-foreground text-xs">Compte</p>
                   </Link>
@@ -58,8 +58,8 @@ const TopMenu = () => {
 
                 <DropdownMenuItem className="cursor-pointer rounded-full p-0 hover:bg-black/10 dark:hover:bg-white/10 transition-all" asChild>
                   <Link to={isLoggedIn ? "/settings" : "/auth"} className="flex flex-col items-center gap-2 text-center p-3">
-                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center bg-secondary-foreground">
-                      <Settings className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                    <div className="h-12 w-12 rounded-full bg-black dark:bg-white flex items-center justify-center">
+                      <Settings className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
                     </div>
                     <p className="font-medium text-foreground text-xs">Paramètres</p>
                   </Link>

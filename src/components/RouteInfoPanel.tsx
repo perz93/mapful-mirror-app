@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { X, Navigation, Clock, Route as RouteIcon } from 'lucide-react';
+import { useCallback, useEffect, useRef } from 'react';
+import { X, Clock, Route as RouteIcon } from 'lucide-react';
 import { useSearch } from '@/contexts/SearchContext';
 import itineraryIcon from '@/assets/itinerary-icon.png';
 
@@ -8,8 +8,8 @@ interface RouteInfoPanelProps {
   durationMin: number | null;
   loading: boolean;
   error: boolean;
-  connectorTarget: { x: number; y: number } | null;
-  onAnchorChange: (anchor: { x: number; y: number } | null) => void;
+  mapInstance: L.Map | null;
+  routeCoordinates: L.LatLngTuple[];
 }
 
 const RouteInfoPanel = ({
@@ -17,76 +17,138 @@ const RouteInfoPanel = ({
   durationMin,
   loading,
   error,
-  connectorTarget,
-  onAnchorChange,
+  mapInstance,
+  routeCoordinates,
 }: RouteInfoPanelProps) => {
   const { routeDestination, setRouteDestination } = useSearch();
   const overlayRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const [panelBounds, setPanelBounds] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const glowPathRef = useRef<SVGPathElement>(null);
+  const dashPathRef = useRef<SVGPathElement>(null);
 
-  const updatePanelBounds = useCallback(() => {
-    if (!overlayRef.current || !panelRef.current) {
-      setPanelBounds(null);
-      onAnchorChange(null);
+  // Keep latest routeCoordinates in a ref so the callback never goes stale
+  const routeCoordsRef = useRef<L.LatLngTuple[]>(routeCoordinates);
+  routeCoordsRef.current = routeCoordinates;
+
+  const mapRef = useRef<L.Map | null>(mapInstance);
+  mapRef.current = mapInstance;
+
+  // Direct DOM update — no React state, no re-render lag
+  const syncConnector = useCallback(() => {
+    const map = mapRef.current;
+    const coords = routeCoordsRef.current;
+    const panel = panelRef.current;
+    const overlay = overlayRef.current;
+    const svg = svgRef.current;
+    const glowPath = glowPathRef.current;
+    const dashPath = dashPathRef.current;
+    if (!map || !panel || !overlay || !svg || !glowPath || !dashPath || coords.length === 0) {
+      if (svg) svg.style.display = 'none';
       return;
     }
 
-    const overlayRect = overlayRef.current.getBoundingClientRect();
-    const panelRect = panelRef.current.getBoundingClientRect();
-    const nextBounds = {
-      x: panelRect.left - overlayRect.left,
-      y: panelRect.top - overlayRect.top,
-      width: panelRect.width,
-      height: panelRect.height,
+    const overlayRect = overlay.getBoundingClientRect();
+    const panelRect = panel.getBoundingClientRect();
+    const mapContainer = map.getContainer();
+    const mapRect = mapContainer.getBoundingClientRect();
+
+    // Anchor point: bottom-center of the panel, relative to overlay
+    const anchorX = panelRect.left - overlayRect.left + panelRect.width / 2;
+    const anchorY = panelRect.top - overlayRect.top + panelRect.height;
+
+    // Offset between map container and overlay to align coordinate systems
+    const offsetX = mapRect.left - overlayRect.left;
+    const offsetY = mapRect.top - overlayRect.top;
+
+    // Convert ALL route points to overlay pixel coords (no visibility filter)
+    const allPoints = coords.map((coord) => {
+      const pt = map.latLngToContainerPoint(coord);
+      return { x: pt.x + offsetX, y: pt.y + offsetY };
+    });
+
+    if (allPoints.length === 0) {
+      svg.style.display = 'none';
+      return;
+    }
+
+    // Prefer points below the panel, fallback to all points
+    const preferredPoints = allPoints.filter(({ y }) => y >= anchorY + 18);
+    const candidatePoints = preferredPoints.length > 0 ? preferredPoints : allPoints;
+
+    const target = candidatePoints.reduce(
+      (best, point) => {
+        const dx = point.x - anchorX;
+        const dy = point.y - anchorY;
+        const score = Math.abs(dx) * 1.35 + Math.abs(dy) + (dy < 0 ? 1000 : 0);
+        return score < best.score ? { point, score } : best;
+      },
+      { point: candidatePoints[0], score: Number.POSITIVE_INFINITY }
+    ).point;
+
+    const curveDepth = Math.max(30, Math.min(90, (target.y - anchorY) * 0.45));
+    const d = `M ${anchorX} ${anchorY} C ${anchorX} ${anchorY + curveDepth}, ${target.x} ${Math.max(anchorY + curveDepth, target.y - 36)}, ${target.x} ${target.y}`;
+
+    svg.style.display = '';
+    glowPath.setAttribute('d', d);
+    dashPath.setAttribute('d', d);
+  }, []); // No deps — reads everything from refs
+
+  // Bind to map move/zoom — direct DOM, zero lag
+  useEffect(() => {
+    const map = mapInstance;
+    if (!map) return;
+
+    let frame = 0;
+    const onMove = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(syncConnector);
     };
 
-    setPanelBounds(nextBounds);
-    onAnchorChange({
-      x: nextBounds.x + nextBounds.width / 2,
-      y: nextBounds.y + nextBounds.height,
-    });
-  }, [onAnchorChange]);
+    map.on('move', onMove);
+    map.on('zoom', onMove);
+    map.on('resize', onMove);
 
+    return () => {
+      cancelAnimationFrame(frame);
+      map.off('move', onMove);
+      map.off('zoom', onMove);
+      map.off('resize', onMove);
+    };
+  }, [mapInstance, syncConnector]);
+
+  // Re-sync when route coordinates arrive or change
   useEffect(() => {
-    if (!routeDestination) {
-      setPanelBounds(null);
-      onAnchorChange(null);
-      return;
-    }
+    if (routeCoordinates.length === 0) return;
+    // Small delay to let the panel render first
+    const frame = requestAnimationFrame(() => {
+      syncConnector();
+      // Double-sync after a short delay for layout settle
+      setTimeout(syncConnector, 100);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [routeCoordinates, syncConnector]);
 
-    updatePanelBounds();
+  // Sync on panel resize
+  useEffect(() => {
+    if (!routeDestination) return;
 
-    const observer = new ResizeObserver(() => updatePanelBounds());
+    const observer = new ResizeObserver(() => syncConnector());
     if (overlayRef.current) observer.observe(overlayRef.current);
     if (panelRef.current) observer.observe(panelRef.current);
 
-    window.addEventListener('resize', updatePanelBounds);
-    const frame = window.requestAnimationFrame(updatePanelBounds);
+    window.addEventListener('resize', syncConnector);
 
     return () => {
       observer.disconnect();
-      window.removeEventListener('resize', updatePanelBounds);
-      window.cancelAnimationFrame(frame);
+      window.removeEventListener('resize', syncConnector);
     };
-  }, [routeDestination, updatePanelBounds, onAnchorChange]);
-
-  const connectorPath = useMemo(() => {
-    if (!panelBounds || !connectorTarget) return null;
-
-    const startX = panelBounds.x + panelBounds.width / 2;
-    const startY = panelBounds.y + panelBounds.height;
-    const endX = connectorTarget.x;
-    const endY = connectorTarget.y;
-    const curveDepth = Math.max(30, Math.min(90, (endY - startY) * 0.45));
-
-    return `M ${startX} ${startY} C ${startX} ${startY + curveDepth}, ${endX} ${Math.max(startY + curveDepth, endY - 36)}, ${endX} ${endY}`;
-  }, [panelBounds, connectorTarget]);
+  }, [routeDestination, syncConnector]);
 
   if (!routeDestination) return null;
 
   return (
-    <div ref={overlayRef} className="absolute inset-0 z-40 pointer-events-none">
+    <div ref={overlayRef} className="absolute inset-0 pointer-events-none" style={{ zIndex: 1000 }}>
       <style>{`
         @keyframes route-panel-in {
           0% { opacity: 0; transform: translateY(-18px) scale(0.96); filter: blur(10px); }
@@ -96,59 +158,50 @@ const RouteInfoPanel = ({
           0% { stroke-dashoffset: 0; }
           100% { stroke-dashoffset: -48; }
         }
-        @keyframes route-pulse-dot {
-          0%, 100% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.18); opacity: 0.82; }
-        }
         @keyframes close-btn-in {
           0% { opacity: 0; transform: scale(0.72) rotate(-80deg); }
           100% { opacity: 1; transform: scale(1) rotate(0); }
         }
       `}</style>
 
-      {connectorPath && connectorTarget && (
-        <svg className="absolute inset-0 h-full w-full overflow-visible" aria-hidden="true">
-          <defs>
-            <linearGradient id="routeConnectorGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="hsl(var(--primary) / 0.95)" />
-              <stop offset="100%" stopColor="hsl(var(--primary) / 0.35)" />
-            </linearGradient>
-            <filter id="routeConnectorGlow" x="-100%" y="-100%" width="300%" height="300%">
-              <feGaussianBlur stdDeviation="6" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
+      <svg
+        ref={svgRef}
+        className="absolute inset-0 h-full w-full overflow-visible"
+        style={{ display: 'none' }}
+        aria-hidden="true"
+      >
+        <defs>
+          <linearGradient id="routeConnectorGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="hsl(var(--primary) / 0.95)" />
+            <stop offset="100%" stopColor="hsl(var(--primary) / 0.35)" />
+          </linearGradient>
+          <filter id="routeConnectorGlow" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur stdDeviation="6" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
 
-          <path
-            d={connectorPath}
-            fill="none"
-            stroke="hsl(var(--primary) / 0.15)"
-            strokeWidth="10"
-            strokeLinecap="round"
-            filter="url(#routeConnectorGlow)"
-          />
-          <path
-            d={connectorPath}
-            fill="none"
-            stroke="url(#routeConnectorGradient)"
-            strokeWidth="3.5"
-            strokeLinecap="round"
-            strokeDasharray="7 11"
-            style={{ animation: 'route-dash-flow 1.2s linear infinite' }}
-          />
-          <circle cx={connectorTarget.x} cy={connectorTarget.y} r="8" fill="hsl(var(--primary) / 0.15)" />
-          <circle
-            cx={connectorTarget.x}
-            cy={connectorTarget.y}
-            r="4.5"
-            fill="hsl(var(--primary))"
-            style={{ animation: 'route-pulse-dot 1.6s ease-in-out infinite' }}
-          />
-        </svg>
-      )}
+        <path
+          ref={glowPathRef}
+          fill="none"
+          stroke="hsl(var(--primary) / 0.15)"
+          strokeWidth="10"
+          strokeLinecap="round"
+          filter="url(#routeConnectorGlow)"
+        />
+        <path
+          ref={dashPathRef}
+          fill="none"
+          stroke="url(#routeConnectorGradient)"
+          strokeWidth="3.5"
+          strokeLinecap="round"
+          strokeDasharray="7 11"
+          style={{ animation: 'route-dash-flow 1.2s linear infinite' }}
+        />
+      </svg>
 
       <div
         className="absolute inset-x-0 px-5"
@@ -161,7 +214,7 @@ const RouteInfoPanel = ({
         >
           <button
             onClick={() => setRouteDestination(null)}
-            className="absolute -top-3 -right-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 backdrop-blur-md text-stone-900 shadow-[0_8px_24px_-6px_rgba(0,0,0,0.3)] hover:bg-white hover:scale-105 hover:shadow-[0_12px_32px_-6px_rgba(0,0,0,0.35)] transition-all duration-300 active:scale-95"
+            className="absolute -top-3 -right-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/80 dark:bg-stone-900/80 backdrop-blur-md hover:bg-white dark:hover:bg-stone-900 text-stone-800 dark:text-stone-100 shadow-[0_8px_24px_-6px_rgba(0,0,0,0.25)] hover:shadow-[0_12px_32px_-6px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-95 transition-all duration-300"
             style={{ animation: 'close-btn-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.18s both' }}
             aria-label="Fermer l'itinéraire"
           >

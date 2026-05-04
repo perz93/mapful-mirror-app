@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useFeaturedEvents } from '@/hooks/useFeaturedEvents';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import EventCardSkeleton from './EventCardSkeleton';
 const EventCard = () => {
   const {
     data: events,
@@ -21,19 +22,22 @@ const EventCard = () => {
     }, 5000);
     return () => clearInterval(interval);
   }, [events]);
-  if (isLoading || !events || events.length === 0) {
+  if (isLoading) {
+    return <EventCardSkeleton />;
+  }
+  if (!events || events.length === 0) {
     return null;
   }
   const currentEvent = events[currentIndex];
   return <div className="fixed bottom-36 left-0 right-0 max-w-md mx-auto px-4 pointer-events-none z-10 touch-none">
       <div className="pointer-events-auto touch-auto">
-        <div className={`flex items-stretch justify-between gap-3 rounded-2xl backdrop-blur-xl bg-white/80 dark:bg-stone-900/80 p-4 shadow-2xl border border-white/50 dark:border-stone-700/50 transition-all duration-700 ease-in-out ${isTransitioning ? 'opacity-0 scale-95 translate-y-2' : 'opacity-100 scale-100 translate-y-0'}`}>
+        <div className={`flex items-stretch justify-between gap-4 rounded-3xl backdrop-blur-2xl bg-white/40 dark:bg-stone-900/40 p-4 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] border border-white/60 dark:border-stone-700/30 transition-all duration-700 ease-in-out ${isTransitioning ? 'opacity-0 scale-95 translate-y-2' : 'opacity-100 scale-100 translate-y-0'}`}>
           <div className="flex flex-col justify-between gap-1.5 flex-[2_2_0px]">
-            <div className="flex flex-col gap-0.5">
-              <p className="leading-normal font-semibold text-zinc-500 font-sans text-base">
+            <div className="flex flex-col gap-1">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-base backdrop-blur-xl bg-stone-500/15 text-stone-600 dark:bg-white/10 dark:text-stone-300 border border-stone-300/30 dark:border-white/10 shadow-sm w-fit italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif", fontWeight: 600 }}>
                 {currentEvent.venue}
-              </p>
-              <p className="text-stone-900 dark:text-white text-sm font-bold leading-tight">
+              </span>
+              <p className="text-stone-900 dark:text-white text-[15px] font-bold leading-tight">
                 {currentEvent.title}
               </p>
               <p className="text-stone-500 dark:text-stone-400 text-xs font-normal leading-normal">
@@ -42,13 +46,13 @@ const EventCard = () => {
               })} • {currentEvent.time}
               </p>
             </div>
-            <Link to={`/event/${currentEvent.id}`} className="flex w-fit cursor-pointer items-center justify-center overflow-hidden rounded-full h-7 px-3 bg-primary text-primary-foreground text-xs font-medium leading-normal hover:opacity-90 transition-all active:scale-95">
+            <Link to={`/event/${currentEvent.id}`} className="flex w-fit cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#ee9d2b] text-white text-xs font-semibold leading-normal hover:opacity-90 transition-all active:scale-95 shadow-md">
               <span>Voir détails</span>
             </Link>
           </div>
           <div style={{
           backgroundImage: `url('${currentEvent.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=400&fit=crop'}')`
-        }} className="w-20 h-20 flex-shrink-0 bg-center bg-no-repeat bg-cover rounded transition-all duration-700 ease-in-out" />
+        }} className="w-24 h-24 flex-shrink-0 bg-center bg-no-repeat bg-cover rounded-2xl shadow-lg border border-white/30 transition-all duration-700 ease-in-out" />
         </div>
         
         {/* Progress indicators */}

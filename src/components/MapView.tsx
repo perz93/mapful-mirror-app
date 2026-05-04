@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster';
@@ -12,12 +12,14 @@ import { fr } from 'date-fns/locale';
 import { toast } from 'sonner';
 import RouteInfoPanel from './RouteInfoPanel';
 import itineraryIcon from '@/assets/itinerary-icon.png';
+import { fuzzyMatch } from '@/lib/fuzzyMatch';
+import { getDistanceKm } from '@/hooks/useNearbyEvents';
 
 const MapView = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const navigate = useNavigate();
-  const { searchQuery, selectedCategories, routeDestination, setRouteDestination } = useSearch();
+  const { searchQuery, selectedCategories, routeDestination, setRouteDestination, distanceFilter } = useSearch();
   const { data: events, isLoading } = useEvents();
 
   const userLocationRef = useRef<{ lat: number; lng: number } | null>(null);
@@ -27,100 +29,22 @@ const MapView = () => {
   const didAutoRecenterRef = useRef(false);
   const routeLayerRef = useRef<L.Polyline | null>(null);
   const destinationMarkerRef = useRef<L.Marker | null>(null);
-  const routeCoordinatesRef = useRef<L.LatLngTuple[]>([]);
-  const panelAnchorPointRef = useRef<{ x: number; y: number } | null>(null);
+
+  // Expose map instance and route coords to RouteInfoPanel via state
+  const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
+  const [routeCoordinates, setRouteCoordinates] = useState<L.LatLngTuple[]>([]);
   const [routeInfo, setRouteInfo] = useState<{ distanceKm: number | null; durationMin: number | null; loading: boolean; error: boolean }>({
     distanceKm: null,
     durationMin: null,
     loading: false,
     error: false,
   });
-  const [panelAnchorPoint, setPanelAnchorPoint] = useState<{ x: number; y: number } | null>(null);
-  const [connectorTarget, setConnectorTarget] = useState<{ x: number; y: number } | null>(null);
-
-  const updateConnectorTarget = useCallback(() => {
-    const map = mapInstanceRef.current;
-    const anchor = panelAnchorPointRef.current;
-
-    if (!map || !anchor || routeCoordinatesRef.current.length === 0) {
-      setConnectorTarget(null);
-      return;
-    }
-
-    const mapSize = map.getSize();
-    const visiblePoints = routeCoordinatesRef.current
-      .map((coord) => map.latLngToContainerPoint(coord))
-      .map((point) => ({ x: point.x, y: point.y }))
-      .filter(({ x, y }) => x >= -24 && x <= mapSize.x + 24 && y >= -24 && y <= mapSize.y + 24);
-
-    const preferredPoints = visiblePoints.filter(({ y }) => y >= anchor.y + 18);
-    const candidatePoints = preferredPoints.length > 0 ? preferredPoints : visiblePoints;
-
-    if (candidatePoints.length === 0) {
-      setConnectorTarget(null);
-      return;
-    }
-
-    const nextTarget = candidatePoints.reduce(
-      (best, point) => {
-        const dx = point.x - anchor.x;
-        const dy = point.y - anchor.y;
-        const score = Math.abs(dx) * 1.35 + Math.abs(dy) + (dy < 0 ? 1000 : 0);
-
-        if (score < best.score) {
-          return { point, score };
-        }
-
-        return best;
-      },
-      {
-        point: candidatePoints[0],
-        score: Number.POSITIVE_INFINITY,
-      }
-    ).point;
-
-    setConnectorTarget((current) => {
-      if (current && Math.abs(current.x - nextTarget.x) < 1 && Math.abs(current.y - nextTarget.y) < 1) {
-        return current;
-      }
-      return nextTarget;
-    });
-  }, []);
-
-  useEffect(() => {
-    panelAnchorPointRef.current = panelAnchorPoint;
-    updateConnectorTarget();
-  }, [panelAnchorPoint, updateConnectorTarget]);
-
-  useEffect(() => {
-    const map = mapInstanceRef.current;
-    if (!map) return;
-
-    let frame = 0;
-    const syncConnector = () => {
-      window.cancelAnimationFrame(frame);
-      frame = window.requestAnimationFrame(() => updateConnectorTarget());
-    };
-
-    map.on('move', syncConnector);
-    map.on('zoom', syncConnector);
-    map.on('resize', syncConnector);
-
-    syncConnector();
-
-    return () => {
-      window.cancelAnimationFrame(frame);
-      map.off('move', syncConnector);
-      map.off('zoom', syncConnector);
-      map.off('resize', syncConnector);
-    };
-  }, [updateConnectorTarget]);
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
     const savedPosition = sessionStorage.getItem('mapPosition');
-    const DEFAULT_INITIAL_ZOOM = 11;
+    const DEFAULT_INITIAL_ZOOM = 9;
 
     let initialCenter: [number, number] = [5.3600, -4.0083];
     let initialZoom = DEFAULT_INITIAL_ZOOM;
@@ -192,31 +116,6 @@ const MapView = () => {
       );
     }
 
-    const createCustomIcon = (imageUrl: string, eventType: string) => {
-      return L.divIcon({
-        className: 'custom-marker',
-        html: `
-          <div class="marker-image-container">
-            <div class="marker-image-wrapper marker-${eventType}">
-              <img src="${imageUrl}" alt="Event" class="marker-event-image" />
-            </div>
-          </div>
-        `,
-        iconSize: [50, 50],
-        iconAnchor: [25, 50],
-      });
-    };
-
-    const iconSvgs = {
-      music: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
-      food: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>',
-      sports: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>',
-      arts: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6"/><path d="M12 18v4"/><path d="M4.93 4.93l4.24 4.24"/><path d="M14.83 14.83l4.24 4.24"/><path d="M2 12h6"/><path d="M16 12h6"/><path d="M4.93 19.07l4.24-4.24"/><path d="M14.83 9.17l4.24-4.24"/></svg>',
-    };
-
-    void createCustomIcon;
-    void iconSvgs;
-
     const markerClusterGroup = L.markerClusterGroup({
       showCoverageOnHover: false,
       zoomToBoundsOnClick: true,
@@ -230,7 +129,6 @@ const MapView = () => {
       iconCreateFunction: function(cluster) {
         const count = cluster.getChildCount();
         let sizeClass = 'small';
-        let colorClass = 'music';
 
         if (count >= 10) {
           sizeClass = 'large';
@@ -247,10 +145,9 @@ const MapView = () => {
         const dominantType = Object.keys(typeCount).reduce((a, b) =>
           typeCount[a] > typeCount[b] ? a : b
         );
-        colorClass = dominantType;
 
         return L.divIcon({
-          html: `<div class="cluster-inner cluster-${colorClass}"><span>${count}</span></div>`,
+          html: `<div class="cluster-inner cluster-${dominantType}"><span>${count}</span></div>`,
           className: `marker-cluster marker-cluster-${sizeClass}`,
           iconSize: L.point(50, 50),
         });
@@ -260,6 +157,7 @@ const MapView = () => {
     markerClusterGroupRef.current = markerClusterGroup;
     map.addLayer(markerClusterGroup);
     mapInstanceRef.current = map;
+    setMapInstance(map);
 
     const handleRecenter = () => {
       if (userLocationRef.current) {
@@ -328,7 +226,6 @@ const MapView = () => {
 
     return () => {
       markersRef.current = [];
-      routeCoordinatesRef.current = [];
       if (markerClusterGroupRef.current && mapInstanceRef.current) {
         mapInstanceRef.current.removeLayer(markerClusterGroupRef.current);
         markerClusterGroupRef.current = null;
@@ -340,6 +237,7 @@ const MapView = () => {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
+      setMapInstance(null);
     };
   }, [navigate]);
 
@@ -371,7 +269,7 @@ const MapView = () => {
         html: `
           <div class="marker-image-container">
             <div class="marker-image-wrapper marker-${eventType}">
-              <img src="${imageUrl || defaultImage}" alt="Event" class="marker-event-image" />
+              <img src="${imageUrl || defaultImage}" alt="Event" class="marker-event-image" loading="lazy" />
             </div>
           </div>
         `,
@@ -413,8 +311,6 @@ const MapView = () => {
         icon: createCustomIcon(event.image_url || '', event.category),
       });
 
-      console.log('Creating marker for event:', event.title);
-
       const dateFormatted = formatEventDate(event.date);
       const timeFormatted = formatEventTime(event.time);
       const defaultImage = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=300&fit=crop';
@@ -432,15 +328,13 @@ const MapView = () => {
                 </div>
                 <div class="popup-card-info">
                   <div class="popup-venue-row">
-                    <p class="popup-card-venue">${event.venue}</p>
-                    <div class="popup-card-time">
-                      <div class="popup-time-value">${timeFormatted}</div>
-                    </div>
+                    <span class="popup-badge-glass">${event.venue}</span>
+                    <span class="popup-badge-glass">${timeFormatted}</span>
                   </div>
                 </div>
               </div>
               <div class="popup-actions" style="display:flex;gap:6px;margin-top:8px;">
-                <button class="popup-route-btn" style="flex:1;background:rgba(255,255,255,0.95);color:#1c1917;border:none;border-radius:999px;padding:6px 10px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;"><img src="${itineraryIcon}" alt="" style="width:20px;height:20px;object-fit:contain;" />Itinéraire</button>
+                <button class="popup-route-btn popup-btn-glass"><img src="${itineraryIcon}" alt="" style="width:20px;height:20px;object-fit:contain;" />Itinéraire</button>
                 <button class="popup-details-btn" style="flex:1;">Voir détails</button>
               </div>
             </div>
@@ -468,7 +362,6 @@ const MapView = () => {
       markerClusterGroup.addLayer(marker);
 
       marker.on('click', () => {
-        console.log('Marker clicked:', event.title);
         const key = `${event.latitude}-${event.longitude}`;
         const countAtPosition = coordCounts.get(key) || 1;
 
@@ -540,8 +433,7 @@ const MapView = () => {
       map.removeLayer(destinationMarkerRef.current);
       destinationMarkerRef.current = null;
     }
-    routeCoordinatesRef.current = [];
-    setConnectorTarget(null);
+    setRouteCoordinates([]);
 
     if (!routeDestination) {
       setRouteInfo({ distanceKm: null, durationMin: null, loading: false, error: false });
@@ -594,10 +486,9 @@ const MapView = () => {
           lineJoin: 'round',
         }).addTo(map);
         routeLayerRef.current = polyline;
-        routeCoordinatesRef.current = coords;
+        setRouteCoordinates(coords);
 
         map.fitBounds(polyline.getBounds(), { padding: [60, 60], maxZoom: 15, animate: true });
-        window.requestAnimationFrame(() => updateConnectorTarget());
 
         setRouteInfo({
           distanceKm: route.distance / 1000,
@@ -611,15 +502,14 @@ const MapView = () => {
         if (err.message === 'denied' || err.message === 'no-geo') {
           toast.error('Activez la localisation pour calculer un itinéraire');
         }
-        routeCoordinatesRef.current = [];
-        setConnectorTarget(null);
+        setRouteCoordinates([]);
         setRouteInfo({ distanceKm: null, durationMin: null, loading: false, error: true });
       });
 
     return () => {
       cancelled = true;
     };
-  }, [routeDestination, updateConnectorTarget]);
+  }, [routeDestination]);
 
   useEffect(() => {
     if (!mapInstanceRef.current || !markerClusterGroupRef.current) return;
@@ -634,18 +524,27 @@ const MapView = () => {
       if (!eventData) return;
 
       const matchesSearch = !query ||
-        eventData.title.toLowerCase().includes(query) ||
-        eventData.venue.toLowerCase().includes(query) ||
-        eventData.type.toLowerCase().includes(query);
+        fuzzyMatch(eventData.title, query) ||
+        fuzzyMatch(eventData.venue, query) ||
+        fuzzyMatch(eventData.type, query);
 
       const matchesCategory = selectedCategories.length === 0 ||
         selectedCategories.includes(eventData.category);
 
-      if (matchesSearch && matchesCategory) {
+      let matchesDistance = true;
+      if (distanceFilter && userLocationRef.current) {
+        const dist = getDistanceKm(
+          userLocationRef.current.lat, userLocationRef.current.lng,
+          eventData.lat, eventData.lng
+        );
+        matchesDistance = dist <= distanceFilter;
+      }
+
+      if (matchesSearch && matchesCategory && matchesDistance) {
         clusterGroup.addLayer(marker);
       }
     });
-  }, [searchQuery, selectedCategories]);
+  }, [searchQuery, selectedCategories, distanceFilter]);
 
   return (
     <>
@@ -655,8 +554,8 @@ const MapView = () => {
         durationMin={routeInfo.durationMin}
         loading={routeInfo.loading}
         error={routeInfo.error}
-        connectorTarget={connectorTarget}
-        onAnchorChange={setPanelAnchorPoint}
+        mapInstance={mapInstance}
+        routeCoordinates={routeCoordinates}
       />
     </>
   );
