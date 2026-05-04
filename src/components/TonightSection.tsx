@@ -32,7 +32,7 @@ const TonightSection = () => {
 
   return (
     <div
-      className={`fixed bottom-[180px] left-0 right-0 max-w-md mx-auto px-3 z-10 pointer-events-none transition-all duration-500 ${
+      className={`fixed bottom-[240px] left-0 right-0 max-w-md mx-auto px-3 z-10 pointer-events-none transition-all duration-500 ${
         showSection ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
       }`}
     >
