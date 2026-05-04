@@ -131,8 +131,12 @@ const ContactFab = ({
             href={contact.href}
             target={contact.href.startsWith('tel:') ? '_self' : '_blank'}
             rel="noopener noreferrer"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsOpen(false);
+            }}
             className={cn(
-              "absolute w-12 h-12 rounded-full flex items-center justify-center shadow-lg",
+              "absolute w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-10",
               contact.bgColor
             )}
             style={{
@@ -140,6 +144,7 @@ const ContactFab = ({
                 ? `translate(${position.x}px, ${position.y}px) scale(1) rotate(0deg)`
                 : 'translate(0, 0) scale(0.3) rotate(-45deg)',
               opacity: animateIn ? 1 : 0,
+              pointerEvents: animateIn ? 'auto' : 'none',
               transition: `transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${animateIn ? openDelay : closeDelay}s, opacity 0.35s ease ${animateIn ? openDelay : closeDelay}s`,
               bottom: 0,
               right: 0
