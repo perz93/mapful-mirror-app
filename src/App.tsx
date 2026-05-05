@@ -6,6 +6,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { SearchProvider } from "@/contexts/SearchContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import NotificationPrompt from "@/components/NotificationPrompt";
+import InstallGuide from "@/components/InstallGuide";
 import { useStatusBarColor } from "@/hooks/useStatusBarColor";
 import { usePWATheme } from "@/hooks/usePWATheme";
 import Index from "./pages/Index";
@@ -81,6 +82,7 @@ const App = () => (
         <SearchProvider>
           <NotificationProvider>
             <NotificationPrompt />
+            <InstallGuide />
             <AppContent />
           </NotificationProvider>
         </SearchProvider>
