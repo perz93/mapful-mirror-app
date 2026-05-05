@@ -672,4 +672,3 @@ All colors MUST be HSL.
 [data-sonner-toaster][data-y-position="top"] {
   top: calc(env(safe-area-inset-top, 0px) + 60px) !important;
 }
-}
