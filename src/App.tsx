@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SearchProvider } from "@/contexts/SearchContext";
+import { NotificationProvider } from "@/contexts/NotificationContext";
+import NotificationPrompt from "@/components/NotificationPrompt";
 import { useStatusBarColor } from "@/hooks/useStatusBarColor";
 import { usePWATheme } from "@/hooks/usePWATheme";
 import Index from "./pages/Index";
@@ -77,7 +79,10 @@ const App = () => (
     <BrowserRouter>
       <AuthProvider>
         <SearchProvider>
-          <AppContent />
+          <NotificationProvider>
+            <NotificationPrompt />
+            <AppContent />
+          </NotificationProvider>
         </SearchProvider>
       </AuthProvider>
     </BrowserRouter>

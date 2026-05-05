@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Mail, Lock, Bell } from 'lucide-react';
+import { ArrowLeft, Mail, Lock, Bell, Smartphone } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNotifications } from '@/contexts/NotificationContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import mapBackground from '@/assets/map-background.jpg';
@@ -265,6 +266,9 @@ const Settings = () => {
             </form>
           </div>
 
+          {/* Push Notifications Section */}
+          <PushNotificationSection />
+
           {/* Notification Preferences Section */}
           <div className="rounded-2xl backdrop-blur-2xl bg-white/10 border border-white/15 p-5">
             <div className="flex items-center gap-2 mb-1">
@@ -336,6 +340,61 @@ const Settings = () => {
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  );
+};
+
+const PushNotificationSection = () => {
+  const { isSupported, isSubscribed, permission, subscribe, unsubscribe, loading: notifLoading } = useNotifications();
+
+  if (!isSupported) return null;
+
+  const handleToggle = async (checked: boolean) => {
+    if (checked) {
+      const success = await subscribe();
+      if (success) {
+        toast.success('Notifications push activées !');
+      } else {
+        toast.error('Impossible d\'activer les notifications');
+      }
+    } else {
+      const success = await unsubscribe();
+      if (success) {
+        toast.success('Notifications push désactivées');
+      }
+    }
+  };
+
+  return (
+    <div className="rounded-2xl backdrop-blur-2xl bg-white/10 border border-white/15 p-5">
+      <div className="flex items-center gap-2 mb-1">
+        <Smartphone className="h-5 w-5 text-[#ee9d2b]" />
+        <h2 className="text-lg font-semibold italic text-white" style={{ fontFamily: "'Source Serif 4', serif" }}>
+          Notifications push
+        </h2>
+      </div>
+      <p className="text-sm text-white/50 mb-5">
+        Recevez des alertes en temps réel sur votre appareil
+      </p>
+      <div className="flex items-center justify-between">
+        <div className="space-y-0.5">
+          <label className="text-sm font-medium text-white/70">
+            Notifications push
+          </label>
+          <p className="text-sm text-white/50">
+            {permission === 'denied'
+              ? 'Bloqué par le navigateur — activez dans les paramètres'
+              : isSubscribed
+                ? 'Vous recevrez des notifications'
+                : 'Activez pour ne rien rater'}
+          </p>
+        </div>
+        <Switch
+          checked={isSubscribed}
+          onCheckedChange={handleToggle}
+          disabled={notifLoading || permission === 'denied'}
+        />
       </div>
     </div>
   );
