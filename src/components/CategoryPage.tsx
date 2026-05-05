@@ -86,7 +86,7 @@ const CategoryPage = ({
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                     <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
                       <div className="flex-1">
-                        <p className="text-white/90 text-xs font-medium mb-1">{event.venue}</p>
+                        <p className="text-white/90 text-xs font-semibold mb-1 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{event.venue}</p>
                         <h3 className="text-white text-lg font-bold leading-tight pr-2">{event.title}</h3>
                       </div>
                       {event.price && <span className="inline-flex items-center px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-sm text-stone-900 text-xs font-semibold whitespace-nowrap">

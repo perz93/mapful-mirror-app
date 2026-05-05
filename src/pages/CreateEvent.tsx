@@ -562,25 +562,39 @@ const CreateEvent = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-3">
                   <Label htmlFor="date" className={labelClass}>Date *</Label>
-                  <Input
-                    id="date"
-                    type="date"
-                    value={formData.date}
-                    onChange={e => setFormData({ ...formData, date: e.target.value })}
-                    required
-                    className={inputClass}
-                  />
+                  <div className="relative">
+                    <Input
+                      id="date"
+                      type="date"
+                      value={formData.date}
+                      onChange={e => setFormData({ ...formData, date: e.target.value })}
+                      required
+                      className={inputClass}
+                    />
+                    {formData.date && (
+                      <button type="button" onClick={() => setFormData({ ...formData, date: '' })} className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full bg-white/15 flex items-center justify-center">
+                        <X className="w-3 h-3 text-white/60" />
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <div className="space-y-3">
                   <Label htmlFor="time" className={labelClass}>Heure *</Label>
-                  <Input
-                    id="time"
-                    type="time"
-                    value={formData.time}
-                    onChange={e => setFormData({ ...formData, time: e.target.value })}
-                    required
-                    className={inputClass}
-                  />
+                  <div className="relative">
+                    <Input
+                      id="time"
+                      type="time"
+                      value={formData.time}
+                      onChange={e => setFormData({ ...formData, time: e.target.value })}
+                      required
+                      className={inputClass}
+                    />
+                    {formData.time && (
+                      <button type="button" onClick={() => setFormData({ ...formData, time: '' })} className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full bg-white/15 flex items-center justify-center">
+                        <X className="w-3 h-3 text-white/60" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
