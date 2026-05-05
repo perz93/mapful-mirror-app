@@ -171,26 +171,21 @@ const MyAccount = () => {
   ];
 
   return (
-    <div className="min-h-screen relative overflow-hidden animate-fade-in">
-      {/* Map Background */}
-      <div
-        className="absolute inset-0 opacity-30"
-        style={{
-          backgroundImage: `url(${mapBackground})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      />
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-2xl" />
+    <div className="min-h-screen relative overflow-hidden animate-fade-in bg-stone-200">
+      {/* Map Background — light natural */}
+      <div className="fixed inset-0 pointer-events-none">
+        <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
+      </div>
+      <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
 
       {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
-          <Link to="/" className="w-11 h-11 rounded-full bg-white/80 dark:bg-stone-900/80 backdrop-blur-md flex items-center justify-center shadow-[0_8px_24px_-6px_rgba(0,0,0,0.25)] hover:scale-105 active:scale-95 transition-all">
-            <ArrowLeft className="w-5 h-5 text-stone-800 dark:text-stone-100" />
+          <Link to="/" className="w-11 h-11 rounded-full bg-white/70 backdrop-blur-md flex items-center justify-center shadow-sm border border-white/60 hover:scale-105 active:scale-95 transition-all">
+            <ArrowLeft className="w-5 h-5 text-stone-700" />
           </Link>
-          <h1 className="text-lg font-bold italic text-white" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+          <h1 className="text-lg font-bold italic text-stone-800" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
             Mon Profil
           </h1>
           <div className="w-11 h-11" />
@@ -226,32 +221,32 @@ const MyAccount = () => {
           </div>
 
           {/* Name */}
-          <h2 className="text-2xl font-bold text-white mb-1 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+          <h2 className="text-2xl font-bold text-stone-800 mb-1 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
             {displayName}
           </h2>
-          <p className="text-white/60 text-xs mb-5">{user?.email}</p>
+          <p className="text-stone-500 text-xs mb-5">{user?.email}</p>
 
           {/* Stats Cards */}
           <div className="grid grid-cols-3 gap-3 w-full mb-6">
-            <div className="flex flex-col items-center gap-1 rounded-2xl backdrop-blur-2xl bg-white/10 border border-white/15 p-3">
+            <div className="flex flex-col items-center gap-1 rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-3">
               <Calendar size={16} className="text-[#ee9d2b]" />
-              <p className="text-xl font-bold text-white">{stats.eventsCreated}</p>
-              <p className="text-[10px] text-white/50 uppercase tracking-wider">Events</p>
+              <p className="text-xl font-bold text-stone-800">{stats.eventsCreated}</p>
+              <p className="text-[10px] text-stone-500 uppercase tracking-wider">Events</p>
             </div>
-            <div className="flex flex-col items-center gap-1 rounded-2xl backdrop-blur-2xl bg-white/10 border border-white/15 p-3">
+            <div className="flex flex-col items-center gap-1 rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-3">
               <Heart size={16} className="text-[#ee9d2b]" />
-              <p className="text-xl font-bold text-white">{stats.favorites}</p>
-              <p className="text-[10px] text-white/50 uppercase tracking-wider">Favoris</p>
+              <p className="text-xl font-bold text-stone-800">{stats.favorites}</p>
+              <p className="text-[10px] text-stone-500 uppercase tracking-wider">Favoris</p>
             </div>
-            <div className="flex flex-col items-center gap-1 rounded-2xl backdrop-blur-2xl bg-white/10 border border-white/15 p-3">
+            <div className="flex flex-col items-center gap-1 rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-3">
               <Zap size={16} className="text-[#ee9d2b]" />
-              <p className="text-xl font-bold text-white">{goingEvents.length}</p>
-              <p className="text-[10px] text-white/50 uppercase tracking-wider">J'y vais</p>
+              <p className="text-xl font-bold text-stone-800">{goingEvents.length}</p>
+              <p className="text-[10px] text-stone-500 uppercase tracking-wider">J'y vais</p>
             </div>
           </div>
 
           {/* Tabs */}
-          <div className="flex w-full rounded-2xl backdrop-blur-2xl bg-white/10 border border-white/15 p-1 mb-6">
+          <div className="flex w-full rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-1 mb-6">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -262,7 +257,7 @@ const MyAccount = () => {
                   className={`flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl text-[11px] font-medium transition-all ${
                     isActive
                       ? 'bg-[#ee9d2b] text-white shadow-lg'
-                      : 'text-white/60 hover:text-white/80'
+                      : 'text-stone-500 hover:text-stone-700'
                   }`}
                 >
                   <Icon size={16} />
@@ -277,7 +272,7 @@ const MyAccount = () => {
             {activeTab === 'events' && (
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-base font-bold text-white italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+                  <h3 className="text-base font-bold text-stone-800 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
                     Mes événements
                   </h3>
                   <Link to="/manage-events" className="text-[#ee9d2b] text-xs font-semibold hover:underline">
@@ -285,9 +280,9 @@ const MyAccount = () => {
                   </Link>
                 </div>
                 {userEvents.length === 0 ? (
-                  <div className="rounded-2xl backdrop-blur-2xl bg-white/10 border border-white/15 p-8 text-center">
-                    <Calendar size={32} className="text-white/30 mx-auto mb-3" />
-                    <p className="text-white/50 text-sm mb-3">Aucun événement créé</p>
+                  <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-8 text-center">
+                    <Calendar size={32} className="text-stone-300 mx-auto mb-3" />
+                    <p className="text-stone-500 text-sm mb-3">Aucun événement créé</p>
                     <Link
                       to="/create-event"
                       className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ee9d2b] text-white text-xs font-semibold hover:opacity-90 transition-all active:scale-95"
@@ -313,7 +308,7 @@ const MyAccount = () => {
             {activeTab === 'listings' && (
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-base font-bold text-white italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+                  <h3 className="text-base font-bold text-stone-800 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
                     Mes annonces
                   </h3>
                   <Link to="/create-listing" className="text-[#ee9d2b] text-xs font-semibold hover:underline">
@@ -321,9 +316,9 @@ const MyAccount = () => {
                   </Link>
                 </div>
                 {userListings.length === 0 ? (
-                  <div className="rounded-2xl backdrop-blur-2xl bg-white/10 border border-white/15 p-8 text-center">
-                    <ShoppingBag size={32} className="text-white/30 mx-auto mb-3" />
-                    <p className="text-white/50 text-sm mb-3">Aucune annonce</p>
+                  <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-8 text-center">
+                    <ShoppingBag size={32} className="text-stone-300 mx-auto mb-3" />
+                    <p className="text-stone-500 text-sm mb-3">Aucune annonce</p>
                     <Link
                       to="/create-listing"
                       className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ee9d2b] text-white text-xs font-semibold hover:opacity-90 transition-all active:scale-95"
@@ -375,14 +370,14 @@ const MyAccount = () => {
 
             {activeTab === 'favorites' && (
               <div>
-                <h3 className="text-base font-bold text-white italic mb-4" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+                <h3 className="text-base font-bold text-stone-800 italic mb-4" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
                   Mes favoris
                 </h3>
                 {favoriteEvents.length === 0 ? (
-                  <div className="rounded-2xl backdrop-blur-2xl bg-white/10 border border-white/15 p-8 text-center">
-                    <Heart size={32} className="text-white/30 mx-auto mb-3" />
-                    <p className="text-white/50 text-sm mb-1">Aucun favori</p>
-                    <p className="text-white/30 text-xs">Les events que tu aimes apparaîtront ici</p>
+                  <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-8 text-center">
+                    <Heart size={32} className="text-stone-300 mx-auto mb-3" />
+                    <p className="text-stone-500 text-sm mb-1">Aucun favori</p>
+                    <p className="text-stone-400 text-xs">Les events que tu aimes apparaîtront ici</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -401,14 +396,14 @@ const MyAccount = () => {
 
             {activeTab === 'activity' && (
               <div>
-                <h3 className="text-base font-bold text-white italic mb-4" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+                <h3 className="text-base font-bold text-stone-800 italic mb-4" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
                   J'y vais
                 </h3>
                 {goingEvents.length === 0 ? (
-                  <div className="rounded-2xl backdrop-blur-2xl bg-white/10 border border-white/15 p-8 text-center">
-                    <Zap size={32} className="text-white/30 mx-auto mb-3" />
-                    <p className="text-white/50 text-sm mb-1">Aucun event prévu</p>
-                    <p className="text-white/30 text-xs">Clique "J'y vais" sur un event pour le retrouver ici</p>
+                  <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-8 text-center">
+                    <Zap size={32} className="text-stone-300 mx-auto mb-3" />
+                    <p className="text-stone-500 text-sm mb-1">Aucun event prévu</p>
+                    <p className="text-stone-400 text-xs">Clique "J'y vais" sur un event pour le retrouver ici</p>
                     <Link
                       to="/"
                       className="inline-flex items-center gap-2 px-4 py-2 mt-4 rounded-full bg-[#ee9d2b] text-white text-xs font-semibold hover:opacity-90 transition-all active:scale-95"
