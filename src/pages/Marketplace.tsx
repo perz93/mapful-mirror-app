@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import mapBackground from '@/assets/map-background.jpg';
 
 const categoryConfig = {
   location_espaces: { label: 'Location espaces', icon: Building2, color: 'bg-blue-500' },
@@ -50,20 +51,26 @@ const Marketplace = () => {
   };
 
   return (
-    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-background animate-fade-in animate-zoom-smooth">
+    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-stone-200 animate-fade-in animate-zoom-smooth">
+      {/* Map Background — light natural */}
+      <div className="fixed inset-0 pointer-events-none">
+        <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
+      </div>
+      <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
+
       {/* Header */}
-      <div className="relative z-10 flex items-center justify-between px-4 pt-12 pb-4 animate-fade-in">
+      <div className="relative z-10 flex items-center justify-between px-4 pb-4 animate-fade-in" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         <Link
           to="/"
-          className="flex size-10 items-center justify-center rounded-full bg-black/70 backdrop-blur-md transition-all duration-200 hover:scale-105 active:scale-95"
+          className="flex size-10 items-center justify-center rounded-full bg-white/70 backdrop-blur-md border border-white/60 shadow-sm transition-all duration-200 hover:scale-105 active:scale-95"
         >
-          <ArrowLeft className="text-white" size={20} />
+          <ArrowLeft className="text-stone-700" size={20} />
         </Link>
-        <h1 className="text-xl font-bold">Marketplace</h1>
+        <h1 className="text-xl font-bold italic text-stone-800" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>Marketplace</h1>
         <Button
           onClick={handleCreateListing}
           size="icon"
-          className="size-10 rounded-full bg-amber-500 hover:bg-amber-600 transition-all duration-200 hover:scale-105 active:scale-95"
+          className="size-10 rounded-full bg-amber-500 hover:bg-amber-600 transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm"
         >
           <Plus className="text-white" size={20} />
         </Button>
@@ -77,7 +84,7 @@ const Marketplace = () => {
             className={`flex-shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95 ${
               selectedCategory === 'all'
                 ? 'bg-primary text-primary-foreground shadow-md'
-                : 'bg-white/70 dark:bg-stone-800/70 backdrop-blur-md'
+                : 'bg-white/60 backdrop-blur-md text-stone-600 border border-white/60'
             }`}
           >
             Tout
@@ -92,7 +99,7 @@ const Marketplace = () => {
                 className={`flex-shrink-0 flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95 ${
                   selectedCategory === key
                     ? 'bg-primary text-primary-foreground shadow-md'
-                    : 'bg-white/70 dark:bg-stone-800/70 backdrop-blur-md'
+                    : 'bg-white/60 backdrop-blur-md text-stone-600 border border-white/60'
                 }`}
               >
                 <Icon size={16} />
@@ -176,14 +183,14 @@ const Marketplace = () => {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="mb-4 rounded-full bg-white/50 dark:bg-stone-800/50 p-6">
-              <Building2 className="text-muted-foreground" size={48} />
+            <div className="mb-4 rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 p-6">
+              <Building2 className="text-stone-400" size={48} />
             </div>
-            <h3 className="mb-2 text-lg font-semibold">Aucune annonce</h3>
-            <p className="mb-4 text-sm text-muted-foreground">
+            <h3 className="mb-2 text-lg font-semibold text-stone-800 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>Aucune annonce</h3>
+            <p className="mb-4 text-sm text-stone-500">
               Soyez le premier à proposer vos services !
             </p>
-            <Button onClick={handleCreateListing} className="bg-amber-500 hover:bg-amber-600">
+            <Button onClick={handleCreateListing} className="bg-amber-500 hover:bg-amber-600 rounded-full px-6">
               <Plus size={16} className="mr-2" />
               Créer une annonce
             </Button>
@@ -191,8 +198,6 @@ const Marketplace = () => {
         )}
       </div>
 
-      {/* Background */}
-      <div className="fixed inset-0 -z-10 bg-gradient-to-b from-amber-50/50 to-background dark:from-amber-950/20" />
     </div>
   );
 };

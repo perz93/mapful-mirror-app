@@ -65,10 +65,10 @@ const EventDetails = () => {
 
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark animate-fade-in animate-zoom-smooth">
-      <div className="mx-auto max-w-md">
+      <div className="mx-auto max-w-md" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <div
           onClick={() => event.image_url && setLightboxOpen(true)}
-          className="relative h-80 bg-cover bg-center rounded-3xl overflow-hidden mx-4 mt-4 cursor-zoom-in transition-transform active:scale-[0.99]"
+          className="relative h-80 bg-cover bg-center rounded-3xl overflow-hidden mx-4 mt-2 cursor-zoom-in transition-transform active:scale-[0.99]"
           style={{
             backgroundImage: `url('${event.image_url || 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&h=600&fit=crop'}')`
           }}

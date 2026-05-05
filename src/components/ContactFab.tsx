@@ -129,7 +129,7 @@ const ContactFab = ({
           <a
             key={index}
             href={contact.href}
-            target={contact.href.startsWith('tel:') ? '_self' : '_blank'}
+            target="_self"
             rel="noopener noreferrer"
             onClick={(e) => {
               e.stopPropagation();
