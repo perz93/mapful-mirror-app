@@ -88,8 +88,8 @@ const Step = ({ icon, title, description, delay, isActive }: StepProps) => (
   <div
     className={`flex items-center gap-3.5 p-3.5 rounded-2xl transition-all duration-500 ${
       isActive
-        ? 'backdrop-blur-2xl bg-white/50 dark:bg-stone-800/50 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.1)] border border-white/60 dark:border-stone-600/30 scale-100 opacity-100'
-        : 'backdrop-blur-xl bg-white/20 dark:bg-stone-800/20 border border-white/30 dark:border-stone-700/20 scale-95 opacity-50'
+        ? 'backdrop-blur-2xl bg-white/70 dark:bg-stone-800/60 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.1)] border border-white/80 dark:border-stone-600/30 scale-100 opacity-100'
+        : 'backdrop-blur-xl bg-white/35 dark:bg-stone-800/25 border border-white/50 dark:border-stone-700/20 scale-95 opacity-50'
     }`}
     style={{ transitionDelay: `${delay}ms` }}
   >
@@ -186,7 +186,7 @@ const InstallGuide = () => {
           animating ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-8 opacity-0 scale-95'
         }`}
       >
-        <div className="rounded-3xl backdrop-blur-2xl bg-white/40 dark:bg-stone-900/40 border border-white/60 dark:border-stone-700/30 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] overflow-hidden">
+        <div className="rounded-3xl backdrop-blur-2xl bg-white/85 dark:bg-stone-900/80 border border-white/70 dark:border-stone-700/30 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] overflow-hidden">
           {/* Content */}
           <div className="px-5 py-6">
             {/* Header */}
@@ -268,9 +268,9 @@ const InstallGuide = () => {
 
             {/* Benefits */}
             <div className="mt-6 flex items-center justify-center gap-3 text-[11px] font-medium text-stone-500 dark:text-stone-400">
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full backdrop-blur-xl bg-white/30 dark:bg-stone-800/30 border border-white/40 dark:border-stone-700/20">⚡ Rapide</span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full backdrop-blur-xl bg-white/30 dark:bg-stone-800/30 border border-white/40 dark:border-stone-700/20">🔔 Notifs</span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full backdrop-blur-xl bg-white/30 dark:bg-stone-800/30 border border-white/40 dark:border-stone-700/20">📱 Plein écran</span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full backdrop-blur-xl bg-white/50 dark:bg-stone-800/40 border border-white/60 dark:border-stone-700/20">⚡ Rapide</span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full backdrop-blur-xl bg-white/50 dark:bg-stone-800/40 border border-white/60 dark:border-stone-700/20">🔔 Notifs</span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full backdrop-blur-xl bg-white/50 dark:bg-stone-800/40 border border-white/60 dark:border-stone-700/20">📱 Plein écran</span>
             </div>
           </div>
         </div>
