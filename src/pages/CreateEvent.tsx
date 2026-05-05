@@ -38,10 +38,10 @@ const categoryIcons: Record<string, string> = {
   sports: sportIcon,
 };
 
-const inputClass = "h-10 rounded-xl bg-white/10 border border-white/15 text-white placeholder:text-white/30 text-sm focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50 [&]:ring-0 [&]:outline-none";
-const labelClass = "text-sm text-white/70 font-normal";
-const cardClass = "rounded-2xl backdrop-blur-2xl bg-white/10 border border-white/15 p-4 space-y-3";
-const sectionTitleClass = "text-lg italic text-white mb-4 flex items-center gap-2";
+const inputClass = "h-9 rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50 [&]:ring-0 [&]:outline-none";
+const labelClass = "text-sm text-stone-600 font-normal";
+const cardClass = "rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.08)] p-4 space-y-3";
+const sectionTitleClass = "text-lg italic text-stone-800 mb-4 flex items-center gap-2";
 
 const CreateEvent = () => {
   const { toast } = useToast();
@@ -354,18 +354,18 @@ const CreateEvent = () => {
   }
 
   return (
-    <div className="relative min-h-screen pb-32 animate-fade-in animate-zoom-smooth">
-      {/* Static Map Background */}
-      <div className="absolute inset-0 pointer-events-none">
+    <div className="relative min-h-screen pb-32 animate-fade-in animate-zoom-smooth overflow-hidden overscroll-none bg-stone-200">
+      {/* Static Map Background — lighter, more natural */}
+      <div className="fixed inset-0 pointer-events-none">
         <img
           src={mapBackground}
           alt=""
-          className="w-full h-full object-cover opacity-30"
+          className="w-full h-full object-cover opacity-60"
         />
       </div>
 
-      {/* Dark Overlay with blur */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-2xl pointer-events-none" />
+      {/* Light blur overlay — less dark, more natural */}
+      <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
 
       {/* Content */}
       <div className="relative mx-auto max-w-md">
@@ -373,14 +373,14 @@ const CreateEvent = () => {
         <div className="px-4 sm:px-6 pt-12 sm:pt-16 pb-8 sm:pb-10">
           <Link
             to="/"
-            className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white/80 dark:bg-stone-900/80 backdrop-blur-md shadow-[0_8px_24px_-6px_rgba(0,0,0,0.25)] hover:scale-105 active:scale-95 transition-all mb-8"
+            className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white/70 backdrop-blur-md shadow-sm border border-white/60 hover:scale-105 active:scale-95 transition-all mb-8"
           >
-            <ArrowLeft className="w-5 h-5 text-stone-900 dark:text-white" />
+            <ArrowLeft className="w-5 h-5 text-stone-700" />
           </Link>
-          <h1 className="text-4xl italic text-white mb-3 text-center" style={{ fontFamily: '"Source Serif 4", serif' }}>
+          <h1 className="text-4xl italic text-stone-800 mb-3 text-center" style={{ fontFamily: '"Source Serif 4", serif' }}>
             Créer un événement
           </h1>
-          <p className="text-white/60 font-light text-center">Partagez votre événement avec la communauté</p>
+          <p className="text-stone-500 font-light text-center">Partagez votre événement avec la communauté</p>
         </div>
 
         {/* Form Cards */}
@@ -397,7 +397,7 @@ const CreateEvent = () => {
               />
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="border border-dashed border-white/20 rounded-2xl p-8 hover:border-white/40 transition-colors cursor-pointer bg-white/5"
+                className="border border-dashed border-stone-300/50 rounded-2xl p-8 hover:border-stone-400/60 transition-colors cursor-pointer bg-white/30"
               >
                 {imagePreview ? (
                   <div className="relative">
@@ -406,15 +406,15 @@ const CreateEvent = () => {
                       alt="Preview"
                       className="w-full h-48 object-cover rounded-lg"
                     />
-                    <div className="absolute inset-0 bg-black/40 rounded-lg flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                    <div className="absolute inset-0 bg-black/30 rounded-lg flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                       <p className="text-white text-sm">Cliquez pour changer</p>
                     </div>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-center">
                     <ImageIcon className="h-10 w-10 text-[#ee9d2b] mb-4" strokeWidth={1.5} />
-                    <h3 className="font-light text-white mb-1">Ajouter une image</h3>
-                    <p className="text-sm text-white/60 font-light">Cliquez pour télécharger</p>
+                    <h3 className="font-light text-stone-700 mb-1">Ajouter une image</h3>
+                    <p className="text-sm text-stone-400 font-light">Cliquez pour télécharger</p>
                   </div>
                 )}
               </div>
@@ -447,7 +447,7 @@ const CreateEvent = () => {
                   <SelectTrigger className={inputClass}>
                     <SelectValue placeholder="Sélectionnez une catégorie" />
                   </SelectTrigger>
-                  <SelectContent className="backdrop-blur-2xl bg-stone-900/95 border-white/15">
+                  <SelectContent className="backdrop-blur-2xl bg-white/95 border-stone-200/60">
                     <SelectItem value="workshops">
                       <span className="flex items-center gap-2">
                         <img src={categoryIcons.workshops} alt="" className="w-5 h-5" />
@@ -535,10 +535,10 @@ const CreateEvent = () => {
               {/* Map for position adjustment */}
               <div className="space-y-3 mt-4">
                 <Label className={labelClass}>
-                  Position sur la carte {geocoding && <span className="text-xs text-white/40">(localisation...)</span>}
+                  Position sur la carte {geocoding && <span className="text-xs text-stone-400">(localisation...)</span>}
                 </Label>
                 <div
-                  className="w-full h-48 rounded-2xl overflow-hidden border border-white/15"
+                  className="w-full h-48 rounded-2xl overflow-hidden border border-stone-300/40"
                   style={{ position: 'relative', zIndex: 1 }}
                 >
                   <div
@@ -546,7 +546,7 @@ const CreateEvent = () => {
                     className="w-full h-full"
                   />
                 </div>
-                <p className="text-xs text-white/50">
+                <p className="text-xs text-stone-400">
                   Utilisez la mini-carte pour ajuster précisément la position via le marqueur rouge
                 </p>
               </div>
@@ -572,8 +572,8 @@ const CreateEvent = () => {
                       className={inputClass}
                     />
                     {formData.date && (
-                      <button type="button" onClick={() => setFormData({ ...formData, date: '' })} className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full bg-white/15 flex items-center justify-center">
-                        <X className="w-3 h-3 text-white/60" />
+                      <button type="button" onClick={() => setFormData({ ...formData, date: '' })} className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full bg-stone-300/40 flex items-center justify-center hover:bg-stone-400/40 transition-colors">
+                        <X className="w-2.5 h-2.5 text-stone-500" />
                       </button>
                     )}
                   </div>
@@ -590,8 +590,8 @@ const CreateEvent = () => {
                       className={inputClass}
                     />
                     {formData.time && (
-                      <button type="button" onClick={() => setFormData({ ...formData, time: '' })} className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full bg-white/15 flex items-center justify-center">
-                        <X className="w-3 h-3 text-white/60" />
+                      <button type="button" onClick={() => setFormData({ ...formData, time: '' })} className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full bg-stone-300/40 flex items-center justify-center hover:bg-stone-400/40 transition-colors">
+                        <X className="w-2.5 h-2.5 text-stone-500" />
                       </button>
                     )}
                   </div>
@@ -643,7 +643,7 @@ const CreateEvent = () => {
                   value={formData.description}
                   onChange={e => setFormData({ ...formData, description: e.target.value })}
                   rows={5}
-                  className="rounded-xl bg-white/10 border border-white/15 text-white placeholder:text-white/30 text-sm focus:outline-none focus:ring-2 focus:ring-[#ee9d2b]/30 resize-none"
+                  className="rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50 resize-none"
                 />
               </div>
             </div>
@@ -668,7 +668,7 @@ const CreateEvent = () => {
                       <button
                         type="button"
                         onClick={() => removeKeyPoint(index)}
-                        className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center hover:bg-red-500/30 transition-colors"
+                        className="w-9 h-9 rounded-full bg-red-500/15 flex items-center justify-center hover:bg-red-500/25 transition-colors"
                       >
                         <X className="w-4 h-4 text-red-400" />
                       </button>
@@ -686,7 +686,7 @@ const CreateEvent = () => {
                     Ajouter un point clé
                   </button>
                 )}
-                <p className="text-xs text-white/50">Maximum 5 points clés</p>
+                <p className="text-xs text-stone-400">Maximum 5 points clés</p>
               </div>
             </div>
 
