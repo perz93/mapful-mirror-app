@@ -4,6 +4,7 @@ import { useFeaturedEvents } from '@/hooks/useFeaturedEvents';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import EventCardSkeleton from './EventCardSkeleton';
+import HypeBadge from './HypeBadge';
 const EventCard = () => {
   const {
     data: events,
@@ -45,6 +46,9 @@ const EventCard = () => {
                 locale: fr
               })} • {currentEvent.time}
               </p>
+              <div className="mt-1">
+                <HypeBadge eventId={currentEvent.id} eventDate={currentEvent.date} eventTime={currentEvent.time} size="sm" />
+              </div>
             </div>
             <Link to={`/event/${currentEvent.id}`} className="flex w-fit cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#ee9d2b] text-white text-xs font-semibold leading-normal hover:opacity-90 transition-all active:scale-95 shadow-md">
               <span>Voir détails</span>

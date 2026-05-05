@@ -10,6 +10,8 @@ import { fr } from 'date-fns/locale';
 import { toast } from 'sonner';
 import ContactFab from '@/components/ContactFab';
 import ImageLightbox from '@/components/ImageLightbox';
+import CountdownTimer from '@/components/CountdownTimer';
+import HypeBar from '@/components/HypeBar';
 
 
 const EventDetails = () => {
@@ -113,6 +115,14 @@ const EventDetails = () => {
         </div>
 
         <div className="p-6 space-y-6">
+          {/* Countdown Timer */}
+          <CountdownTimer eventDate={event.date} eventTime={event.time} />
+
+          {/* Hype Bar */}
+          <div className="rounded-2xl bg-white dark:bg-stone-900 p-4 border border-stone-200/50 dark:border-stone-700/30 shadow-sm">
+            <HypeBar eventId={event.id} maxCapacity={event.capacity || 50} />
+          </div>
+
           <div className="space-y-4 rounded-md px-[3px] py-[10px] bg-orange-50">
             <div className="flex items-start gap-3 px-[9px]">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 flex-shrink-0">

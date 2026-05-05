@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { useEventsByCategory } from '@/hooks/useEventsByCategory';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import HypeBadge from './HypeBadge';
+import HypeBar from './HypeBar';
 interface CategoryPageProps {
   category: string;
   title: string;
@@ -84,6 +86,10 @@ const CategoryPage = ({
               backgroundImage: `url('${event.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=400&fit=crop'}')`
             }}>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    {/* Hype + Countdown badges top-right */}
+                    <div className="absolute top-3 right-3">
+                      <HypeBadge eventId={event.id} eventDate={event.date} eventTime={event.time} size="sm" />
+                    </div>
                     <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
                       <div className="flex-1">
                         <p className="text-white/90 text-xs font-semibold mb-1 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{event.venue}</p>
@@ -94,8 +100,8 @@ const CategoryPage = ({
                         </span>}
                     </div>
                   </div>
-                  
-                  <div className="p-4">
+
+                  <div className="p-4 space-y-3">
                     <div className="flex items-center gap-4 text-stone-600 dark:text-stone-400">
                       <div className="flex items-center gap-1.5">
                         <Calendar size={14} strokeWidth={2} />
@@ -110,6 +116,7 @@ const CategoryPage = ({
                         <span className="text-xs font-medium">{event.time}</span>
                       </div>
                     </div>
+                    <HypeBar eventId={event.id} maxCapacity={event.capacity || 50} />
                   </div>
                 </div>
               </Link>)}

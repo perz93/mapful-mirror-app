@@ -5,6 +5,7 @@ import { useTonightEvents } from '@/hooks/useTonightEvents';
 import { useAttendees } from '@/hooks/useAttendees';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import HypeBadge from './HypeBadge';
 
 const AttendeesBadge = ({ eventId }: { eventId: string }) => {
   const { count } = useAttendees(eventId);
@@ -87,7 +88,7 @@ const TonightSection = () => {
                 <p className="text-[10px] text-stone-400 dark:text-stone-500 truncate italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
                   {event.venue}
                 </p>
-                <AttendeesBadge eventId={event.id} />
+                <HypeBadge eventId={event.id} eventDate={event.date} eventTime={event.time} size="sm" />
               </div>
             </Link>
           ))}
