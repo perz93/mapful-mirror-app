@@ -44,34 +44,37 @@ const NotificationPrompt = () => {
       className={`fixed left-0 right-0 max-w-md mx-auto px-3 z-50 transition-all duration-300 ${animating ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
       style={{ top: 'calc(env(safe-area-inset-top, 0px) + 60px)' }}
     >
-      <div className="rounded-2xl backdrop-blur-2xl bg-white/85 border border-white/70 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.12)] px-4 py-3">
-        <div className="flex items-center gap-3">
-          <div className="flex-shrink-0 h-9 w-9 rounded-full bg-[#ee9d2b]/12 flex items-center justify-center">
-            <Bell size={17} className="text-[#ee9d2b]" />
+      <div className="rounded-2xl backdrop-blur-2xl bg-white/80 border border-white/60 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] p-4">
+        <div className="flex items-start gap-3">
+          <div className="flex-shrink-0 h-10 w-10 rounded-full bg-[#ee9d2b]/15 flex items-center justify-center">
+            <Bell size={20} className="text-[#ee9d2b]" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[13px] font-semibold text-stone-800">
+            <p className="text-sm font-bold text-stone-900">
               Ne rate aucun event !
             </p>
-            <p className="text-[11px] text-stone-500 leading-tight mt-0.5">
-              Active les notifications pour les events près de toi
+            <p className="text-xs text-stone-500 mt-0.5">
+              Active les notifications pour savoir quand un event hype commence près de toi
             </p>
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={handleSubscribe}
+                disabled={loading}
+                className="flex-1 h-9 rounded-full bg-[#ee9d2b] text-white text-xs font-semibold hover:opacity-90 transition-all active:scale-95 shadow-md disabled:opacity-50"
+              >
+                {loading ? '...' : 'Activer'}
+              </button>
+              <button
+                onClick={handleClose}
+                className="h-9 px-4 rounded-full bg-stone-100 text-stone-600 text-xs font-medium hover:bg-stone-200 transition-all active:scale-95"
+              >
+                Plus tard
+              </button>
+            </div>
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <button
-              onClick={handleSubscribe}
-              disabled={loading}
-              className="h-8 px-4 rounded-full bg-[#ee9d2b] text-white text-[11px] font-semibold hover:opacity-90 transition-all active:scale-95 disabled:opacity-50"
-            >
-              {loading ? '...' : 'Activer'}
-            </button>
-            <button
-              onClick={handleClose}
-              className="h-8 w-8 rounded-full bg-stone-100 flex items-center justify-center hover:bg-stone-200 transition-all active:scale-95"
-            >
-              <X size={14} className="text-stone-400" />
-            </button>
-          </div>
+          <button onClick={handleClose} className="flex-shrink-0 h-8 w-8 rounded-full bg-stone-100 flex items-center justify-center hover:bg-stone-200 transition-all active:scale-95">
+            <X size={14} className="text-stone-400" />
+          </button>
         </div>
       </div>
     </div>
