@@ -93,16 +93,17 @@ const ContactFab = ({
 
   const hasContacts = contacts.length > 0;
 
-  // Semi-circle fan towards upper-left with consistent spacing
+  // Semi-circle fan towards upper-left with generous spacing
   const getPosition = (index: number, total: number) => {
     if (total === 1) {
-      return { x: 0, y: -80 };
+      return { x: 0, y: -90 };
     }
 
-    const radius = 80;
+    // Bigger radius = more space between icons
+    const radius = 75 + total * 15;
     // Spread from 90° (straight up) to 180° (straight left)
     const startAngle = 90;
-    const endAngle = 180;
+    const endAngle = 185;
     const angleStep = (endAngle - startAngle) / (total - 1);
     const angle = (startAngle + index * angleStep) * (Math.PI / 180);
 

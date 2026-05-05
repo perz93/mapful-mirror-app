@@ -95,7 +95,8 @@ const ListingDetails = () => {
           {/* Back button */}
           <button
             onClick={() => navigate(-1)}
-            className="absolute top-4 left-4 w-10 h-10 rounded-full bg-black/70 backdrop-blur-md flex items-center justify-center"
+            className="absolute left-4 w-10 h-10 rounded-full bg-black/70 backdrop-blur-md flex items-center justify-center"
+            style={{ top: 'calc(env(safe-area-inset-top, 0px) + 12px)' }}
           >
             <ArrowLeft className="w-5 h-5 text-white" />
           </button>

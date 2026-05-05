@@ -234,15 +234,15 @@ const EditEvent = () => {
       {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-5">
-          <Link 
-            to="/manage-events" 
-            className="w-11 h-11 rounded-full bg-black/70 backdrop-blur-md flex items-center justify-center hover:bg-black/90 transition-all"
+        <div className="flex items-center justify-between px-5" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)', paddingBottom: '12px' }}>
+          <Link
+            to="/manage-events"
+            className="w-11 h-11 rounded-full bg-white/70 backdrop-blur-md flex items-center justify-center shadow-sm border border-white/60 hover:scale-105 active:scale-95 transition-all"
           >
-            <ArrowLeft className="w-5 h-5 text-white" />
+            <ArrowLeft className="w-5 h-5 text-stone-700" />
           </Link>
-          
-          <h1 className="text-foreground text-lg font-semibold">Modifier l'événement</h1>
+
+          <h1 className="text-stone-800 text-lg font-semibold italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>Modifier l'événement</h1>
           
           <div className="w-11 h-11" />
         </div>
