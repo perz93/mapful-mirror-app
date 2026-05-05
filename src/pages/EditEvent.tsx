@@ -1,9 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Upload, Loader2 } from 'lucide-react';
+import { ArrowLeft, Upload, Loader2, Image as ImageIcon, Phone, MessageCircle, Instagram, Facebook } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import mapBackground from '@/assets/map-background.jpg';
+
+const inputClass = "h-9 rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50 w-full px-3";
+const labelClass = "text-sm text-stone-600 font-normal";
+const cardClass = "rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.08)] p-4 space-y-3";
+const sectionTitleClass = "text-lg italic text-stone-800 mb-4 flex items-center gap-2";
 
 const EditEvent = () => {
   const { id } = useParams();
@@ -14,7 +20,7 @@ const EditEvent = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -26,12 +32,15 @@ const EditEvent = () => {
     price: '',
     capacity: '',
     is_paid: false,
+    contact_phone: '',
+    contact_whatsapp: '',
+    contact_instagram: '',
+    contact_facebook: '',
+    contact_twitter: '',
   });
 
   useEffect(() => {
-    if (id && user) {
-      loadEvent();
-    }
+    if (id && user) loadEvent();
   }, [id, user]);
 
   const loadEvent = async () => {
@@ -44,7 +53,6 @@ const EditEvent = () => {
         .single();
 
       if (error) throw error;
-
       if (!data) {
         toast.error('Événement non trouvé');
         navigate('/manage-events');
@@ -62,14 +70,17 @@ const EditEvent = () => {
         price: data.price?.toString() || '',
         capacity: data.capacity?.toString() || '',
         is_paid: data.is_paid,
+        contact_phone: data.contact_phone || '',
+        contact_whatsapp: data.contact_whatsapp || '',
+        contact_instagram: data.contact_instagram || '',
+        contact_facebook: data.contact_facebook || '',
+        contact_twitter: data.contact_twitter || '',
       });
-      
-      if (data.image_url) {
-        setImagePreview(data.image_url);
-      }
+
+      if (data.image_url) setImagePreview(data.image_url);
     } catch (error: any) {
       console.error('Error loading event:', error);
-      toast.error('Erreur lors du chargement de l\'événement');
+      toast.error("Erreur lors du chargement");
       navigate('/manage-events');
     } finally {
       setLoading(false);
@@ -79,107 +90,41 @@ const EditEvent = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      toast.error('Veuillez sélectionner une image');
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('L\'image ne doit pas dépasser 5MB');
-      return;
-    }
-
+    if (!file.type.startsWith('image/')) { toast.error('Sélectionnez une image'); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error('Max 5MB'); return; }
     setImageFile(file);
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result as string);
-    };
+    reader.onloadend = () => setImagePreview(reader.result as string);
     reader.readAsDataURL(file);
-  };
-
-  const geocodeAddress = async (venue: string, address: string): Promise<{ latitude: number; longitude: number } | null> => {
-    try {
-      // Add "Abidjan, Côte d'Ivoire" context for better geocoding accuracy
-      const searchQuery = address.toLowerCase().includes('abidjan') || address.toLowerCase().includes('ivoire')
-        ? `${venue}, ${address}`
-        : `${venue}, ${address}, Abidjan, Côte d'Ivoire`;
-      
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1`
-      );
-      const data = await response.json();
-      
-      if (data && data.length > 0) {
-        const lat = parseFloat(data[0].lat);
-        const lon = parseFloat(data[0].lon);
-        
-        // Validate coordinates are roughly in Côte d'Ivoire region (lat: 4-11, lon: -9 to -2)
-        if (lat >= 4 && lat <= 11 && lon >= -9 && lon <= -2) {
-          return { latitude: lat, longitude: lon };
-        }
-        console.warn('Geocoded coordinates outside Côte d\'Ivoire, keeping original');
-        return null;
-      }
-      return null;
-    } catch (error) {
-      console.error('Geocoding error:', error);
-      return null;
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!user) {
-      toast.error('Vous devez être connecté');
-      return;
-    }
+    if (!user) { toast.error('Connexion requise'); return; }
 
     setSubmitting(true);
     try {
-      // Get current event data to preserve coordinates if geocoding fails
       const { data: currentEvent } = await supabase
         .from('events')
         .select('latitude, longitude, image_url')
         .eq('id', id)
         .single();
 
-      // Geocode address - keep original coordinates if geocoding fails or returns invalid results
-      const geocodedCoords = await geocodeAddress(formData.venue, formData.address);
-      const latitude = geocodedCoords?.latitude ?? currentEvent?.latitude ?? 5.3600;
-      const longitude = geocodedCoords?.longitude ?? currentEvent?.longitude ?? -4.0083;
-
       let imageUrl = imagePreview;
 
-      // Upload new image if selected
       if (imageFile) {
         if (currentEvent?.image_url) {
           const oldPath = currentEvent.image_url.split('/').slice(-2).join('/');
-          await supabase.storage
-            .from('event-images')
-            .remove([oldPath]);
+          await supabase.storage.from('event-images').remove([oldPath]);
         }
-
-        // Upload new image
         const fileExt = imageFile.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const filePath = `${user.id}/${fileName}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('event-images')
-          .upload(filePath, imageFile);
-
+        const filePath = `${user.id}/${Math.random()}.${fileExt}`;
+        const { error: uploadError } = await supabase.storage.from('event-images').upload(filePath, imageFile);
         if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('event-images')
-          .getPublicUrl(filePath);
-
+        const { data: { publicUrl } } = supabase.storage.from('event-images').getPublicUrl(filePath);
         imageUrl = publicUrl;
       }
 
-      // Update event
       const { error } = await supabase
         .from('events')
         .update({
@@ -194,13 +139,17 @@ const EditEvent = () => {
           capacity: formData.capacity ? parseInt(formData.capacity) : null,
           is_paid: formData.is_paid,
           image_url: imageUrl,
-          latitude,
-          longitude,
+          latitude: currentEvent?.latitude ?? 5.3600,
+          longitude: currentEvent?.longitude ?? -4.0083,
+          contact_phone: formData.contact_phone || null,
+          contact_whatsapp: formData.contact_whatsapp || null,
+          contact_instagram: formData.contact_instagram || null,
+          contact_facebook: formData.contact_facebook || null,
+          contact_twitter: formData.contact_twitter || null,
         })
         .eq('id', id);
 
       if (error) throw error;
-
       toast.success('Événement mis à jour !');
       navigate('/manage-events');
     } catch (error: any) {
@@ -220,207 +169,187 @@ const EditEvent = () => {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden animate-fade-in animate-zoom-smooth">
+    <div className="relative min-h-screen pb-32 animate-fade-in animate-zoom-smooth overflow-hidden overscroll-none bg-stone-200">
       {/* Map Background */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage: "url('/src/assets/map-background.jpg')",
-          filter: "blur(3px)"
-        }}
-      />
-      <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
-      
+      <div className="fixed inset-0 pointer-events-none">
+        <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
+      </div>
+      <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
+
       {/* Content */}
-      <div className="relative z-10 min-h-screen flex flex-col">
+      <div className="relative mx-auto max-w-md">
         {/* Header */}
-        <div className="flex items-center justify-between px-5" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)', paddingBottom: '12px' }}>
+        <div className="px-4 pb-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
           <Link
             to="/manage-events"
-            className="w-11 h-11 rounded-full bg-white/70 backdrop-blur-md flex items-center justify-center shadow-sm border border-white/60 hover:scale-105 active:scale-95 transition-all"
+            className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white/70 backdrop-blur-md shadow-sm border border-white/60 hover:scale-105 active:scale-95 transition-all mb-6"
           >
             <ArrowLeft className="w-5 h-5 text-stone-700" />
           </Link>
-
-          <h1 className="text-stone-800 text-lg font-semibold italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>Modifier l'événement</h1>
-          
-          <div className="w-11 h-11" />
+          <h1 className="text-3xl italic text-stone-800 mb-2 text-center" style={{ fontFamily: '"Source Serif 4", serif' }}>
+            Modifier l'événement
+          </h1>
+          <p className="text-stone-500 font-light text-center text-sm">Mettez à jour les informations</p>
         </div>
 
         {/* Form */}
-        <div className="flex-1 px-6 pb-8 pt-4">
-          <form onSubmit={handleSubmit} className="bg-background/80 backdrop-blur-sm rounded-2xl p-6 space-y-4">
-            {/* Image Upload */}
-            <div>
-              <label className="block text-sm font-medium mb-2">Image de l'événement</label>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="hidden"
-              />
-              <div 
+        <div className="px-4 pb-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Image */}
+            <div className={cardClass}>
+              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+              <div
                 onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-border rounded-lg p-4 text-center cursor-pointer hover:border-primary transition-colors"
+                className="border border-dashed border-stone-300/50 rounded-2xl p-6 hover:border-stone-400/60 transition-colors cursor-pointer bg-white/30"
               >
                 {imagePreview ? (
-                  <img src={imagePreview} alt="Preview" className="w-full h-48 object-cover rounded-lg mb-2" />
+                  <img src={imagePreview} alt="Preview" className="w-full h-48 object-cover rounded-xl" />
                 ) : (
-                  <div className="py-8">
-                    <Upload className="w-12 h-12 mx-auto mb-2 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">Cliquez pour changer l'image</p>
+                  <div className="flex flex-col items-center justify-center text-center py-4">
+                    <ImageIcon className="h-10 w-10 text-[#ee9d2b] mb-3" strokeWidth={1.5} />
+                    <p className="text-stone-600 text-sm">Cliquez pour changer l'image</p>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Title */}
-            <div>
-              <label className="block text-sm font-medium mb-2">Titre *</label>
-              <input
-                type="text"
-                required
-                value={formData.title}
-                onChange={(e) => setFormData({...formData, title: e.target.value})}
-                className="w-full px-4 py-2 rounded-lg border border-border bg-background"
-              />
+            {/* Basic Info */}
+            <div className={cardClass}>
+              <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>Informations</h2>
+
+              <div className="space-y-2">
+                <label className={labelClass}>Titre *</label>
+                <input type="text" required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className={inputClass} />
+              </div>
+
+              <div className="space-y-2">
+                <label className={labelClass}>Description</label>
+                <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} rows={4} className="rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50 w-full px-3 py-2 resize-none" />
+              </div>
+
+              <div className="space-y-2">
+                <label className={labelClass}>Lieu *</label>
+                <input type="text" required value={formData.venue} onChange={e => setFormData({...formData, venue: e.target.value})} className={inputClass} />
+              </div>
+
+              <div className="space-y-2">
+                <label className={labelClass}>Adresse</label>
+                <input type="text" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className={inputClass} />
+              </div>
+
+              <div className="space-y-2">
+                <label className={labelClass}>Catégorie *</label>
+                <select required value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className={inputClass}>
+                  <option value="">Sélectionner</option>
+                  <option value="music">Concerts</option>
+                  <option value="sports">Sports</option>
+                  <option value="brunch">Brunch</option>
+                  <option value="meetups">Meetups</option>
+                  <option value="conferences">Conférences</option>
+                  <option value="workshops">Ateliers</option>
+                  <option value="festivals">Festivals</option>
+                  <option value="shows">Spectacles</option>
+                  <option value="exhibitions">Expositions</option>
+                  <option value="religious">Religieux</option>
+                </select>
+              </div>
             </div>
 
-            {/* Description */}
-            <div>
-              <label className="block text-sm font-medium mb-2">Description</label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                rows={4}
-                className="w-full px-4 py-2 rounded-lg border border-border bg-background"
-              />
+            {/* Date & Time — stacked */}
+            <div className={cardClass}>
+              <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>Date et heure</h2>
+
+              <div className="space-y-2">
+                <label className={labelClass}>Date *</label>
+                <input type="date" required value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} className={inputClass} />
+              </div>
+              <div className="space-y-2">
+                <label className={labelClass}>Heure *</label>
+                <input type="time" required value={formData.time} onChange={e => setFormData({...formData, time: e.target.value})} className={inputClass} />
+              </div>
             </div>
 
-            {/* Venue */}
-            <div>
-              <label className="block text-sm font-medium mb-2">Lieu *</label>
-              <input
-                type="text"
-                required
-                value={formData.venue}
-                onChange={(e) => setFormData({...formData, venue: e.target.value})}
-                className="w-full px-4 py-2 rounded-lg border border-border bg-background"
-              />
+            {/* Price & Capacity */}
+            <div className={cardClass}>
+              <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>Prix et capacité</h2>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <label className={labelClass}>Prix (FCFA)</label>
+                  <input type="number" step="0.01" min="0" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className={inputClass} />
+                </div>
+                <div className="space-y-2">
+                  <label className={labelClass}>Capacité</label>
+                  <input type="number" min="1" value={formData.capacity} onChange={e => setFormData({...formData, capacity: e.target.value})} className={inputClass} />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <input type="checkbox" id="is_paid" checked={formData.is_paid} onChange={e => setFormData({...formData, is_paid: e.target.checked})} className="w-4 h-4 accent-[#ee9d2b]" />
+                <label htmlFor="is_paid" className="text-sm text-stone-600">Événement payant</label>
+              </div>
             </div>
 
-            {/* Address */}
-            <div>
-              <label className="block text-sm font-medium mb-2">Adresse *</label>
-              <input
-                type="text"
-                required
-                value={formData.address}
-                onChange={(e) => setFormData({...formData, address: e.target.value})}
-                className="w-full px-4 py-2 rounded-lg border border-border bg-background"
-              />
+            {/* Contact / Réseaux sociaux */}
+            <div className={cardClass}>
+              <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
+                <Phone className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
+                Contact & Réseaux
+              </h2>
+
+              <div className="space-y-2">
+                <label className={`${labelClass} flex items-center gap-2`}>
+                  <Phone className="w-4 h-4 text-[#ee9d2b]" /> Téléphone
+                </label>
+                <input type="tel" placeholder="+225 XX XX XX XX" value={formData.contact_phone} onChange={e => setFormData({...formData, contact_phone: e.target.value})} className={inputClass} />
+              </div>
+
+              <div className="space-y-2">
+                <label className={`${labelClass} flex items-center gap-2`}>
+                  <MessageCircle className="w-4 h-4 text-[#ee9d2b]" /> WhatsApp
+                </label>
+                <input type="tel" placeholder="+225 XX XX XX XX" value={formData.contact_whatsapp} onChange={e => setFormData({...formData, contact_whatsapp: e.target.value})} className={inputClass} />
+              </div>
+
+              <div className="space-y-2">
+                <label className={`${labelClass} flex items-center gap-2`}>
+                  <Instagram className="w-4 h-4 text-[#ee9d2b]" /> Instagram
+                </label>
+                <input type="text" placeholder="@votre_compte" value={formData.contact_instagram} onChange={e => setFormData({...formData, contact_instagram: e.target.value})} className={inputClass} />
+              </div>
+
+              <div className="space-y-2">
+                <label className={`${labelClass} flex items-center gap-2`}>
+                  <Facebook className="w-4 h-4 text-[#ee9d2b]" /> Facebook
+                </label>
+                <input type="text" placeholder="Nom de page" value={formData.contact_facebook} onChange={e => setFormData({...formData, contact_facebook: e.target.value})} className={inputClass} />
+              </div>
+
+              <div className="space-y-2">
+                <label className={`${labelClass} flex items-center gap-2`}>
+                  <span className="text-[#ee9d2b] font-bold text-sm">𝕏</span> X (Twitter)
+                </label>
+                <input type="text" placeholder="@votre_compte" value={formData.contact_twitter} onChange={e => setFormData({...formData, contact_twitter: e.target.value})} className={inputClass} />
+              </div>
             </div>
 
-            {/* Category */}
-            <div>
-              <label className="block text-sm font-medium mb-2">Catégorie *</label>
-              <select
-                required
-                value={formData.category}
-                onChange={(e) => setFormData({...formData, category: e.target.value})}
-                className="w-full px-4 py-2 rounded-lg border border-border bg-background"
+            {/* Submit */}
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full h-12 rounded-full bg-[#ee9d2b] text-white font-semibold text-base hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                <option value="">Sélectionner une catégorie</option>
-                <option value="music">Musique</option>
-                <option value="sports">Sports</option>
-                <option value="food">Food</option>
-                <option value="arts">Arts</option>
-                <option value="meetups">Meetups</option>
-                <option value="conferences">Conférences</option>
-                <option value="workshops">Ateliers</option>
-                <option value="festivals">Festivals</option>
-                <option value="shows">Spectacles</option>
-                <option value="exhibitions">Expositions</option>
-              </select>
+                {submitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Mise à jour...
+                  </>
+                ) : (
+                  'Mettre à jour'
+                )}
+              </button>
             </div>
-
-            {/* Date and Time */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Date *</label>
-                <input
-                  type="date"
-                  required
-                  value={formData.date}
-                  onChange={(e) => setFormData({...formData, date: e.target.value})}
-                  className="w-full px-4 py-2 rounded-lg border border-border bg-background"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Heure *</label>
-                <input
-                  type="time"
-                  required
-                  value={formData.time}
-                  onChange={(e) => setFormData({...formData, time: e.target.value})}
-                  className="w-full px-4 py-2 rounded-lg border border-border bg-background"
-                />
-              </div>
-            </div>
-
-            {/* Price and Capacity */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Prix (€)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formData.price}
-                  onChange={(e) => setFormData({...formData, price: e.target.value})}
-                  className="w-full px-4 py-2 rounded-lg border border-border bg-background"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Capacité</label>
-                <input
-                  type="number"
-                  min="1"
-                  value={formData.capacity}
-                  onChange={(e) => setFormData({...formData, capacity: e.target.value})}
-                  className="w-full px-4 py-2 rounded-lg border border-border bg-background"
-                />
-              </div>
-            </div>
-
-            {/* Is Paid */}
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="is_paid"
-                checked={formData.is_paid}
-                onChange={(e) => setFormData({...formData, is_paid: e.target.checked})}
-                className="w-4 h-4"
-              />
-              <label htmlFor="is_paid" className="text-sm font-medium">Événement payant</label>
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full py-3 rounded-full bg-primary text-primary-foreground font-medium hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-            >
-              {submitting ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Mise à jour...
-                </>
-              ) : (
-                'Mettre à jour'
-              )}
-            </button>
           </form>
         </div>
       </div>
