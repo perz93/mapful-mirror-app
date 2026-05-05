@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { X, Share, Plus, MoreVertical, Download, ChevronRight, Smartphone } from 'lucide-react';
+import { Share, Plus, MoreVertical, Download, ChevronRight, Smartphone } from 'lucide-react';
 
-const DISMISS_KEY = 'install_guide_dismissed';
-const INSTALL_PROMPT_KEY = 'install_guide_shown_count';
+const INSTALLED_KEY = 'pwa_installed';
 
 type OS = 'ios' | 'android' | 'unknown';
 
@@ -21,12 +20,12 @@ function isStandalone(): boolean {
 }
 
 // ==========================================
-// iOS Step Illustrations (animated SVGs)
+// iOS Step Illustrations (animated)
 // ==========================================
 
 const IOSShareIcon = () => (
-  <div className="relative flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-500/20">
-    <Share size={28} className="text-blue-500" />
+  <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl backdrop-blur-xl bg-blue-500/15 border border-blue-500/20">
+    <Share size={24} className="text-blue-500" />
     <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center animate-bounce">
       <span className="text-white text-[10px] font-bold">1</span>
     </div>
@@ -34,8 +33,8 @@ const IOSShareIcon = () => (
 );
 
 const IOSAddIcon = () => (
-  <div className="relative flex items-center justify-center w-16 h-16 rounded-2xl bg-green-500/10 border border-green-500/20">
-    <Plus size={28} className="text-green-500" />
+  <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl backdrop-blur-xl bg-green-500/15 border border-green-500/20">
+    <Plus size={24} className="text-green-500" />
     <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center animate-bounce" style={{ animationDelay: '150ms' }}>
       <span className="text-white text-[10px] font-bold">2</span>
     </div>
@@ -43,8 +42,8 @@ const IOSAddIcon = () => (
 );
 
 const IOSConfirmIcon = () => (
-  <div className="relative flex items-center justify-center w-16 h-16 rounded-2xl bg-[#ee9d2b]/10 border border-[#ee9d2b]/20">
-    <Smartphone size={28} className="text-[#ee9d2b]" />
+  <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl backdrop-blur-xl bg-[#ee9d2b]/15 border border-[#ee9d2b]/20">
+    <Smartphone size={24} className="text-[#ee9d2b]" />
     <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#ee9d2b] flex items-center justify-center animate-bounce" style={{ animationDelay: '300ms' }}>
       <span className="text-white text-[10px] font-bold">3</span>
     </div>
@@ -56,8 +55,8 @@ const IOSConfirmIcon = () => (
 // ==========================================
 
 const AndroidMenuIcon = () => (
-  <div className="relative flex items-center justify-center w-16 h-16 rounded-2xl bg-green-500/10 border border-green-500/20">
-    <MoreVertical size={28} className="text-green-500" />
+  <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl backdrop-blur-xl bg-green-500/15 border border-green-500/20">
+    <MoreVertical size={24} className="text-green-500" />
     <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center animate-bounce">
       <span className="text-white text-[10px] font-bold">1</span>
     </div>
@@ -65,8 +64,8 @@ const AndroidMenuIcon = () => (
 );
 
 const AndroidInstallIcon = () => (
-  <div className="relative flex items-center justify-center w-16 h-16 rounded-2xl bg-[#ee9d2b]/10 border border-[#ee9d2b]/20">
-    <Download size={28} className="text-[#ee9d2b]" />
+  <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl backdrop-blur-xl bg-[#ee9d2b]/15 border border-[#ee9d2b]/20">
+    <Download size={24} className="text-[#ee9d2b]" />
     <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#ee9d2b] flex items-center justify-center animate-bounce" style={{ animationDelay: '150ms' }}>
       <span className="text-white text-[10px] font-bold">2</span>
     </div>
@@ -74,7 +73,7 @@ const AndroidInstallIcon = () => (
 );
 
 // ==========================================
-// Step Component
+// Step Component (glass style)
 // ==========================================
 
 interface StepProps {
@@ -87,10 +86,10 @@ interface StepProps {
 
 const Step = ({ icon, title, description, delay, isActive }: StepProps) => (
   <div
-    className={`flex items-center gap-4 p-4 rounded-2xl transition-all duration-500 ${
+    className={`flex items-center gap-3.5 p-3.5 rounded-2xl transition-all duration-500 ${
       isActive
-        ? 'bg-white/80 dark:bg-stone-800/80 shadow-lg scale-100 opacity-100'
-        : 'bg-white/40 dark:bg-stone-800/40 scale-95 opacity-60'
+        ? 'backdrop-blur-2xl bg-white/50 dark:bg-stone-800/50 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.1)] border border-white/60 dark:border-stone-600/30 scale-100 opacity-100'
+        : 'backdrop-blur-xl bg-white/20 dark:bg-stone-800/20 border border-white/30 dark:border-stone-700/20 scale-95 opacity-50'
     }`}
     style={{ transitionDelay: `${delay}ms` }}
   >
@@ -130,30 +129,20 @@ const InstallGuide = () => {
     // Don't show if already installed as PWA
     if (isStandalone()) return;
 
+    // Don't show if user already installed before
+    if (localStorage.getItem(INSTALLED_KEY)) return;
+
     const detectedOS = detectOS();
     if (detectedOS === 'unknown') return;
     setOs(detectedOS);
 
-    // Check if dismissed
-    const dismissed = localStorage.getItem(DISMISS_KEY);
-    if (dismissed) {
-      const dismissedAt = parseInt(dismissed);
-      // Re-show after 7 days
-      if (Date.now() - dismissedAt < 7 * 24 * 60 * 60 * 1000) return;
-    }
-
-    // Show count check (max 3 times)
-    const count = parseInt(localStorage.getItem(INSTALL_PROMPT_KEY) || '0');
-    if (count >= 3) return;
-
-    // Show after 8 seconds
-    const timer = setTimeout(() => {
-      setVisible(true);
-      localStorage.setItem(INSTALL_PROMPT_KEY, String(count + 1));
-      setTimeout(() => setAnimating(true), 50);
-    }, 8000);
-
-    return () => clearTimeout(timer);
+    // Show immediately
+    setVisible(true);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setAnimating(true);
+      });
+    });
   }, []);
 
   // Animate steps
@@ -168,66 +157,48 @@ const InstallGuide = () => {
     return () => clearInterval(interval);
   }, [animating, os]);
 
-  const handleClose = useCallback(() => {
-    setAnimating(false);
-    localStorage.setItem(DISMISS_KEY, String(Date.now()));
-    setTimeout(() => setVisible(false), 300);
-  }, []);
-
   const handleInstallAndroid = useCallback(async () => {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
     const result = await deferredPrompt.userChoice;
     if (result.outcome === 'accepted') {
-      handleClose();
+      localStorage.setItem(INSTALLED_KEY, 'true');
+      setAnimating(false);
+      setTimeout(() => setVisible(false), 300);
     }
     setDeferredPrompt(null);
-  }, [deferredPrompt, handleClose]);
+  }, [deferredPrompt]);
 
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end justify-center">
-      {/* Backdrop */}
+    <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+      {/* Backdrop — no click to close */}
       <div
-        className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${
+        className={`absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity duration-500 ${
           animating ? 'opacity-100' : 'opacity-0'
         }`}
-        onClick={handleClose}
       />
 
-      {/* Bottom Sheet */}
+      {/* Glass Card — EventCard style */}
       <div
-        className={`relative w-full max-w-md mx-auto transition-all duration-500 ease-out ${
-          animating ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
+        className={`relative w-full max-w-md mx-auto transition-all duration-700 ease-out ${
+          animating ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-8 opacity-0 scale-95'
         }`}
       >
-        <div className="mx-3 mb-3 rounded-3xl backdrop-blur-2xl bg-stone-50/95 dark:bg-stone-900/95 border border-white/20 dark:border-stone-700/30 shadow-[0_-8px_40px_-8px_rgba(0,0,0,0.3)] overflow-hidden">
-          {/* Handle */}
-          <div className="flex justify-center pt-3 pb-1">
-            <div className="w-10 h-1 rounded-full bg-stone-300 dark:bg-stone-600" />
-          </div>
-
-          {/* Close */}
-          <button
-            onClick={handleClose}
-            className="absolute top-3 right-4 h-8 w-8 rounded-full bg-stone-200/80 dark:bg-stone-700/80 flex items-center justify-center hover:scale-105 active:scale-95 transition-all"
-          >
-            <X size={14} className="text-stone-500" />
-          </button>
-
+        <div className="rounded-3xl backdrop-blur-2xl bg-white/40 dark:bg-stone-900/40 border border-white/60 dark:border-stone-700/30 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] overflow-hidden">
           {/* Content */}
-          <div className="px-5 pb-6 pt-2">
+          <div className="px-5 py-6">
             {/* Header */}
-            <div className="text-center mb-5">
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#ee9d2b]/10 mb-3">
-                <Smartphone size={28} className="text-[#ee9d2b]" />
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl backdrop-blur-xl bg-[#ee9d2b]/15 border border-[#ee9d2b]/20 mb-3 shadow-lg shadow-[#ee9d2b]/10">
+                <Smartphone size={32} className="text-[#ee9d2b]" />
               </div>
-              <h2 className="text-xl font-bold text-stone-900 dark:text-white italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+              <h2 className="text-2xl font-bold text-stone-900 dark:text-white italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
                 Installe l'app !
               </h2>
-              <p className="text-sm text-stone-500 dark:text-stone-400 mt-1">
-                Ajoute Mapful à ton écran d'accueil pour un accès rapide
+              <p className="text-sm text-stone-600 dark:text-stone-300 mt-1.5">
+                Ajoute Mapful à ton écran d'accueil pour profiter de toutes les fonctionnalités
               </p>
             </div>
 
@@ -262,9 +233,9 @@ const InstallGuide = () => {
                   {deferredPrompt ? (
                     <button
                       onClick={handleInstallAndroid}
-                      className="w-full flex items-center gap-4 p-4 rounded-2xl bg-[#ee9d2b] text-white shadow-lg hover:opacity-90 active:scale-[0.98] transition-all"
+                      className="w-full flex items-center gap-4 p-4 rounded-2xl bg-[#ee9d2b] text-white shadow-lg shadow-[#ee9d2b]/30 hover:opacity-90 active:scale-[0.98] transition-all"
                     >
-                      <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-white/20">
+                      <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-xl">
                         <Download size={28} />
                       </div>
                       <div className="flex-1 text-left">
@@ -296,21 +267,11 @@ const InstallGuide = () => {
             </div>
 
             {/* Benefits */}
-            <div className="mt-5 flex items-center justify-center gap-4 text-[11px] text-stone-400 dark:text-stone-500">
-              <span className="flex items-center gap-1">⚡ Plus rapide</span>
-              <span className="w-1 h-1 rounded-full bg-stone-300" />
-              <span className="flex items-center gap-1">🔔 Notifications</span>
-              <span className="w-1 h-1 rounded-full bg-stone-300" />
-              <span className="flex items-center gap-1">📱 Plein écran</span>
+            <div className="mt-6 flex items-center justify-center gap-3 text-[11px] font-medium text-stone-500 dark:text-stone-400">
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full backdrop-blur-xl bg-white/30 dark:bg-stone-800/30 border border-white/40 dark:border-stone-700/20">⚡ Rapide</span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full backdrop-blur-xl bg-white/30 dark:bg-stone-800/30 border border-white/40 dark:border-stone-700/20">🔔 Notifs</span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full backdrop-blur-xl bg-white/30 dark:bg-stone-800/30 border border-white/40 dark:border-stone-700/20">📱 Plein écran</span>
             </div>
-
-            {/* Later button */}
-            <button
-              onClick={handleClose}
-              className="w-full mt-4 py-2.5 rounded-full text-sm font-medium text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 transition-colors"
-            >
-              Plus tard
-            </button>
           </div>
         </div>
       </div>
