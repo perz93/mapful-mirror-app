@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Phone, Instagram, Facebook, Twitter, MessageCircle, X, MessageSquare } from 'lucide-react';
+import { Phone, Instagram, Facebook, MessageCircle, X, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ContactFabProps {
@@ -84,26 +84,25 @@ const ContactFab = ({
   
   if (contactTwitter) {
     contacts.push({
-      icon: <Twitter className="w-5 h-5 text-white" />,
-      href: `https://twitter.com/${contactTwitter.replace('@', '')}`,
-      bgColor: 'bg-sky-500',
-      label: 'Twitter'
+      icon: <span className="text-white font-bold text-base">𝕏</span>,
+      href: `https://x.com/${contactTwitter.replace('@', '')}`,
+      bgColor: 'bg-black',
+      label: 'X'
     });
   }
 
   const hasContacts = contacts.length > 0;
 
-  // Quarter-circle fan towards upper-left, kept compact so all icons stay on screen
+  // Semi-circle fan towards upper-left with consistent spacing
   const getPosition = (index: number, total: number) => {
     if (total === 1) {
-      return { x: -10, y: -95 };
+      return { x: 0, y: -80 };
     }
 
-    // Adaptive radius so each icon (48px) has a real gap on the arc
-    const radius = 70 + total * 18;
-    // Angles from 95° (almost up) to 175° (towards left)
-    const startAngle = 95;
-    const endAngle = 175;
+    const radius = 80;
+    // Spread from 90° (straight up) to 180° (straight left)
+    const startAngle = 90;
+    const endAngle = 180;
     const angleStep = (endAngle - startAngle) / (total - 1);
     const angle = (startAngle + index * angleStep) * (Math.PI / 180);
 
