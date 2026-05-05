@@ -3,6 +3,7 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { getSiteUrl } from '@/lib/siteUrl';
 
 interface AuthContextType {
   user: User | null;
@@ -55,7 +56,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signUp = async (email: string, password: string, fullName?: string) => {
     try {
-      const redirectUrl = `${window.location.origin}/`;
+      const redirectUrl = `${getSiteUrl()}/`;
       
       const { error } = await supabase.auth.signUp({
         email,

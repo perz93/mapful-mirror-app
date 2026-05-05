@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import mapBackground from "@/assets/map-background.jpg";
+import { getSiteUrl } from "@/lib/siteUrl";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -59,7 +60,7 @@ const Auth = () => {
     }
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth`,
+      redirectTo: `${getSiteUrl()}/auth`,
     });
 
     if (error) {
