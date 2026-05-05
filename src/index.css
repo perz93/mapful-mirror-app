@@ -663,3 +663,13 @@ All colors MUST be HSL.
     }
   }
 }
+
+/* Force Sonner toast position below status bar */
+[data-sonner-toaster] {
+  top: calc(env(safe-area-inset-top, 0px) + 60px) !important;
+}
+
+[data-sonner-toaster][data-y-position="top"] {
+  top: calc(env(safe-area-inset-top, 0px) + 60px) !important;
+}
+}
