@@ -105,9 +105,9 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
   return (
     <>
       <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
-        <DialogContent className="max-w-[90vw] sm:max-w-md mx-auto top-[15%] translate-y-0 sm:top-[50%] sm:translate-y-[-50%] w-[90vw] sm:w-full p-6 rounded-3xl">
+        <DialogContent className="max-w-[90vw] sm:max-w-md mx-auto top-[15%] translate-y-0 sm:top-[50%] sm:translate-y-[-50%] w-[90vw] sm:w-full p-6 pt-8 rounded-3xl">
           <DialogHeader>
-            <DialogTitle className="text-lg">Rechercher un événement</DialogTitle>
+            <DialogTitle className="text-lg pr-8">Rechercher un événement</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pb-2">
             <div className="relative">
