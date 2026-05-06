@@ -34,9 +34,27 @@
   }
 }
 
+/* Remove all focus rings, outlines, tap highlights */
+*, *::before, *::after {
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
+}
+
+*:focus, *:focus-visible, *:focus-within {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+button, a, input, select, textarea, [role="button"], [tabindex] {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
 body {
   min-height: 100dvh;
   font-family: 'Be Vietnam Pro', sans-serif;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .leaflet-container {
