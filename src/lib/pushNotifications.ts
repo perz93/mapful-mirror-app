@@ -68,7 +68,7 @@ export async function unsubscribeFromPush(): Promise<boolean> {
     if (!subscription) return false;
 
     // Remove from Supabase
-    await supabase.from('push_subscriptions').delete().eq('endpoint', subscription.endpoint);
+    await (supabase as any).from('push_subscriptions').delete().eq('endpoint', subscription.endpoint);
 
     // Unsubscribe
     await subscription.unsubscribe();
