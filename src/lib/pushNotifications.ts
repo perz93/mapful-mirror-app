@@ -35,14 +35,14 @@ export async function subscribeToPush(): Promise<PushSubscription | null> {
     // Subscribe
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) as BufferSource,
     });
 
     // Save to Supabase
     const subJson = subscription.toJSON();
     const { data: { user } } = await supabase.auth.getUser();
 
-    await supabase.from('push_subscriptions').upsert(
+    await (supabase as any).from('push_subscriptions').upsert(
       {
         user_id: user?.id || null,
         endpoint: subJson.endpoint!,
@@ -68,7 +68,7 @@ export async function unsubscribeFromPush(): Promise<boolean> {
     if (!subscription) return false;
 
     // Remove from Supabase
-    await supabase.from('push_subscriptions').delete().eq('endpoint', subscription.endpoint);
+    await (supabase as any).from('push_subscriptions').delete().eq('endpoint', subscription.endpoint);
 
     // Unsubscribe
     await subscription.unsubscribe();
@@ -100,8 +100,7 @@ export async function sendLocalNotification(title: string, body: string, url?: s
     body,
     icon: '/icon-192.png',
     badge: '/icon-192.png',
-    vibrate: [200, 100, 200],
     tag: 'local-' + Date.now(),
     data: { url: url || '/' },
-  });
+  } as NotificationOptions);
 }
