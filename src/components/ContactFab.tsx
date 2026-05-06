@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { Phone, Instagram, Facebook, MessageCircle, X, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getDisplayUrl } from '@/components/profile/social/SocialPlatformConfig';
+import TikTokIcon from '@/components/icons/TikTokIcon';
 
 interface ContactFabProps {
   contactPhone?: string | null;
   contactWhatsapp?: string | null;
   contactInstagram?: string | null;
   contactFacebook?: string | null;
+  contactTiktok?: string | null;
   contactTwitter?: string | null;
 }
 
@@ -23,6 +25,7 @@ const ContactFab = ({
   contactWhatsapp,
   contactInstagram,
   contactFacebook,
+  contactTiktok,
   contactTwitter
 }: ContactFabProps) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -80,6 +83,15 @@ const ContactFab = ({
       href: getDisplayUrl('facebook', contactFacebook),
       bgColor: 'bg-blue-600',
       label: 'Facebook'
+    });
+  }
+
+  if (contactTiktok) {
+    contacts.push({
+      icon: <TikTokIcon className="w-5 h-5 text-white" />,
+      href: getDisplayUrl('tiktok', contactTiktok),
+      bgColor: 'bg-black',
+      label: 'TikTok'
     });
   }
 

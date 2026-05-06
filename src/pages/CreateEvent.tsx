@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign, ArrowLeft, Loader2, Phone, Instagram, Facebook, Twitter, MessageCircle, Plus, X, Sparkles } from 'lucide-react';
+import TikTokIcon from '@/components/icons/TikTokIcon';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import mapBackground from '@/assets/map-background.jpg';
@@ -72,6 +73,7 @@ const CreateEvent = () => {
     contactWhatsapp: '',
     contactInstagram: '',
     contactFacebook: '',
+    contactTiktok: '',
     contactTwitter: ''
   });
 
@@ -291,6 +293,7 @@ const CreateEvent = () => {
           contact_whatsapp: formData.contactWhatsapp || null,
           contact_instagram: formData.contactInstagram || null,
           contact_facebook: formData.contactFacebook || null,
+          contact_tiktok: formData.contactTiktok || null,
           contact_twitter: formData.contactTwitter || null,
           key_points: validKeyPoints.length > 0 ? validKeyPoints : null
         });
@@ -318,6 +321,7 @@ const CreateEvent = () => {
         contactWhatsapp: '',
         contactInstagram: '',
         contactFacebook: '',
+        contactTiktok: '',
         contactTwitter: ''
       });
       setKeyPoints(['']);
@@ -748,6 +752,20 @@ const CreateEvent = () => {
                     placeholder="Nom de votre page"
                     value={formData.contactFacebook}
                     onChange={e => setFormData({ ...formData, contactFacebook: e.target.value })}
+                    className={inputClass}
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <Label htmlFor="contactTiktok" className={`${labelClass} flex items-center gap-2`}>
+                    <TikTokIcon className="w-4 h-4 text-[#ee9d2b]" />
+                    TikTok
+                  </Label>
+                  <Input
+                    id="contactTiktok"
+                    placeholder="@votre_compte"
+                    value={formData.contactTiktok}
+                    onChange={e => setFormData({ ...formData, contactTiktok: e.target.value })}
                     className={inputClass}
                   />
                 </div>

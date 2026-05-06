@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Upload, Loader2, Image as ImageIcon, Phone, MessageCircle, Instagram, Facebook } from 'lucide-react';
+import TikTokIcon from '@/components/icons/TikTokIcon';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -36,6 +37,7 @@ const EditEvent = () => {
     contact_whatsapp: '',
     contact_instagram: '',
     contact_facebook: '',
+    contact_tiktok: '',
     contact_twitter: '',
   });
 
@@ -74,6 +76,7 @@ const EditEvent = () => {
         contact_whatsapp: data.contact_whatsapp || '',
         contact_instagram: data.contact_instagram || '',
         contact_facebook: data.contact_facebook || '',
+        contact_tiktok: data.contact_tiktok || '',
         contact_twitter: data.contact_twitter || '',
       });
 
@@ -145,6 +148,7 @@ const EditEvent = () => {
           contact_whatsapp: formData.contact_whatsapp || null,
           contact_instagram: formData.contact_instagram || null,
           contact_facebook: formData.contact_facebook || null,
+          contact_tiktok: formData.contact_tiktok || null,
           contact_twitter: formData.contact_twitter || null,
         })
         .eq('id', id);
@@ -323,6 +327,13 @@ const EditEvent = () => {
                   <Facebook className="w-4 h-4 text-[#ee9d2b]" /> Facebook
                 </label>
                 <input type="text" placeholder="Nom de page" value={formData.contact_facebook} onChange={e => setFormData({...formData, contact_facebook: e.target.value})} className={inputClass} />
+              </div>
+
+              <div className="space-y-2">
+                <label className={`${labelClass} flex items-center gap-2`}>
+                  <TikTokIcon className="w-4 h-4 text-[#ee9d2b]" /> TikTok
+                </label>
+                <input type="text" placeholder="@votre_compte" value={formData.contact_tiktok} onChange={e => setFormData({...formData, contact_tiktok: e.target.value})} className={inputClass} />
               </div>
 
               <div className="space-y-2">

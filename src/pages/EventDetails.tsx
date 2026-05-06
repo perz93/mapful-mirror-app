@@ -243,6 +243,7 @@ const EventDetails = () => {
         contactWhatsapp={event.contact_whatsapp}
         contactInstagram={event.contact_instagram}
         contactFacebook={event.contact_facebook}
+        contactTiktok={event.contact_tiktok}
         contactTwitter={event.contact_twitter}
       />
 

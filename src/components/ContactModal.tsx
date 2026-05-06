@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, Phone, Instagram, Facebook, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getDisplayUrl } from '@/components/profile/social/SocialPlatformConfig';
+import TikTokIcon from '@/components/icons/TikTokIcon';
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface ContactModalProps {
   contactWhatsapp?: string | null;
   contactInstagram?: string | null;
   contactFacebook?: string | null;
+  contactTiktok?: string | null;
   contactTwitter?: string | null;
 }
 
@@ -20,6 +22,7 @@ const ContactModal = ({
   contactWhatsapp,
   contactInstagram,
   contactFacebook,
+  contactTiktok,
   contactTwitter
 }: ContactModalProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
@@ -38,7 +41,7 @@ const ContactModal = ({
 
   if (!shouldRender) return null;
 
-  const hasContact = contactPhone || contactWhatsapp || contactInstagram || contactFacebook || contactTwitter;
+  const hasContact = contactPhone || contactWhatsapp || contactInstagram || contactFacebook || contactTiktok || contactTwitter;
 
   return (
     <div 
@@ -144,19 +147,37 @@ const ContactModal = ({
               </a>
             )}
 
+            {contactTiktok && (
+              <a
+                href={getDisplayUrl('tiktok', contactTiktok)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-4 p-4 rounded-2xl bg-stone-50 hover:bg-stone-100 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                style={{ animationDelay: '0.3s' }}
+              >
+                <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
+                  <TikTokIcon className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <p className="font-medium text-stone-900">TikTok</p>
+                  <p className="text-sm text-stone-500">@{contactTiktok.replace(/^@/, '')}</p>
+                </div>
+              </a>
+            )}
+
             {contactTwitter && (
               <a
                 href={getDisplayUrl('twitter', contactTwitter)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-4 p-4 rounded-2xl bg-stone-50 hover:bg-stone-100 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                style={{ animationDelay: '0.3s' }}
+                style={{ animationDelay: '0.35s' }}
               >
-                <div className="w-12 h-12 rounded-full bg-sky-500 flex items-center justify-center">
-                  <Twitter className="w-5 h-5 text-white" />
+                <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center">
+                  <span className="text-white font-bold text-base">𝕏</span>
                 </div>
                 <div>
-                  <p className="font-medium text-stone-900">Twitter</p>
+                  <p className="font-medium text-stone-900">X</p>
                   <p className="text-sm text-stone-500">@{contactTwitter.replace('@', '')}</p>
                 </div>
               </a>
