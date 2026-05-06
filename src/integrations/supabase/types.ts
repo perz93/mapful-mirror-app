@@ -51,7 +51,6 @@ export type Database = {
           contact_facebook: string | null
           contact_instagram: string | null
           contact_phone: string | null
-          contact_tiktok: string | null
           contact_twitter: string | null
           contact_whatsapp: string | null
           created_at: string
@@ -78,7 +77,6 @@ export type Database = {
           contact_facebook?: string | null
           contact_instagram?: string | null
           contact_phone?: string | null
-          contact_tiktok?: string | null
           contact_twitter?: string | null
           contact_whatsapp?: string | null
           created_at?: string
@@ -105,7 +103,6 @@ export type Database = {
           contact_facebook?: string | null
           contact_instagram?: string | null
           contact_phone?: string | null
-          contact_tiktok?: string | null
           contact_twitter?: string | null
           contact_whatsapp?: string | null
           created_at?: string
