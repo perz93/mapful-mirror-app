@@ -52,13 +52,13 @@ const SplashScreen = ({ onFinish }: { onFinish: () => void }) => {
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-end flex-1 pb-10 px-6 max-w-md mx-auto w-full">
 
-        {/* Logo VOBE */}
+        {/* Logo VIBE */}
         <div
           className={`mb-2 transition-all duration-700 ease-out ${
             phase >= 2 ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-6 scale-90'
           }`}
         >
-          <img src="/vobe-logo.png" alt="VOBE" className="h-20 w-auto" />
+          <img src="/vibe-logo.png" alt="VIBE" className="h-20 w-auto" />
         </div>
 
         {/* Slogan */}

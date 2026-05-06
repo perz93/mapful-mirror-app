@@ -17,8 +17,8 @@ export default defineConfig(({ mode }) => ({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'robots.txt'],
       manifest: {
-        name: 'VOBE — Explore. Réserve. Vibrez.',
-        short_name: 'VOBE',
+        name: 'VIBE — Explore. Réserve. Vibrez.',
+        short_name: 'VIBE',
         description: 'Tous les événements près de vous',
         theme_color: '#ee9d2b',
         background_color: '#e8e4d8',
