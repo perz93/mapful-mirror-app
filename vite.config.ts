@@ -17,9 +17,9 @@ export default defineConfig(({ mode }) => ({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'robots.txt'],
       manifest: {
-        name: 'Mapful Events',
-        short_name: 'Mapful',
-        description: 'Discover events near you',
+        name: 'VOBE — Explore. Réserve. Vibrez.',
+        short_name: 'VOBE',
+        description: 'Tous les événements près de vous',
         theme_color: '#ee9d2b',
         background_color: '#e8e4d8',
         display: 'standalone',
