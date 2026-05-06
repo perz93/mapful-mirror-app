@@ -105,50 +105,59 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
   return (
     <>
       <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
-        <DialogContent className="max-w-[90vw] sm:max-w-md mx-auto top-[15%] translate-y-0 sm:top-[50%] sm:translate-y-[-50%] w-[90vw] sm:w-full p-6 pt-8 rounded-3xl">
-          <DialogHeader>
-            <DialogTitle className="text-lg pr-8">Rechercher un événement</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 pb-2">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
-              <input
-                type="text"
-                placeholder="Nom de l'événement..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleSearch();
-                  }
-                }}
-                className="w-full h-11 pl-10 pr-4 rounded-3xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm"
-                autoFocus
-              />
+        <DialogContent className="max-w-[90vw] sm:max-w-md mx-auto top-[12%] translate-y-0 sm:top-[50%] sm:translate-y-[-50%] w-[90vw] sm:w-full p-0 rounded-3xl border-0 bg-transparent shadow-none [&>button]:hidden">
+          <div className="backdrop-blur-2xl bg-white/85 rounded-3xl border border-white/60 shadow-[0_8px_40px_-8px_rgba(0,0,0,0.2)] overflow-hidden">
+            {/* Header */}
+            <div className="px-5 pt-5 pb-3 flex items-center justify-between">
+              <h2 className="text-xl font-bold italic text-stone-800" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+                Rechercher
+              </h2>
+              <button
+                onClick={() => setSearchOpen(false)}
+                className="h-8 w-8 rounded-full bg-stone-100 flex items-center justify-center hover:bg-stone-200 transition-all active:scale-95"
+              >
+                <span className="text-stone-400 text-sm font-medium">✕</span>
+              </button>
             </div>
-            
-            {/* Category Filters */}
-            <div className="space-y-2">
+
+            {/* Search input */}
+            <div className="px-5 pb-4">
+              <div className="relative">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" size={16} />
+                <input
+                  type="text"
+                  placeholder="Nom de l'événement..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
+                  className="w-full h-10 pl-10 pr-4 rounded-2xl bg-stone-100/80 border-0 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#ee9d2b]/30 text-sm"
+                  autoFocus
+                />
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="h-px bg-stone-200/60 mx-5" />
+
+            {/* Categories */}
+            <div className="px-5 py-4 space-y-3">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold text-foreground">Catégories</p>
+                <p className="text-xs font-bold uppercase tracking-[0.1em] text-stone-500">Catégories</p>
                 {selectedCategories.length > 0 && (
-                  <button
-                    onClick={() => setSelectedCategories([])}
-                    className="text-xs text-primary hover:underline font-medium"
-                  >
-                    Tout effacer
+                  <button onClick={() => setSelectedCategories([])} className="text-[11px] text-[#ee9d2b] font-semibold">
+                    Effacer
                   </button>
                 )}
               </div>
-              <div className="flex flex-wrap gap-2 max-h-[200px] overflow-y-auto">
+              <div className="flex flex-wrap gap-1.5">
                 {CATEGORIES.map((category) => (
                   <button
                     key={category.id}
                     onClick={() => toggleCategory(category.id)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    className={`px-3 py-1.5 rounded-full text-[11px] font-medium transition-all active:scale-95 ${
                       selectedCategories.includes(category.id)
-                        ? `${category.color} text-white shadow-lg scale-105`
-                        : 'bg-muted text-muted-foreground hover:scale-105'
+                        ? 'bg-[#ee9d2b] text-white shadow-md'
+                        : 'bg-stone-100/80 text-stone-600 hover:bg-stone-200/80'
                     }`}
                   >
                     {category.label}
@@ -157,10 +166,13 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
               </div>
             </div>
 
-            {/* Distance Filter */}
-            <div className="space-y-2">
-              <p className="text-sm font-semibold text-foreground">Autour de moi</p>
-              <div className="flex flex-wrap gap-2">
+            {/* Divider */}
+            <div className="h-px bg-stone-200/60 mx-5" />
+
+            {/* Distance */}
+            <div className="px-5 py-4 space-y-3">
+              <p className="text-xs font-bold uppercase tracking-[0.1em] text-stone-500">Autour de moi</p>
+              <div className="flex flex-wrap gap-1.5">
                 {[
                   { label: 'Tout', value: null },
                   { label: '500m', value: 0.5 },
@@ -172,10 +184,10 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                   <button
                     key={opt.label}
                     onClick={() => setDistanceFilter(opt.value)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    className={`px-3 py-1.5 rounded-full text-[11px] font-medium transition-all active:scale-95 ${
                       distanceFilter === opt.value
-                        ? 'bg-[#ee9d2b] text-white shadow-lg scale-105'
-                        : 'bg-muted text-muted-foreground hover:scale-105'
+                        ? 'bg-[#ee9d2b] text-white shadow-md'
+                        : 'bg-stone-100/80 text-stone-600 hover:bg-stone-200/80'
                     }`}
                   >
                     {opt.label}
@@ -184,12 +196,15 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
               </div>
             </div>
 
-            <button
-              onClick={handleSearch}
-              className="w-full h-11 rounded-3xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-all text-sm"
-            >
-              Rechercher
-            </button>
+            {/* Search button */}
+            <div className="px-5 pb-5 pt-1">
+              <button
+                onClick={handleSearch}
+                className="w-full h-11 rounded-2xl bg-[#ee9d2b] text-white font-semibold hover:opacity-90 transition-all active:scale-[0.98] text-sm shadow-lg shadow-[#ee9d2b]/20"
+              >
+                Rechercher
+              </button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

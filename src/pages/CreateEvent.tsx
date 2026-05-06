@@ -559,16 +559,16 @@ const CreateEvent = () => {
                 Date et heure
               </h2>
 
-              <div className="space-y-3">
+              <div className="space-y-3 overflow-hidden">
                 <Label htmlFor="date" className={labelClass}>Date *</Label>
-                <div className="relative">
+                <div className="relative overflow-hidden">
                   <Input
                     id="date"
                     type="date"
                     value={formData.date}
                     onChange={e => setFormData({ ...formData, date: e.target.value })}
                     required
-                    className={inputClass}
+                    className={`${inputClass} w-full max-w-full`}
                   />
                   {formData.date && (
                     <button type="button" onClick={() => setFormData({ ...formData, date: '' })} className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full bg-stone-300/40 flex items-center justify-center hover:bg-stone-400/40 transition-colors">
@@ -577,16 +577,16 @@ const CreateEvent = () => {
                   )}
                 </div>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-3 overflow-hidden">
                 <Label htmlFor="time" className={labelClass}>Heure *</Label>
-                <div className="relative">
+                <div className="relative overflow-hidden">
                   <Input
                     id="time"
                     type="time"
                     value={formData.time}
                     onChange={e => setFormData({ ...formData, time: e.target.value })}
                     required
-                    className={inputClass}
+                    className={`${inputClass} w-full max-w-full`}
                   />
                   {formData.time && (
                     <button type="button" onClick={() => setFormData({ ...formData, time: '' })} className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full bg-stone-300/40 flex items-center justify-center hover:bg-stone-400/40 transition-colors">

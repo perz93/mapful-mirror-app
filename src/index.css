@@ -672,3 +672,13 @@ All colors MUST be HSL.
 [data-sonner-toaster][data-y-position="top"] {
   top: calc(env(safe-area-inset-top, 0px) + 60px) !important;
 }
+
+/* Fix date/time inputs overflow on iOS */
+input[type="date"],
+input[type="time"] {
+  -webkit-appearance: none;
+  appearance: none;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
