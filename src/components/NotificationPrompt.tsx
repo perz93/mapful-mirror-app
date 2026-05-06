@@ -42,7 +42,7 @@ const NotificationPrompt = () => {
   return (
     <div
       className={`fixed left-3 z-50 transition-all duration-300 ${animating ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}
-      style={{ top: 'calc(env(safe-area-inset-top, 0px) + 12px)', maxWidth: '260px' }}
+      style={{ top: 'calc(env(safe-area-inset-top, 0px) + 18px)', maxWidth: '260px' }}
     >
       <div className="rounded-xl backdrop-blur-2xl bg-white/85 border border-white/60 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.12)] px-3 py-2">
         <div className="flex items-center gap-2">
