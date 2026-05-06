@@ -3,22 +3,33 @@ import { useState, useEffect, useCallback } from 'react';
 const SPLASH_SHOWN_KEY = 'splash_shown_session';
 
 const SplashScreen = ({ onFinish }: { onFinish: () => void }) => {
+  const [loaded, setLoaded] = useState(false);
   const [exiting, setExiting] = useState(false);
 
   useEffect(() => {
+    // Preload image
+    const img = new Image();
+    img.onload = () => setLoaded(true);
+    img.src = '/splash-bg.jpg';
+  }, []);
+
+  useEffect(() => {
+    if (!loaded) return;
     const t1 = setTimeout(() => setExiting(true), 3000);
     const t2 = setTimeout(() => onFinish(), 3700);
     return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, [onFinish]);
+  }, [loaded, onFinish]);
 
   return (
     <div
-      className={`fixed inset-0 z-[200] transition-transform duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+      className={`fixed inset-0 z-[200] bg-[#ee9d2b] transition-transform duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] ${
         exiting ? '-translate-y-full' : 'translate-y-0'
       }`}
     >
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-300 ${
+          loaded ? 'opacity-100' : 'opacity-0'
+        }`}
         style={{ backgroundImage: "url('/splash-bg.jpg')" }}
       />
     </div>
