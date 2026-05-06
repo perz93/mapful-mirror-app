@@ -43,41 +43,39 @@ const SplashScreen = ({ onFinish }: { onFinish: () => void }) => {
         style={{ backgroundImage: "url('/splash-bg.jpg')" }}
       />
 
-      {/* Content — absolutely positioned in the card zone */}
-      <div className="absolute inset-0 z-10 flex flex-col items-center" style={{ top: '42%' }}>
-        <div className="flex flex-col items-center px-10">
+      {/* Content — positioned exactly in the glass card zone (45%-78% of screen) */}
+      <div className="absolute left-0 right-0 z-10 flex flex-col items-center justify-center px-8" style={{ top: '44%', bottom: '22%' }}>
 
-          {/* Logo — VERY BIG, inside the card */}
-          <div
-            className={`mb-4 transition-all duration-700 ease-out ${
-              phase >= 2 ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-75'
-            }`}
-          >
-            <img src="/vibe-logo.png" alt="VIBE" className="w-52 drop-shadow-xl" />
-          </div>
+        {/* Logo — full width of card */}
+        <div
+          className={`mb-5 transition-all duration-700 ease-out ${
+            phase >= 2 ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-75'
+          }`}
+        >
+          <img src="/vibe-logo.png" alt="VIBE" className="w-72 max-w-[80vw] drop-shadow-xl" />
+        </div>
 
-          {/* Slogan */}
-          <div
-            className={`mb-2 transition-all duration-600 ease-out ${
-              phase >= 3 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-            }`}
-          >
-            <p className="text-[22px] text-center text-white font-semibold tracking-wide" style={{ fontFamily: "'Source Serif 4', Georgia, serif", textShadow: '0 2px 16px rgba(0,0,0,0.4)' }}>
-              Explore. Réserve. <span className="text-[#ee9d2b] italic">Vibrez.</span>
-            </p>
-          </div>
+        {/* Slogan */}
+        <div
+          className={`mb-3 transition-all duration-600 ease-out ${
+            phase >= 3 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+          }`}
+        >
+          <p className="text-[26px] text-center text-white font-semibold tracking-wide" style={{ fontFamily: "'Source Serif 4', Georgia, serif", textShadow: '0 3px 20px rgba(0,0,0,0.5)' }}>
+            Explore. Réserve. <span className="text-[#ee9d2b] italic">Vibrez.</span>
+          </p>
+        </div>
 
-          {/* Sub text */}
-          <div
-            className={`transition-all duration-600 ease-out ${
-              phase >= 4 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
-            }`}
-          >
-            <p className="text-[17px] text-center text-white/85 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif", textShadow: '0 2px 12px rgba(0,0,0,0.35)' }}>
-              Tous les <span className="text-[#ee9d2b] font-bold">événements</span>.<br />
-              Près de <span className="text-[#ee9d2b] font-bold">vous</span>.
-            </p>
-          </div>
+        {/* Sub text */}
+        <div
+          className={`transition-all duration-600 ease-out ${
+            phase >= 4 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+          }`}
+        >
+          <p className="text-[20px] text-center text-white/90 italic leading-relaxed" style={{ fontFamily: "'Source Serif 4', Georgia, serif", textShadow: '0 2px 16px rgba(0,0,0,0.4)' }}>
+            Tous les <span className="text-[#ee9d2b] font-bold">événements</span>.<br />
+            Près de <span className="text-[#ee9d2b] font-bold">vous</span>.
+          </p>
         </div>
       </div>
 
