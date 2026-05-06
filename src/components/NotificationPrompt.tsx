@@ -41,31 +41,24 @@ const NotificationPrompt = () => {
 
   return (
     <div
-      className={`fixed left-0 right-0 max-w-md mx-auto px-3 z-50 transition-all duration-300 ${animating ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
-      style={{ top: 'calc(env(safe-area-inset-top, 0px) + 60px)' }}
+      className={`fixed left-3 z-50 transition-all duration-300 ${animating ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}
+      style={{ top: 'calc(env(safe-area-inset-top, 0px) + 12px)', maxWidth: '260px' }}
     >
-      <div className="rounded-2xl backdrop-blur-2xl bg-white/80 border border-white/60 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] px-3.5 py-2.5">
-        <div className="flex items-center gap-2.5">
-          <div className="flex-shrink-0 h-8 w-8 rounded-full bg-[#ee9d2b]/12 flex items-center justify-center">
-            <Bell size={15} className="text-[#ee9d2b]" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[13px] font-semibold text-stone-800 leading-tight">
-              Ne rate aucun event !
-            </p>
-            <p className="text-[11px] text-stone-500 leading-tight">
-              Active les notifs pour les events près de toi
-            </p>
-          </div>
+      <div className="rounded-xl backdrop-blur-2xl bg-white/85 border border-white/60 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.12)] px-3 py-2">
+        <div className="flex items-center gap-2">
+          <Bell size={14} className="text-[#ee9d2b] flex-shrink-0" />
+          <p className="text-[11px] text-stone-700 font-medium leading-tight flex-1">
+            Ne rate aucun event !
+          </p>
           <button
             onClick={handleSubscribe}
             disabled={loading}
-            className="flex-shrink-0 h-7 px-3.5 rounded-full bg-[#ee9d2b] text-white text-[11px] font-semibold hover:opacity-90 transition-all active:scale-95 disabled:opacity-50"
+            className="flex-shrink-0 h-6 px-3 rounded-full bg-[#ee9d2b] text-white text-[10px] font-semibold hover:opacity-90 transition-all active:scale-95 disabled:opacity-50"
           >
-            {loading ? '...' : 'Activer'}
+            OK
           </button>
-          <button onClick={handleClose} className="flex-shrink-0 h-7 w-7 rounded-full bg-stone-100 flex items-center justify-center hover:bg-stone-200 transition-all active:scale-95">
-            <X size={12} className="text-stone-400" />
+          <button onClick={handleClose} className="flex-shrink-0 h-5 w-5 rounded-full bg-stone-100 flex items-center justify-center hover:bg-stone-200 transition-all active:scale-95">
+            <X size={10} className="text-stone-400" />
           </button>
         </div>
       </div>
