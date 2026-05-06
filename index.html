@@ -31,6 +31,8 @@
   </head>
 
   <body>
+    <!-- Instant splash: shows before React loads -->
+    <div id="instant-splash" style="position:fixed;inset:0;z-index:9999;background:#ee9d2b url('/splash-bg.jpg') center/cover no-repeat;transition:transform 0.7s cubic-bezier(0.4,0,0.2,1);"></div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
