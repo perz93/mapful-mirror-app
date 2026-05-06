@@ -15,7 +15,6 @@ interface ContactItem {
   href: string;
   bgColor: string;
   label: string;
-  fallback?: string;
 }
 
 const ContactFab = ({
@@ -77,20 +76,18 @@ const ContactFab = ({
   if (contactFacebook) {
     contacts.push({
       icon: <Facebook className="w-5 h-5 text-white" />,
-      href: `fb://profile/${contactFacebook}`,
+      href: `https://www.facebook.com/${contactFacebook}`,
       bgColor: 'bg-blue-600',
-      label: 'Facebook',
-      fallback: `https://facebook.com/${contactFacebook}`
+      label: 'Facebook'
     });
   }
 
   if (contactTwitter) {
     contacts.push({
       icon: <span className="text-white font-bold text-base">𝕏</span>,
-      href: `twitter://user?screen_name=${contactTwitter.replace('@', '')}`,
+      href: `https://x.com/${contactTwitter.replace('@', '')}`,
       bgColor: 'bg-black',
-      label: 'X',
-      fallback: `https://x.com/${contactTwitter.replace('@', '')}`
+      label: 'X'
     });
   }
 
@@ -136,16 +133,6 @@ const ContactFab = ({
             rel="noopener noreferrer"
             onClick={(e) => {
               e.stopPropagation();
-              if (contact.fallback) {
-                e.preventDefault();
-                // Try deep link, fallback to web URL after timeout
-                const timer = setTimeout(() => {
-                  window.location.href = contact.fallback!;
-                }, 1500);
-                window.location.href = contact.href;
-                // If app opened, clear fallback
-                window.addEventListener('blur', () => clearTimeout(timer), { once: true });
-              }
               setIsOpen(false);
             }}
             className={cn(

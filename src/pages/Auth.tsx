@@ -71,18 +71,12 @@ const Auth = () => {
   };
 
   return (
-    <div className="fixed inset-0 w-full h-screen overflow-hidden overscroll-none bg-stone-100 dark:bg-stone-950 animate-fade-in animate-zoom-smooth">
-      {/* Map Background - animation permanente */}
-      <div
-        className="absolute inset-0 opacity-40 animate-pan"
-        style={{
-          backgroundImage: `url(${mapBackground})`,
-          backgroundSize: "150% 150%",
-          backgroundPosition: "center",
-        }}
-      />
-      {/* Overlay sombre pour assombrir légèrement le fond */}
-      <div className="absolute inset-0 bg-black/50" />
+    <div className="fixed inset-0 w-full h-screen overflow-hidden overscroll-none bg-stone-200 animate-fade-in animate-zoom-smooth">
+      {/* Map Background — light natural */}
+      <div className="absolute inset-0">
+        <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
+      </div>
+      <div className="absolute inset-0 bg-white/30 backdrop-blur-xl" />
 
       {/* Content Card with 3D flip */}
       <div
@@ -98,7 +92,7 @@ const Auth = () => {
         >
           {/* Login Face (Front) */}
           <div
-            className="bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-2xl p-6 w-full"
+            className="backdrop-blur-2xl bg-white/85 border border-white/60 rounded-[2.5rem] shadow-[0_8px_40px_-8px_rgba(0,0,0,0.15)] p-6 w-full"
             style={{
               backfaceVisibility: "hidden",
               WebkitBackfaceVisibility: "hidden",
@@ -197,7 +191,7 @@ const Auth = () => {
 
           {/* Signup Face (Back) */}
           <div
-            className="bg-background/95 backdrop-blur-xl rounded-[2.5rem] shadow-2xl p-6 w-full"
+            className="backdrop-blur-2xl bg-white/85 border border-white/60 rounded-[2.5rem] shadow-[0_8px_40px_-8px_rgba(0,0,0,0.15)] p-6 w-full"
             style={{
               backfaceVisibility: "hidden",
               WebkitBackfaceVisibility: "hidden",
