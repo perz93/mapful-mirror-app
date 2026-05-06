@@ -81,6 +81,8 @@ const MapView = () => {
       }));
     });
 
+    // Delay geolocation request so it doesn't trigger during splash/install guide
+    const geoTimeout = setTimeout(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -115,6 +117,7 @@ const MapView = () => {
         }
       );
     }
+    }, 7000); // Wait for splash + install guide to finish
 
     const markerClusterGroup = L.markerClusterGroup({
       showCoverageOnHover: false,
@@ -225,6 +228,7 @@ const MapView = () => {
     window.addEventListener('zoomOut', handleZoomOut);
 
     return () => {
+      clearTimeout(geoTimeout);
       markersRef.current = [];
       if (markerClusterGroupRef.current && mapInstanceRef.current) {
         mapInstanceRef.current.removeLayer(markerClusterGroupRef.current);
