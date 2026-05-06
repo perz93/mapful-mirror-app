@@ -82,8 +82,20 @@ const MapView = () => {
     });
 
     // Delay geolocation request so it doesn't trigger during splash/install guide
-    const geoTimeout = setTimeout(() => {
-    if (navigator.geolocation) {
+    // Only request if permission was already granted (no browser popup)
+    const geoTimeout = setTimeout(async () => {
+    let shouldRequest = true;
+    if (navigator.permissions) {
+      try {
+        const perm = await navigator.permissions.query({ name: 'geolocation' });
+        if (perm.state === 'prompt') {
+          // Permission not yet granted — don't trigger browser popup automatically
+          // User will trigger it via the locate button
+          shouldRequest = false;
+        }
+      } catch {}
+    }
+    if (shouldRequest && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
@@ -117,7 +129,7 @@ const MapView = () => {
         }
       );
     }
-    }, 7000); // Wait for splash + install guide to finish
+    }, 15000); // Wait 15s for splash + install guide to finish before requesting location
 
     const markerClusterGroup = L.markerClusterGroup({
       showCoverageOnHover: false,
