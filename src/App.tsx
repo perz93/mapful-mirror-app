@@ -7,6 +7,7 @@ import { SearchProvider } from "@/contexts/SearchContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import NotificationPrompt from "@/components/NotificationPrompt";
 import InstallGuide from "@/components/InstallGuide";
+import SplashScreenWrapper from "@/components/SplashScreen";
 import { useStatusBarColor } from "@/hooks/useStatusBarColor";
 import { usePWATheme } from "@/hooks/usePWATheme";
 import Index from "./pages/Index";
@@ -81,9 +82,11 @@ const App = () => (
       <AuthProvider>
         <SearchProvider>
           <NotificationProvider>
-            <NotificationPrompt />
-            <InstallGuide />
-            <AppContent />
+            <SplashScreenWrapper>
+              <NotificationPrompt />
+              <InstallGuide />
+              <AppContent />
+            </SplashScreenWrapper>
           </NotificationProvider>
         </SearchProvider>
       </AuthProvider>
