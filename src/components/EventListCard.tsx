@@ -8,6 +8,7 @@ interface EventListCardProps {
 }
 
 const EventListCard = ({ event }: EventListCardProps) => {
+  if (!event) return null;
   const formatEventDate = (date: string, time: string) => {
     const eventDate = new Date(date);
     const [hours] = time.split(':');
