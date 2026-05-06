@@ -100,8 +100,7 @@ export async function sendLocalNotification(title: string, body: string, url?: s
     body,
     icon: '/icon-192.png',
     badge: '/icon-192.png',
-    vibrate: [200, 100, 200],
     tag: 'local-' + Date.now(),
     data: { url: url || '/' },
-  });
+  } as NotificationOptions);
 }
