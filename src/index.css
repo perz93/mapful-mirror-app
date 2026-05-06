@@ -34,7 +34,7 @@
   }
 }
 
-/* Remove all focus rings, outlines, tap highlights */
+/* Remove ALL focus rings, outlines, tap highlights, accent backgrounds */
 *, *::before, *::after {
   -webkit-tap-highlight-color: transparent !important;
   outline: none !important;
@@ -43,12 +43,23 @@
 *:focus, *:focus-visible, *:focus-within {
   outline: none !important;
   box-shadow: none !important;
+  ring-color: transparent !important;
   -webkit-tap-highlight-color: transparent !important;
 }
 
-button, a, input, select, textarea, [role="button"], [tabindex] {
+button, a, input, select, textarea, [role="button"], [role="menuitem"], [role="option"], [tabindex] {
   outline: none !important;
   -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Kill Radix/Shadcn focus backgrounds */
+[data-radix-collection-item]:focus,
+[role="menuitem"]:focus,
+[role="menuitemcheckbox"]:focus,
+[role="menuitemradio"]:focus,
+[role="option"]:focus {
+  background-color: transparent !important;
+  outline: none !important;
 }
 
 body {
