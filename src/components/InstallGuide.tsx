@@ -266,12 +266,6 @@ const InstallGuide = () => {
               )}
             </div>
 
-            {/* Benefits */}
-            <div className="mt-6 flex items-center justify-center gap-3 text-[11px] font-medium text-stone-500 dark:text-stone-400">
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full backdrop-blur-xl bg-white/50 dark:bg-stone-800/40 border border-white/60 dark:border-stone-700/20">⚡ Rapide</span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full backdrop-blur-xl bg-white/50 dark:bg-stone-800/40 border border-white/60 dark:border-stone-700/20">🔔 Notifs</span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full backdrop-blur-xl bg-white/50 dark:bg-stone-800/40 border border-white/60 dark:border-stone-700/20">📱 Plein écran</span>
-            </div>
           </div>
         </div>
       </div>
