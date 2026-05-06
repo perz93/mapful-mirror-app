@@ -35,14 +35,14 @@ export async function subscribeToPush(): Promise<PushSubscription | null> {
     // Subscribe
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) as BufferSource,
     });
 
     // Save to Supabase
     const subJson = subscription.toJSON();
     const { data: { user } } = await supabase.auth.getUser();
 
-    await supabase.from('push_subscriptions').upsert(
+    await (supabase as any).from('push_subscriptions').upsert(
       {
         user_id: user?.id || null,
         endpoint: subJson.endpoint!,
