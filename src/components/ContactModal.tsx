@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { X, Phone, Instagram, Facebook, Twitter, MessageCircle } from 'lucide-react';
+import { X, Phone, Instagram, Facebook, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getDisplayUrl } from '@/components/profile/social/SocialPlatformConfig';
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -91,7 +92,7 @@ const ContactModal = ({
 
             {contactWhatsapp && (
               <a
-                href={`https://wa.me/${contactWhatsapp.replace(/[^0-9]/g, '')}`}
+                href={getDisplayUrl('whatsapp', contactWhatsapp)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-4 p-4 rounded-2xl bg-stone-50 hover:bg-stone-100 transition-all hover:scale-[1.02] active:scale-[0.98]"
@@ -109,7 +110,7 @@ const ContactModal = ({
 
             {contactInstagram && (
               <a
-                href={`https://instagram.com/${contactInstagram.replace('@', '')}`}
+                href={getDisplayUrl('instagram', contactInstagram)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-4 p-4 rounded-2xl bg-stone-50 hover:bg-stone-100 transition-all hover:scale-[1.02] active:scale-[0.98]"
@@ -127,7 +128,7 @@ const ContactModal = ({
 
             {contactFacebook && (
               <a
-                href={`https://facebook.com/${contactFacebook}`}
+                href={getDisplayUrl('facebook', contactFacebook)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-4 p-4 rounded-2xl bg-stone-50 hover:bg-stone-100 transition-all hover:scale-[1.02] active:scale-[0.98]"
@@ -145,7 +146,7 @@ const ContactModal = ({
 
             {contactTwitter && (
               <a
-                href={`https://twitter.com/${contactTwitter.replace('@', '')}`}
+                href={getDisplayUrl('twitter', contactTwitter)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-4 p-4 rounded-2xl bg-stone-50 hover:bg-stone-100 transition-all hover:scale-[1.02] active:scale-[0.98]"

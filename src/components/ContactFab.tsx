@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Phone, Instagram, Facebook, MessageCircle, X, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getDisplayUrl } from '@/components/profile/social/SocialPlatformConfig';
 
 interface ContactFabProps {
   contactPhone?: string | null;
@@ -58,7 +59,7 @@ const ContactFab = ({
   if (contactWhatsapp) {
     contacts.push({
       icon: <MessageCircle className="w-5 h-5 text-white" />,
-      href: `https://wa.me/${contactWhatsapp.replace(/[^0-9]/g, '')}`,
+      href: getDisplayUrl('whatsapp', contactWhatsapp),
       bgColor: 'bg-green-600',
       label: 'WhatsApp'
     });
@@ -67,16 +68,16 @@ const ContactFab = ({
   if (contactInstagram) {
     contacts.push({
       icon: <Instagram className="w-5 h-5 text-white" />,
-      href: `https://instagram.com/${contactInstagram.replace('@', '')}`,
+      href: getDisplayUrl('instagram', contactInstagram),
       bgColor: 'bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400',
       label: 'Instagram'
     });
   }
-  
+
   if (contactFacebook) {
     contacts.push({
       icon: <Facebook className="w-5 h-5 text-white" />,
-      href: `https://www.facebook.com/${contactFacebook}`,
+      href: getDisplayUrl('facebook', contactFacebook),
       bgColor: 'bg-blue-600',
       label: 'Facebook'
     });
@@ -85,7 +86,7 @@ const ContactFab = ({
   if (contactTwitter) {
     contacts.push({
       icon: <span className="text-white font-bold text-base">𝕏</span>,
-      href: `https://x.com/${contactTwitter.replace('@', '')}`,
+      href: getDisplayUrl('twitter', contactTwitter),
       bgColor: 'bg-black',
       label: 'X'
     });
@@ -129,7 +130,7 @@ const ContactFab = ({
           <a
             key={index}
             href={contact.href}
-            target="_self"
+            target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => {
               e.stopPropagation();
