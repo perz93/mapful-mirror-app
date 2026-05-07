@@ -105,15 +105,14 @@ const MapView = () => {
     });
 
     // Delay geolocation request so it doesn't trigger during splash/install guide
-    // Only request if permission was already granted (no browser popup)
+    // After delay, always request — the native permission popup will show if needed
     const geoTimeout = setTimeout(async () => {
     let shouldRequest = true;
     if (navigator.permissions) {
       try {
         const perm = await navigator.permissions.query({ name: 'geolocation' });
-        if (perm.state === 'prompt') {
-          // Permission not yet granted — don't trigger browser popup automatically
-          // User will trigger it via the locate button
+        if (perm.state === 'denied') {
+          // User already denied — don't bother requesting
           shouldRequest = false;
         }
       } catch {}
