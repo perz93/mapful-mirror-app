@@ -517,7 +517,7 @@ const MapView = () => {
 
     // Add heatmap layer based on event affluence (attendee %)
     // Only visible when zoom >= 12 (when clusters separate into individual markers)
-    const HEATMAP_MIN_ZOOM = 12;
+    const HEATMAP_MIN_ZOOM = 11;
 
     (async () => {
       try {
