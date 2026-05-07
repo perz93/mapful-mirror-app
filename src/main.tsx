@@ -24,13 +24,28 @@ updateServiceWorker = registerSW({
   },
 });
 
-// Also clear old caches on startup to prevent stale content
+// Clear old caches on startup — purge stale API data and old SW caches
 if ('caches' in window) {
   caches.keys().then((names) => {
     for (const name of names) {
-      // Clean up old workbox precache versions
+      // Clean up old workbox precache temps
       if (name.startsWith('workbox-precache') && name.includes('-temp')) {
         caches.delete(name);
+      }
+      // Purge old supabase cache (ensures fresh data from new DB)
+      if (name === 'supabase-api') {
+        caches.delete(name);
+      }
+    }
+  });
+}
+
+// Unregister any rogue push-sw.js that was previously registered separately
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then((regs) => {
+    for (const reg of regs) {
+      if (reg.active?.scriptURL?.includes('push-sw.js')) {
+        reg.unregister();
       }
     }
   });

@@ -15,6 +15,19 @@ clientsClaim();
 // Skip waiting so new SW activates immediately
 self.skipWaiting();
 
+// Purge ALL old caches on activate (nuclear cleanup for SW conflict recovery)
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((names) =>
+      Promise.all(
+        names
+          .filter((name) => name === 'supabase-api' || name === 'openstreetmap-tiles' || name === 'carto-tiles')
+          .map((name) => caches.delete(name))
+      )
+    )
+  );
+});
+
 // ============================================
 // Runtime caching
 // ============================================
