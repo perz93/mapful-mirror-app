@@ -33,6 +33,8 @@ function isStandalonePWA(): boolean {
   );
 }
 
+const GEO_GRANTED_KEY = 'geo_permission_granted';
+
 const MapView = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -53,6 +55,56 @@ const MapView = () => {
   const geoRetryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [showGeoBanner, setShowGeoBanner] = useState(false);
+
+  // PWA standalone: need user gesture to trigger geo permission on iOS
+  // Show a "locate me" gate screen if we're in standalone and never got geo before
+  const needsGeoGate = isStandalonePWA() && !localStorage.getItem(GEO_GRANTED_KEY);
+  const [showGeoGate, setShowGeoGate] = useState(needsGeoGate);
+
+  const handleGeoGate = () => {
+    if (!navigator.geolocation) {
+      setShowGeoGate(false);
+      return;
+    }
+    // This tap IS a user gesture — iOS will show the permission prompt
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        localStorage.setItem(GEO_GRANTED_KEY, 'true');
+        userLocationRef.current = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        setShowGeoGate(false);
+        // Fly to user position once map is ready
+        const tryFly = () => {
+          if (mapInstanceRef.current) {
+            mapInstanceRef.current.flyTo([pos.coords.latitude, pos.coords.longitude], 15, { duration: 1.5 });
+            // Place marker
+            if (!userMarkerRef.current) {
+              const userIcon = L.divIcon({
+                className: 'user-location-marker',
+                html: `<div class="user-location-pulse"></div>`,
+                iconSize: [20, 20],
+                iconAnchor: [10, 10],
+              });
+              userMarkerRef.current = L.marker([pos.coords.latitude, pos.coords.longitude], { icon: userIcon })
+                .addTo(mapInstanceRef.current)
+                .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
+            }
+          } else {
+            setTimeout(tryFly, 200);
+          }
+        };
+        tryFly();
+      },
+      () => {
+        // Permission denied or error — dismiss gate, continue without location
+        setShowGeoGate(false);
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    );
+  };
+
+  const handleSkipGeoGate = () => {
+    setShowGeoGate(false);
+  };
 
   // Expose map instance and route coords to RouteInfoPanel via state
   const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
@@ -182,6 +234,7 @@ const MapView = () => {
       const { latitude, longitude } = position.coords;
       userLocationRef.current = { lat: latitude, lng: longitude };
       setShowGeoBanner(false);
+      localStorage.setItem(GEO_GRANTED_KEY, 'true');
 
       // Clear retry timer since we got a fix
       if (geoRetryTimerRef.current) {
@@ -844,6 +897,46 @@ const MapView = () => {
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     );
   };
+
+  // PWA Geo Gate — full screen prompt requiring user tap to trigger iOS geo permission
+  if (showGeoGate) {
+    return (
+      <>
+        <div ref={mapRef} className="absolute inset-0 z-0" />
+        <div className="absolute inset-0 z-[50] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="mx-6 w-full max-w-sm rounded-3xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-2xl border border-white/70 dark:border-stone-700/30 shadow-2xl p-6 text-center">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#ee9d2b]/15 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ee9d2b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="10" r="3"/>
+                <path d="M12 2a8 8 0 0 0-8 8c0 1.892.402 3.13 1.5 4.5L12 22l6.5-7.5c1.098-1.37 1.5-2.608 1.5-4.5a8 8 0 0 0-8-8z"/>
+              </svg>
+            </div>
+            <h2
+              className="text-xl font-bold text-stone-900 dark:text-white mb-2"
+              style={{ fontFamily: "'Source Serif 4', Georgia, serif", fontStyle: 'italic' }}
+            >
+              Voir les events autour de toi
+            </h2>
+            <p className="text-sm text-stone-500 dark:text-stone-400 mb-6">
+              Autorise la localisation pour découvrir ce qui se passe près de toi
+            </p>
+            <button
+              onClick={handleGeoGate}
+              className="w-full py-3.5 rounded-2xl bg-[#ee9d2b] text-white font-bold text-base shadow-lg shadow-[#ee9d2b]/30 active:scale-[0.97] transition-transform"
+            >
+              Activer ma position
+            </button>
+            <button
+              onClick={handleSkipGeoGate}
+              className="w-full mt-3 py-2 text-sm text-stone-400 hover:text-stone-600 transition-colors"
+            >
+              Plus tard
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
