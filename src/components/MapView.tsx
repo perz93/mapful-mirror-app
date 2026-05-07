@@ -196,28 +196,34 @@ const MapView = () => {
       placeUserMarker(latitude, longitude);
     };
 
+    let geoRetryCount = 0;
+    const MAX_GEO_RETRIES = 6;
+
     const onGeoError = (err: GeolocationPositionError) => {
-      console.log('[Geo] Error:', err.code, err.message, 'PWA:', isStandalonePWA());
+      console.log('[Geo] Error:', err.code, err.message, 'PWA:', isStandalonePWA(), 'retry:', geoRetryCount);
 
-      // In PWA standalone, show banner so user can tap to re-trigger permission
-      if (isStandalonePWA() && !userLocationRef.current) {
+      if (userLocationRef.current) return; // Already have position, ignore error
+
+      // Strategy: first try low accuracy, then high accuracy, alternate
+      // iOS PWA sometimes needs enableHighAccuracy:true to trigger the real GPS chip
+      if (geoRetryCount < MAX_GEO_RETRIES) {
+        const useHighAccuracy = geoRetryCount % 2 === 1; // alternate
+        const delay = geoRetryCount < 2 ? 2000 : 5000;
+        geoRetryCount++;
+
+        geoRetryTimerRef.current = setTimeout(() => {
+          if (userLocationRef.current) return;
+          navigator.geolocation.getCurrentPosition(
+            onGeoSuccess,
+            onGeoError,
+            { enableHighAccuracy: useHighAccuracy, timeout: 12000, maximumAge: 0 }
+          );
+        }, delay);
+      }
+
+      // Show banner after 2nd failure (give it a chance first)
+      if (geoRetryCount >= 2) {
         setShowGeoBanner(true);
-
-        // Auto-retry every 5s in PWA mode (permission might be granted async)
-        if (!geoRetryTimerRef.current) {
-          const retry = () => {
-            if (userLocationRef.current) return; // Already got a fix
-            navigator.geolocation.getCurrentPosition(
-              onGeoSuccess,
-              () => {
-                // Still failing, retry again
-                geoRetryTimerRef.current = setTimeout(retry, 5000);
-              },
-              { enableHighAccuracy: false, timeout: 8000, maximumAge: 30000 }
-            );
-          };
-          geoRetryTimerRef.current = setTimeout(retry, 5000);
-        }
       }
     };
 
@@ -235,23 +241,33 @@ const MapView = () => {
           }
         },
         onGeoError,
-        { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
+        { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 }
       );
     };
 
     // Use watchPosition for continuous tracking — more reliable in PWA standalone
+    // Use enableHighAccuracy:true — critical for iOS PWA to get a real GPS fix
     if (navigator.geolocation) {
       watchIdRef.current = navigator.geolocation.watchPosition(
         onGeoSuccess,
-        onGeoError,
-        { enableHighAccuracy: false, timeout: 15000, maximumAge: 30000 }
+        (err) => {
+          // watchPosition error is less critical, just log it
+          console.log('[Geo] Watch error:', err.code, err.message);
+        },
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 30000 }
       );
     }
 
     const handleRecenter = () => locateUser(true);
 
-    // Also do an immediate getCurrentPosition (watchPosition can be slow to fire first time)
-    locateUser(!savedPosition);
+    // Immediate getCurrentPosition — try low accuracy first (faster), then watchPosition handles high accuracy
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        onGeoSuccess,
+        onGeoError,
+        { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
+      );
+    }
 
     window.addEventListener('recenterMap', handleRecenter);
 
@@ -778,17 +794,22 @@ const MapView = () => {
     });
   }, [searchQuery, selectedCategories, distanceFilter]);
 
+  const [geoLoading, setGeoLoading] = useState(false);
+
   // Handle manual geo permission request (user tap = gesture → triggers iOS prompt)
   const handleGeoRetry = () => {
     if (!navigator.geolocation) return;
-    setShowGeoBanner(false);
+    setGeoLoading(true);
+
+    // Try high accuracy first (user gesture = good time to request real GPS)
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
         userLocationRef.current = { lat: latitude, lng: longitude };
+        setShowGeoBanner(false);
+        setGeoLoading(false);
         if (mapInstanceRef.current) {
           mapInstanceRef.current.flyTo([latitude, longitude], 15, { duration: 1.5 });
-          // Place user marker
           if (!userMarkerRef.current) {
             const userIcon = L.divIcon({
               className: 'user-location-marker',
@@ -804,12 +825,23 @@ const MapView = () => {
           }
         }
       },
-      () => {
-        // Still denied — show banner again
+      (err) => {
+        setGeoLoading(false);
         setShowGeoBanner(true);
-        toast.error('Activez la localisation dans les réglages de votre appareil');
+        // Different message based on error code
+        if (err.code === 1) {
+          // PERMISSION_DENIED
+          if (isStandalonePWA()) {
+            toast.error('Allez dans Réglages > Confidentialité > Service de localisation > vérifiez que votre navigateur et cette app sont autorisés');
+          } else {
+            toast.error('Autorisez la localisation dans les paramètres du navigateur');
+          }
+        } else {
+          // POSITION_UNAVAILABLE or TIMEOUT
+          toast.error('Position GPS introuvable, réessayez dans quelques secondes');
+        }
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     );
   };
 
@@ -817,7 +849,7 @@ const MapView = () => {
     <>
       <div ref={mapRef} className="absolute inset-0 z-0" />
 
-      {/* Geo permission banner for PWA standalone */}
+      {/* Geo banner — shown when geolocation fails */}
       {showGeoBanner && (
         <div
           className="absolute z-[1000] left-4 right-4 animate-fade-in"
@@ -825,22 +857,33 @@ const MapView = () => {
         >
           <button
             onClick={handleGeoRetry}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/90 dark:bg-stone-900/90 backdrop-blur-xl shadow-lg border border-stone-200/50 dark:border-stone-700/50 active:scale-[0.98] transition-transform"
+            disabled={geoLoading}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/90 dark:bg-stone-900/90 backdrop-blur-xl shadow-lg border border-stone-200/50 dark:border-stone-700/50 active:scale-[0.98] transition-transform disabled:opacity-70"
           >
             <div className="flex-shrink-0 w-9 h-9 rounded-full bg-[#ee9d2b]/15 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ee9d2b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="12" y1="8" x2="12" y2="12"/>
-                <line x1="12" y1="16" x2="12.01" y2="16"/>
-              </svg>
+              {geoLoading ? (
+                <div className="w-4 h-4 border-2 border-[#ee9d2b] border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ee9d2b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="10" r="3"/>
+                  <path d="M12 2a8 8 0 0 0-8 8c0 1.892.402 3.13 1.5 4.5L12 22l6.5-7.5c1.098-1.37 1.5-2.608 1.5-4.5a8 8 0 0 0-8-8z"/>
+                </svg>
+              )}
             </div>
             <div className="flex-1 text-left">
-              <p className="text-sm font-semibold text-stone-900 dark:text-white">Position indisponible</p>
-              <p className="text-xs text-stone-500 dark:text-stone-400">Appuyez ici pour activer la localisation</p>
+              <p className="text-sm font-semibold text-stone-900 dark:text-white">
+                {geoLoading ? 'Recherche GPS en cours...' : 'Position introuvable'}
+              </p>
+              <p className="text-xs text-stone-500 dark:text-stone-400">
+                {geoLoading ? 'Veuillez patienter' : 'Touchez pour localiser votre position'}
+              </p>
             </div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-400">
-              <polyline points="9 18 15 12 9 6"/>
-            </svg>
+            {!geoLoading && (
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ee9d2b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74"/>
+                <path d="M21 3v6h-6"/>
+              </svg>
+            )}
           </button>
         </div>
       )}
