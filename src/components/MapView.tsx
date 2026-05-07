@@ -516,16 +516,17 @@ const MapView = () => {
     });
 
     // Add heatmap layer based on event affluence (attendee %)
+    // Only visible when zoom >= 12 (when clusters separate into individual markers)
+    const HEATMAP_MIN_ZOOM = 12;
+
     (async () => {
       try {
-        // Fetch all attendee counts in one query
         const eventIds = events.map((e) => e.id);
         const { data: attendeeCounts } = await supabase
           .from('event_attendees')
           .select('event_id')
           .in('event_id', eventIds);
 
-        // Count per event
         const countMap: Record<string, number> = {};
         if (attendeeCounts) {
           for (const row of attendeeCounts) {
@@ -537,32 +538,53 @@ const MapView = () => {
           const count = countMap[e.id] || 0;
           const capacity = e.capacity || 50;
           const pct = Math.min(count / capacity, 1);
-          // Minimum intensity 0.35 so all events are clearly visible in blue
           const intensity = 0.35 + pct * 0.65;
           return [e.latitude, e.longitude, intensity] as [number, number, number];
         });
 
         if (heatPoints.length > 0 && mapInstanceRef.current) {
-          // Remove old heatmap if still there
           if (heatLayerRef.current) {
             mapInstanceRef.current.removeLayer(heatLayerRef.current);
           }
-          heatLayerRef.current = (L as any).heatLayer(heatPoints, {
+
+          const heatLayer = (L as any).heatLayer(heatPoints, {
             radius: 35,
             blur: 25,
-            maxZoom: 10,
+            maxZoom: 18,
             max: 1.0,
             minOpacity: 0.3,
             gradient: {
-              0.0:  '#dbeafe', // bleu très clair — 0%
+              0.0:  '#dbeafe', // bleu très clair — 0-15%
               0.15: '#93c5fd', // bleu clair — 15%
-              0.30: '#3b82f6', // bleu pur — 30%
+              0.30: '#3b82f6', // bleu pur — 15-50%
               0.50: '#2563eb', // bleu pur intense — 50%
-              0.60: '#f97316', // orange — 60%
-              0.80: '#ea580c', // orange foncé — 80%
+              0.60: '#f97316', // orange — 50-100%
+              0.80: '#ea580c', // orange foncé
               1.00: '#dc2626', // orange-rouge — 100%
             },
-          }).addTo(mapInstanceRef.current);
+          });
+
+          heatLayerRef.current = heatLayer;
+
+          // Show/hide heatmap based on zoom level
+          const updateHeatmapVisibility = () => {
+            if (!mapInstanceRef.current) return;
+            const zoom = mapInstanceRef.current.getZoom();
+            if (zoom >= HEATMAP_MIN_ZOOM) {
+              if (!mapInstanceRef.current.hasLayer(heatLayer)) {
+                mapInstanceRef.current.addLayer(heatLayer);
+              }
+            } else {
+              if (mapInstanceRef.current.hasLayer(heatLayer)) {
+                mapInstanceRef.current.removeLayer(heatLayer);
+              }
+            }
+          };
+
+          // Initial check
+          updateHeatmapVisibility();
+          // Listen for zoom changes
+          mapInstanceRef.current.on('zoomend', updateHeatmapVisibility);
 
           // Scintillement pour les events >= 50% affluence
           const hotEvents = events.filter((e) => {
@@ -572,7 +594,6 @@ const MapView = () => {
           });
 
           if (hotEvents.length > 0) {
-            // Create a pulsing overlay for hot events
             hotEvents.forEach((e) => {
               const el = document.createElement('div');
               el.className = 'heatmap-pulse-marker';
