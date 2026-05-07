@@ -24,9 +24,8 @@ export async function getPermissionState(): Promise<NotificationPermission> {
 
 export async function subscribeToPush(): Promise<PushSubscription | null> {
   try {
-    // Register push service worker
-    const registration = await navigator.serviceWorker.register('/push-sw.js', { scope: '/' });
-    await navigator.serviceWorker.ready;
+    // Use the existing PWA service worker (push handlers are merged into it)
+    const registration = await navigator.serviceWorker.ready;
 
     // Request permission
     const permission = await Notification.requestPermission();
