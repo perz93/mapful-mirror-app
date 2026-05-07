@@ -38,28 +38,50 @@
 *, *::before, *::after {
   -webkit-tap-highlight-color: transparent !important;
   outline: none !important;
+  outline-style: none !important;
 }
 
 *:focus, *:focus-visible, *:focus-within {
   outline: none !important;
+  outline-style: none !important;
+  outline-width: 0 !important;
   box-shadow: none !important;
-  ring-color: transparent !important;
   -webkit-tap-highlight-color: transparent !important;
+  border-color: inherit !important;
 }
 
-button, a, input, select, textarea, [role="button"], [role="menuitem"], [role="option"], [tabindex] {
+button, a, input, select, textarea, [role="button"], [role="menuitem"], [role="option"], [tabindex],
+button:focus, button:focus-visible, button:active,
+a:focus, a:focus-visible, a:active,
+div:focus, div:focus-visible,
+[role="tab"]:focus, [role="tab"]:focus-visible,
+[role="tablist"] button:focus,
+[data-state]:focus, [data-state]:focus-visible {
   outline: none !important;
+  outline-style: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
   -webkit-tap-highlight-color: transparent !important;
+  -webkit-focus-ring-color: transparent !important;
 }
 
-/* Kill Radix/Shadcn focus backgrounds */
+/* Kill Radix/Shadcn focus backgrounds and rings */
 [data-radix-collection-item]:focus,
+[data-radix-collection-item]:focus-visible,
 [role="menuitem"]:focus,
 [role="menuitemcheckbox"]:focus,
 [role="menuitemradio"]:focus,
-[role="option"]:focus {
+[role="option"]:focus,
+[data-state="active"]:focus,
+[data-state="active"]:focus-visible,
+[data-state="inactive"]:focus,
+[data-state="inactive"]:focus-visible {
   background-color: transparent !important;
   outline: none !important;
+  outline-width: 0 !important;
+  box-shadow: none !important;
+  ring: none !important;
 }
 
 body {

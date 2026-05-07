@@ -162,7 +162,7 @@ const MapView = () => {
       removeOutsideVisibleBounds: true,
       animate: true,
       animateAddingMarkers: true,
-      disableClusteringAtZoom: 19,
+      disableClusteringAtZoom: 12,
       maxClusterRadius: 50,
       iconCreateFunction: function(cluster) {
         const count = cluster.getChildCount();
