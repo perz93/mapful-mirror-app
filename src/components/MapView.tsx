@@ -550,7 +550,7 @@ const MapView = () => {
           heatLayerRef.current = (L as any).heatLayer(heatPoints, {
             radius: 35,
             blur: 25,
-            maxZoom: 14,
+            maxZoom: 10,
             max: 1.0,
             minOpacity: 0.3,
             gradient: {
