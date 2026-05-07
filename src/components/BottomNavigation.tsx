@@ -39,10 +39,12 @@ interface BottomNavigationProps {
 }
 
 interface ScrollIndicatorState {
-  width: number;
-  left: number;
-  visible: boolean;
+  thumbLeft: number;  // 0-1 position
+  canScroll: boolean; // whether content overflows
 }
+
+const TRACK_WIDTH = 40; // px — total track width
+const THUMB_WIDTH = 16; // px — thumb width (small like iOS)
 
 const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
   const location = useLocation();
@@ -50,38 +52,31 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
   const [searchOpen, setSearchOpen] = useState(false);
   const { searchQuery, setSearchQuery, selectedCategories, setSelectedCategories, toggleCategory, distanceFilter, setDistanceFilter } = useSearch();
   const [indicator, setIndicator] = useState<ScrollIndicatorState>({
-    width: 100,
-    left: 0,
-    visible: false,
+    thumbLeft: 0,
+    canScroll: false,
   });
 
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
 
-    const updateIndicator = () => {
+    const update = () => {
       const { scrollWidth, clientWidth, scrollLeft } = el;
-
-      const maxScroll = Math.max(scrollWidth - clientWidth, 0);
-      const widthPercent = scrollWidth > 0 ? Math.min((clientWidth / scrollWidth) * 100, 100) : 100;
-      const leftPercent = maxScroll > 0 ? (scrollLeft / maxScroll) * (100 - widthPercent) : 0;
-
+      const maxScroll = scrollWidth - clientWidth;
       setIndicator({
-        width: widthPercent,
-        left: leftPercent,
-        visible: true,
+        canScroll: maxScroll > 1,
+        thumbLeft: maxScroll > 0 ? scrollLeft / maxScroll : 0,
       });
     };
 
-    const timer = setTimeout(updateIndicator, 150);
-
-    el.addEventListener('scroll', updateIndicator, { passive: true } as AddEventListenerOptions);
-    window.addEventListener('resize', updateIndicator);
+    const timer = setTimeout(update, 150);
+    el.addEventListener('scroll', update, { passive: true } as AddEventListenerOptions);
+    window.addEventListener('resize', update);
 
     return () => {
       clearTimeout(timer);
-      el.removeEventListener('scroll', updateIndicator);
-      window.removeEventListener('resize', updateIndicator);
+      el.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
     };
   }, []);
 
@@ -253,14 +248,17 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                 })}
               </div>
 
-              {indicator.visible && indicator.width < 95 && (
-                <div className="pointer-events-none absolute bottom-1.5 left-1/2 -translate-x-1/2 w-16 h-[3px] rounded-full bg-black/[0.06] dark:bg-white/[0.08]">
+              {indicator.canScroll && (
+                <div
+                  className="pointer-events-none absolute bottom-1.5 left-1/2 -translate-x-1/2 rounded-full bg-black/[0.08]"
+                  style={{ width: TRACK_WIDTH, height: 2.5 }}
+                >
                   <div
-                    className="h-full rounded-full bg-black/25 dark:bg-white/30"
+                    className="absolute top-0 h-full rounded-full bg-black/30"
                     style={{
-                      width: `${Math.max(indicator.width, 30)}%`,
-                      transform: `translateX(${indicator.left}%)`,
-                      transition: 'transform 0.15s ease-out, width 0.15s ease-out',
+                      width: THUMB_WIDTH,
+                      left: indicator.thumbLeft * (TRACK_WIDTH - THUMB_WIDTH),
+                      transition: 'left 0.15s ease-out',
                     }}
                   />
                 </div>
