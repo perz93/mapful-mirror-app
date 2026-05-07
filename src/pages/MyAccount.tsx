@@ -228,17 +228,17 @@ const MyAccount = () => {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-3 gap-3 w-full mb-6">
-            <div className="flex flex-col items-center gap-1 rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-3">
+            <div className="flex flex-col items-center gap-1 rounded-2xl backdrop-blur-2xl bg-white/80 border border-white/60 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] p-3">
               <Calendar size={16} className="text-[#ee9d2b]" />
               <p className="text-xl font-bold text-stone-800">{stats.eventsCreated}</p>
               <p className="text-[10px] text-stone-500 uppercase tracking-wider">Events</p>
             </div>
-            <div className="flex flex-col items-center gap-1 rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-3">
+            <div className="flex flex-col items-center gap-1 rounded-2xl backdrop-blur-2xl bg-white/80 border border-white/60 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] p-3">
               <Heart size={16} className="text-[#ee9d2b]" />
               <p className="text-xl font-bold text-stone-800">{stats.favorites}</p>
               <p className="text-[10px] text-stone-500 uppercase tracking-wider">Favoris</p>
             </div>
-            <div className="flex flex-col items-center gap-1 rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-3">
+            <div className="flex flex-col items-center gap-1 rounded-2xl backdrop-blur-2xl bg-white/80 border border-white/60 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] p-3">
               <Zap size={16} className="text-[#ee9d2b]" />
               <p className="text-xl font-bold text-stone-800">{goingEvents.length}</p>
               <p className="text-[10px] text-stone-500 uppercase tracking-wider">J'y vais</p>
@@ -246,7 +246,7 @@ const MyAccount = () => {
           </div>
 
           {/* Tabs */}
-          <div className="flex w-full rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-1 mb-6">
+          <div className="flex w-full rounded-2xl backdrop-blur-2xl bg-white/80 border border-white/60 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] p-1 mb-6">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -280,7 +280,7 @@ const MyAccount = () => {
                   </Link>
                 </div>
                 {userEvents.length === 0 ? (
-                  <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-8 text-center">
+                  <div className="rounded-2xl backdrop-blur-2xl bg-white/80 border border-white/60 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] p-8 text-center">
                     <Calendar size={32} className="text-stone-300 mx-auto mb-3" />
                     <p className="text-stone-500 text-sm mb-3">Aucun événement créé</p>
                     <Link
@@ -316,7 +316,7 @@ const MyAccount = () => {
                   </Link>
                 </div>
                 {userListings.length === 0 ? (
-                  <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-8 text-center">
+                  <div className="rounded-2xl backdrop-blur-2xl bg-white/80 border border-white/60 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] p-8 text-center">
                     <ShoppingBag size={32} className="text-stone-300 mx-auto mb-3" />
                     <p className="text-stone-500 text-sm mb-3">Aucune annonce</p>
                     <Link
@@ -331,7 +331,7 @@ const MyAccount = () => {
                     {userListings.map(listing => (
                       <div
                         key={listing.id}
-                        className="rounded-2xl backdrop-blur-2xl bg-white/90 dark:bg-stone-900/80 border border-white/60 dark:border-stone-700/30 overflow-hidden shadow-lg"
+                        className="rounded-2xl backdrop-blur-2xl bg-white/80 dark:bg-stone-900/80 border border-white/60 dark:border-stone-700/30 overflow-hidden shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)]"
                       >
                         {listing.image_url && (
                           <img src={listing.image_url} alt={listing.title} className="w-full h-28 object-cover" />
@@ -374,7 +374,7 @@ const MyAccount = () => {
                   Mes favoris
                 </h3>
                 {favoriteEvents.length === 0 ? (
-                  <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-8 text-center">
+                  <div className="rounded-2xl backdrop-blur-2xl bg-white/80 border border-white/60 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] p-8 text-center">
                     <Heart size={32} className="text-stone-300 mx-auto mb-3" />
                     <p className="text-stone-500 text-sm mb-1">Aucun favori</p>
                     <p className="text-stone-400 text-xs">Les events que tu aimes apparaîtront ici</p>
@@ -400,7 +400,7 @@ const MyAccount = () => {
                   J'y vais
                 </h3>
                 {goingEvents.length === 0 ? (
-                  <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-8 text-center">
+                  <div className="rounded-2xl backdrop-blur-2xl bg-white/80 border border-white/60 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] p-8 text-center">
                     <Zap size={32} className="text-stone-300 mx-auto mb-3" />
                     <p className="text-stone-500 text-sm mb-1">Aucun event prévu</p>
                     <p className="text-stone-400 text-xs">Clique "J'y vais" sur un event pour le retrouver ici</p>
