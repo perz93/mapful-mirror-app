@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Upload, X } from 'lucide-react';
+import mapBackground from '@/assets/map-background.jpg';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -124,20 +125,27 @@ const CreateListing = () => {
   };
 
   return (
-    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-background">
+    <div className="relative mx-auto flex min-h-screen max-w-md flex-col overflow-hidden">
+      {/* Background map */}
+      <div className="fixed inset-0 pointer-events-none">
+        <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
+        <div className="absolute inset-0 bg-white/30 backdrop-blur-xl" />
+      </div>
+
       {/* Header */}
-      <div className="relative z-10 flex items-center gap-4 px-4 pt-12 pb-4">
+      <div className="relative z-10 px-4 sm:px-6 pb-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         <Link
           to="/marketplace"
-          className="flex size-10 items-center justify-center rounded-full bg-black/70 backdrop-blur-md"
+          className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white/70 backdrop-blur-md shadow-sm border border-white/60 hover:scale-105 active:scale-95 transition-all mb-4"
         >
-          <ArrowLeft className="text-white" size={20} />
+          <ArrowLeft className="w-5 h-5 text-stone-700" />
         </Link>
-        <h1 className="text-xl font-bold">Nouvelle annonce</h1>
+        <h1 className="text-3xl italic text-stone-800 text-center" style={{ fontFamily: '"Source Serif 4", serif' }}>Nouvelle annonce</h1>
+        <p className="text-stone-500 font-light text-center mt-1">Proposez vos services à la communauté</p>
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-4 pb-8">
+      <form onSubmit={handleSubmit} className="relative z-10 flex-1 overflow-y-auto px-4 pb-8">
         <div className="space-y-6">
           {/* Image Upload */}
           <div>
@@ -300,8 +308,6 @@ const CreateListing = () => {
         </div>
       </form>
 
-      {/* Background */}
-      <div className="fixed inset-0 -z-10 bg-gradient-to-b from-amber-50/50 to-background dark:from-amber-950/20" />
     </div>
   );
 };
