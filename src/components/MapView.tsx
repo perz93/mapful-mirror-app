@@ -176,43 +176,61 @@ const MapView = () => {
           }
         },
         (error) => {
-          if (!flyTo) return; // Silent fail on initial load
-          console.error('Geolocation error:', error.code, error.message);
+          // DEBUG: show exact error to diagnose iOS issue
+          const errorTypes: Record<number, string> = {
+            1: 'PERMISSION_DENIED',
+            2: 'POSITION_UNAVAILABLE',
+            3: 'TIMEOUT',
+          };
+          const errorName = errorTypes[error.code] || `UNKNOWN(${error.code})`;
+          console.error(`[GEO] Error: ${errorName} — ${error.message}`);
 
-          if (error.code === 1) {
-            // PERMISSION_DENIED — try again without high accuracy (iOS fallback)
-            navigator.geolocation.getCurrentPosition(
-              (pos) => {
-                const { latitude, longitude } = pos.coords;
-                userLocationRef.current = { lat: latitude, lng: longitude };
-                map.flyTo([latitude, longitude], 15, { duration: 1.5 });
-
-                if (!userMarkerRef.current) {
-                  const userIcon = L.divIcon({
-                    className: 'user-location-marker',
-                    html: `<div class="user-location-pulse"></div>`,
-                    iconSize: [20, 20],
-                    iconAnchor: [10, 10],
-                  });
-                  userMarkerRef.current = L.marker([latitude, longitude], { icon: userIcon })
-                    .addTo(map)
-                    .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
-                } else {
-                  userMarkerRef.current.setLatLng([latitude, longitude]);
-                }
-              },
-              () => {
-                toast.error('Position non disponible. Vérifiez que la localisation est activée dans vos réglages.', {
-                  duration: 5000,
-                });
-              },
-              { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 }
-            );
-          } else {
-            toast.error('Position non disponible, réessayez', { duration: 3000 });
+          // If high accuracy failed, retry without it
+          if (error.code !== 1) {
+            // Not a permission issue — show error
+            if (flyTo) {
+              toast.error(`GPS: ${errorName}. Réessayez.`, { duration: 4000 });
+            }
+            return;
           }
+
+          // PERMISSION_DENIED — try fallback without high accuracy
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              const { latitude, longitude } = pos.coords;
+              userLocationRef.current = { lat: latitude, lng: longitude };
+
+              if (flyTo) {
+                map.flyTo([latitude, longitude], 15, { duration: 1.5 });
+              }
+
+              if (!userMarkerRef.current) {
+                const userIcon = L.divIcon({
+                  className: 'user-location-marker',
+                  html: `<div class="user-location-pulse"></div>`,
+                  iconSize: [20, 20],
+                  iconAnchor: [10, 10],
+                });
+                userMarkerRef.current = L.marker([latitude, longitude], { icon: userIcon })
+                  .addTo(map)
+                  .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
+              } else {
+                userMarkerRef.current.setLatLng([latitude, longitude]);
+              }
+            },
+            (err2) => {
+              const err2Name = errorTypes[err2.code] || `UNKNOWN(${err2.code})`;
+              console.error(`[GEO] Fallback error: ${err2Name} — ${err2.message}`);
+              if (flyTo) {
+                toast.error(`GPS bloqué (${err2Name}). Supprimez la PWA, allez dans Réglages > Safari > Effacer données, puis réinstallez.`, {
+                  duration: 8000,
+                });
+              }
+            },
+            { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 }
+          );
         },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+        { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
       );
     };
 
