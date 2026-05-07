@@ -104,20 +104,10 @@ const MapView = () => {
       }));
     });
 
-    // Delay geolocation request so it doesn't trigger during splash/install guide
-    // After delay, always request — the native permission popup will show if needed
-    const geoTimeout = setTimeout(async () => {
-    let shouldRequest = true;
-    if (navigator.permissions) {
-      try {
-        const perm = await navigator.permissions.query({ name: 'geolocation' });
-        if (perm.state === 'denied') {
-          // User already denied — don't bother requesting
-          shouldRequest = false;
-        }
-      } catch {}
-    }
-    if (shouldRequest && navigator.geolocation) {
+    // Request geolocation immediately — native popup will show if needed
+    const requestGeolocation = () => {
+      if (!navigator.geolocation) return;
+
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
@@ -134,24 +124,23 @@ const MapView = () => {
             iconAnchor: [10, 10],
           });
 
-          const userMarker = L.marker([latitude, longitude], { icon: userIcon })
-            .addTo(map)
-            .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
-
-          userMarkerRef.current = userMarker;
-        },
-        (error) => {
-          console.log('Géolocalisation non disponible:', error);
-          if (error.code === error.PERMISSION_DENIED && !sessionStorage.getItem('locationToastShown')) {
-            sessionStorage.setItem('locationToastShown', '1');
-            toast.error('Veuillez activer la localisation dans les paramètres de votre navigateur pour voir votre position sur la carte', {
-              duration: 5000,
-            });
+          if (userMarkerRef.current) {
+            userMarkerRef.current.setLatLng([latitude, longitude]);
+          } else {
+            const userMarker = L.marker([latitude, longitude], { icon: userIcon })
+              .addTo(map)
+              .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
+            userMarkerRef.current = userMarker;
           }
-        }
+        },
+        () => {
+          // Silently fail on initial load — user can tap the locate button
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
       );
-    }
-    }, 15000); // Wait 15s for splash + install guide to finish before requesting location
+    };
+
+    requestGeolocation();
 
     const markerClusterGroup = L.markerClusterGroup({
       showCoverageOnHover: false,
@@ -259,7 +248,6 @@ const MapView = () => {
     window.addEventListener('zoomOut', handleZoomOut);
 
     return () => {
-      clearTimeout(geoTimeout);
       darkModeQuery.removeEventListener('change', handleDarkModeChange);
       markersRef.current = [];
       if (heatLayerRef.current && mapInstanceRef.current) {
