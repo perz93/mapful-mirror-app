@@ -104,44 +104,6 @@ const MapView = () => {
       }));
     });
 
-    // Request geolocation immediately — native popup will show if needed
-    const requestGeolocation = () => {
-      if (!navigator.geolocation) return;
-
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          userLocationRef.current = { lat: latitude, lng: longitude };
-
-          if (!savedPosition) {
-            map.setView([latitude, longitude], DEFAULT_INITIAL_ZOOM);
-          }
-
-          const userIcon = L.divIcon({
-            className: 'user-location-marker',
-            html: `<div class="user-location-pulse"></div>`,
-            iconSize: [20, 20],
-            iconAnchor: [10, 10],
-          });
-
-          if (userMarkerRef.current) {
-            userMarkerRef.current.setLatLng([latitude, longitude]);
-          } else {
-            const userMarker = L.marker([latitude, longitude], { icon: userIcon })
-              .addTo(map)
-              .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
-            userMarkerRef.current = userMarker;
-          }
-        },
-        () => {
-          // Silently fail on initial load — user can tap the locate button
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
-      );
-    };
-
-    requestGeolocation();
-
     const markerClusterGroup = L.markerClusterGroup({
       showCoverageOnHover: false,
       zoomToBoundsOnClick: true,
@@ -185,18 +147,17 @@ const MapView = () => {
     mapInstanceRef.current = map;
     setMapInstance(map);
 
-    const handleRecenter = () => {
-      // Always request fresh position on user click (explicit gesture = browser allows prompt)
-      if (!navigator.geolocation) {
-        toast.error('La géolocalisation n\'est pas supportée par votre navigateur', { duration: 3000 });
-        return;
-      }
+    const locateUser = (flyTo: boolean) => {
+      if (!navigator.geolocation) return;
 
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
           userLocationRef.current = { lat: latitude, lng: longitude };
-          map.flyTo([latitude, longitude], 15, { duration: 1.5 });
+
+          if (flyTo) {
+            map.flyTo([latitude, longitude], 15, { duration: 1.5 });
+          }
 
           if (!userMarkerRef.current) {
             const userIcon = L.divIcon({
@@ -209,26 +170,56 @@ const MapView = () => {
             const userMarker = L.marker([latitude, longitude], { icon: userIcon })
               .addTo(map)
               .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
-
             userMarkerRef.current = userMarker;
           } else {
             userMarkerRef.current.setLatLng([latitude, longitude]);
           }
         },
         (error) => {
-          if (error.code === error.PERMISSION_DENIED) {
-            toast.error('Activez la localisation : Réglages > Confidentialité > Service de localisation > votre navigateur', {
-              duration: 6000,
-            });
-          } else if (error.code === error.TIMEOUT) {
-            toast.error('Impossible d\'obtenir votre position, réessayez', { duration: 3000 });
+          if (!flyTo) return; // Silent fail on initial load
+          console.error('Geolocation error:', error.code, error.message);
+
+          if (error.code === 1) {
+            // PERMISSION_DENIED — try again without high accuracy (iOS fallback)
+            navigator.geolocation.getCurrentPosition(
+              (pos) => {
+                const { latitude, longitude } = pos.coords;
+                userLocationRef.current = { lat: latitude, lng: longitude };
+                map.flyTo([latitude, longitude], 15, { duration: 1.5 });
+
+                if (!userMarkerRef.current) {
+                  const userIcon = L.divIcon({
+                    className: 'user-location-marker',
+                    html: `<div class="user-location-pulse"></div>`,
+                    iconSize: [20, 20],
+                    iconAnchor: [10, 10],
+                  });
+                  userMarkerRef.current = L.marker([latitude, longitude], { icon: userIcon })
+                    .addTo(map)
+                    .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
+                } else {
+                  userMarkerRef.current.setLatLng([latitude, longitude]);
+                }
+              },
+              () => {
+                toast.error('Position non disponible. Vérifiez que la localisation est activée dans vos réglages.', {
+                  duration: 5000,
+                });
+              },
+              { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 }
+            );
           } else {
-            toast.error('Erreur de localisation, vérifiez vos paramètres', { duration: 3000 });
+            toast.error('Position non disponible, réessayez', { duration: 3000 });
           }
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
       );
     };
+
+    const handleRecenter = () => locateUser(true);
+
+    // Request geolocation immediately on map load
+    locateUser(!savedPosition);
 
     window.addEventListener('recenterMap', handleRecenter);
 
