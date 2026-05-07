@@ -132,17 +132,27 @@ const InstallGuide = () => {
     // Don't show if user already installed before
     if (localStorage.getItem(INSTALLED_KEY)) return;
 
+    // Don't show if user dismissed before in this session
+    if (sessionStorage.getItem('install_guide_dismissed')) return;
+
     const detectedOS = detectOS();
     if (detectedOS === 'unknown') return;
     setOs(detectedOS);
 
-    // Show immediately
-    setVisible(true);
-    requestAnimationFrame(() => {
+    // Delay 8s — let geolocation permission prompt appear first
+    // iOS Safari shows the geo prompt right away, and we must not cover it
+    const timer = setTimeout(() => {
+      // Double-check not standalone (could have changed)
+      if (isStandalone()) return;
+      setVisible(true);
       requestAnimationFrame(() => {
-        setAnimating(true);
+        requestAnimationFrame(() => {
+          setAnimating(true);
+        });
       });
-    });
+    }, 8000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   // Animate steps
@@ -168,6 +178,12 @@ const InstallGuide = () => {
     }
     setDeferredPrompt(null);
   }, [deferredPrompt]);
+
+  const handleDismiss = useCallback(() => {
+    sessionStorage.setItem('install_guide_dismissed', 'true');
+    setAnimating(false);
+    setTimeout(() => setVisible(false), 400);
+  }, []);
 
   if (!visible) return null;
 
@@ -265,6 +281,14 @@ const InstallGuide = () => {
                 </>
               )}
             </div>
+
+            {/* Dismiss button */}
+            <button
+              onClick={handleDismiss}
+              className="w-full mt-4 py-2.5 text-sm text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 transition-colors"
+            >
+              Plus tard
+            </button>
 
           </div>
         </div>
