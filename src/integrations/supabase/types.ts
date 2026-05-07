@@ -14,97 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      push_subscriptions: {
-        Row: {
-          id: string
-          user_id: string | null
-          endpoint: string
-          p256dh: string
-          auth: string
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          user_id?: string | null
-          endpoint: string
-          p256dh: string
-          auth: string
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string | null
-          endpoint?: string
-          p256dh?: string
-          auth?: string
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      notification_log: {
-        Row: {
-          id: string
-          user_id: string
-          event_id: string
-          notification_type: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          event_id: string
-          notification_type: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          event_id?: string
-          notification_type?: string
-          created_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "notification_log_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "events"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      event_attendees: {
-        Row: {
-          id: string
-          event_id: string
-          user_id: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          event_id: string
-          user_id: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          event_id?: string
-          user_id?: string
-          created_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "event_attendees_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "events"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       event_favorites: {
         Row: {
           created_at: string
@@ -142,7 +51,6 @@ export type Database = {
           contact_facebook: string | null
           contact_instagram: string | null
           contact_phone: string | null
-          contact_tiktok: string | null
           contact_twitter: string | null
           contact_whatsapp: string | null
           created_at: string
@@ -169,7 +77,6 @@ export type Database = {
           contact_facebook?: string | null
           contact_instagram?: string | null
           contact_phone?: string | null
-          contact_tiktok?: string | null
           contact_twitter?: string | null
           contact_whatsapp?: string | null
           created_at?: string
@@ -196,7 +103,6 @@ export type Database = {
           contact_facebook?: string | null
           contact_instagram?: string | null
           contact_phone?: string | null
-          contact_tiktok?: string | null
           contact_twitter?: string | null
           contact_whatsapp?: string | null
           created_at?: string
