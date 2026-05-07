@@ -39,12 +39,10 @@ interface BottomNavigationProps {
 }
 
 interface ScrollIndicatorState {
-  thumbLeft: number;  // 0-1 position
-  canScroll: boolean; // whether content overflows
+  thumbWidth: number;  // % of track
+  thumbLeft: number;   // % position
+  canScroll: boolean;
 }
-
-const TRACK_WIDTH = 40; // px — total track width
-const THUMB_WIDTH = 16; // px — thumb width (small like iOS)
 
 const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
   const location = useLocation();
@@ -52,6 +50,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
   const [searchOpen, setSearchOpen] = useState(false);
   const { searchQuery, setSearchQuery, selectedCategories, setSelectedCategories, toggleCategory, distanceFilter, setDistanceFilter } = useSearch();
   const [indicator, setIndicator] = useState<ScrollIndicatorState>({
+    thumbWidth: 0,
     thumbLeft: 0,
     canScroll: false,
   });
@@ -63,10 +62,15 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
     const update = () => {
       const { scrollWidth, clientWidth, scrollLeft } = el;
       const maxScroll = scrollWidth - clientWidth;
-      setIndicator({
-        canScroll: maxScroll > 1,
-        thumbLeft: maxScroll > 0 ? scrollLeft / maxScroll : 0,
-      });
+      if (maxScroll <= 1) {
+        setIndicator({ thumbWidth: 100, thumbLeft: 0, canScroll: false });
+        return;
+      }
+      // Thumb width = visible portion as % of total
+      const thumbW = (clientWidth / scrollWidth) * 100;
+      // Thumb position = scroll progress mapped to remaining track space
+      const thumbL = (scrollLeft / maxScroll) * (100 - thumbW);
+      setIndicator({ thumbWidth: thumbW, thumbLeft: thumbL, canScroll: true });
     };
 
     const timer = setTimeout(update, 150);
@@ -249,16 +253,13 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
               </div>
 
               {indicator.canScroll && (
-                <div
-                  className="pointer-events-none absolute bottom-1.5 left-1/2 -translate-x-1/2 rounded-full bg-black/[0.08]"
-                  style={{ width: TRACK_WIDTH, height: 2.5 }}
-                >
+                <div className="pointer-events-none absolute bottom-1 left-2 right-2 h-[2px] rounded-full bg-black/[0.06]">
                   <div
-                    className="absolute top-0 h-full rounded-full bg-black/30"
+                    className="absolute top-0 h-full rounded-full bg-stone-400/50"
                     style={{
-                      width: THUMB_WIDTH,
-                      left: indicator.thumbLeft * (TRACK_WIDTH - THUMB_WIDTH),
-                      transition: 'left 0.15s ease-out',
+                      width: `${indicator.thumbWidth}%`,
+                      left: `${indicator.thumbLeft}%`,
+                      transition: 'left 0.12s ease-out',
                     }}
                   />
                 </div>
