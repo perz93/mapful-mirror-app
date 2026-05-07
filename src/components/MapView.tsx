@@ -198,51 +198,48 @@ const MapView = () => {
     setMapInstance(map);
 
     const handleRecenter = () => {
-      if (userLocationRef.current) {
-        map.flyTo([userLocationRef.current.lat, userLocationRef.current.lng], 15, {
-          duration: 1.5,
-        });
-
-        if (userMarkerRef.current) {
-          userMarkerRef.current.setLatLng([userLocationRef.current.lat, userLocationRef.current.lng]);
-        }
-      } else {
-        navigator.geolocation?.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            userLocationRef.current = { lat: latitude, lng: longitude };
-            map.flyTo([latitude, longitude], 15, { duration: 1.5 });
-
-            if (!userMarkerRef.current) {
-              const userIcon = L.divIcon({
-                className: 'user-location-marker',
-                html: `<div class="user-location-pulse"></div>`,
-                iconSize: [20, 20],
-                iconAnchor: [10, 10],
-              });
-
-              const userMarker = L.marker([latitude, longitude], { icon: userIcon })
-                .addTo(map)
-                .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
-
-              userMarkerRef.current = userMarker;
-            } else {
-              userMarkerRef.current.setLatLng([latitude, longitude]);
-            }
-          },
-          (error) => {
-            if (error.code === error.PERMISSION_DENIED) {
-              toast.error('Veuillez activer la localisation dans les paramètres de votre navigateur', {
-                duration: 5000,
-              });
-            } else {
-              toast.error('Impossible d\'obtenir votre position', {
-                duration: 3000,
-              });
-            }
-          }
-        );
+      // Always request fresh position on user click (explicit gesture = browser allows prompt)
+      if (!navigator.geolocation) {
+        toast.error('La géolocalisation n\'est pas supportée par votre navigateur', { duration: 3000 });
+        return;
       }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          userLocationRef.current = { lat: latitude, lng: longitude };
+          map.flyTo([latitude, longitude], 15, { duration: 1.5 });
+
+          if (!userMarkerRef.current) {
+            const userIcon = L.divIcon({
+              className: 'user-location-marker',
+              html: `<div class="user-location-pulse"></div>`,
+              iconSize: [20, 20],
+              iconAnchor: [10, 10],
+            });
+
+            const userMarker = L.marker([latitude, longitude], { icon: userIcon })
+              .addTo(map)
+              .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
+
+            userMarkerRef.current = userMarker;
+          } else {
+            userMarkerRef.current.setLatLng([latitude, longitude]);
+          }
+        },
+        (error) => {
+          if (error.code === error.PERMISSION_DENIED) {
+            toast.error('Activez la localisation : Réglages > Confidentialité > Service de localisation > votre navigateur', {
+              duration: 6000,
+            });
+          } else if (error.code === error.TIMEOUT) {
+            toast.error('Impossible d\'obtenir votre position, réessayez', { duration: 3000 });
+          } else {
+            toast.error('Erreur de localisation, vérifiez vos paramètres', { duration: 3000 });
+          }
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+      );
     };
 
     window.addEventListener('recenterMap', handleRecenter);
