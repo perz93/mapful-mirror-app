@@ -178,7 +178,7 @@ const Settings = () => {
 
         <div className="space-y-6">
           {/* Email Section */}
-          <div className="rounded-2xl backdrop-blur-2xl bg-white/30 border border-white/30 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] p-5">
+          <div className="rounded-2xl backdrop-blur-2xl bg-white/80 border border-white/60 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] p-5">
             <div className="flex items-center gap-2 mb-1">
               <Mail className="h-5 w-5 text-[#ee9d2b]" />
               <h2 className="text-lg font-semibold italic text-stone-800" style={{ fontFamily: "'Source Serif 4', serif" }}>
@@ -213,7 +213,7 @@ const Settings = () => {
           </div>
 
           {/* Password Section */}
-          <div className="rounded-2xl backdrop-blur-2xl bg-white/30 border border-white/30 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] p-5">
+          <div className="rounded-2xl backdrop-blur-2xl bg-white/80 border border-white/60 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] p-5">
             <div className="flex items-center gap-2 mb-1">
               <Lock className="h-5 w-5 text-[#ee9d2b]" />
               <h2 className="text-lg font-semibold italic text-stone-800" style={{ fontFamily: "'Source Serif 4', serif" }}>
@@ -264,7 +264,7 @@ const Settings = () => {
           <PushNotificationSection />
 
           {/* Notification Preferences Section */}
-          <div className="rounded-2xl backdrop-blur-2xl bg-white/30 border border-white/30 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] p-5">
+          <div className="rounded-2xl backdrop-blur-2xl bg-white/80 border border-white/60 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] p-5">
             <div className="flex items-center gap-2 mb-1">
               <Bell className="h-5 w-5 text-[#ee9d2b]" />
               <h2 className="text-lg font-semibold italic text-stone-800" style={{ fontFamily: "'Source Serif 4', serif" }}>
@@ -361,7 +361,7 @@ const PushNotificationSection = () => {
   };
 
   return (
-    <div className="rounded-2xl backdrop-blur-2xl bg-white/30 border border-white/30 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] p-5">
+    <div className="rounded-2xl backdrop-blur-2xl bg-white/80 border border-white/60 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] p-5">
       <div className="flex items-center gap-2 mb-1">
         <Smartphone className="h-5 w-5 text-[#ee9d2b]" />
         <h2 className="text-lg font-semibold italic text-stone-800" style={{ fontFamily: "'Source Serif 4', serif" }}>

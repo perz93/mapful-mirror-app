@@ -41,7 +41,7 @@ const categoryIcons: Record<string, string> = {
 
 const inputClass = "h-9 rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50 [&]:ring-0 [&]:outline-none";
 const labelClass = "text-sm text-stone-600 font-normal";
-const cardClass = "rounded-2xl backdrop-blur-2xl bg-white/30 border border-white/30 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] p-4 space-y-3";
+const cardClass = "rounded-2xl backdrop-blur-2xl bg-white/80 border border-white/60 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] p-4 space-y-3";
 const sectionTitleClass = "text-lg italic text-stone-800 mb-4 flex items-center gap-2";
 
 const CreateEvent = () => {

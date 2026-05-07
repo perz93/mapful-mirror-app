@@ -53,7 +53,7 @@ const ContactModal = ({
     >
       <div 
         className={cn(
-          "relative bg-white/30 backdrop-blur-2xl rounded-3xl p-6 w-full max-w-sm shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] border border-white/30 transition-all duration-500",
+          "relative bg-white/80 backdrop-blur-2xl rounded-3xl p-6 w-full max-w-sm shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] border border-white/60 transition-all duration-500",
           isAnimating 
             ? "opacity-100 scale-100 translate-y-0" 
             : "opacity-0 scale-75 translate-y-8"
