@@ -102,6 +102,13 @@ body {
   /* Removed grayscale filter for colorful map */
 }
 
+/* Dark mode: invert light tiles to a soft gray tone */
+@media (prefers-color-scheme: dark) {
+  .leaflet-tile-pane {
+    filter: invert(0.92) hue-rotate(180deg) saturate(0.3) brightness(1.1);
+  }
+}
+
 /* User location marker styles */
 .user-location-marker {
   background: transparent !important;
