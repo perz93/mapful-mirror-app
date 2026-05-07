@@ -128,7 +128,7 @@ const Marketplace = () => {
                   key={listing.id}
                   to={`/listing/${listing.id}`}
                   style={{ animationDelay: `${Math.min(index * 60, 360)}ms`, animationFillMode: 'backwards' }}
-                  className="group relative overflow-hidden rounded-2xl bg-white/80 dark:bg-stone-900/80 backdrop-blur-2xl shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] border border-white/60 dark:border-stone-700/30 animate-fade-in transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98]"
+                  className="group relative overflow-hidden rounded-2xl bg-white/70 dark:bg-stone-800/70 backdrop-blur-md shadow-lg animate-fade-in transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98]"
                 >
                   {listing.image_url && (
                     <div className="h-32 overflow-hidden">

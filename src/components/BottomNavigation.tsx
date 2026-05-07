@@ -106,7 +106,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
     <>
       <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
         <DialogContent className="max-w-[90vw] sm:max-w-md mx-auto top-[12%] translate-y-0 sm:top-[50%] sm:translate-y-[-50%] w-[90vw] sm:w-full p-0 rounded-3xl border-0 bg-transparent shadow-none [&>button]:hidden">
-          <div className="backdrop-blur-2xl bg-white/80 rounded-3xl border border-white/60 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] overflow-hidden">
+          <div className="backdrop-blur-2xl bg-white/85 rounded-3xl border border-white/60 shadow-[0_8px_40px_-8px_rgba(0,0,0,0.2)] overflow-hidden">
             {/* Header */}
             <div className="px-5 pt-5 pb-3 flex items-center justify-between">
               <h2 className="text-xl font-bold italic text-stone-800" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>

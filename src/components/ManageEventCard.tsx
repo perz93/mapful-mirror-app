@@ -75,7 +75,7 @@ const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) 
 
   return (
     <div className="w-full pointer-events-auto touch-auto">
-      <div className="flex items-stretch justify-between gap-3 rounded-2xl backdrop-blur-2xl bg-white/80 dark:bg-stone-900/80 p-4 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] border border-white/60 dark:border-stone-700/30">
+      <div className="flex items-stretch justify-between gap-3 rounded-2xl backdrop-blur-xl bg-white/80 dark:bg-stone-900/80 p-4 shadow-2xl border border-white/50 dark:border-stone-700/50">
         <div className="flex flex-col justify-between gap-2 flex-[2_2_0px]">
           <div className="flex flex-col gap-0.5">
             <div className="flex items-center gap-2">

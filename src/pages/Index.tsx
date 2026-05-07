@@ -5,7 +5,7 @@ import BottomNavigation from "@/components/BottomNavigation";
 import TopMenu from "@/components/TopMenu";
 const Index = () => {
   return (
-    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden">
+    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-background">
       <div className="relative flex-1 overflow-hidden">
         <div className="h-full w-full animate-fade-in animate-zoom-smooth">
           <MapView />
