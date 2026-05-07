@@ -1,7 +1,7 @@
 /// <reference lib="webworker" />
-import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching';
+import { cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
 import { clientsClaim } from 'workbox-core';
-import { registerRoute } from 'workbox-routing';
+import { registerRoute, NavigationRoute } from 'workbox-routing';
 import { CacheFirst, NetworkFirst } from 'workbox-strategies';
 import { ExpirationPlugin } from 'workbox-expiration';
 
@@ -11,22 +11,14 @@ declare const self: ServiceWorkerGlobalScope;
 cleanupOutdatedCaches();
 precacheAndRoute(self.__WB_MANIFEST);
 clientsClaim();
-
-// Skip waiting so new SW activates immediately
 self.skipWaiting();
 
-// Purge ALL old caches on activate (nuclear cleanup for SW conflict recovery)
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((names) =>
-      Promise.all(
-        names
-          .filter((name) => name === 'supabase-api' || name === 'openstreetmap-tiles' || name === 'carto-tiles')
-          .map((name) => caches.delete(name))
-      )
-    )
-  );
+// SPA navigation fallback — serve index.html for all navigation requests
+const handler = createHandlerBoundToURL('/index.html');
+const navigationRoute = new NavigationRoute(handler, {
+  denylist: [/^\/~oauth/],
 });
+registerRoute(navigationRoute);
 
 // ============================================
 // Runtime caching

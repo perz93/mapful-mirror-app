@@ -147,6 +147,13 @@ const MapView = () => {
     mapInstanceRef.current = map;
     setMapInstance(map);
 
+    // Force map to recalculate size after splash screen disappears
+    // The splash keeps the container at opacity:0 for up to 3.7s in standalone mode
+    // Leaflet needs invalidateSize once the container is visible
+    const sizeTimers = [100, 500, 1000, 2000, 4000].map(delay =>
+      setTimeout(() => map.invalidateSize(), delay)
+    );
+
     // Zoom handlers
     const handleZoomIn = () => map.zoomIn();
     const handleZoomOut = () => map.zoomOut();
@@ -155,6 +162,7 @@ const MapView = () => {
     window.addEventListener('zoomOut', handleZoomOut);
 
     return () => {
+      sizeTimers.forEach(t => clearTimeout(t));
       darkModeQuery.removeEventListener('change', handleDarkModeChange);
       markersRef.current = [];
       if (heatLayerRef.current && mapInstanceRef.current) {
