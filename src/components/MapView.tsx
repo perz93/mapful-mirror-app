@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+import 'leaflet.heat';
 import { useNavigate } from 'react-router-dom';
 import { useSearch } from '@/contexts/SearchContext';
 import { useEvents } from '@/hooks/useEvents';
@@ -14,6 +15,15 @@ import RouteInfoPanel from './RouteInfoPanel';
 import itineraryIcon from '@/assets/itinerary-icon.png';
 import { fuzzyMatch } from '@/lib/fuzzyMatch';
 import { getDistanceKm } from '@/hooks/useNearbyEvents';
+import { supabase } from '@/integrations/supabase/client';
+
+// Tile layer URLs
+const TILE_LIGHT = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+const TILE_DARK = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+
+function getPrefersDark(): boolean {
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
+}
 
 const MapView = () => {
   const mapRef = useRef<HTMLDivElement>(null);
@@ -29,6 +39,8 @@ const MapView = () => {
   const didAutoRecenterRef = useRef(false);
   const routeLayerRef = useRef<L.Polyline | null>(null);
   const destinationMarkerRef = useRef<L.Marker | null>(null);
+  const tileLayerRef = useRef<L.TileLayer | null>(null);
+  const heatLayerRef = useRef<any>(null);
 
   // Expose map instance and route coords to RouteInfoPanel via state
   const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
@@ -66,10 +78,21 @@ const MapView = () => {
       markerZoomAnimation: true,
     });
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    const isDark = getPrefersDark();
+    const tileLayer = L.tileLayer(isDark ? TILE_DARK : TILE_LIGHT, {
       attribution: '© OpenStreetMap contributors © CARTO',
       maxZoom: 20,
     }).addTo(map);
+    tileLayerRef.current = tileLayer;
+
+    // Listen for dark mode changes
+    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleDarkModeChange = (e: MediaQueryListEvent) => {
+      if (tileLayerRef.current) {
+        tileLayerRef.current.setUrl(e.matches ? TILE_DARK : TILE_LIGHT);
+      }
+    };
+    darkModeQuery.addEventListener('change', handleDarkModeChange);
 
     map.on('moveend', () => {
       const center = map.getCenter();
@@ -241,7 +264,12 @@ const MapView = () => {
 
     return () => {
       clearTimeout(geoTimeout);
+      darkModeQuery.removeEventListener('change', handleDarkModeChange);
       markersRef.current = [];
+      if (heatLayerRef.current && mapInstanceRef.current) {
+        mapInstanceRef.current.removeLayer(heatLayerRef.current);
+        heatLayerRef.current = null;
+      }
       if (markerClusterGroupRef.current && mapInstanceRef.current) {
         mapInstanceRef.current.removeLayer(markerClusterGroupRef.current);
         markerClusterGroupRef.current = null;
@@ -277,6 +305,12 @@ const MapView = () => {
 
     markersRef.current = [];
     markerClusterGroup.clearLayers();
+
+    // Remove old heatmap
+    if (heatLayerRef.current) {
+      map.removeLayer(heatLayerRef.current);
+      heatLayerRef.current = null;
+    }
 
     const createCustomIcon = (imageUrl: string, eventType: string) => {
       const defaultImage = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=300&fit=crop';
@@ -349,7 +383,14 @@ const MapView = () => {
                   </div>
                 </div>
               </div>
-              <div class="popup-actions" style="display:flex;gap:6px;margin-top:8px;">
+              <div class="popup-hype-row" data-event-id="${event.id}">
+                <span class="popup-hype-count">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                  <span class="popup-hype-number">...</span> y vont
+                </span>
+                <button class="popup-going-btn" data-event-id="${event.id}">J'y vais</button>
+              </div>
+              <div class="popup-actions" style="display:flex;gap:6px;margin-top:6px;">
                 <button class="popup-route-btn popup-btn-glass"><img src="${itineraryIcon}" alt="" style="width:20px;height:20px;object-fit:contain;" />Itinéraire</button>
                 <button class="popup-details-btn" style="flex:1;">Voir détails</button>
               </div>
@@ -389,7 +430,7 @@ const MapView = () => {
         }
       });
 
-      marker.on('popupopen', () => {
+      marker.on('popupopen', async () => {
         const popupInstance = marker.getPopup();
         const popupElement = popupInstance?.getElement();
         if (!popupElement) return;
@@ -414,8 +455,84 @@ const MapView = () => {
             marker.closePopup();
           });
         }
+
+        // Load attendee count for popup hype row
+        const hypeNumber = popupElement.querySelector('.popup-hype-number') as HTMLElement | null;
+        const goingBtn = popupElement.querySelector('.popup-going-btn') as HTMLElement | null;
+
+        if (hypeNumber) {
+          const { count } = await supabase
+            .from('event_attendees')
+            .select('*', { count: 'exact', head: true })
+            .eq('event_id', event.id);
+          hypeNumber.textContent = String(count ?? 0);
+        }
+
+        if (goingBtn) {
+          // Check if current user is going
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            const { data } = await supabase
+              .from('event_attendees')
+              .select('id')
+              .eq('event_id', event.id)
+              .eq('user_id', user.id)
+              .maybeSingle();
+
+            if (data) {
+              goingBtn.classList.add('popup-going-active');
+              goingBtn.textContent = "J'y serai !";
+            }
+
+            goingBtn.addEventListener('click', async (e) => {
+              e.stopPropagation();
+              const isActive = goingBtn.classList.contains('popup-going-active');
+
+              if (isActive) {
+                await supabase.from('event_attendees').delete()
+                  .eq('event_id', event.id).eq('user_id', user.id);
+                goingBtn.classList.remove('popup-going-active');
+                goingBtn.textContent = "J'y vais";
+                if (hypeNumber) {
+                  hypeNumber.textContent = String(Math.max(0, parseInt(hypeNumber.textContent || '0') - 1));
+                }
+              } else {
+                await supabase.from('event_attendees').insert({ event_id: event.id, user_id: user.id });
+                goingBtn.classList.add('popup-going-active');
+                goingBtn.textContent = "J'y serai !";
+                if (hypeNumber) {
+                  hypeNumber.textContent = String(parseInt(hypeNumber.textContent || '0') + 1);
+                }
+              }
+            });
+          } else {
+            goingBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              navigate('/auth');
+            });
+          }
+        }
       });
     });
+
+    // Add heatmap layer showing event density
+    const heatPoints = events.map((e) => [e.latitude, e.longitude, 0.6] as [number, number, number]);
+    if (heatPoints.length > 0) {
+      heatLayerRef.current = (L as any).heatLayer(heatPoints, {
+        radius: 35,
+        blur: 25,
+        maxZoom: 14,
+        max: 1.0,
+        minOpacity: 0.15,
+        gradient: {
+          0.2: '#fed7aa',
+          0.4: '#fdba74',
+          0.6: '#fb923c',
+          0.8: '#f97316',
+          1.0: '#ea580c',
+        },
+      }).addTo(map);
+    }
 
     if (!didAutoRecenterRef.current) {
       const coords = events
