@@ -554,14 +554,42 @@ const MapView = () => {
             max: 1.0,
             minOpacity: 0.12,
             gradient: {
-              0.15: '#bfdbfe', // bleu clair — calme
-              0.30: '#86efac', // vert — ça commence
-              0.45: '#fde047', // jaune — tendance
-              0.60: '#fb923c', // orange — hype
-              0.80: '#ef4444', // rouge — hot
-              1.00: '#e11d48', // rose vif — blindé
+              0.0:  '#dbeafe', // bleu très clair — 0%
+              0.15: '#93c5fd', // bleu clair — 15%
+              0.30: '#3b82f6', // bleu pur — 30%
+              0.50: '#2563eb', // bleu pur intense — 50%
+              0.60: '#f97316', // orange — 60%
+              0.80: '#ea580c', // orange foncé — 80%
+              1.00: '#dc2626', // orange-rouge — 100%
             },
           }).addTo(mapInstanceRef.current);
+
+          // Scintillement pour les events >= 50% affluence
+          const hotEvents = events.filter((e) => {
+            const count = countMap[e.id] || 0;
+            const capacity = e.capacity || 50;
+            return (count / capacity) >= 0.50;
+          });
+
+          if (hotEvents.length > 0) {
+            // Create a pulsing overlay for hot events
+            hotEvents.forEach((e) => {
+              const el = document.createElement('div');
+              el.className = 'heatmap-pulse-marker';
+              const icon = L.divIcon({
+                className: 'heatmap-pulse-icon',
+                html: el.outerHTML,
+                iconSize: [60, 60],
+                iconAnchor: [30, 30],
+              });
+              const pulseMarker = L.marker([e.latitude, e.longitude], {
+                icon,
+                interactive: false,
+                zIndexOffset: -1000,
+              });
+              markerClusterGroup.addLayer(pulseMarker);
+            });
+          }
         }
       } catch (err) {
         console.error('Heatmap load failed:', err);
