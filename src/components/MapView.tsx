@@ -515,24 +515,58 @@ const MapView = () => {
       });
     });
 
-    // Add heatmap layer showing event density
-    const heatPoints = events.map((e) => [e.latitude, e.longitude, 0.6] as [number, number, number]);
-    if (heatPoints.length > 0) {
-      heatLayerRef.current = (L as any).heatLayer(heatPoints, {
-        radius: 35,
-        blur: 25,
-        maxZoom: 11,
-        max: 1.0,
-        minOpacity: 0.15,
-        gradient: {
-          0.2: '#fed7aa',
-          0.4: '#fdba74',
-          0.6: '#fb923c',
-          0.8: '#f97316',
-          1.0: '#ea580c',
-        },
-      }).addTo(map);
-    }
+    // Add heatmap layer based on event affluence (attendee %)
+    (async () => {
+      try {
+        // Fetch all attendee counts in one query
+        const eventIds = events.map((e) => e.id);
+        const { data: attendeeCounts } = await supabase
+          .from('event_attendees')
+          .select('event_id')
+          .in('event_id', eventIds);
+
+        // Count per event
+        const countMap: Record<string, number> = {};
+        if (attendeeCounts) {
+          for (const row of attendeeCounts) {
+            countMap[row.event_id] = (countMap[row.event_id] || 0) + 1;
+          }
+        }
+
+        const heatPoints = events.map((e) => {
+          const count = countMap[e.id] || 0;
+          const capacity = e.capacity || 50;
+          const pct = Math.min(count / capacity, 1);
+          // Minimum intensity 0.1 so all events are visible, max 1.0
+          const intensity = 0.1 + pct * 0.9;
+          return [e.latitude, e.longitude, intensity] as [number, number, number];
+        });
+
+        if (heatPoints.length > 0 && mapInstanceRef.current) {
+          // Remove old heatmap if still there
+          if (heatLayerRef.current) {
+            mapInstanceRef.current.removeLayer(heatLayerRef.current);
+          }
+          heatLayerRef.current = (L as any).heatLayer(heatPoints, {
+            radius: 35,
+            blur: 25,
+            maxZoom: 12,
+            max: 1.0,
+            minOpacity: 0.12,
+            gradient: {
+              0.15: '#bfdbfe', // bleu clair — calme
+              0.30: '#86efac', // vert — ça commence
+              0.45: '#fde047', // jaune — tendance
+              0.60: '#fb923c', // orange — hype
+              0.80: '#ef4444', // rouge — hot
+              1.00: '#e11d48', // rose vif — blindé
+            },
+          }).addTo(mapInstanceRef.current);
+        }
+      } catch (err) {
+        console.error('Heatmap load failed:', err);
+      }
+    })();
 
     if (!didAutoRecenterRef.current) {
       const coords = events
