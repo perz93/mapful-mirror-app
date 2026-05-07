@@ -76,7 +76,10 @@ div:focus, div:focus-visible,
 [data-state="active"]:focus,
 [data-state="active"]:focus-visible,
 [data-state="inactive"]:focus,
-[data-state="inactive"]:focus-visible {
+[data-state="inactive"]:focus-visible,
+[data-highlighted],
+[data-highlighted]:focus,
+[data-radix-collection-item][data-highlighted] {
   background-color: transparent !important;
   outline: none !important;
   outline-width: 0 !important;
