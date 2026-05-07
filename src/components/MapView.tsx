@@ -25,6 +25,14 @@ function getPrefersDark(): boolean {
   return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
 }
 
+// Detect if running as installed PWA (standalone mode)
+function isStandalonePWA(): boolean {
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    (navigator as any).standalone === true
+  );
+}
+
 const MapView = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -41,6 +49,10 @@ const MapView = () => {
   const destinationMarkerRef = useRef<L.Marker | null>(null);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const heatLayerRef = useRef<any>(null);
+  const watchIdRef = useRef<number | null>(null);
+  const geoRetryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const [showGeoBanner, setShowGeoBanner] = useState(false);
 
   // Expose map instance and route coords to RouteInfoPanel via state
   const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
@@ -163,30 +175,82 @@ const MapView = () => {
       }
     };
 
+    let hasFlyedTo = false;
+    const shouldFlyOnFirstFix = !savedPosition;
+
+    const onGeoSuccess = (position: GeolocationPosition) => {
+      const { latitude, longitude } = position.coords;
+      userLocationRef.current = { lat: latitude, lng: longitude };
+      setShowGeoBanner(false);
+
+      // Clear retry timer since we got a fix
+      if (geoRetryTimerRef.current) {
+        clearTimeout(geoRetryTimerRef.current);
+        geoRetryTimerRef.current = null;
+      }
+
+      if (shouldFlyOnFirstFix && !hasFlyedTo) {
+        hasFlyedTo = true;
+        map.flyTo([latitude, longitude], 15, { duration: 1.5 });
+      }
+      placeUserMarker(latitude, longitude);
+    };
+
+    const onGeoError = (err: GeolocationPositionError) => {
+      console.log('[Geo] Error:', err.code, err.message, 'PWA:', isStandalonePWA());
+
+      // In PWA standalone, show banner so user can tap to re-trigger permission
+      if (isStandalonePWA() && !userLocationRef.current) {
+        setShowGeoBanner(true);
+
+        // Auto-retry every 5s in PWA mode (permission might be granted async)
+        if (!geoRetryTimerRef.current) {
+          const retry = () => {
+            if (userLocationRef.current) return; // Already got a fix
+            navigator.geolocation.getCurrentPosition(
+              onGeoSuccess,
+              () => {
+                // Still failing, retry again
+                geoRetryTimerRef.current = setTimeout(retry, 5000);
+              },
+              { enableHighAccuracy: false, timeout: 8000, maximumAge: 30000 }
+            );
+          };
+          geoRetryTimerRef.current = setTimeout(retry, 5000);
+        }
+      }
+    };
+
     const locateUser = (flyTo: boolean) => {
       if (!navigator.geolocation) return;
 
+      if (flyTo) hasFlyedTo = false;
+
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const { latitude, longitude } = position.coords;
-          userLocationRef.current = { lat: latitude, lng: longitude };
+          onGeoSuccess(position);
           if (flyTo) {
-            map.flyTo([latitude, longitude], 15, { duration: 1.5 });
+            map.flyTo([position.coords.latitude, position.coords.longitude], 15, { duration: 1.5 });
+            hasFlyedTo = true;
           }
-          placeUserMarker(latitude, longitude);
         },
-        () => {
-          // No toast, no error message — just silently fail
-          // iOS will show its own native "Turn on Location Services" dialog
-          // if the GPS is disabled system-wide
-        },
+        onGeoError,
         { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
       );
     };
 
+    // Use watchPosition for continuous tracking — more reliable in PWA standalone
+    if (navigator.geolocation) {
+      watchIdRef.current = navigator.geolocation.watchPosition(
+        onGeoSuccess,
+        onGeoError,
+        { enableHighAccuracy: false, timeout: 15000, maximumAge: 30000 }
+      );
+    }
+
     const handleRecenter = () => locateUser(true);
 
-    // Request geolocation immediately on map load
+    // Also do an immediate getCurrentPosition (watchPosition can be slow to fire first time)
     locateUser(!savedPosition);
 
     window.addEventListener('recenterMap', handleRecenter);
@@ -208,6 +272,15 @@ const MapView = () => {
 
     return () => {
       darkModeQuery.removeEventListener('change', handleDarkModeChange);
+      // Clean up geolocation watch and retry timer
+      if (watchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+        watchIdRef.current = null;
+      }
+      if (geoRetryTimerRef.current) {
+        clearTimeout(geoRetryTimerRef.current);
+        geoRetryTimerRef.current = null;
+      }
       markersRef.current = [];
       if (heatLayerRef.current && mapInstanceRef.current) {
         mapInstanceRef.current.removeLayer(heatLayerRef.current);
@@ -705,9 +778,73 @@ const MapView = () => {
     });
   }, [searchQuery, selectedCategories, distanceFilter]);
 
+  // Handle manual geo permission request (user tap = gesture → triggers iOS prompt)
+  const handleGeoRetry = () => {
+    if (!navigator.geolocation) return;
+    setShowGeoBanner(false);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        userLocationRef.current = { lat: latitude, lng: longitude };
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.flyTo([latitude, longitude], 15, { duration: 1.5 });
+          // Place user marker
+          if (!userMarkerRef.current) {
+            const userIcon = L.divIcon({
+              className: 'user-location-marker',
+              html: `<div class="user-location-pulse"></div>`,
+              iconSize: [20, 20],
+              iconAnchor: [10, 10],
+            });
+            userMarkerRef.current = L.marker([latitude, longitude], { icon: userIcon })
+              .addTo(mapInstanceRef.current)
+              .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
+          } else {
+            userMarkerRef.current.setLatLng([latitude, longitude]);
+          }
+        }
+      },
+      () => {
+        // Still denied — show banner again
+        setShowGeoBanner(true);
+        toast.error('Activez la localisation dans les réglages de votre appareil');
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
+
   return (
     <>
       <div ref={mapRef} className="absolute inset-0 z-0" />
+
+      {/* Geo permission banner for PWA standalone */}
+      {showGeoBanner && (
+        <div
+          className="absolute z-[1000] left-4 right-4 animate-fade-in"
+          style={{ top: 'calc(env(safe-area-inset-top, 0px) + 70px)' }}
+        >
+          <button
+            onClick={handleGeoRetry}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/90 dark:bg-stone-900/90 backdrop-blur-xl shadow-lg border border-stone-200/50 dark:border-stone-700/50 active:scale-[0.98] transition-transform"
+          >
+            <div className="flex-shrink-0 w-9 h-9 rounded-full bg-[#ee9d2b]/15 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ee9d2b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            </div>
+            <div className="flex-1 text-left">
+              <p className="text-sm font-semibold text-stone-900 dark:text-white">Position indisponible</p>
+              <p className="text-xs text-stone-500 dark:text-stone-400">Appuyez ici pour activer la localisation</p>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-400">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
+        </div>
+      )}
+
       <RouteInfoPanel
         distanceKm={routeInfo.distanceKm}
         durationMin={routeInfo.durationMin}
