@@ -32,21 +32,28 @@ const EventCard = () => {
   const currentEvent = events[currentIndex];
   return <div className="fixed bottom-36 left-0 right-0 max-w-md mx-auto px-4 pointer-events-none z-10 touch-none">
       <div className="pointer-events-auto touch-auto">
-        <div className={`flex items-stretch justify-between gap-4 rounded-3xl backdrop-blur-xl bg-white/60 dark:bg-stone-900/60 p-4 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] border border-white/60 dark:border-stone-700/30 transition-all duration-700 ease-in-out ${isTransitioning ? 'opacity-0 scale-95 translate-y-2' : 'opacity-100 scale-100 translate-y-0'}`}>
+        <div
+          className={`flex items-stretch justify-between gap-4 rounded-3xl backdrop-blur-xl bg-white/65 dark:bg-stone-900/60 p-4 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.12)] border border-white/70 dark:border-stone-700/30 transition-all duration-700 ease-in-out ${isTransitioning ? 'opacity-0 scale-95 translate-y-2' : 'opacity-100 scale-100 translate-y-0'}`}
+          style={{ animation: 'float 6s ease-in-out infinite' }}
+        >
           <div className="flex flex-col justify-between gap-1.5 flex-[2_2_0px]">
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1.5">
               <span className="inline-flex items-center px-3 py-1 rounded-full text-base backdrop-blur-xl bg-stone-500/15 text-stone-600 dark:bg-white/10 dark:text-stone-300 border border-stone-300/30 dark:border-white/10 shadow-sm w-fit italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif", fontWeight: 600 }}>
                 {currentEvent.venue}
               </span>
               <p className="text-stone-900 dark:text-white text-[15px] font-bold leading-tight">
                 {currentEvent.title}
               </p>
-              <p className="text-stone-500 dark:text-stone-400 text-xs font-normal leading-normal">
-                {format(new Date(currentEvent.date), 'EEE, dd MMM', {
-                locale: fr
-              })} • {currentEvent.time}
-              </p>
-              <div className="mt-1">
+              {/* Date & Time badges */}
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#ee9d2b]/10 border border-[#ee9d2b]/20 text-[10px] font-semibold text-[#ee9d2b]">
+                  📅 {format(new Date(currentEvent.date), 'EEE dd MMM', { locale: fr })}
+                </span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 border border-stone-200/60 dark:border-stone-700/60 text-[10px] font-semibold text-stone-600 dark:text-stone-300">
+                  🕐 {currentEvent.time}
+                </span>
+              </div>
+              <div className="mt-0.5">
                 <HypeBadge eventId={currentEvent.id} eventDate={currentEvent.date} eventTime={currentEvent.time} capacity={currentEvent.capacity} size="sm" />
               </div>
             </div>

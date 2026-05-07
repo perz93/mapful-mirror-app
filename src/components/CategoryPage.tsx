@@ -77,15 +77,22 @@ const CategoryPage = ({
           </div>
         </header>
 
-        <div className="p-4 space-y-3">
+        <div className="p-4 space-y-5">
           {!events || events.length === 0 ? <div className="flex items-center justify-center min-h-[50vh]">
               <p className="text-stone-600 dark:text-stone-400">Aucun événement dans cette catégorie pour le moment</p>
-            </div> : events.map(event => <Link key={event.id} to={`/event/${event.id}`} className="block group">
-                <div className="overflow-hidden rounded-3xl bg-white dark:bg-stone-900 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.01] border border-stone-200/50 dark:border-stone-800/50">
-                  <div className="h-44 bg-cover bg-center relative" style={{
+            </div> : events.map((event, i) => <Link key={event.id} to={`/event/${event.id}`} className="block group">
+                <div
+                  className="overflow-hidden rounded-3xl bg-white dark:bg-stone-900 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.1)] hover:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.18)] transition-all duration-500 hover:scale-[1.02] border border-white/80 dark:border-stone-700/40 animate-fade-in"
+                  style={{
+                    animation: `float 6s ease-in-out infinite, fade-in 0.5s ease-out`,
+                    animationDelay: `${i * 0.8}s, ${i * 0.1}s`,
+                  }}
+                >
+                  {/* Image section */}
+                  <div className="h-48 bg-cover bg-center relative" style={{
               backgroundImage: `url('${event.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=400&fit=crop'}')`
             }}>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
                     {/* Hype + Countdown badges top-right */}
                     <div className="absolute top-3 right-3">
                       <HypeBadge eventId={event.id} eventDate={event.date} eventTime={event.time} capacity={event.capacity} size="sm" />
@@ -93,27 +100,27 @@ const CategoryPage = ({
                     <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
                       <div className="flex-1">
                         <p className="text-white/90 text-xs font-semibold mb-1 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{event.venue}</p>
-                        <h3 className="text-white text-lg font-bold leading-tight pr-2">{event.title}</h3>
+                        <h3 className="text-white text-lg font-bold leading-tight pr-2 drop-shadow-sm">{event.title}</h3>
                       </div>
-                      {event.price && <span className="inline-flex items-center px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-sm text-stone-900 text-xs font-semibold whitespace-nowrap">
+                      {event.price && <span className="inline-flex items-center px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-sm text-stone-900 text-xs font-bold whitespace-nowrap shadow-sm">
                           {event.price} FCFA
                         </span>}
                     </div>
                   </div>
 
+                  {/* Info section */}
                   <div className="p-4 space-y-3">
-                    <div className="flex items-center gap-4 text-stone-600 dark:text-stone-400">
-                      <div className="flex items-center gap-1.5">
-                        <Calendar size={14} strokeWidth={2} />
-                        <span className="text-xs font-medium">
-                          {format(new Date(event.date), 'EEE, dd MMM', {
-                      locale: fr
-                    })}
+                    {/* Date & Time badges */}
+                    <div className="flex items-center gap-2">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#ee9d2b]/10 border border-[#ee9d2b]/20">
+                        <Calendar size={13} strokeWidth={2.5} className="text-[#ee9d2b]" />
+                        <span className="text-xs font-semibold text-[#ee9d2b]">
+                          {format(new Date(event.date), 'EEE dd MMM', { locale: fr })}
                         </span>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <Clock size={14} strokeWidth={2} />
-                        <span className="text-xs font-medium">{event.time}</span>
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-stone-100 dark:bg-stone-800 border border-stone-200/60 dark:border-stone-700/60">
+                        <Clock size={13} strokeWidth={2.5} className="text-stone-500 dark:text-stone-400" />
+                        <span className="text-xs font-semibold text-stone-600 dark:text-stone-300">{event.time}</span>
                       </div>
                     </div>
                     <HypeBar eventId={event.id} maxCapacity={event.capacity || 50} />
