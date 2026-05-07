@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, MapPin, Calendar, Users, Share2, Heart, Flame } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, Users, Share2, Heart, Flame, CheckCircle2, Sparkles } from 'lucide-react';
 import { useAttendees } from '@/hooks/useAttendees';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -223,7 +223,7 @@ const EventDetails = () => {
           )}
 
           <div className="border-t border-stone-200 dark:border-stone-800 pt-6 pb-20">
-            <GoingSection eventId={event.id} />
+            <GoingSection eventId={event.id} capacity={event.capacity} />
             <div className="flex items-center justify-between mt-4">
               <div>
                 <p className="text-sm text-stone-600 dark:text-stone-400">
@@ -259,30 +259,83 @@ const EventDetails = () => {
   );
 };
 
-const GoingSection = ({ eventId }: { eventId: string }) => {
-  const { isGoing, count, toggleGoing } = useAttendees(eventId);
+const GoingSection = ({ eventId, capacity }: { eventId: string; capacity?: number }) => {
+  const { isGoing, count, toggleGoing, loading } = useAttendees(eventId);
+  const pct = capacity ? Math.min(Math.round((count / capacity) * 100), 100) : null;
 
   return (
-    <div className="flex items-center justify-between rounded-2xl bg-[#ee9d2b]/5 border border-[#ee9d2b]/15 px-4 py-3">
-      <div className="flex items-center gap-2.5">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#ee9d2b]/10">
-          <Flame size={20} className="text-[#ee9d2b]" />
+    <div className={`relative overflow-hidden rounded-2xl transition-all duration-300 ${
+      isGoing
+        ? 'bg-gradient-to-br from-[#ee9d2b]/10 to-[#ee9d2b]/5 border-2 border-[#ee9d2b]/40 shadow-lg shadow-[#ee9d2b]/10'
+        : 'bg-white/60 dark:bg-stone-900/60 backdrop-blur-sm border border-stone-200/50 dark:border-stone-700/50'
+    }`}>
+      {/* Glow background when going */}
+      {isGoing && (
+        <div className="absolute -top-12 -right-12 w-32 h-32 bg-[#ee9d2b]/15 rounded-full blur-2xl" />
+      )}
+
+      <div className="relative p-4 space-y-3">
+        {/* Top row: count + button */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className={`flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300 ${
+              isGoing
+                ? 'bg-[#ee9d2b] shadow-md shadow-[#ee9d2b]/30'
+                : 'bg-stone-100 dark:bg-stone-800'
+            }`}>
+              {isGoing ? (
+                <CheckCircle2 size={22} className="text-white" />
+              ) : (
+                <Flame size={22} className="text-stone-400 dark:text-stone-500" />
+              )}
+            </div>
+            <div>
+              <p className="text-base font-bold text-stone-900 dark:text-white">
+                {count} <span className="font-medium text-stone-500 dark:text-stone-400 text-sm">y vont</span>
+              </p>
+              {pct !== null && (
+                <p className="text-[11px] text-stone-400 dark:text-stone-500">
+                  {pct}% des places prises
+                </p>
+              )}
+            </div>
+          </div>
+
+          <button
+            onClick={toggleGoing}
+            disabled={loading}
+            className={`relative px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 active:scale-95 disabled:opacity-50 ${
+              isGoing
+                ? 'bg-[#ee9d2b] text-white shadow-lg shadow-[#ee9d2b]/30 hover:shadow-xl hover:shadow-[#ee9d2b]/40'
+                : 'bg-gradient-to-r from-[#ee9d2b] to-[#e88d15] text-white shadow-md hover:shadow-lg hover:scale-105'
+            }`}
+          >
+            <span className="flex items-center gap-1.5">
+              {isGoing ? (
+                <>
+                  <Sparkles size={14} />
+                  J'y serai !
+                </>
+              ) : (
+                <>
+                  <Flame size={14} />
+                  J'y vais
+                </>
+              )}
+            </span>
+          </button>
         </div>
-        <div>
-          <p className="text-sm font-bold text-stone-900 dark:text-white">{count} personnes y vont</p>
-          <p className="text-[11px] text-stone-500 dark:text-stone-400">Montre que tu seras là !</p>
-        </div>
+
+        {/* Status message */}
+        {isGoing && (
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#ee9d2b]/10 border border-[#ee9d2b]/20">
+            <CheckCircle2 size={14} className="text-[#ee9d2b] flex-shrink-0" />
+            <p className="text-xs font-medium text-[#ee9d2b]">
+              Tu es inscrit ! On t'attend.
+            </p>
+          </div>
+        )}
       </div>
-      <button
-        onClick={toggleGoing}
-        className={`px-4 py-2 rounded-full text-sm font-semibold transition-all active:scale-95 ${
-          isGoing
-            ? 'bg-[#ee9d2b] text-white shadow-md'
-            : 'bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700 hover:border-[#ee9d2b]/50'
-        }`}
-      >
-        {isGoing ? "J'y vais !" : "J'y vais"}
-      </button>
     </div>
   );
 };

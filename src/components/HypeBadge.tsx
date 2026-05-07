@@ -6,6 +6,7 @@ interface HypeBadgeProps {
   eventId: string;
   eventDate: string;
   eventTime: string;
+  capacity?: number;
   size?: 'sm' | 'md' | 'lg';
 }
 
@@ -26,18 +27,28 @@ const getCountdownText = (date: string, time: string) => {
   return `J-${days}`;
 };
 
-const getHypeLevel = (count: number): { level: string; color: string; glow: string } => {
-  if (count >= 40) return { level: 'SOLD OUT', color: 'bg-red-500', glow: 'shadow-red-500/40' };
-  if (count >= 25) return { level: 'HOT', color: 'bg-orange-500', glow: 'shadow-orange-500/40' };
-  if (count >= 15) return { level: 'HYPE', color: 'bg-amber-500', glow: 'shadow-amber-500/40' };
-  if (count >= 8) return { level: 'TREND', color: 'bg-yellow-500', glow: 'shadow-yellow-500/30' };
+const getHypeLevel = (count: number, capacity?: number): { level: string; color: string; glow: string } => {
+  if (!capacity || capacity <= 0) {
+    // Fallback seuils fixes si pas de capacity
+    if (count >= 40) return { level: 'SOLD OUT', color: 'bg-red-500', glow: 'shadow-red-500/40' };
+    if (count >= 25) return { level: 'HOT', color: 'bg-orange-500', glow: 'shadow-orange-500/40' };
+    if (count >= 15) return { level: 'HYPE', color: 'bg-amber-500', glow: 'shadow-amber-500/40' };
+    if (count >= 8) return { level: 'TREND', color: 'bg-yellow-500', glow: 'shadow-yellow-500/30' };
+    return { level: '', color: '', glow: '' };
+  }
+
+  const pct = (count / capacity) * 100;
+  if (pct >= 90) return { level: 'SOLD OUT', color: 'bg-red-500', glow: 'shadow-red-500/40' };
+  if (pct >= 60) return { level: 'HOT', color: 'bg-orange-500', glow: 'shadow-orange-500/40' };
+  if (pct >= 35) return { level: 'HYPE', color: 'bg-amber-500', glow: 'shadow-amber-500/40' };
+  if (pct >= 15) return { level: 'TREND', color: 'bg-yellow-500', glow: 'shadow-yellow-500/30' };
   return { level: '', color: '', glow: '' };
 };
 
-const HypeBadge = ({ eventId, eventDate, eventTime, size = 'sm' }: HypeBadgeProps) => {
+const HypeBadge = ({ eventId, eventDate, eventTime, capacity, size = 'sm' }: HypeBadgeProps) => {
   const { count } = useAttendees(eventId);
   const countdownText = getCountdownText(eventDate, eventTime);
-  const hype = getHypeLevel(count);
+  const hype = getHypeLevel(count, capacity);
 
   if (!countdownText && !hype.level) return null;
 

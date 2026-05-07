@@ -47,7 +47,7 @@ const EventCard = () => {
               })} • {currentEvent.time}
               </p>
               <div className="mt-1">
-                <HypeBadge eventId={currentEvent.id} eventDate={currentEvent.date} eventTime={currentEvent.time} size="sm" />
+                <HypeBadge eventId={currentEvent.id} eventDate={currentEvent.date} eventTime={currentEvent.time} capacity={currentEvent.capacity} size="sm" />
               </div>
             </div>
             <Link to={`/event/${currentEvent.id}`} className="flex w-fit cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#ee9d2b] text-white text-xs font-semibold leading-normal hover:opacity-90 transition-all active:scale-95 shadow-md">

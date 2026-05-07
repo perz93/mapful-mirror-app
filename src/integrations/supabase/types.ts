@@ -14,6 +14,35 @@ export type Database = {
   }
   public: {
     Tables: {
+      event_attendees: {
+        Row: {
+          id: string
+          event_id: string
+          user_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          event_id: string
+          user_id: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          event_id?: string
+          user_id?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_attendees_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_favorites: {
         Row: {
           created_at: string

@@ -88,7 +88,7 @@ const CategoryPage = ({
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                     {/* Hype + Countdown badges top-right */}
                     <div className="absolute top-3 right-3">
-                      <HypeBadge eventId={event.id} eventDate={event.date} eventTime={event.time} size="sm" />
+                      <HypeBadge eventId={event.id} eventDate={event.date} eventTime={event.time} capacity={event.capacity} size="sm" />
                     </div>
                     <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
                       <div className="flex-1">
