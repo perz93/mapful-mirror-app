@@ -253,14 +253,14 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                 })}
               </div>
 
-              {indicator.visible && (
-                <div className="pointer-events-none absolute bottom-1 left-10 right-10 h-0.5 rounded-full bg-black/5 dark:bg-black/20">
+              {indicator.visible && indicator.width < 95 && (
+                <div className="pointer-events-none absolute bottom-1.5 left-1/2 -translate-x-1/2 w-16 h-[3px] rounded-full bg-black/[0.06] dark:bg-white/[0.08]">
                   <div
-                    className="h-full rounded-full bg-black"
+                    className="h-full rounded-full bg-black/25 dark:bg-white/30"
                     style={{
-                      width: `${indicator.width}%`,
+                      width: `${Math.max(indicator.width, 30)}%`,
                       transform: `translateX(${indicator.left}%)`,
-                      transition: 'transform 0.2s ease-out, width 0.2s ease-out',
+                      transition: 'transform 0.15s ease-out, width 0.15s ease-out',
                     }}
                   />
                 </div>

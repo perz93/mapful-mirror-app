@@ -102,10 +102,10 @@ body {
   /* Removed grayscale filter for colorful map */
 }
 
-/* Dark mode: darken map while keeping water blue */
+/* Dark mode: gray land + blue water preserved */
 @media (prefers-color-scheme: dark) {
   .leaflet-tile-pane {
-    filter: brightness(0.7) contrast(1.2) saturate(0.6);
+    filter: brightness(0.65) contrast(1.3) saturate(1.4);
   }
 }
 
