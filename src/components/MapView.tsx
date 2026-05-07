@@ -8,6 +8,7 @@ import 'leaflet.heat';
 import { useNavigate } from 'react-router-dom';
 import { useSearch } from '@/contexts/SearchContext';
 import { useEvents } from '@/hooks/useEvents';
+import { useGeolocation } from '@/hooks/useGeolocation';
 import { format, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -25,24 +26,14 @@ function getPrefersDark(): boolean {
   return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
 }
 
-// Detect if running as installed PWA (standalone mode)
-function isStandalonePWA(): boolean {
-  return (
-    window.matchMedia('(display-mode: standalone)').matches ||
-    (navigator as any).standalone === true
-  );
-}
-
-const GEO_GRANTED_KEY = 'geo_permission_granted';
-
 const MapView = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const navigate = useNavigate();
   const { searchQuery, selectedCategories, routeDestination, setRouteDestination, distanceFilter } = useSearch();
   const { data: events, isLoading } = useEvents();
+  const geo = useGeolocation();
 
-  const userLocationRef = useRef<{ lat: number; lng: number } | null>(null);
   const userMarkerRef = useRef<L.Marker | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
   const markerClusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
@@ -51,60 +42,7 @@ const MapView = () => {
   const destinationMarkerRef = useRef<L.Marker | null>(null);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const heatLayerRef = useRef<any>(null);
-  const watchIdRef = useRef<number | null>(null);
-  const geoRetryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const [showGeoBanner, setShowGeoBanner] = useState(false);
-
-  // PWA standalone: need user gesture to trigger geo permission on iOS
-  // Show a "locate me" gate screen if we're in standalone and never got geo before
-  const needsGeoGate = isStandalonePWA() && !localStorage.getItem(GEO_GRANTED_KEY);
-  const [showGeoGate, setShowGeoGate] = useState(needsGeoGate);
-
-  const handleGeoGate = () => {
-    if (!navigator.geolocation) {
-      setShowGeoGate(false);
-      return;
-    }
-    // This tap IS a user gesture — iOS will show the permission prompt
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        localStorage.setItem(GEO_GRANTED_KEY, 'true');
-        userLocationRef.current = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        setShowGeoGate(false);
-        // Fly to user position once map is ready
-        const tryFly = () => {
-          if (mapInstanceRef.current) {
-            mapInstanceRef.current.flyTo([pos.coords.latitude, pos.coords.longitude], 15, { duration: 1.5 });
-            // Place marker
-            if (!userMarkerRef.current) {
-              const userIcon = L.divIcon({
-                className: 'user-location-marker',
-                html: `<div class="user-location-pulse"></div>`,
-                iconSize: [20, 20],
-                iconAnchor: [10, 10],
-              });
-              userMarkerRef.current = L.marker([pos.coords.latitude, pos.coords.longitude], { icon: userIcon })
-                .addTo(mapInstanceRef.current)
-                .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
-            }
-          } else {
-            setTimeout(tryFly, 200);
-          }
-        };
-        tryFly();
-      },
-      () => {
-        // Permission denied or error — dismiss gate, continue without location
-        setShowGeoGate(false);
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-    );
-  };
-
-  const handleSkipGeoGate = () => {
-    setShowGeoGate(false);
-  };
+  const didFlyToUserRef = useRef(false);
 
   // Expose map instance and route coords to RouteInfoPanel via state
   const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
@@ -116,6 +54,9 @@ const MapView = () => {
     error: false,
   });
 
+  // ========================================
+  // Map initialization (runs once)
+  // ========================================
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
@@ -149,7 +90,6 @@ const MapView = () => {
     }).addTo(map);
     tileLayerRef.current = tileLayer;
 
-    // Listen for dark mode changes
     const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleDarkModeChange = (e: MediaQueryListEvent) => {
       if (tileLayerRef.current) {
@@ -181,12 +121,8 @@ const MapView = () => {
       iconCreateFunction: function(cluster) {
         const count = cluster.getChildCount();
         let sizeClass = 'small';
-
-        if (count >= 10) {
-          sizeClass = 'large';
-        } else if (count >= 5) {
-          sizeClass = 'medium';
-        }
+        if (count >= 10) sizeClass = 'large';
+        else if (count >= 5) sizeClass = 'medium';
 
         const markers = cluster.getAllChildMarkers();
         const typeCount: Record<string, number> = {};
@@ -211,145 +147,15 @@ const MapView = () => {
     mapInstanceRef.current = map;
     setMapInstance(map);
 
-    const placeUserMarker = (latitude: number, longitude: number) => {
-      if (!userMarkerRef.current) {
-        const userIcon = L.divIcon({
-          className: 'user-location-marker',
-          html: `<div class="user-location-pulse"></div>`,
-          iconSize: [20, 20],
-          iconAnchor: [10, 10],
-        });
-        userMarkerRef.current = L.marker([latitude, longitude], { icon: userIcon })
-          .addTo(map)
-          .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
-      } else {
-        userMarkerRef.current.setLatLng([latitude, longitude]);
-      }
-    };
-
-    let hasFlyedTo = false;
-    const shouldFlyOnFirstFix = !savedPosition;
-
-    const onGeoSuccess = (position: GeolocationPosition) => {
-      const { latitude, longitude } = position.coords;
-      userLocationRef.current = { lat: latitude, lng: longitude };
-      setShowGeoBanner(false);
-      localStorage.setItem(GEO_GRANTED_KEY, 'true');
-
-      // Clear retry timer since we got a fix
-      if (geoRetryTimerRef.current) {
-        clearTimeout(geoRetryTimerRef.current);
-        geoRetryTimerRef.current = null;
-      }
-
-      if (shouldFlyOnFirstFix && !hasFlyedTo) {
-        hasFlyedTo = true;
-        map.flyTo([latitude, longitude], 15, { duration: 1.5 });
-      }
-      placeUserMarker(latitude, longitude);
-    };
-
-    let geoRetryCount = 0;
-    const MAX_GEO_RETRIES = 6;
-
-    const onGeoError = (err: GeolocationPositionError) => {
-      console.log('[Geo] Error:', err.code, err.message, 'PWA:', isStandalonePWA(), 'retry:', geoRetryCount);
-
-      if (userLocationRef.current) return; // Already have position, ignore error
-
-      // Strategy: first try low accuracy, then high accuracy, alternate
-      // iOS PWA sometimes needs enableHighAccuracy:true to trigger the real GPS chip
-      if (geoRetryCount < MAX_GEO_RETRIES) {
-        const useHighAccuracy = geoRetryCount % 2 === 1; // alternate
-        const delay = geoRetryCount < 2 ? 2000 : 5000;
-        geoRetryCount++;
-
-        geoRetryTimerRef.current = setTimeout(() => {
-          if (userLocationRef.current) return;
-          navigator.geolocation.getCurrentPosition(
-            onGeoSuccess,
-            onGeoError,
-            { enableHighAccuracy: useHighAccuracy, timeout: 12000, maximumAge: 0 }
-          );
-        }, delay);
-      }
-
-      // Show banner after 2nd failure (give it a chance first)
-      if (geoRetryCount >= 2) {
-        setShowGeoBanner(true);
-      }
-    };
-
-    const locateUser = (flyTo: boolean) => {
-      if (!navigator.geolocation) return;
-
-      if (flyTo) hasFlyedTo = false;
-
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          onGeoSuccess(position);
-          if (flyTo) {
-            map.flyTo([position.coords.latitude, position.coords.longitude], 15, { duration: 1.5 });
-            hasFlyedTo = true;
-          }
-        },
-        onGeoError,
-        { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 }
-      );
-    };
-
-    // Use watchPosition for continuous tracking — more reliable in PWA standalone
-    // Use enableHighAccuracy:true — critical for iOS PWA to get a real GPS fix
-    if (navigator.geolocation) {
-      watchIdRef.current = navigator.geolocation.watchPosition(
-        onGeoSuccess,
-        (err) => {
-          // watchPosition error is less critical, just log it
-          console.log('[Geo] Watch error:', err.code, err.message);
-        },
-        { enableHighAccuracy: true, timeout: 20000, maximumAge: 30000 }
-      );
-    }
-
-    const handleRecenter = () => locateUser(true);
-
-    // Immediate getCurrentPosition — try low accuracy first (faster), then watchPosition handles high accuracy
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        onGeoSuccess,
-        onGeoError,
-        { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
-      );
-    }
-
-    window.addEventListener('recenterMap', handleRecenter);
-
-    const handleZoomIn = () => {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.zoomIn();
-      }
-    };
-
-    const handleZoomOut = () => {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.zoomOut();
-      }
-    };
+    // Zoom handlers
+    const handleZoomIn = () => map.zoomIn();
+    const handleZoomOut = () => map.zoomOut();
 
     window.addEventListener('zoomIn', handleZoomIn);
     window.addEventListener('zoomOut', handleZoomOut);
 
     return () => {
       darkModeQuery.removeEventListener('change', handleDarkModeChange);
-      // Clean up geolocation watch and retry timer
-      if (watchIdRef.current !== null) {
-        navigator.geolocation.clearWatch(watchIdRef.current);
-        watchIdRef.current = null;
-      }
-      if (geoRetryTimerRef.current) {
-        clearTimeout(geoRetryTimerRef.current);
-        geoRetryTimerRef.current = null;
-      }
       markersRef.current = [];
       if (heatLayerRef.current && mapInstanceRef.current) {
         mapInstanceRef.current.removeLayer(heatLayerRef.current);
@@ -359,7 +165,6 @@ const MapView = () => {
         mapInstanceRef.current.removeLayer(markerClusterGroupRef.current);
         markerClusterGroupRef.current = null;
       }
-      window.removeEventListener('recenterMap', handleRecenter);
       window.removeEventListener('zoomIn', handleZoomIn);
       window.removeEventListener('zoomOut', handleZoomOut);
       if (mapInstanceRef.current) {
@@ -369,6 +174,88 @@ const MapView = () => {
       setMapInstance(null);
     };
   }, [navigate]);
+
+  // ========================================
+  // Geolocation → update user marker on map
+  // ========================================
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || !geo.position) return;
+
+    const { lat, lng } = geo.position;
+
+    // Place or update user marker
+    if (!userMarkerRef.current) {
+      const userIcon = L.divIcon({
+        className: 'user-location-marker',
+        html: `<div class="user-location-pulse"></div>`,
+        iconSize: [20, 20],
+        iconAnchor: [10, 10],
+      });
+      userMarkerRef.current = L.marker([lat, lng], { icon: userIcon })
+        .addTo(map)
+        .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
+    } else {
+      userMarkerRef.current.setLatLng([lat, lng]);
+    }
+
+    // Fly to user position on first fix (only if no saved map position)
+    if (!didFlyToUserRef.current && !sessionStorage.getItem('mapPosition')) {
+      didFlyToUserRef.current = true;
+      map.flyTo([lat, lng], 15, { duration: 1.5 });
+    }
+  }, [geo.position]);
+
+  // Listen for recenter → direct getCurrentPosition (must stay in user gesture stack)
+  useEffect(() => {
+    const handler = () => {
+      if (!navigator.geolocation || !mapInstanceRef.current) return;
+      // Direct call — not through the hook — to preserve user gesture context for iOS
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          const map = mapInstanceRef.current;
+          if (!map) return;
+
+          // Update marker
+          if (!userMarkerRef.current) {
+            const userIcon = L.divIcon({
+              className: 'user-location-marker',
+              html: `<div class="user-location-pulse"></div>`,
+              iconSize: [20, 20],
+              iconAnchor: [10, 10],
+            });
+            userMarkerRef.current = L.marker([latitude, longitude], { icon: userIcon })
+              .addTo(map)
+              .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
+          } else {
+            userMarkerRef.current.setLatLng([latitude, longitude]);
+          }
+
+          map.flyTo([latitude, longitude], 15, { duration: 1.5 });
+
+          // Also update sessionStorage for geo hook
+          try {
+            sessionStorage.setItem('user_geo', JSON.stringify({
+              lat: latitude, lng: longitude,
+              accuracy: pos.coords.accuracy,
+              timestamp: pos.timestamp,
+            }));
+          } catch {}
+        },
+        (err) => {
+          if (err.code === 1) {
+            toast.error('Autorisez la localisation pour voir votre position');
+          } else {
+            toast.error('Position GPS introuvable');
+          }
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+      );
+    };
+    window.addEventListener('recenterMap', handler);
+    return () => window.removeEventListener('recenterMap', handler);
+  }, []);
 
   // Listen for external "fly to" requests (e.g., from search suggestions)
   useEffect(() => {
@@ -382,6 +269,9 @@ const MapView = () => {
     return () => window.removeEventListener('map:flyto', handler);
   }, []);
 
+  // ========================================
+  // Events markers + heatmap
+  // ========================================
   useEffect(() => {
     if (!mapInstanceRef.current || !markerClusterGroupRef.current || !events || isLoading) return;
 
@@ -391,7 +281,6 @@ const MapView = () => {
     markersRef.current = [];
     markerClusterGroup.clearLayers();
 
-    // Remove old heatmap
     if (heatLayerRef.current) {
       map.removeLayer(heatLayerRef.current);
       heatLayerRef.current = null;
@@ -506,7 +395,6 @@ const MapView = () => {
       marker.on('click', () => {
         const key = `${event.latitude}-${event.longitude}`;
         const countAtPosition = coordCounts.get(key) || 1;
-
         if (countAtPosition === 1) {
           map.flyTo([event.latitude, event.longitude], 16, {
             duration: 0.8,
@@ -541,7 +429,6 @@ const MapView = () => {
           });
         }
 
-        // Load attendee count for popup hype row
         const hypeNumber = popupElement.querySelector('.popup-hype-number') as HTMLElement | null;
         const goingBtn = popupElement.querySelector('.popup-going-btn') as HTMLElement | null;
 
@@ -554,7 +441,6 @@ const MapView = () => {
         }
 
         if (goingBtn) {
-          // Check if current user is going
           const { data: { user } } = await supabase.auth.getUser();
           if (user) {
             const { data } = await supabase
@@ -572,7 +458,6 @@ const MapView = () => {
             goingBtn.addEventListener('click', async (e) => {
               e.stopPropagation();
               const isActive = goingBtn.classList.contains('popup-going-active');
-
               if (isActive) {
                 await supabase.from('event_attendees').delete()
                   .eq('event_id', event.id).eq('user_id', user.id);
@@ -600,8 +485,7 @@ const MapView = () => {
       });
     });
 
-    // Add heatmap layer based on event affluence (attendee %)
-    // Only visible when zoom >= 12 (when clusters separate into individual markers)
+    // Heatmap
     const HEATMAP_MIN_ZOOM = 11;
 
     (async () => {
@@ -639,19 +523,18 @@ const MapView = () => {
             max: 1.0,
             minOpacity: 0.3,
             gradient: {
-              0.0:  '#dbeafe', // bleu très clair — 0-15%
-              0.15: '#93c5fd', // bleu clair — 15%
-              0.30: '#3b82f6', // bleu pur — 15-50%
-              0.50: '#2563eb', // bleu pur intense — 50%
-              0.60: '#f97316', // orange — 50-100%
-              0.80: '#ea580c', // orange foncé
-              1.00: '#dc2626', // orange-rouge — 100%
+              0.0:  '#dbeafe',
+              0.15: '#93c5fd',
+              0.30: '#3b82f6',
+              0.50: '#2563eb',
+              0.60: '#f97316',
+              0.80: '#ea580c',
+              1.00: '#dc2626',
             },
           });
 
           heatLayerRef.current = heatLayer;
 
-          // Show/hide heatmap based on zoom level
           const updateHeatmapVisibility = () => {
             if (!mapInstanceRef.current) return;
             const zoom = mapInstanceRef.current.getZoom();
@@ -666,12 +549,9 @@ const MapView = () => {
             }
           };
 
-          // Initial check
           updateHeatmapVisibility();
-          // Listen for zoom changes
           mapInstanceRef.current.on('zoomend', updateHeatmapVisibility);
 
-          // Scintillement pour les events >= 50% affluence
           const hotEvents = events.filter((e) => {
             const count = countMap[e.id] || 0;
             const capacity = e.capacity || 50;
@@ -717,11 +597,13 @@ const MapView = () => {
           });
         }
       }
-
       didAutoRecenterRef.current = true;
     }
   }, [events, isLoading, navigate, setRouteDestination]);
 
+  // ========================================
+  // Route calculation
+  // ========================================
   useEffect(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
@@ -749,27 +631,19 @@ const MapView = () => {
     });
     destinationMarkerRef.current = L.marker([routeDestination.lat, routeDestination.lng], { icon: destIcon }).addTo(map);
 
-    const ensureUserLocation = (): Promise<{ lat: number; lng: number }> =>
-      new Promise((resolve, reject) => {
-        if (userLocationRef.current) return resolve(userLocationRef.current);
-        if (!navigator.geolocation) return reject(new Error('no-geo'));
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-            userLocationRef.current = loc;
-            resolve(loc);
-          },
-          () => reject(new Error('denied')),
-          { timeout: 7000 }
-        );
-      });
+    if (!geo.position) {
+      toast.error('Activez la localisation pour calculer un itinéraire');
+      setRouteInfo({ distanceKm: null, durationMin: null, loading: false, error: true });
+      return;
+    }
 
     setRouteInfo({ distanceKm: null, durationMin: null, loading: true, error: false });
 
     let cancelled = false;
+    const origin = geo.position;
 
-    ensureUserLocation()
-      .then(async (origin) => {
+    (async () => {
+      try {
         const url = `https://router.project-osrm.org/route/v1/driving/${origin.lng},${origin.lat};${routeDestination.lng},${routeDestination.lat}?overview=full&geometries=geojson`;
         const res = await fetch(url);
         if (!res.ok) throw new Error('osrm-error');
@@ -797,21 +671,19 @@ const MapView = () => {
           loading: false,
           error: false,
         });
-      })
-      .catch((err) => {
+      } catch {
         if (cancelled) return;
-        if (err.message === 'denied' || err.message === 'no-geo') {
-          toast.error('Activez la localisation pour calculer un itinéraire');
-        }
         setRouteCoordinates([]);
         setRouteInfo({ distanceKm: null, durationMin: null, loading: false, error: true });
-      });
+      }
+    })();
 
-    return () => {
-      cancelled = true;
-    };
-  }, [routeDestination]);
+    return () => { cancelled = true; };
+  }, [routeDestination, geo.position]);
 
+  // ========================================
+  // Search & distance filter
+  // ========================================
   useEffect(() => {
     if (!mapInstanceRef.current || !markerClusterGroupRef.current) return;
 
@@ -833,9 +705,9 @@ const MapView = () => {
         selectedCategories.includes(eventData.category);
 
       let matchesDistance = true;
-      if (distanceFilter && userLocationRef.current) {
+      if (distanceFilter && geo.position) {
         const dist = getDistanceKm(
-          userLocationRef.current.lat, userLocationRef.current.lng,
+          geo.position.lat, geo.position.lng,
           eventData.lat, eventData.lng
         );
         matchesDistance = dist <= distanceFilter;
@@ -845,141 +717,11 @@ const MapView = () => {
         clusterGroup.addLayer(marker);
       }
     });
-  }, [searchQuery, selectedCategories, distanceFilter]);
-
-  const [geoLoading, setGeoLoading] = useState(false);
-
-  // Handle manual geo permission request (user tap = gesture → triggers iOS prompt)
-  const handleGeoRetry = () => {
-    if (!navigator.geolocation) return;
-    setGeoLoading(true);
-
-    // Try high accuracy first (user gesture = good time to request real GPS)
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        userLocationRef.current = { lat: latitude, lng: longitude };
-        setShowGeoBanner(false);
-        setGeoLoading(false);
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.flyTo([latitude, longitude], 15, { duration: 1.5 });
-          if (!userMarkerRef.current) {
-            const userIcon = L.divIcon({
-              className: 'user-location-marker',
-              html: `<div class="user-location-pulse"></div>`,
-              iconSize: [20, 20],
-              iconAnchor: [10, 10],
-            });
-            userMarkerRef.current = L.marker([latitude, longitude], { icon: userIcon })
-              .addTo(mapInstanceRef.current)
-              .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
-          } else {
-            userMarkerRef.current.setLatLng([latitude, longitude]);
-          }
-        }
-      },
-      (err) => {
-        setGeoLoading(false);
-        setShowGeoBanner(true);
-        // Different message based on error code
-        if (err.code === 1) {
-          // PERMISSION_DENIED
-          if (isStandalonePWA()) {
-            toast.error('Allez dans Réglages > Confidentialité > Service de localisation > vérifiez que votre navigateur et cette app sont autorisés');
-          } else {
-            toast.error('Autorisez la localisation dans les paramètres du navigateur');
-          }
-        } else {
-          // POSITION_UNAVAILABLE or TIMEOUT
-          toast.error('Position GPS introuvable, réessayez dans quelques secondes');
-        }
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-    );
-  };
-
-  // PWA Geo Gate — full screen prompt requiring user tap to trigger iOS geo permission
-  if (showGeoGate) {
-    return (
-      <>
-        <div ref={mapRef} className="absolute inset-0 z-0" />
-        <div className="absolute inset-0 z-[50] flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="mx-6 w-full max-w-sm rounded-3xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-2xl border border-white/70 dark:border-stone-700/30 shadow-2xl p-6 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#ee9d2b]/15 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ee9d2b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="10" r="3"/>
-                <path d="M12 2a8 8 0 0 0-8 8c0 1.892.402 3.13 1.5 4.5L12 22l6.5-7.5c1.098-1.37 1.5-2.608 1.5-4.5a8 8 0 0 0-8-8z"/>
-              </svg>
-            </div>
-            <h2
-              className="text-xl font-bold text-stone-900 dark:text-white mb-2"
-              style={{ fontFamily: "'Source Serif 4', Georgia, serif", fontStyle: 'italic' }}
-            >
-              Voir les events autour de toi
-            </h2>
-            <p className="text-sm text-stone-500 dark:text-stone-400 mb-6">
-              Autorise la localisation pour découvrir ce qui se passe près de toi
-            </p>
-            <button
-              onClick={handleGeoGate}
-              className="w-full py-3.5 rounded-2xl bg-[#ee9d2b] text-white font-bold text-base shadow-lg shadow-[#ee9d2b]/30 active:scale-[0.97] transition-transform"
-            >
-              Activer ma position
-            </button>
-            <button
-              onClick={handleSkipGeoGate}
-              className="w-full mt-3 py-2 text-sm text-stone-400 hover:text-stone-600 transition-colors"
-            >
-              Plus tard
-            </button>
-          </div>
-        </div>
-      </>
-    );
-  }
+  }, [searchQuery, selectedCategories, distanceFilter, geo.position]);
 
   return (
     <>
       <div ref={mapRef} className="absolute inset-0 z-0" />
-
-      {/* Geo banner — shown when geolocation fails */}
-      {showGeoBanner && (
-        <div
-          className="absolute z-[1000] left-4 right-4 animate-fade-in"
-          style={{ top: 'calc(env(safe-area-inset-top, 0px) + 70px)' }}
-        >
-          <button
-            onClick={handleGeoRetry}
-            disabled={geoLoading}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/90 dark:bg-stone-900/90 backdrop-blur-xl shadow-lg border border-stone-200/50 dark:border-stone-700/50 active:scale-[0.98] transition-transform disabled:opacity-70"
-          >
-            <div className="flex-shrink-0 w-9 h-9 rounded-full bg-[#ee9d2b]/15 flex items-center justify-center">
-              {geoLoading ? (
-                <div className="w-4 h-4 border-2 border-[#ee9d2b] border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ee9d2b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="10" r="3"/>
-                  <path d="M12 2a8 8 0 0 0-8 8c0 1.892.402 3.13 1.5 4.5L12 22l6.5-7.5c1.098-1.37 1.5-2.608 1.5-4.5a8 8 0 0 0-8-8z"/>
-                </svg>
-              )}
-            </div>
-            <div className="flex-1 text-left">
-              <p className="text-sm font-semibold text-stone-900 dark:text-white">
-                {geoLoading ? 'Recherche GPS en cours...' : 'Position introuvable'}
-              </p>
-              <p className="text-xs text-stone-500 dark:text-stone-400">
-                {geoLoading ? 'Veuillez patienter' : 'Touchez pour localiser votre position'}
-              </p>
-            </div>
-            {!geoLoading && (
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ee9d2b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74"/>
-                <path d="M21 3v6h-6"/>
-              </svg>
-            )}
-          </button>
-        </div>
-      )}
 
       <RouteInfoPanel
         distanceKm={routeInfo.distanceKm}

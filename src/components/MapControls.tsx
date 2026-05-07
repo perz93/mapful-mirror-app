@@ -1,19 +1,27 @@
 import { Plus, Minus, Crosshair, ShoppingCart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
 const MapControls = () => {
   const navigate = useNavigate();
+
   const handleRecenter = () => {
+    // This is a user gesture (tap) — dispatches event that triggers geo.request()
+    // On iOS PWA, this user gesture allows the geolocation permission prompt to appear
     window.dispatchEvent(new Event('recenterMap'));
   };
+
   const handleZoomIn = () => {
     window.dispatchEvent(new Event('zoomIn'));
   };
+
   const handleZoomOut = () => {
     window.dispatchEvent(new Event('zoomOut'));
   };
+
   const handleMarketplaceClick = () => {
     navigate('/marketplace');
   };
+
   return <>
       {/* Left side controls: Zoom + Position */}
       <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col items-start gap-3">
