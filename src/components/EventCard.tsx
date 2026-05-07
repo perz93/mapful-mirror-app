@@ -46,11 +46,11 @@ const EventCard = () => {
               </p>
               {/* Date & Time badges */}
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#ee9d2b]/10 border border-[#ee9d2b]/20 text-[10px] font-semibold text-[#ee9d2b]">
-                  📅 {format(new Date(currentEvent.date), 'EEE dd MMM', { locale: fr })}
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#ee9d2b]/10 border border-[#ee9d2b]/20 text-[10px] font-semibold text-[#ee9d2b]">
+                  {format(new Date(currentEvent.date), 'EEE dd MMM', { locale: fr })}
                 </span>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 border border-stone-200/60 dark:border-stone-700/60 text-[10px] font-semibold text-stone-600 dark:text-stone-300">
-                  🕐 {currentEvent.time}
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 border border-stone-200/60 dark:border-stone-700/60 text-[10px] font-semibold text-stone-600 dark:text-stone-300">
+                  {currentEvent.time}
                 </span>
               </div>
               <div className="mt-0.5">
