@@ -245,9 +245,18 @@ const MapView = () => {
         },
         (err) => {
           if (err.code === 1) {
-            toast.error('Autorisez la localisation pour voir votre position');
+            // Permission denied — on iOS/Android, can't re-ask, must go to settings
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true;
+            if (isIOS && isStandalone) {
+              toast.error('Réglages iPhone → VIBE → Position → Activer', { duration: 6000 });
+            } else if (isIOS) {
+              toast.error('Réglages iPhone → Safari → Position → Autoriser', { duration: 6000 });
+            } else {
+              toast.error('Activez la localisation dans les paramètres du navigateur', { duration: 5000 });
+            }
           } else {
-            toast.error('Position GPS introuvable');
+            toast.error('Position GPS introuvable, réessayez');
           }
         },
         { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
