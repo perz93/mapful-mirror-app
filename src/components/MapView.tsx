@@ -282,9 +282,9 @@ const MapView = () => {
   // Events markers + heatmap
   // ========================================
   useEffect(() => {
-    if (!mapInstanceRef.current || !markerClusterGroupRef.current || !events || isLoading) return;
+    if (!mapInstance || !markerClusterGroupRef.current || !events || isLoading) return;
 
-    const map = mapInstanceRef.current;
+    const map = mapInstance;
     const markerClusterGroup = markerClusterGroupRef.current;
 
     markersRef.current = [];
@@ -608,7 +608,7 @@ const MapView = () => {
       }
       didAutoRecenterRef.current = true;
     }
-  }, [events, isLoading, navigate, setRouteDestination]);
+  }, [events, isLoading, navigate, setRouteDestination, mapInstance]);
 
   // ========================================
   // Route calculation

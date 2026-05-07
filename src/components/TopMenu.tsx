@@ -20,11 +20,11 @@ const TopMenu = () => {
       {isOpen && <div className="fixed inset-0 bg-black/50 backdrop-blur-xl z-20 animate-fade-in" />}
 
       <div className="fixed left-0 right-0 top-0 z-30 max-w-md mx-auto" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
-        {/* Bell icon — top left */}
-        <div className="absolute left-4 top-0 pt-2" style={{ paddingTop: 'env(safe-area-inset-top, 0px)', marginTop: '8px' }}>
+        <div className="p-4 pt-2 flex items-start justify-between">
+          {/* Bell icon — left */}
           <button
             onClick={() => navigate(isLoggedIn ? '/notifications' : '/auth')}
-            className="relative h-12 w-12 rounded-full bg-white/70 dark:bg-stone-900/70 backdrop-blur-md hover:bg-white/90 dark:hover:bg-stone-900/90 transition-all duration-300 active:scale-95 hover:scale-105 flex items-center justify-center shadow-lg"
+            className="relative h-12 w-12 rounded-full bg-white/70 dark:bg-stone-900/70 backdrop-blur-md hover:bg-white/90 dark:hover:bg-stone-900/90 transition-all duration-300 active:scale-95 hover:scale-105 flex items-center justify-center mt-2 shadow-lg"
           >
             <Bell size={20} strokeWidth={2} className="text-black dark:text-white" />
             {unreadCount > 0 && (
@@ -33,10 +33,8 @@ const TopMenu = () => {
               </span>
             )}
           </button>
-        </div>
 
-        {/* Menu burger — top right */}
-        <div className="p-4 pt-2 flex items-start justify-end">
+          {/* Menu burger — right */}
         <DropdownMenu onOpenChange={setIsOpen}>
           <DropdownMenuTrigger asChild>
             <button className="relative h-12 w-12 rounded-full bg-white/70 dark:bg-stone-900/70 backdrop-blur-md hover:bg-white/90 dark:hover:bg-stone-900/90 transition-all duration-300 active:scale-95 hover:scale-105 flex items-center justify-center mt-2 shadow-lg">
