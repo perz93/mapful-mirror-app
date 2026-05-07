@@ -42,7 +42,7 @@ export async function subscribeToPush(): Promise<PushSubscription | null> {
     const subJson = subscription.toJSON();
     const { data: { user } } = await supabase.auth.getUser();
 
-    await (supabase as any).from('push_subscriptions').upsert(
+    await supabase.from('push_subscriptions').upsert(
       {
         user_id: user?.id || null,
         endpoint: subJson.endpoint!,
@@ -68,7 +68,7 @@ export async function unsubscribeFromPush(): Promise<boolean> {
     if (!subscription) return false;
 
     // Remove from Supabase
-    await (supabase as any).from('push_subscriptions').delete().eq('endpoint', subscription.endpoint);
+    await supabase.from('push_subscriptions').delete().eq('endpoint', subscription.endpoint);
 
     // Unsubscribe
     await subscription.unsubscribe();

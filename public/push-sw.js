@@ -21,7 +21,20 @@ self.addEventListener('push', (event) => {
   };
 
   event.waitUntil(
-    self.registration.showNotification(data.title || 'Mapful', options)
+    (async () => {
+      // Show notification
+      await self.registration.showNotification(data.title || 'Mapful', options);
+
+      // Update badge count
+      const allNotifications = await self.registration.getNotifications();
+      if ('setAppBadge' in self.navigator) {
+        try {
+          await self.navigator.setAppBadge(allNotifications.length + 1);
+        } catch (e) {
+          // Badge API not available in all contexts
+        }
+      }
+    })()
   );
 });
 
@@ -31,16 +44,46 @@ self.addEventListener('notificationclick', (event) => {
   const url = event.notification.data?.url || '/';
 
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-      // Focus existing window if available
+    (async () => {
+      // Clear badge on click
+      const remaining = await self.registration.getNotifications();
+      if ('setAppBadge' in self.navigator) {
+        try {
+          if (remaining.length === 0) {
+            await self.navigator.clearAppBadge();
+          } else {
+            await self.navigator.setAppBadge(remaining.length);
+          }
+        } catch (e) {}
+      }
+
+      // Navigate to the event page
+      const clientList = await clients.matchAll({ type: 'window', includeUncontrolled: true });
       for (const client of clientList) {
         if (client.url.includes(self.location.origin) && 'focus' in client) {
           client.navigate(url);
           return client.focus();
         }
       }
-      // Open new window
       return clients.openWindow(url);
-    })
+    })()
+  );
+});
+
+// Clear badge when all notifications are dismissed
+self.addEventListener('notificationclose', (event) => {
+  event.waitUntil(
+    (async () => {
+      const remaining = await self.registration.getNotifications();
+      if ('setAppBadge' in self.navigator) {
+        try {
+          if (remaining.length === 0) {
+            await self.navigator.clearAppBadge();
+          } else {
+            await self.navigator.setAppBadge(remaining.length);
+          }
+        } catch (e) {}
+      }
+    })()
   );
 });

@@ -10,6 +10,8 @@ import InstallGuide from "@/components/InstallGuide";
 import SplashScreenWrapper from "@/components/SplashScreen";
 import { useStatusBarColor } from "@/hooks/useStatusBarColor";
 import { usePWATheme } from "@/hooks/usePWATheme";
+import { useProximityNotifications } from "@/hooks/useProximityNotifications";
+import { useBadgeCount } from "@/hooks/useBadgeCount";
 import Index from "./pages/Index";
 import Concerts from "./pages/Concerts";
 import Sports from "./pages/Sports";
@@ -41,6 +43,8 @@ const queryClient = new QueryClient();
 const AppContent = () => {
   useStatusBarColor();
   usePWATheme();
+  useProximityNotifications();
+  useBadgeCount();
   
   return (
     <Routes>
