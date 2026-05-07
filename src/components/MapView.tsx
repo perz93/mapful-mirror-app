@@ -537,8 +537,8 @@ const MapView = () => {
           const count = countMap[e.id] || 0;
           const capacity = e.capacity || 50;
           const pct = Math.min(count / capacity, 1);
-          // Minimum intensity 0.1 so all events are visible, max 1.0
-          const intensity = 0.1 + pct * 0.9;
+          // Minimum intensity 0.35 so all events are clearly visible in blue
+          const intensity = 0.35 + pct * 0.65;
           return [e.latitude, e.longitude, intensity] as [number, number, number];
         });
 
@@ -552,7 +552,7 @@ const MapView = () => {
             blur: 25,
             maxZoom: 12,
             max: 1.0,
-            minOpacity: 0.12,
+            minOpacity: 0.3,
             gradient: {
               0.0:  '#dbeafe', // bleu très clair — 0%
               0.15: '#93c5fd', // bleu clair — 15%
