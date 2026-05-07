@@ -102,10 +102,10 @@ body {
   /* Removed grayscale filter for colorful map */
 }
 
-/* Dark mode: invert light tiles to a soft gray tone */
+/* Dark mode: darken map while keeping water blue */
 @media (prefers-color-scheme: dark) {
   .leaflet-tile-pane {
-    filter: invert(0.85) hue-rotate(180deg) saturate(0.25) brightness(1.25);
+    filter: brightness(0.7) contrast(1.2) saturate(0.6);
   }
 }
 
