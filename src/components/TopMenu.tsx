@@ -24,9 +24,9 @@ const TopMenu = () => {
           {/* Bell icon — left */}
           <button
             onClick={() => navigate(isLoggedIn ? '/notifications' : '/auth')}
-            className="relative h-12 w-12 rounded-full bg-white/70 dark:bg-stone-900/70 backdrop-blur-md hover:bg-white/90 dark:hover:bg-stone-900/90 transition-all duration-300 active:scale-95 hover:scale-105 flex items-center justify-center mt-2 shadow-lg"
+            className="relative h-12 w-12 rounded-full bg-[#ee9d2b]/15 dark:bg-[#ee9d2b]/20 backdrop-blur-md hover:bg-[#ee9d2b]/25 dark:hover:bg-[#ee9d2b]/30 transition-all duration-300 active:scale-95 hover:scale-105 flex items-center justify-center mt-2 shadow-lg border border-[#ee9d2b]/20"
           >
-            <Bell size={20} strokeWidth={2} className="text-black dark:text-white" />
+            <Bell size={20} strokeWidth={2} className="text-[#ee9d2b]" />
             {unreadCount > 0 && (
               <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-[#ee9d2b] text-white text-[10px] font-bold px-1 shadow-md">
                 {unreadCount > 9 ? '9+' : unreadCount}
