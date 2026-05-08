@@ -185,7 +185,7 @@ const EditListing = () => {
   }
 
   return (
-    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-background">
+    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-background animate-fade-in animate-zoom-smooth">
       {/* Header */}
       <div className="relative z-10 flex items-center gap-4 px-4 pt-12 pb-4">
         <Link

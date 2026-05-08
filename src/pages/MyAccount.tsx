@@ -171,7 +171,7 @@ const MyAccount = () => {
   ];
 
   return (
-    <div className="min-h-screen relative overflow-hidden animate-fade-in bg-stone-200">
+    <div className="min-h-screen relative overflow-hidden animate-fade-in animate-zoom-smooth bg-stone-200">
       {/* Map Background — light natural */}
       <div className="fixed inset-0 pointer-events-none">
         <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />

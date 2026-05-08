@@ -19,7 +19,7 @@ const Notifications = () => {
 
   if (!user) {
     return (
-      <div className="relative min-h-screen bg-stone-50 dark:bg-stone-950">
+      <div className="relative min-h-screen bg-stone-50 dark:bg-stone-950 animate-fade-in animate-zoom-smooth">
         <div className="fixed inset-x-0 top-0 z-10 max-w-md mx-auto" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
           <div className="flex items-center gap-3 px-4 py-3 bg-white/80 dark:bg-stone-900/80 backdrop-blur-xl border-b border-stone-200/50 dark:border-stone-800/50">
             <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800">
@@ -40,7 +40,7 @@ const Notifications = () => {
   }
 
   return (
-    <div className="relative min-h-screen bg-stone-50 dark:bg-stone-950 max-w-md mx-auto">
+    <div className="relative min-h-screen bg-stone-50 dark:bg-stone-950 max-w-md mx-auto animate-fade-in animate-zoom-smooth">
       {/* Header */}
       <div className="fixed inset-x-0 top-0 z-10 max-w-md mx-auto" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <div className="flex items-center gap-3 px-4 py-3 bg-white/80 dark:bg-stone-900/80 backdrop-blur-xl border-b border-stone-200/50 dark:border-stone-800/50">
