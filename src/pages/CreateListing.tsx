@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const categories = [
   { value: 'location_espaces', label: 'Location espaces' },
@@ -29,6 +30,7 @@ const priceTypes = [
 const CreateListing = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -71,7 +73,7 @@ const CreateListing = () => {
     e.preventDefault();
     
     if (!formData.title || !formData.category) {
-      toast.error('Veuillez remplir les champs obligatoires');
+      toast.error(t('form.fillRequired'));
       return;
     }
 
@@ -114,11 +116,11 @@ const CreateListing = () => {
 
       if (error) throw error;
 
-      toast.success('Annonce créée avec succès !');
+      toast.success(t('market.listingCreated'));
       navigate('/marketplace');
     } catch (error: any) {
       console.error('Error creating listing:', error);
-      toast.error('Erreur lors de la création de l\'annonce');
+      toast.error(t('market.listingError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -140,8 +142,8 @@ const CreateListing = () => {
         >
           <ArrowLeft className="w-5 h-5 text-stone-700" />
         </Link>
-        <h1 className="text-3xl italic text-stone-800 text-center" style={{ fontFamily: '"Source Serif 4", serif' }}>Nouvelle annonce</h1>
-        <p className="text-stone-500 font-light text-center mt-1">Proposez vos services à la communauté</p>
+        <h1 className="text-3xl italic text-stone-800 text-center" style={{ fontFamily: '"Source Serif 4", serif' }}>{t('market.newListing')}</h1>
+        <p className="text-stone-500 font-light text-center mt-1">{t('market.offerServices')}</p>
       </div>
 
       {/* Form */}
@@ -149,7 +151,7 @@ const CreateListing = () => {
         <div className="space-y-6">
           {/* Image Upload */}
           <div>
-            <Label>Photo</Label>
+            <Label>{t('market.photo')}</Label>
             <div className="mt-2">
               {imagePreview ? (
                 <div className="relative">
@@ -169,7 +171,7 @@ const CreateListing = () => {
               ) : (
                 <label className="flex h-48 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-muted-foreground/30 bg-white/50 dark:bg-stone-800/50 transition-colors hover:border-primary">
                   <Upload className="mb-2 text-muted-foreground" size={32} />
-                  <span className="text-sm text-muted-foreground">Ajouter une photo</span>
+                  <span className="text-sm text-muted-foreground">{t('market.addPhoto')}</span>
                   <input
                     type="file"
                     accept="image/*"
@@ -183,7 +185,7 @@ const CreateListing = () => {
 
           {/* Title */}
           <div>
-            <Label htmlFor="title">Titre *</Label>
+            <Label htmlFor="title">{t('form.titleShort')}</Label>
             <Input
               id="title"
               value={formData.title}
@@ -196,13 +198,13 @@ const CreateListing = () => {
 
           {/* Category */}
           <div>
-            <Label>Catégorie *</Label>
+            <Label>{t('form.category')}</Label>
             <Select
               value={formData.category}
               onValueChange={(value) => setFormData({ ...formData, category: value })}
             >
               <SelectTrigger className="mt-2">
-                <SelectValue placeholder="Sélectionner une catégorie" />
+                <SelectValue placeholder={t('market.selectCategory')} />
               </SelectTrigger>
               <SelectContent>
                 {categories.map((cat) => (
@@ -216,12 +218,12 @@ const CreateListing = () => {
 
           {/* Description */}
           <div>
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t('form.description')}</Label>
             <Textarea
               id="description"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Décrivez votre service en détail..."
+              placeholder={t('market.descPlaceholder')}
               className="mt-2 min-h-[100px]"
             />
           </div>
@@ -229,7 +231,7 @@ const CreateListing = () => {
           {/* Price */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="price">Prix (FCFA)</Label>
+              <Label htmlFor="price">{t('form.priceFCFA')}</Label>
               <Input
                 id="price"
                 type="number"
@@ -261,12 +263,12 @@ const CreateListing = () => {
 
           {/* Location */}
           <div>
-            <Label htmlFor="location">Localisation</Label>
+            <Label htmlFor="location">{t('market.location')}</Label>
             <Input
               id="location"
               value={formData.location}
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-              placeholder="Ex: Cocody, Abidjan"
+              placeholder={t('market.locationPlaceholder')}
               className="mt-2"
             />
           </div>
@@ -274,7 +276,7 @@ const CreateListing = () => {
           {/* Contact */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="phone">Téléphone</Label>
+              <Label htmlFor="phone">{t('form.phoneShort')}</Label>
               <Input
                 id="phone"
                 type="tel"
@@ -285,7 +287,7 @@ const CreateListing = () => {
               />
             </div>
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('auth.email')}</Label>
               <Input
                 id="email"
                 type="email"
@@ -303,7 +305,7 @@ const CreateListing = () => {
             disabled={isSubmitting}
             className="w-full bg-amber-500 hover:bg-amber-600"
           >
-            {isSubmitting ? 'Publication...' : 'Publier l\'annonce'}
+            {isSubmitting ? t('market.publishing') : t('market.publishListing')}
           </Button>
         </div>
       </form>

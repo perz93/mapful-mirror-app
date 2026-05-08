@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { X, Clock, Route as RouteIcon } from 'lucide-react';
 import { useSearch } from '@/contexts/SearchContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import itineraryIcon from '@/assets/itinerary-icon.png';
 
 interface RouteInfoPanelProps {
@@ -21,6 +22,7 @@ const RouteInfoPanel = ({
   routeCoordinates,
 }: RouteInfoPanelProps) => {
   const { routeDestination, setRouteDestination } = useSearch();
+  const { t } = useLanguage();
   const overlayRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -216,7 +218,7 @@ const RouteInfoPanel = ({
             onClick={() => setRouteDestination(null)}
             className="absolute -top-3 -right-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/80 dark:bg-stone-900/80 backdrop-blur-md hover:bg-white dark:hover:bg-stone-900 text-stone-800 dark:text-stone-100 shadow-[0_8px_24px_-6px_rgba(0,0,0,0.25)] hover:shadow-[0_12px_32px_-6px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-95 transition-all duration-300"
             style={{ animation: 'close-btn-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.18s both' }}
-            aria-label="Fermer l'itinéraire"
+            aria-label={t('map.closeRoute')}
           >
             <X size={16} strokeWidth={2.5} />
           </button>
@@ -229,15 +231,15 @@ const RouteInfoPanel = ({
               </div>
 
               <div className="min-w-0 flex-1">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Itinéraire</p>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t('map.route')}</p>
                 <p className="mt-0.5 truncate text-sm font-bold text-foreground">{routeDestination.label}</p>
 
                 {loading && (
-                  <p className="mt-1 text-[11px] font-medium text-muted-foreground">Calcul en cours...</p>
+                  <p className="mt-1 text-[11px] font-medium text-muted-foreground">{t('map.routeCalculating')}</p>
                 )}
 
                 {error && (
-                  <p className="mt-1 text-[11px] font-medium text-destructive">Itinéraire indisponible</p>
+                  <p className="mt-1 text-[11px] font-medium text-destructive">{t('map.routeUnavailable')}</p>
                 )}
 
                 {!loading && !error && distanceKm !== null && durationMin !== null && (

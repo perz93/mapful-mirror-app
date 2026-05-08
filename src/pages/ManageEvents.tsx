@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Event } from '@/hooks/useEvents';
 import ManageEventCard from '@/components/ManageEventCard';
@@ -9,6 +10,7 @@ import mapBackground from '@/assets/map-background.jpg';
 
 const ManageEvents = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -65,7 +67,7 @@ const ManageEvents = () => {
             <ArrowLeft className="w-5 h-5 text-stone-700" />
           </Link>
 
-          <h1 className="text-stone-800 text-lg font-semibold italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>Gérer mes événements</h1>
+          <h1 className="text-stone-800 text-lg font-semibold italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{t('manage.title')}</h1>
 
           <Link
             to="/create-event"
@@ -83,13 +85,13 @@ const ManageEvents = () => {
             </div>
           ) : events.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground mb-4">Vous n'avez créé aucun événement pour le moment</p>
+              <p className="text-muted-foreground mb-4">{t('manage.noEvents')}</p>
               <Link
                 to="/create-event"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-all"
               >
                 <Plus className="w-5 h-5" />
-                Créer un événement
+                {t('event.create')}
               </Link>
             </div>
           ) : (

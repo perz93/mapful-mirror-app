@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, Pencil, Users, Calendar, Heart, Flame, ShoppingBag, Trash2, Edit, Zap } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useEvents, Event } from '@/hooks/useEvents';
 import EventListCard from '@/components/EventListCard';
@@ -23,6 +24,7 @@ const GoingBadge = ({ eventId }: { eventId: string }) => {
 
 const MyAccount = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('events');
@@ -118,13 +120,13 @@ const MyAccount = () => {
   };
 
   const handleDeleteListing = async (listingId: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette annonce ?')) return;
+    if (!confirm(t('account.deleteListingConfirm'))) return;
     const { error } = await supabase.from('marketplace_listings').delete().eq('id', listingId);
     if (error) {
-      toast.error('Erreur lors de la suppression');
+      toast.error(t('account.deleteListingError'));
       return;
     }
-    toast.success('Annonce supprimée');
+    toast.success(t('account.listingDeleted'));
     loadUserListings();
   };
 
@@ -136,11 +138,11 @@ const MyAccount = () => {
     const file = event.target.files?.[0];
     if (!file || !user) return;
     if (!file.type.startsWith('image/')) {
-      toast.error('Veuillez sélectionner une image');
+      toast.error(t('form.invalidImage'));
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("L'image ne doit pas dépasser 5MB");
+      toast.error(t('form.imageTooLarge'));
       return;
     }
     setUploading(true);
@@ -158,22 +160,22 @@ const MyAccount = () => {
       const { error: updateError } = await supabase.from('profiles').update({ avatar_url: publicUrl }).eq('id', user.id);
       if (updateError) throw updateError;
       setProfile({ ...profile, avatar_url: publicUrl });
-      toast.success('Photo de profil mise à jour !');
+      toast.success(t('account.avatarUpdated'));
     } catch (error: any) {
-      toast.error('Erreur lors de la mise à jour de la photo');
+      toast.error(t('account.avatarError'));
     } finally {
       setUploading(false);
     }
   };
 
-  const displayName = profile?.full_name || user?.email?.split('@')[0] || 'Utilisateur';
+  const displayName = profile?.full_name || user?.email?.split('@')[0] || t('user');
   const initials = displayName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
 
   const tabs = [
-    { id: 'events', label: 'Events', icon: Calendar },
-    { id: 'listings', label: 'Annonces', icon: ShoppingBag },
-    { id: 'favorites', label: 'Favoris', icon: Heart },
-    { id: 'activity', label: 'Activité', icon: Zap },
+    { id: 'events', label: t('account.events'), icon: Calendar },
+    { id: 'listings', label: t('account.listings'), icon: ShoppingBag },
+    { id: 'favorites', label: t('account.favorites'), icon: Heart },
+    { id: 'activity', label: t('account.activity'), icon: Zap },
   ];
 
   return (
@@ -192,7 +194,7 @@ const MyAccount = () => {
             <ArrowLeft className="w-5 h-5 text-stone-700" />
           </Link>
           <h1 className="text-lg font-bold italic text-stone-800" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
-            Mon Profil
+            {t('account.title')}
           </h1>
           <div className="w-11 h-11" />
         </div>
@@ -242,12 +244,12 @@ const MyAccount = () => {
             <div className="flex flex-col items-center gap-1 rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-3">
               <Heart size={16} className="text-[#ee9d2b]" />
               <p className="text-xl font-bold text-stone-800">{stats.favorites}</p>
-              <p className="text-[10px] text-stone-500 uppercase tracking-wider">Favoris</p>
+              <p className="text-[10px] text-stone-500 uppercase tracking-wider">{t('account.favorites')}</p>
             </div>
             <div className="flex flex-col items-center gap-1 rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-3">
               <Zap size={16} className="text-[#ee9d2b]" />
               <p className="text-xl font-bold text-stone-800">{goingEvents.length}</p>
-              <p className="text-[10px] text-stone-500 uppercase tracking-wider">J'y vais</p>
+              <p className="text-[10px] text-stone-500 uppercase tracking-wider">{t('account.goingTitle')}</p>
             </div>
           </div>
 
@@ -279,21 +281,21 @@ const MyAccount = () => {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-base font-bold text-stone-800 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
-                    Mes événements
+                    {t('account.myEvents')}
                   </h3>
                   <Link to="/manage-events" className="text-[#ee9d2b] text-xs font-semibold hover:underline">
-                    Gérer tout
+                    {t('account.manageAll')}
                   </Link>
                 </div>
                 {userEvents.length === 0 ? (
                   <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-8 text-center">
                     <Calendar size={32} className="text-stone-300 mx-auto mb-3" />
-                    <p className="text-stone-500 text-sm mb-3">Aucun événement créé</p>
+                    <p className="text-stone-500 text-sm mb-3">{t('account.noEvents')}</p>
                     <Link
                       to="/create-event"
                       className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ee9d2b] text-white text-xs font-semibold hover:opacity-90 transition-all active:scale-95"
                     >
-                      Créer mon premier event
+                      {t('account.createFirst')}
                     </Link>
                   </div>
                 ) : (
@@ -315,21 +317,21 @@ const MyAccount = () => {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-base font-bold text-stone-800 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
-                    Mes annonces
+                    {t('account.myListings')}
                   </h3>
                   <Link to="/create-listing" className="text-[#ee9d2b] text-xs font-semibold hover:underline">
-                    + Créer
+                    {t('account.createListing')}
                   </Link>
                 </div>
                 {userListings.length === 0 ? (
                   <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-8 text-center">
                     <ShoppingBag size={32} className="text-stone-300 mx-auto mb-3" />
-                    <p className="text-stone-500 text-sm mb-3">Aucune annonce</p>
+                    <p className="text-stone-500 text-sm mb-3">{t('account.noListings')}</p>
                     <Link
                       to="/create-listing"
                       className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ee9d2b] text-white text-xs font-semibold hover:opacity-90 transition-all active:scale-95"
                     >
-                      Publier une annonce
+                      {t('account.publishListing')}
                     </Link>
                   </div>
                 ) : (
@@ -377,13 +379,13 @@ const MyAccount = () => {
             {activeTab === 'favorites' && (
               <div>
                 <h3 className="text-base font-bold text-stone-800 italic mb-4" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
-                  Mes favoris
+                  {t('account.myFavorites')}
                 </h3>
                 {favoriteEvents.length === 0 ? (
                   <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-8 text-center">
                     <Heart size={32} className="text-stone-300 mx-auto mb-3" />
-                    <p className="text-stone-500 text-sm mb-1">Aucun favori</p>
-                    <p className="text-stone-400 text-xs">Les events que tu aimes apparaîtront ici</p>
+                    <p className="text-stone-500 text-sm mb-1">{t('account.noFavorites')}</p>
+                    <p className="text-stone-400 text-xs">{t('account.favoritesHint')}</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -403,18 +405,18 @@ const MyAccount = () => {
             {activeTab === 'activity' && (
               <div>
                 <h3 className="text-base font-bold text-stone-800 italic mb-4" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
-                  J'y vais
+                  {t('account.goingTitle')}
                 </h3>
                 {goingEvents.length === 0 ? (
                   <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-8 text-center">
                     <Zap size={32} className="text-stone-300 mx-auto mb-3" />
-                    <p className="text-stone-500 text-sm mb-1">Aucun event prévu</p>
-                    <p className="text-stone-400 text-xs">Clique "J'y vais" sur un event pour le retrouver ici</p>
+                    <p className="text-stone-500 text-sm mb-1">{t('account.noActivity')}</p>
+                    <p className="text-stone-400 text-xs">{t('account.activityHint')}</p>
                     <Link
                       to="/"
                       className="inline-flex items-center gap-2 px-4 py-2 mt-4 rounded-full bg-[#ee9d2b] text-white text-xs font-semibold hover:opacity-90 transition-all active:scale-95"
                     >
-                      Explorer les events
+                      {t('account.explore')}
                     </Link>
                   </div>
                 ) : (

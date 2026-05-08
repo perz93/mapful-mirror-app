@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import HypeBadge from './HypeBadge';
 import HypeBar from './HypeBar';
+import { useLanguage } from '@/contexts/LanguageContext';
 interface CategoryPageProps {
   category: string;
   title: string;
@@ -15,6 +16,7 @@ const CategoryPage = ({
   title,
   iconSrc
 }: CategoryPageProps) => {
+  const { t } = useLanguage();
   const {
     data: events,
     isLoading,
@@ -38,7 +40,7 @@ const CategoryPage = ({
             </div>
           </header>
           <div className="p-4 flex items-center justify-center min-h-[50vh]">
-            <p className="text-stone-600 dark:text-stone-400">Chargement...</p>
+            <p className="text-stone-600 dark:text-stone-400">{t('loading')}</p>
           </div>
         </div>
       </div>;
@@ -58,7 +60,7 @@ const CategoryPage = ({
             </div>
           </header>
           <div className="p-4 flex items-center justify-center min-h-[50vh]">
-            <p className="text-red-600 dark:text-red-400">Erreur lors du chargement des événements</p>
+            <p className="text-red-600 dark:text-red-400">{t('form.loadError')}</p>
           </div>
         </div>
       </div>;
@@ -79,7 +81,7 @@ const CategoryPage = ({
 
         <div className="p-4 space-y-5">
           {!events || events.length === 0 ? <div className="flex items-center justify-center min-h-[50vh]">
-              <p className="text-stone-600 dark:text-stone-400">Aucun événement dans cette catégorie pour le moment</p>
+              <p className="text-stone-600 dark:text-stone-400">{t('event.noEvents')}</p>
             </div> : events.map((event, i) => <Link key={event.id} to={`/event/${event.id}`} className="block group">
                 <div
                   className="overflow-hidden rounded-3xl bg-white dark:bg-stone-900 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.1)] hover:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.18)] transition-all duration-500 hover:scale-[1.02] border border-white/80 dark:border-stone-700/40 animate-fade-in"

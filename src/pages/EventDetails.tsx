@@ -7,6 +7,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import ContactFab from '@/components/ContactFab';
 import ImageLightbox from '@/components/ImageLightbox';
@@ -17,6 +19,7 @@ import HypeBar from '@/components/HypeBar';
 const EventDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t, lang } = useLanguage();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [reminderSet, setReminderSet] = useState(false);
 
@@ -56,14 +59,14 @@ const EventDetails = () => {
       delete reminders[id];
       localStorage.setItem('event_reminders', JSON.stringify(reminders));
       setReminderSet(false);
-      toast.success('Rappel supprimé');
+      toast.success(t('reminder.removed'));
       return;
     }
 
     if ('Notification' in window && Notification.permission === 'default') {
       const perm = await Notification.requestPermission();
       if (perm !== 'granted') {
-        toast.error('Active les notifications pour les rappels');
+        toast.error(t('reminder.enableNotif'));
         return;
       }
     }
@@ -84,7 +87,7 @@ const EventDetails = () => {
     const msUntilReminder = reminderTime.getTime() - Date.now();
     if (msUntilReminder > 0 && 'Notification' in window && Notification.permission === 'granted') {
       setTimeout(() => {
-        new Notification(`${event.title} dans 1h !`, {
+        new Notification(`${event.title} ${t('reminder.title')}`, {
           body: `${event.venue} — ${event.time}`,
           icon: '/icon-192.png',
           tag: `reminder-${id}`,
@@ -92,13 +95,13 @@ const EventDetails = () => {
       }, Math.min(msUntilReminder, 2147483647));
     }
 
-    toast.success('Rappel activé — 1h avant l\'événement');
+    toast.success(t('reminder.set'));
   }, [id, event, reminderSet]);
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center">
-        <div className="text-stone-600 dark:text-stone-400">Chargement...</div>
+        <div className="text-stone-600 dark:text-stone-400">{t('loading')}</div>
       </div>
     );
   }
@@ -107,16 +110,16 @@ const EventDetails = () => {
     return (
       <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center p-4">
         <div className="text-center">
-          <p className="text-stone-600 dark:text-stone-400 mb-4">Événement introuvable</p>
+          <p className="text-stone-600 dark:text-stone-400 mb-4">{t('event.notFound')}</p>
           <Link to="/">
-            <Button>Retour à l'accueil</Button>
+            <Button>{t('event.backHome')}</Button>
           </Link>
         </div>
       </div>
     );
   }
 
-  const formattedDate = format(new Date(event.date), "EEEE d MMMM yyyy", { locale: fr });
+  const formattedDate = format(new Date(event.date), "EEEE d MMMM yyyy", { locale: lang === 'fr' ? fr : enUS });
   const formattedTime = event.time.substring(0, 5);
   const keyPoints = event.key_points as string[] | null;
 
@@ -164,7 +167,7 @@ const EventDetails = () => {
                     }).catch(() => {});
                   } else {
                     navigator.clipboard.writeText(window.location.href);
-                    toast.success('Lien copié !');
+                    toast.success(t('event.share'));
                   }
                 }}
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
@@ -201,7 +204,7 @@ const EventDetails = () => {
               </div>
               <div className="flex-1">
                 <p className="font-semibold text-stone-900 dark:text-white italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{event.venue}</p>
-                <p className="text-sm text-stone-600 dark:text-stone-400">{event.address || 'Adresse non spécifiée'}</p>
+                <p className="text-sm text-stone-600 dark:text-stone-400">{event.address || t('event.addressUnspecified')}</p>
               </div>
             </div>
 
@@ -221,7 +224,7 @@ const EventDetails = () => {
               </div>
               <div>
                 <p className="font-semibold text-stone-900 dark:text-white">
-                  {event.capacity ? `${event.capacity} personnes` : 'Capacité illimitée'}
+                  {event.capacity ? `${event.capacity} ${t('event.capacity')}` : t('event.unlimitedCapacity')}
                 </p>
               </div>
             </div>
@@ -241,7 +244,7 @@ const EventDetails = () => {
                 <div className="flex items-center gap-3 mb-8">
                   <div className="h-px flex-1 bg-gradient-to-r from-transparent to-stone-300 dark:to-stone-700" />
                   <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-500 dark:text-stone-400">
-                    Points clés
+                    {t('event.keyPoints')}
                   </h2>
                   <div className="h-px flex-1 bg-gradient-to-l from-transparent to-stone-300 dark:to-stone-700" />
                 </div>
@@ -268,7 +271,7 @@ const EventDetails = () => {
                             <div className={`absolute -left-2 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full ${color.bg}`} />
                             <div className="bg-white dark:bg-stone-900 rounded-xl px-4 py-3 shadow-sm border border-stone-100 dark:border-stone-800 transition-all group-hover:shadow-md group-hover:border-stone-200 dark:group-hover:border-stone-700">
                               <p className={`text-[10px] font-bold uppercase tracking-[0.15em] ${color.text} mb-1`}>
-                                Étape {String(index + 1).padStart(2, '0')}
+                                {t('event.step')} {String(index + 1).padStart(2, '0')}
                               </p>
                               <p className="text-stone-800 dark:text-stone-200 text-sm leading-relaxed font-medium">
                                 {point}
@@ -286,7 +289,7 @@ const EventDetails = () => {
 
           {event.description && (
             <div className="border-t border-stone-200 dark:border-stone-800 pt-6">
-              <h2 className="text-xl font-bold text-stone-900 dark:text-white mb-3 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>À propos de cet événement</h2>
+              <h2 className="text-xl font-bold text-stone-900 dark:text-white mb-3 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{t('event.about')}</h2>
               <p className="text-stone-600 dark:text-stone-400 leading-relaxed italic font-semibold" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
                 {event.description}
               </p>
@@ -298,10 +301,10 @@ const EventDetails = () => {
             <div className="flex items-center justify-between mt-4">
               <div>
                 <p className="text-sm text-stone-600 dark:text-stone-400">
-                  {event.is_paid ? 'Prix' : 'Entrée'}
+                  {event.is_paid ? t('event.price') : t('event.entry')}
                 </p>
                 <p className="text-3xl font-bold text-stone-900 dark:text-white">
-                  {event.is_paid && event.price ? `${event.price} FCFA` : 'Gratuit'}
+                  {event.is_paid && event.price ? `${event.price} FCFA` : t('event.free')}
                 </p>
               </div>
             </div>
@@ -331,6 +334,7 @@ const EventDetails = () => {
 };
 
 const GoingSection = ({ eventId, capacity }: { eventId: string; capacity?: number }) => {
+  const { t } = useLanguage();
   const { isGoing, count, toggleGoing, loading } = useAttendees(eventId);
   const pct = capacity ? Math.min(Math.round((count / capacity) * 100), 100) : null;
 
@@ -362,11 +366,11 @@ const GoingSection = ({ eventId, capacity }: { eventId: string; capacity?: numbe
             </div>
             <div>
               <p className="text-base font-bold text-stone-900 dark:text-white">
-                {count} <span className="font-medium text-stone-500 dark:text-stone-400 text-sm">y vont</span>
+                {count} <span className="font-medium text-stone-500 dark:text-stone-400 text-sm">{t('event.attendees')}</span>
               </p>
               {pct !== null && (
                 <p className="text-[11px] text-stone-400 dark:text-stone-500">
-                  {pct}% des places prises
+                  {pct}{t('event.percentFilled')}
                 </p>
               )}
             </div>
@@ -385,12 +389,12 @@ const GoingSection = ({ eventId, capacity }: { eventId: string; capacity?: numbe
               {isGoing ? (
                 <>
                   <Sparkles size={14} />
-                  J'y serai !
+                  {t('event.goingConfirm')}
                 </>
               ) : (
                 <>
                   <Flame size={14} />
-                  J'y vais
+                  {t('event.going')}
                 </>
               )}
             </span>
@@ -402,7 +406,7 @@ const GoingSection = ({ eventId, capacity }: { eventId: string; capacity?: numbe
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#ee9d2b]/10 border border-[#ee9d2b]/20">
             <CheckCircle2 size={14} className="text-[#ee9d2b] flex-shrink-0" />
             <p className="text-xs font-medium text-[#ee9d2b]">
-              Tu es inscrit ! On t'attend.
+              {t('event.enrolled')}
             </p>
           </div>
         )}

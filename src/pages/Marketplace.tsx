@@ -4,6 +4,7 @@ import { ArrowLeft, Plus, MapPin, Phone, Mail, Building2, UtensilsCrossed, Music
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import mapBackground from '@/assets/map-background.jpg';
@@ -21,6 +22,7 @@ type CategoryKey = keyof typeof categoryConfig;
 const Marketplace = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState<CategoryKey | 'all'>('all');
 
   const { data: listings, isLoading } = useQuery({
@@ -66,7 +68,7 @@ const Marketplace = () => {
         >
           <ArrowLeft className="text-stone-700" size={20} />
         </Link>
-        <h1 className="text-xl font-bold italic text-stone-800" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>Marketplace</h1>
+        <h1 className="text-xl font-bold italic text-stone-800" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{t('market.title')}</h1>
         <Button
           onClick={handleCreateListing}
           size="icon"
@@ -87,7 +89,7 @@ const Marketplace = () => {
                 : 'bg-white/60 backdrop-blur-md text-stone-600 border border-white/60'
             }`}
           >
-            Tout
+            {t('market.all')}
           </button>
           {(Object.keys(categoryConfig) as CategoryKey[]).map((key) => {
             const config = categoryConfig[key];
@@ -155,9 +157,9 @@ const Marketplace = () => {
                         <div className="text-right">
                           <p className="font-bold text-primary">{listing.price.toLocaleString()} FCFA</p>
                           <p className="text-xs text-muted-foreground">
-                            {listing.price_type === 'hourly' && '/heure'}
-                            {listing.price_type === 'daily' && '/jour'}
-                            {listing.price_type === 'negotiable' && 'Négociable'}
+                            {listing.price_type === 'hourly' && t('market.perHour')}
+                            {listing.price_type === 'daily' && t('market.perDay')}
+                            {listing.price_type === 'negotiable' && t('market.negotiable')}
                           </p>
                         </div>
                       )}
@@ -186,13 +188,13 @@ const Marketplace = () => {
             <div className="mb-4 rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 p-6">
               <Building2 className="text-stone-400" size={48} />
             </div>
-            <h3 className="mb-2 text-lg font-semibold text-stone-800 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>Aucune annonce</h3>
+            <h3 className="mb-2 text-lg font-semibold text-stone-800 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{t('market.noListings')}</h3>
             <p className="mb-4 text-sm text-stone-500">
-              Soyez le premier à proposer vos services !
+              {t('market.beFirst')}
             </p>
             <Button onClick={handleCreateListing} className="bg-amber-500 hover:bg-amber-600 rounded-full px-6">
               <Plus size={16} className="mr-2" />
-              Créer une annonce
+              {t('market.createListing')}
             </Button>
           </div>
         )}

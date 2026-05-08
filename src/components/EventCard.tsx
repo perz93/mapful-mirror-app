@@ -5,7 +5,9 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import EventCardSkeleton from './EventCardSkeleton';
 import HypeBadge from './HypeBadge';
+import { useLanguage } from '@/contexts/LanguageContext';
 const EventCard = () => {
+  const { t } = useLanguage();
   const {
     data: events,
     isLoading
@@ -57,7 +59,7 @@ const EventCard = () => {
               </div>
             </div>
             <Link to={`/event/${currentEvent.id}`} className="flex w-fit cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#ee9d2b] text-white text-xs font-semibold leading-normal hover:opacity-90 transition-all active:scale-95 shadow-md">
-              <span>Voir détails</span>
+              <span>{t('seeDetails')}</span>
             </Link>
           </div>
           <div style={{

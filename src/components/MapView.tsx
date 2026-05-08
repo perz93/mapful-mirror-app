@@ -7,6 +7,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import 'leaflet.heat';
 import { useNavigate } from 'react-router-dom';
 import { useSearch } from '@/contexts/SearchContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useEvents } from '@/hooks/useEvents';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { format, parseISO } from 'date-fns';
@@ -31,6 +32,7 @@ const MapView = () => {
   const mapInstanceRef = useRef<L.Map | null>(null);
   const navigate = useNavigate();
   const { searchQuery, selectedCategories, routeDestination, setRouteDestination, distanceFilter, dateFilter, priceFilter } = useSearch();
+  const { t } = useLanguage();
   const { data: events, isLoading } = useEvents();
   const geo = useGeolocation();
 
@@ -202,7 +204,7 @@ const MapView = () => {
       });
       userMarkerRef.current = L.marker([lat, lng], { icon: userIcon })
         .addTo(map)
-        .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
+        .bindPopup(`<div class="popup-body"><strong>${t('map.yourPosition')}</strong></div>`);
     } else {
       userMarkerRef.current.setLatLng([lat, lng]);
     }
@@ -235,7 +237,7 @@ const MapView = () => {
             });
             userMarkerRef.current = L.marker([latitude, longitude], { icon: userIcon })
               .addTo(map)
-              .bindPopup('<div class="popup-body"><strong>Votre position</strong></div>');
+              .bindPopup(`<div class="popup-body"><strong>${t('map.yourPosition')}</strong></div>`);
           } else {
             userMarkerRef.current.setLatLng([latitude, longitude]);
           }
@@ -257,14 +259,14 @@ const MapView = () => {
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
             const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true;
             if (isIOS && isStandalone) {
-              toast.error('Réglages iPhone → VIBE → Position → Activer', { duration: 6000 });
+              toast.error(t('map.iosVibe'), { duration: 6000 });
             } else if (isIOS) {
-              toast.error('Réglages iPhone → Safari → Position → Autoriser', { duration: 6000 });
+              toast.error(t('map.iosSafari'), { duration: 6000 });
             } else {
-              toast.error('Activez la localisation dans les paramètres du navigateur', { duration: 5000 });
+              toast.error(t('map.enableLocation'), { duration: 5000 });
             }
           } else {
-            toast.error('Position GPS introuvable, réessayez');
+            toast.error(t('map.gpsNotFound'));
           }
         },
         { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
@@ -649,7 +651,7 @@ const MapView = () => {
     destinationMarkerRef.current = L.marker([routeDestination.lat, routeDestination.lng], { icon: destIcon }).addTo(map);
 
     if (!geo.position) {
-      toast.error('Activez la localisation pour calculer un itinéraire');
+      toast.error(t('map.enableForRoute'));
       setRouteInfo({ distanceKm: null, durationMin: null, loading: false, error: true });
       return;
     }

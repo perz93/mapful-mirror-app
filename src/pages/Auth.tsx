@@ -4,6 +4,7 @@ import { X, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import mapBackground from "@/assets/map-background.jpg";
@@ -12,6 +13,7 @@ import { getSiteUrl } from "@/lib/siteUrl";
 const Auth = () => {
   const navigate = useNavigate();
   const { signUp, signIn, user } = useAuth();
+  const { t } = useLanguage();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,12 +35,12 @@ const Auth = () => {
     e.preventDefault();
 
     if (!isLogin && password !== confirmPassword) {
-      toast.error("Les mots de passe ne correspondent pas");
+      toast.error(t('auth.passwordMismatch'));
       return;
     }
 
     if (!isLogin && !acceptTerms) {
-      toast.error("Veuillez accepter les conditions d'utilisation");
+      toast.error(t('auth.acceptTermsRequired'));
       return;
     }
 
@@ -55,7 +57,7 @@ const Auth = () => {
 
   const handleForgotPassword = async () => {
     if (!email) {
-      toast.error("Veuillez entrer votre email");
+      toast.error(t('auth.enterEmail'));
       return;
     }
 
@@ -64,9 +66,9 @@ const Auth = () => {
     });
 
     if (error) {
-      toast.error("Erreur lors de l'envoi de l'email");
+      toast.error(t('auth.resetSendError'));
     } else {
-      toast.success("Email de réinitialisation envoyé !");
+      toast.success(t('auth.resetSent'));
     }
   };
 
@@ -104,16 +106,16 @@ const Auth = () => {
             <button
               onClick={() => navigate("/")}
               className="absolute top-4 left-4 w-11 h-11 rounded-full bg-white/80 dark:bg-stone-900/80 backdrop-blur-md hover:bg-white dark:hover:bg-stone-900 flex items-center justify-center shadow-[0_8px_24px_-6px_rgba(0,0,0,0.25)] hover:shadow-[0_12px_32px_-6px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-95 transition-all duration-300 z-10"
-              aria-label="Fermer"
+              aria-label={t('close')}
             >
               <X className="w-4 h-4 text-stone-800 dark:text-stone-100" strokeWidth={2.5} />
             </button>
 
             {/* Header */}
             <div className="text-center mt-6 mb-6">
-              <h1 className="text-2xl font-bold italic mb-2" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>Bienvenue</h1>
+              <h1 className="text-2xl font-bold italic mb-2" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{t('auth.welcome')}</h1>
               <p className="text-muted-foreground text-base">
-                Découvrez votre ville autrement
+                {t('auth.discoverCity')}
               </p>
             </div>
 
@@ -130,7 +132,7 @@ const Auth = () => {
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="Mot de passe"
+                  placeholder={t('auth.password')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -153,7 +155,7 @@ const Auth = () => {
                   onClick={handleForgotPassword}
                   className="text-xs text-muted-foreground hover:text-foreground transition-colors underline"
                 >
-                  Mot de passe oublié ?
+                  {t('auth.forgotPassword')}
                 </button>
               </div>
             </form>
@@ -171,7 +173,7 @@ const Auth = () => {
                 }}
                 disabled={loading}
               >
-                S&apos;inscrire
+                {t('auth.signup')}
               </Button>
               <Button
                 type="submit"
@@ -179,13 +181,13 @@ const Auth = () => {
                 onClick={handleSubmit}
                 disabled={loading}
               >
-                {loading ? "..." : "Se connecter"}
+                {loading ? "..." : t('auth.login')}
               </Button>
             </div>
 
             {/* Footer Text */}
             <p className="text-center text-xs text-muted-foreground">
-              Explorez les événements près de chez vous
+              {t('auth.exploreNearby')}
             </p>
           </div>
 
@@ -204,16 +206,16 @@ const Auth = () => {
             <button
               onClick={() => navigate("/")}
               className="absolute top-4 left-4 w-11 h-11 rounded-full bg-white/80 dark:bg-stone-900/80 backdrop-blur-md hover:bg-white dark:hover:bg-stone-900 flex items-center justify-center shadow-[0_8px_24px_-6px_rgba(0,0,0,0.25)] hover:shadow-[0_12px_32px_-6px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-95 transition-all duration-300 z-10"
-              aria-label="Fermer"
+              aria-label={t('close')}
             >
               <X className="w-4 h-4 text-stone-800 dark:text-stone-100" strokeWidth={2.5} />
             </button>
 
             {/* Header */}
             <div className="text-center mt-6 mb-6">
-              <h1 className="text-2xl font-bold italic mb-2" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>Rejoignez-nous</h1>
+              <h1 className="text-2xl font-bold italic mb-2" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{t('auth.joinUs')}</h1>
               <p className="text-muted-foreground text-base">
-                Vivez chaque instant qui compte
+                {t('auth.liveEveryMoment')}
               </p>
             </div>
 
@@ -221,7 +223,7 @@ const Auth = () => {
             <form onSubmit={handleSubmit} className="space-y-3 mb-6">
               <input
                 type="text"
-                placeholder="Nom complet"
+                placeholder={t('auth.fullName')}
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 className="w-full px-5 py-3 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all text-sm"
@@ -237,7 +239,7 @@ const Auth = () => {
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="Mot de passe"
+                  placeholder={t('auth.password')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -255,7 +257,7 @@ const Auth = () => {
               <div className="relative">
                 <input
                   type={showConfirmPassword ? "text" : "password"}
-                  placeholder="Confirmer le mot de passe"
+                  placeholder={t('auth.confirmPassword')}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
@@ -283,13 +285,13 @@ const Auth = () => {
                   htmlFor="terms"
                   className="text-xs text-muted-foreground leading-tight cursor-pointer"
                 >
-                  J&apos;accepte les{" "}
+                  {t('auth.acceptTerms')}{" "}
                   <a href="/terms" className="text-foreground underline hover:opacity-80">
-                    conditions d&apos;utilisation
+                    {t('auth.termsOfUse')}
                   </a>{" "}
-                  et la{" "}
+                  {t('auth.andThe')}{" "}
                   <a href="/privacy" className="text-foreground underline hover:opacity-80">
-                    politique de confidentialité
+                    {t('auth.privacyPolicy')}
                   </a>
                 </label>
               </div>
@@ -308,7 +310,7 @@ const Auth = () => {
                 }}
                 disabled={loading}
               >
-                Se connecter
+                {t('auth.login')}
               </Button>
               <Button
                 type="submit"
@@ -316,13 +318,13 @@ const Auth = () => {
                 onClick={handleSubmit}
                 disabled={loading}
               >
-                {loading ? "..." : "S'inscrire"}
+                {loading ? "..." : t('auth.signup')}
               </Button>
             </div>
 
             {/* Footer Text */}
             <p className="text-center text-xs text-muted-foreground">
-              Partagez vos moments avec la communauté
+              {t('auth.shareWithCommunity')}
             </p>
           </div>
         </div>

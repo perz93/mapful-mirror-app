@@ -1,5 +1,6 @@
 import { Flame, Users, Zap } from 'lucide-react';
 import { useAttendees } from '@/hooks/useAttendees';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface HypeBarProps {
   eventId: string;
@@ -7,6 +8,7 @@ interface HypeBarProps {
 }
 
 const HypeBar = ({ eventId, maxCapacity = 50 }: HypeBarProps) => {
+  const { t } = useLanguage();
   const { count } = useAttendees(eventId);
   const percentage = Math.min((count / maxCapacity) * 100, 100);
 
@@ -19,10 +21,10 @@ const HypeBar = ({ eventId, maxCapacity = 50 }: HypeBarProps) => {
   };
 
   const getLabel = () => {
-    if (percentage >= 90) return 'Complet !';
-    if (percentage >= 60) return 'Places limitées';
-    if (percentage >= 35) return 'Ca monte !';
-    if (percentage >= 15) return 'Tendance';
+    if (percentage >= 90) return t('hype.full');
+    if (percentage >= 60) return t('hype.limited');
+    if (percentage >= 35) return t('hype.rising');
+    if (percentage >= 15) return t('hype.trending');
     return '';
   };
 
@@ -45,7 +47,7 @@ const HypeBar = ({ eventId, maxCapacity = 50 }: HypeBarProps) => {
         <div className="flex items-center gap-1.5">
           {getIcon()}
           <span className="text-xs font-semibold text-stone-700 dark:text-stone-300">
-            {count}/{maxCapacity} y vont
+            {count}/{maxCapacity} {t('event.attendees')}
           </span>
         </div>
         {getLabel() && (
@@ -69,7 +71,7 @@ const HypeBar = ({ eventId, maxCapacity = 50 }: HypeBarProps) => {
       {percentage > 0 && (
         <div className="flex justify-end">
           <span className="text-[10px] text-stone-400 dark:text-stone-500">
-            {Math.round(percentage)}% rempli
+            {Math.round(percentage)}{t('hype.filled')}
           </span>
         </div>
       )}

@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Bell, BellOff, Check, CheckCheck } from 'lucide-react';
 import { useNotificationInbox } from '@/hooks/useNotificationInbox';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
@@ -15,6 +16,7 @@ const typeIcons: Record<string, string> = {
 const Notifications = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const { notifications, unreadCount, loading, markAsRead, markAllAsRead } = useNotificationInbox();
 
   if (!user) {
@@ -25,14 +27,14 @@ const Notifications = () => {
             <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800">
               <ArrowLeft size={22} />
             </button>
-            <h1 className="text-lg font-bold">Notifications</h1>
+            <h1 className="text-lg font-bold">{t('notif.title')}</h1>
           </div>
         </div>
         <div className="flex flex-col items-center justify-center h-screen gap-4 px-6">
           <BellOff size={48} className="text-stone-300" />
-          <p className="text-stone-500 text-center">Connecte-toi pour voir tes notifications</p>
+          <p className="text-stone-500 text-center">{t('auth.loginToSee')}</p>
           <button onClick={() => navigate('/auth')} className="px-6 py-3 rounded-2xl bg-[#ee9d2b] text-white font-semibold">
-            Se connecter
+            {t('auth.login')}
           </button>
         </div>
       </div>
@@ -48,9 +50,9 @@ const Notifications = () => {
             <ArrowLeft size={22} className="text-stone-900 dark:text-white" />
           </button>
           <div className="flex-1">
-            <h1 className="text-lg font-bold text-stone-900 dark:text-white">Notifications</h1>
+            <h1 className="text-lg font-bold text-stone-900 dark:text-white">{t('notif.title')}</h1>
             {unreadCount > 0 && (
-              <p className="text-xs text-stone-500">{unreadCount} non lue{unreadCount > 1 ? 's' : ''}</p>
+              <p className="text-xs text-stone-500">{unreadCount} {unreadCount > 1 ? t('notif.unreadPlural') : t('notif.unread')}</p>
             )}
           </div>
           {unreadCount > 0 && (
@@ -59,7 +61,7 @@ const Notifications = () => {
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#ee9d2b]/10 text-[#ee9d2b] text-xs font-semibold hover:bg-[#ee9d2b]/20 transition-colors"
             >
               <CheckCheck size={14} />
-              Tout lire
+              {t('notif.markAllRead')}
             </button>
           )}
         </div>
@@ -85,10 +87,10 @@ const Notifications = () => {
               <Bell size={36} className="text-stone-300 dark:text-stone-600" />
             </div>
             <p className="text-stone-500 dark:text-stone-400 text-center text-sm">
-              Aucune notification pour le moment
+              {t('notif.empty')}
             </p>
             <p className="text-stone-400 dark:text-stone-500 text-center text-xs max-w-[250px]">
-              Tu recevras des notifications quand de nouveaux events seront publiés près de toi
+              {t('notif.emptyHint')}
             </p>
           </div>
         ) : (

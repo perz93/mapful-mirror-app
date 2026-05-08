@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Clock, Zap } from 'lucide-react';
 import { isPast } from 'date-fns';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface CountdownTimerProps {
   eventDate: string;
@@ -15,6 +16,7 @@ interface TimeLeft {
 }
 
 const CountdownTimer = ({ eventDate, eventTime }: CountdownTimerProps) => {
+  const { t } = useLanguage();
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
   const [isLive, setIsLive] = useState(false);
 
@@ -50,7 +52,7 @@ const CountdownTimer = ({ eventDate, eventTime }: CountdownTimerProps) => {
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
           <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500" />
         </div>
-        <span className="text-sm font-bold text-red-500 uppercase tracking-wider">En cours maintenant</span>
+        <span className="text-sm font-bold text-red-500 uppercase tracking-wider">{t('countdown.happening')}</span>
       </div>
     );
   }
@@ -61,10 +63,10 @@ const CountdownTimer = ({ eventDate, eventTime }: CountdownTimerProps) => {
   const isSoon = timeLeft.days <= 1;
 
   const blocks = [
-    { value: timeLeft.days, label: 'Jours' },
-    { value: timeLeft.hours, label: 'Heures' },
-    { value: timeLeft.minutes, label: 'Min' },
-    { value: timeLeft.seconds, label: 'Sec' },
+    { value: timeLeft.days, label: t('countdown.days') },
+    { value: timeLeft.hours, label: t('countdown.hours') },
+    { value: timeLeft.minutes, label: t('countdown.min') },
+    { value: timeLeft.seconds, label: t('countdown.sec') },
   ];
 
   return (
@@ -76,7 +78,7 @@ const CountdownTimer = ({ eventDate, eventTime }: CountdownTimerProps) => {
           <Clock size={16} className={isSoon ? 'text-amber-500' : 'text-stone-500'} />
         )}
         <span className={`text-xs font-bold uppercase tracking-[0.15em] ${isUrgent ? 'text-red-500' : isSoon ? 'text-amber-500' : 'text-stone-500'}`}>
-          {isUrgent ? 'Commence bientôt !' : isSoon ? 'C\'est demain !' : 'Compte à rebours'}
+          {isUrgent ? t('countdown.soon') : isSoon ? t('countdown.tomorrow') : t('countdown.title')}
         </span>
       </div>
       <div className="grid grid-cols-4 gap-2">

@@ -9,21 +9,22 @@ import {
 import { useSearch } from '@/contexts/SearchContext';
 import { useEvents } from '@/hooks/useEvents';
 import { fuzzyMatch } from '@/lib/fuzzyMatch';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const HISTORY_KEY = 'search_history';
 const MAX_HISTORY = 8;
 
 const CATEGORIES = [
-  { id: 'music', label: 'Musique', color: 'bg-purple-500' },
-  { id: 'sports', label: 'Sports', color: 'bg-green-500' },
-  { id: 'food', label: 'Food', color: 'bg-orange-500' },
-  { id: 'arts', label: 'Arts', color: 'bg-pink-500' },
-  { id: 'meetups', label: 'Meetups', color: 'bg-blue-500' },
-  { id: 'conferences', label: 'Conférences', color: 'bg-indigo-500' },
-  { id: 'workshops', label: 'Ateliers', color: 'bg-yellow-500' },
-  { id: 'festivals', label: 'Festivals', color: 'bg-red-500' },
-  { id: 'shows', label: 'Spectacles', color: 'bg-teal-500' },
-  { id: 'exhibitions', label: 'Expositions', color: 'bg-cyan-500' },
+  { id: 'music', labelKey: 'cat.music', color: 'bg-purple-500' },
+  { id: 'sports', labelKey: 'cat.sports', color: 'bg-green-500' },
+  { id: 'food', labelKey: 'Food', color: 'bg-orange-500' },
+  { id: 'arts', labelKey: 'Arts', color: 'bg-pink-500' },
+  { id: 'meetups', labelKey: 'cat.meetups', color: 'bg-blue-500' },
+  { id: 'conferences', labelKey: 'cat.conferences', color: 'bg-indigo-500' },
+  { id: 'workshops', labelKey: 'cat.workshops', color: 'bg-yellow-500' },
+  { id: 'festivals', labelKey: 'cat.festivals', color: 'bg-red-500' },
+  { id: 'shows', labelKey: 'cat.shows', color: 'bg-teal-500' },
+  { id: 'exhibitions', labelKey: 'cat.exhibitions', color: 'bg-cyan-500' },
 ];
 
 interface AddressResult {
@@ -33,6 +34,7 @@ interface AddressResult {
 }
 
 const SearchBar = () => {
+  const { t } = useLanguage();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const debounceRef = useRef<number | null>(null);
   const { searchQuery, setSearchQuery, selectedCategories, setSelectedCategories, toggleCategory, setRouteDestination, dateFilter, setDateFilter, priceFilter, setPriceFilter, distanceFilter, setDistanceFilter } = useSearch();
@@ -162,7 +164,7 @@ const SearchBar = () => {
               ref={inputRef}
               type="text"
               inputMode="text"
-              placeholder="Rechercher événement ou adresse..."
+              placeholder={t('search.placeholder')}
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"
@@ -194,8 +196,8 @@ const SearchBar = () => {
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={clearSearch}
                 className="absolute top-1/2 -translate-y-1/2 right-2 h-7 w-7 rounded-full bg-stone-200/90 dark:bg-stone-700/90 hover:bg-stone-300 dark:hover:bg-stone-600 text-stone-700 dark:text-stone-200 flex items-center justify-center shadow-sm transition-all active:scale-90 animate-fade-in"
-                aria-label="Effacer la recherche"
-                title="Effacer"
+                aria-label={t('search.clear')}
+                title={t('search.clearBtn')}
               >
                 <X size={14} strokeWidth={2.5} />
               </button>
@@ -239,8 +241,8 @@ const SearchBar = () => {
                     <Calendar className="h-5 w-5 text-primary" strokeWidth={1.5} />
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold text-stone-900 dark:text-white text-sm">Créer un événement</p>
-                    <p className="text-xs text-stone-500 dark:text-stone-400 font-light">Organiser un nouvel événement</p>
+                    <p className="font-semibold text-stone-900 dark:text-white text-sm">{t('menu.createEvent')}</p>
+                    <p className="text-xs text-stone-500 dark:text-stone-400 font-light">{t('menu.organizeEvent')}</p>
                   </div>
                 </a>
               </DropdownMenuItem>
@@ -250,8 +252,8 @@ const SearchBar = () => {
                     <User className="h-5 w-5 text-primary" strokeWidth={1.5} />
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold text-stone-900 dark:text-white text-sm">Mon compte</p>
-                    <p className="text-xs text-stone-500 dark:text-stone-400 font-light">Gérer votre profil</p>
+                    <p className="font-semibold text-stone-900 dark:text-white text-sm">{t('menu.account')}</p>
+                    <p className="text-xs text-stone-500 dark:text-stone-400 font-light">{t('menu.manageProfile')}</p>
                   </div>
                 </a>
               </DropdownMenuItem>
@@ -261,8 +263,8 @@ const SearchBar = () => {
                     <Settings className="h-5 w-5 text-primary" strokeWidth={1.5} />
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold text-stone-900 dark:text-white text-sm">Paramètres</p>
-                    <p className="text-xs text-stone-500 dark:text-stone-400 font-light">Préférences et confidentialité</p>
+                    <p className="font-semibold text-stone-900 dark:text-white text-sm">{t('menu.settings')}</p>
+                    <p className="text-xs text-stone-500 dark:text-stone-400 font-light">{t('menu.settingsDesc')}</p>
                   </div>
                 </div>
               </DropdownMenuItem>
@@ -278,14 +280,14 @@ const SearchBar = () => {
                 <div className="p-2">
                   <div className="flex items-center justify-between px-3 py-1.5">
                     <p className="text-[11px] uppercase tracking-wider font-semibold text-stone-500 dark:text-stone-400 flex items-center gap-1.5">
-                      <Clock size={11} /> Recherches récentes
+                      <Clock size={11} /> {t('search.recent')}
                     </p>
                     <button
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={clearAllHistory}
                       className="text-[11px] text-primary hover:underline font-medium"
                     >
-                      Tout effacer
+                      {t('search.clearAll')}
                     </button>
                   </div>
                   {history.map((term) => (
@@ -307,7 +309,7 @@ const SearchBar = () => {
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={(e) => { e.stopPropagation(); removeHistoryItem(term); }}
                         className="h-7 w-7 rounded-full hover:bg-stone-200 dark:hover:bg-stone-700 flex items-center justify-center text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-all flex-shrink-0"
-                        aria-label={`Supprimer ${term}`}
+                        aria-label={`${t('delete')} ${term}`}
                       >
                         <X size={14} />
                       </button>
@@ -317,7 +319,7 @@ const SearchBar = () => {
               )}
               {matchingEvents.length > 0 && (
                 <div className="p-2">
-                  <p className="px-3 py-1.5 text-[11px] uppercase tracking-wider font-semibold text-stone-500 dark:text-stone-400">Événements</p>
+                  <p className="px-3 py-1.5 text-[11px] uppercase tracking-wider font-semibold text-stone-500 dark:text-stone-400">{t('search.events')}</p>
                   {matchingEvents.map(ev => (
                     <button
                       key={ev.id}
@@ -340,7 +342,7 @@ const SearchBar = () => {
               {(addressResults.length > 0 || searchingAddress) && (
                 <div className="p-2 border-t border-stone-100 dark:border-stone-800">
                   <p className="px-3 py-1.5 text-[11px] uppercase tracking-wider font-semibold text-stone-500 dark:text-stone-400 flex items-center gap-2">
-                    <Navigation size={11} /> Itinéraire vers une adresse
+                    <Navigation size={11} /> {t('search.routeTo')}
                     {searchingAddress && <Loader2 size={11} className="animate-spin" />}
                   </p>
                   {addressResults.map((r, i) => (
@@ -373,14 +375,14 @@ const SearchBar = () => {
             <div className="rounded-2xl backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 border border-white/60 dark:border-stone-800/60 shadow-2xl p-4">
               {searchQuery.trim().length > 0 && (
                 <div className="mb-3">
-                  <p className="text-[11px] uppercase tracking-wider font-semibold text-stone-500 dark:text-stone-400 mb-2">Recherche active</p>
+                  <p className="text-[11px] uppercase tracking-wider font-semibold text-stone-500 dark:text-stone-400 mb-2">{t('search.activeSearch')}</p>
                   <div className="flex flex-wrap gap-2">
                     <span className="inline-flex items-center gap-1.5 pl-3 pr-1 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium shadow-sm">
                       {searchQuery}
                       <button
                         onClick={clearSearch}
                         className="h-5 w-5 rounded-full bg-white/25 hover:bg-white/40 flex items-center justify-center transition-colors"
-                        aria-label="Effacer la recherche"
+                        aria-label={t('search.clear')}
                       >
                         <X size={12} strokeWidth={2.5} />
                       </button>
@@ -389,13 +391,13 @@ const SearchBar = () => {
                 </div>
               )}
               <div className="flex items-center justify-between mb-3">
-                <p className="text-sm font-semibold text-stone-900 dark:text-white">Filtrer par catégorie</p>
+                <p className="text-sm font-semibold text-stone-900 dark:text-white">{t('filter.categories')}</p>
                 {selectedCategories.length > 0 && (
                   <button
                     onClick={() => setSelectedCategories([])}
                     className="text-xs text-primary hover:underline font-medium"
                   >
-                    Tout effacer
+                    {t('search.clearAll')}
                   </button>
                 )}
               </div>
@@ -410,7 +412,7 @@ const SearchBar = () => {
                         : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:scale-105'
                     }`}
                   >
-                    {category.label}
+                    {t(category.labelKey)}
                   </button>
                 ))}
               </div>
@@ -418,14 +420,14 @@ const SearchBar = () => {
               {/* Date filter */}
               <div className="mt-4 pt-3 border-t border-stone-200/50 dark:border-stone-700/50">
                 <p className="text-sm font-semibold text-stone-900 dark:text-white mb-2 flex items-center gap-1.5">
-                  <Calendar size={14} className="text-primary" /> Quand
+                  <Calendar size={14} className="text-primary" /> {t('filter.when')}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {([
-                    { id: 'all', label: 'Tous' },
-                    { id: 'today', label: "Aujourd'hui" },
-                    { id: 'week', label: 'Cette semaine' },
-                    { id: 'month', label: 'Ce mois' },
+                    { id: 'all', label: t('filter.all') },
+                    { id: 'today', label: t('filter.today') },
+                    { id: 'week', label: t('filter.week') },
+                    { id: 'month', label: t('filter.month') },
                   ] as const).map((opt) => (
                     <button
                       key={opt.id}
@@ -445,13 +447,13 @@ const SearchBar = () => {
               {/* Price filter */}
               <div className="mt-3 pt-3 border-t border-stone-200/50 dark:border-stone-700/50">
                 <p className="text-sm font-semibold text-stone-900 dark:text-white mb-2 flex items-center gap-1.5">
-                  <DollarSign size={14} className="text-primary" /> Prix
+                  <DollarSign size={14} className="text-primary" /> {t('filter.price')}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {([
-                    { id: 'all', label: 'Tous' },
-                    { id: 'free', label: 'Gratuit' },
-                    { id: 'paid', label: 'Payant' },
+                    { id: 'all', label: t('filter.all') },
+                    { id: 'free', label: t('filter.free') },
+                    { id: 'paid', label: t('filter.paid') },
                   ] as const).map((opt) => (
                     <button
                       key={opt.id}
@@ -471,11 +473,11 @@ const SearchBar = () => {
               {/* Distance filter */}
               <div className="mt-3 pt-3 border-t border-stone-200/50 dark:border-stone-700/50">
                 <p className="text-sm font-semibold text-stone-900 dark:text-white mb-2 flex items-center gap-1.5">
-                  <Ruler size={14} className="text-primary" /> Distance max
+                  <Ruler size={14} className="text-primary" /> {t('filter.distance')}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {([
-                    { id: null, label: 'Tous' },
+                    { id: null, label: t('filter.all') },
                     { id: 2, label: '2 km' },
                     { id: 5, label: '5 km' },
                     { id: 10, label: '10 km' },
@@ -508,7 +510,7 @@ const SearchBar = () => {
                     }}
                     className="w-full py-2 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-semibold hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
                   >
-                    Réinitialiser tous les filtres
+                    {t('filter.reset')}
                   </button>
                 </div>
               )}

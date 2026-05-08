@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useSearch } from '@/contexts/SearchContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Import custom icons
 import atelierIcon from '@/assets/icons/atelier.png';
@@ -21,17 +22,17 @@ import religieuxIcon from '@/assets/icons/religieux.png';
 import spectacleIcon from '@/assets/icons/spectacle.png';
 import sportIcon from '@/assets/icons/sport.png';
 
-const CATEGORIES = [
-  { id: 'workshops', label: 'Ateliers', color: 'bg-yellow-500' },
-  { id: 'brunch', label: 'Brunch', color: 'bg-amber-500' },
-  { id: 'music', label: 'Concerts', color: 'bg-purple-500' },
-  { id: 'conferences', label: 'Conférences', color: 'bg-indigo-500' },
-  { id: 'exhibitions', label: 'Expositions', color: 'bg-cyan-500' },
-  { id: 'festivals', label: 'Festivals', color: 'bg-red-500' },
-  { id: 'meetups', label: 'Meetups', color: 'bg-blue-500' },
-  { id: 'religious', label: 'Religieux', color: 'bg-violet-500' },
-  { id: 'shows', label: 'Spectacles', color: 'bg-teal-500' },
-  { id: 'sports', label: 'Sports', color: 'bg-green-500' },
+const CATEGORIES_META = [
+  { id: 'workshops', tKey: 'cat.workshops', color: 'bg-yellow-500' },
+  { id: 'brunch', tKey: 'cat.brunch', color: 'bg-amber-500' },
+  { id: 'music', tKey: 'cat.music', color: 'bg-purple-500' },
+  { id: 'conferences', tKey: 'cat.conferences', color: 'bg-indigo-500' },
+  { id: 'exhibitions', tKey: 'cat.exhibitions', color: 'bg-cyan-500' },
+  { id: 'festivals', tKey: 'cat.festivals', color: 'bg-red-500' },
+  { id: 'meetups', tKey: 'cat.meetups', color: 'bg-blue-500' },
+  { id: 'religious', tKey: 'cat.religious', color: 'bg-violet-500' },
+  { id: 'shows', tKey: 'cat.shows', color: 'bg-teal-500' },
+  { id: 'sports', tKey: 'cat.sports', color: 'bg-green-500' },
 ];
 
 interface BottomNavigationProps {
@@ -49,6 +50,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const { searchQuery, setSearchQuery, selectedCategories, setSelectedCategories, toggleCategory, distanceFilter, setDistanceFilter } = useSearch();
+  const { t } = useLanguage();
   const [indicator, setIndicator] = useState<ScrollIndicatorState>({
     thumbWidth: 0,
     thumbLeft: 0,
@@ -85,16 +87,16 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
   }, []);
 
   const navItems = [
-    { icon: atelierIcon, label: 'Ateliers', path: '/workshops' },
-    { icon: brunchIcon, label: 'Brunch', path: '/brunch' },
-    { icon: concertIcon, label: 'Concerts', path: '/concerts' },
-    { icon: conferenceIcon, label: 'Conférences', path: '/conferences' },
-    { icon: expositionIcon, label: 'Expositions', path: '/exhibitions' },
-    { icon: festivalIcon, label: 'Festivals', path: '/festivals' },
-    { icon: meetupIcon, label: 'Meetups', path: '/meetups' },
-    { icon: religieuxIcon, label: 'Religieux', path: '/religious' },
-    { icon: spectacleIcon, label: 'Spectacles', path: '/shows' },
-    { icon: sportIcon, label: 'Sports', path: '/sports' },
+    { icon: atelierIcon, label: t('cat.workshops'), path: '/workshops' },
+    { icon: brunchIcon, label: t('cat.brunch'), path: '/brunch' },
+    { icon: concertIcon, label: t('cat.music'), path: '/concerts' },
+    { icon: conferenceIcon, label: t('cat.conferences'), path: '/conferences' },
+    { icon: expositionIcon, label: t('cat.exhibitions'), path: '/exhibitions' },
+    { icon: festivalIcon, label: t('cat.festivals'), path: '/festivals' },
+    { icon: meetupIcon, label: t('cat.meetups'), path: '/meetups' },
+    { icon: religieuxIcon, label: t('cat.religious'), path: '/religious' },
+    { icon: spectacleIcon, label: t('cat.shows'), path: '/shows' },
+    { icon: sportIcon, label: t('cat.sports'), path: '/sports' },
   ];
 
   const handleSearch = () => {
@@ -109,7 +111,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
             {/* Header */}
             <div className="px-5 pt-5 pb-3 flex items-center justify-between">
               <h2 className="text-xl font-bold italic text-stone-800" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
-                Rechercher
+                {t('nav.search')}
               </h2>
               <button
                 onClick={() => setSearchOpen(false)}
@@ -125,7 +127,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" size={16} />
                 <input
                   type="text"
-                  placeholder="Nom de l'événement..."
+                  placeholder={t('nav.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
@@ -141,15 +143,15 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
             {/* Categories */}
             <div className="px-5 py-4 space-y-3">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-bold uppercase tracking-[0.1em] text-stone-500">Catégories</p>
+                <p className="text-xs font-bold uppercase tracking-[0.1em] text-stone-500">{t('nav.categories')}</p>
                 {selectedCategories.length > 0 && (
                   <button onClick={() => setSelectedCategories([])} className="text-[11px] text-[#ee9d2b] font-semibold">
-                    Effacer
+                    {t('nav.clearBtn')}
                   </button>
                 )}
               </div>
               <div className="flex flex-wrap gap-1.5">
-                {CATEGORIES.map((category) => (
+                {CATEGORIES_META.map((category) => (
                   <button
                     key={category.id}
                     onClick={() => toggleCategory(category.id)}
@@ -159,7 +161,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                         : 'bg-stone-100/80 text-stone-600 hover:bg-stone-200/80'
                     }`}
                   >
-                    {category.label}
+                    {t(category.tKey)}
                   </button>
                 ))}
               </div>
@@ -170,10 +172,10 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
 
             {/* Distance */}
             <div className="px-5 py-4 space-y-3">
-              <p className="text-xs font-bold uppercase tracking-[0.1em] text-stone-500">Autour de moi</p>
+              <p className="text-xs font-bold uppercase tracking-[0.1em] text-stone-500">{t('nav.nearMe')}</p>
               <div className="flex flex-wrap gap-1.5">
                 {[
-                  { label: 'Tout', value: null },
+                  { label: t('nav.allDistance'), value: null },
                   { label: '500m', value: 0.5 },
                   { label: '1 km', value: 1 },
                   { label: '2 km', value: 2 },
@@ -201,7 +203,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                 onClick={handleSearch}
                 className="w-full h-11 rounded-2xl bg-[#ee9d2b] text-white font-semibold hover:opacity-90 transition-all active:scale-[0.98] text-sm shadow-lg shadow-[#ee9d2b]/20"
               >
-                Rechercher
+                {t('nav.search')}
               </button>
             </div>
           </div>
@@ -214,7 +216,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
             <button
               onClick={() => setSearchOpen(true)}
               className="flex-shrink-0 h-14 w-14 ml-2 flex items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-all duration-300 hover:scale-105 active:scale-95"
-              aria-label="Rechercher"
+              aria-label={t('nav.search')}
             >
               <Search size={24} strokeWidth={2} />
             </button>

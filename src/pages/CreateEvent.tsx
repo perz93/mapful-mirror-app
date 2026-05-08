@@ -9,6 +9,7 @@ import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign, ArrowLe
 import TikTokIcon from '@/components/icons/TikTokIcon';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import mapBackground from '@/assets/map-background.jpg';
 import { supabase } from '@/integrations/supabase/client';
 import L from 'leaflet';
@@ -47,14 +48,15 @@ const sectionTitleClass = "text-lg italic text-stone-800 mb-4 flex items-center 
 const CreateEvent = () => {
   const { toast } = useToast();
   const { user, loading } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   // Redirect if not authenticated
   useEffect(() => {
     if (!loading && !user) {
       toast({
-        title: "Connexion requise",
-        description: "Vous devez être connecté pour créer un événement.",
+        title: t('auth.loginRequired'),
+        description: t('auth.mustBeLoggedIn'),
         variant: "destructive"
       });
       navigate('/auth');
@@ -121,7 +123,7 @@ const CreateEvent = () => {
     if (!file.type.startsWith('image/')) {
       toast({
         title: "Erreur",
-        description: "Veuillez sélectionner une image valide",
+        description: t('form.invalidImage'),
         variant: "destructive"
       });
       return;
@@ -131,7 +133,7 @@ const CreateEvent = () => {
     if (file.size > 5 * 1024 * 1024) {
       toast({
         title: "Erreur",
-        description: "L'image ne doit pas dépasser 5 MB",
+        description: t('form.imageTooLarge'),
         variant: "destructive"
       });
       return;
@@ -242,7 +244,7 @@ const CreateEvent = () => {
     if (!user) {
       toast({
         title: "Erreur",
-        description: "Vous devez être connecté pour créer un événement",
+        description: t('auth.mustBeLoggedIn'),
         variant: "destructive"
       });
       return;
@@ -310,8 +312,8 @@ const CreateEvent = () => {
       }
 
       toast({
-        title: "Événement créé !",
-        description: "Votre événement a été publié avec succès."
+        title: t('event.created'),
+        description: t('event.createdDesc')
       });
 
       // Save contacts for next time
@@ -354,7 +356,7 @@ const CreateEvent = () => {
       console.error('Error creating event:', error);
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de la création de l'événement",
+        description: t('event.createError'),
         variant: "destructive"
       });
     } finally {
@@ -366,7 +368,7 @@ const CreateEvent = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">Chargement...</p>
+        <p className="text-muted-foreground">{t('loading')}</p>
       </div>
     );
   }
@@ -401,9 +403,9 @@ const CreateEvent = () => {
             <ArrowLeft className="w-5 h-5 text-stone-700" />
           </Link>
           <h1 className="text-4xl italic text-stone-800 mb-3 text-center" style={{ fontFamily: '"Source Serif 4", serif' }}>
-            Créer un événement
+            {t('event.create')}
           </h1>
-          <p className="text-stone-500 font-light text-center">Partagez votre événement avec la communauté</p>
+          <p className="text-stone-500 font-light text-center">{t('form.shareEvent')}</p>
         </div>
 
         {/* Form Cards */}
@@ -430,14 +432,14 @@ const CreateEvent = () => {
                       className="w-full h-48 object-cover rounded-lg"
                     />
                     <div className="absolute inset-0 bg-black/30 rounded-lg flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                      <p className="text-white text-sm">Cliquez pour changer</p>
+                      <p className="text-white text-sm">{t('form.clickToChange')}</p>
                     </div>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-center">
                     <ImageIcon className="h-10 w-10 text-[#ee9d2b] mb-4" strokeWidth={1.5} />
-                    <h3 className="font-light text-stone-700 mb-1">Ajouter une image</h3>
-                    <p className="text-sm text-stone-400 font-light">Cliquez pour télécharger</p>
+                    <h3 className="font-light text-stone-700 mb-1">{t('form.addImage')}</h3>
+                    <p className="text-sm text-stone-400 font-light">{t('form.clickToUpload')}</p>
                   </div>
                 )}
               </div>
@@ -446,11 +448,11 @@ const CreateEvent = () => {
             {/* Basic Information Card */}
             <div className={cardClass}>
               <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
-                Informations de base
+                {t('form.basicInfo')}
               </h2>
 
               <div className="space-y-3">
-                <Label htmlFor="title" className={labelClass}>Titre de l'événement *</Label>
+                <Label htmlFor="title" className={labelClass}>{t('form.title')}</Label>
                 <Input
                   id="title"
                   placeholder="Festival de musique Jazz"
@@ -462,73 +464,73 @@ const CreateEvent = () => {
               </div>
 
               <div className="space-y-3">
-                <Label htmlFor="category" className={labelClass}>Catégorie *</Label>
+                <Label htmlFor="category" className={labelClass}>{t('form.category')}</Label>
                 <Select
                   value={formData.category}
                   onValueChange={value => setFormData({ ...formData, category: value })}
                 >
                   <SelectTrigger className={inputClass}>
-                    <SelectValue placeholder="Sélectionnez une catégorie" />
+                    <SelectValue placeholder={t('form.selectCategory')} />
                   </SelectTrigger>
                   <SelectContent className="backdrop-blur-2xl bg-white/95 border-stone-200/60">
                     <SelectItem value="workshops">
                       <span className="flex items-center gap-2">
                         <img src={categoryIcons.workshops} alt="" className="w-5 h-5" />
-                        Ateliers
+                        {t('cat.workshops')}
                       </span>
                     </SelectItem>
                     <SelectItem value="brunch">
                       <span className="flex items-center gap-2">
                         <img src={categoryIcons.brunch} alt="" className="w-5 h-5" />
-                        Brunch
+                        {t('cat.brunch')}
                       </span>
                     </SelectItem>
                     <SelectItem value="music">
                       <span className="flex items-center gap-2">
                         <img src={categoryIcons.music} alt="" className="w-5 h-5" />
-                        Concerts
+                        {t('cat.concerts')}
                       </span>
                     </SelectItem>
                     <SelectItem value="conferences">
                       <span className="flex items-center gap-2">
                         <img src={categoryIcons.conferences} alt="" className="w-5 h-5" />
-                        Conférences
+                        {t('cat.conferences')}
                       </span>
                     </SelectItem>
                     <SelectItem value="exhibitions">
                       <span className="flex items-center gap-2">
                         <img src={categoryIcons.exhibitions} alt="" className="w-5 h-5" />
-                        Expositions
+                        {t('cat.exhibitions')}
                       </span>
                     </SelectItem>
                     <SelectItem value="festivals">
                       <span className="flex items-center gap-2">
                         <img src={categoryIcons.festivals} alt="" className="w-5 h-5" />
-                        Festivals
+                        {t('cat.festivals')}
                       </span>
                     </SelectItem>
                     <SelectItem value="meetups">
                       <span className="flex items-center gap-2">
                         <img src={categoryIcons.meetups} alt="" className="w-5 h-5" />
-                        Meetups
+                        {t('cat.meetups')}
                       </span>
                     </SelectItem>
                     <SelectItem value="religious">
                       <span className="flex items-center gap-2">
                         <img src={categoryIcons.religious} alt="" className="w-5 h-5" />
-                        Religieux
+                        {t('cat.religious')}
                       </span>
                     </SelectItem>
                     <SelectItem value="shows">
                       <span className="flex items-center gap-2">
                         <img src={categoryIcons.shows} alt="" className="w-5 h-5" />
-                        Spectacles
+                        {t('cat.shows')}
                       </span>
                     </SelectItem>
                     <SelectItem value="sports">
                       <span className="flex items-center gap-2">
                         <img src={categoryIcons.sports} alt="" className="w-5 h-5" />
-                        Sports
+                        {t('cat.sports')}
                       </span>
                     </SelectItem>
                   </SelectContent>
@@ -540,11 +542,11 @@ const CreateEvent = () => {
             <div className={cardClass}>
               <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
                 <MapPin className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
-                Localisation
+                {t('form.location')}
               </h2>
 
               <div className="space-y-3">
-                <Label htmlFor="address" className={labelClass}>Adresse / lieu de l'événement *</Label>
+                <Label htmlFor="address" className={labelClass}>{t('form.address')}</Label>
                 <Input
                   id="address"
                   placeholder="Ex: Cocody Angré, Abidjan"
@@ -558,7 +560,7 @@ const CreateEvent = () => {
               {/* Map for position adjustment */}
               <div className="space-y-3 mt-4">
                 <Label className={labelClass}>
-                  Position sur la carte {geocoding && <span className="text-xs text-stone-400">(localisation...)</span>}
+                  {t('form.mapPosition')} {geocoding && <span className="text-xs text-stone-400">({t('form.locating')})</span>}
                 </Label>
                 <div
                   className="w-full h-48 rounded-2xl overflow-hidden border border-stone-300/40"
@@ -570,7 +572,7 @@ const CreateEvent = () => {
                   />
                 </div>
                 <p className="text-xs text-stone-400">
-                  Utilisez la mini-carte pour ajuster précisément la position via le marqueur rouge
+                  {t('form.mapHint')}
                 </p>
               </div>
             </div>
@@ -579,11 +581,11 @@ const CreateEvent = () => {
             <div className={cardClass}>
               <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
                 <Calendar className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
-                Date et heure
+                {t('form.dateTime')}
               </h2>
 
               <div className="space-y-3 overflow-hidden">
-                <Label htmlFor="date" className={labelClass}>Date *</Label>
+                <Label htmlFor="date" className={labelClass}>{t('form.date')}</Label>
                 <div className="relative overflow-hidden">
                   <Input
                     id="date"
@@ -601,7 +603,7 @@ const CreateEvent = () => {
                 </div>
               </div>
               <div className="space-y-3 overflow-hidden">
-                <Label htmlFor="time" className={labelClass}>Heure *</Label>
+                <Label htmlFor="time" className={labelClass}>{t('form.time')}</Label>
                 <div className="relative overflow-hidden">
                   <Input
                     id="time"
@@ -623,12 +625,12 @@ const CreateEvent = () => {
             {/* Price and Capacity Card */}
             <div className={cardClass}>
               <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
-                Prix et capacité
+                {t('form.priceCapacity')}
               </h2>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-3">
-                  <Label htmlFor="price" className={labelClass}>Prix (FCFA)</Label>
+                  <Label htmlFor="price" className={labelClass}>{t('form.priceFCFA')}</Label>
                   <Input
                     id="price"
                     placeholder="Ex: 5000 FCFA"
@@ -638,7 +640,7 @@ const CreateEvent = () => {
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label htmlFor="capacity" className={labelClass}>Capacité</Label>
+                  <Label htmlFor="capacity" className={labelClass}>{t('form.capacityLabel')}</Label>
                   <Input
                     id="capacity"
                     type="number"
@@ -654,13 +656,13 @@ const CreateEvent = () => {
             {/* Description Card */}
             <div className={cardClass}>
               <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
-                Description
+                {t('form.description')}
               </h2>
 
               <div className="space-y-3">
                 <Textarea
                   id="description"
-                  placeholder="Décrivez votre événement..."
+                  placeholder={t('form.descPlaceholder')}
                   value={formData.description}
                   onChange={e => setFormData({ ...formData, description: e.target.value })}
                   rows={5}
@@ -673,14 +675,14 @@ const CreateEvent = () => {
             <div className={cardClass}>
               <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
                 <Sparkles className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
-                Points clés de l'événement
+                {t('form.keyPoints')}
               </h2>
 
               <div className="space-y-3">
                 {keyPoints.map((point, index) => (
                   <div key={index} className="flex items-center gap-2">
                     <Input
-                      placeholder={`Point clé ${index + 1}`}
+                      placeholder={`${t('form.keyPointN')} ${index + 1}`}
                       value={point}
                       onChange={e => updateKeyPoint(index, e.target.value)}
                       className={`${inputClass} flex-1`}
@@ -704,10 +706,10 @@ const CreateEvent = () => {
                     className="flex items-center gap-2 text-[#ee9d2b] hover:text-[#ee9d2b]/80 transition-colors text-sm font-medium"
                   >
                     <Plus className="w-4 h-4" />
-                    Ajouter un point clé
+                    {t('form.addKeyPoint')}
                   </button>
                 )}
-                <p className="text-xs text-stone-400">Maximum 5 points clés</p>
+                <p className="text-xs text-stone-400">{t('form.maxKeyPoints')}</p>
               </div>
             </div>
 
@@ -715,14 +717,14 @@ const CreateEvent = () => {
             <div className={cardClass}>
               <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
                 <Phone className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
-                Contact
+                {t('form.contact')}
               </h2>
 
               <div className="space-y-4">
                 <div className="space-y-3">
                   <Label htmlFor="contactPhone" className={`${labelClass} flex items-center gap-2`}>
                     <Phone className="w-4 h-4 text-[#ee9d2b]" />
-                    Numéro de téléphone
+                    {t('form.phone')}
                   </Label>
                   <Input
                     id="contactPhone"
@@ -736,7 +738,7 @@ const CreateEvent = () => {
                 <div className="space-y-3">
                   <Label htmlFor="contactWhatsapp" className={`${labelClass} flex items-center gap-2`}>
                     <MessageCircle className="w-4 h-4 text-[#ee9d2b]" />
-                    WhatsApp
+                    {t('form.whatsapp')}
                   </Label>
                   <Input
                     id="contactWhatsapp"
@@ -750,11 +752,11 @@ const CreateEvent = () => {
                 <div className="space-y-3">
                   <Label htmlFor="contactInstagram" className={`${labelClass} flex items-center gap-2`}>
                     <Instagram className="w-4 h-4 text-[#ee9d2b]" />
-                    Instagram
+                    {t('form.instagram')}
                   </Label>
                   <Input
                     id="contactInstagram"
-                    placeholder="@votre_compte"
+                    placeholder={t('form.accountPlaceholder')}
                     value={formData.contactInstagram}
                     onChange={e => setFormData({ ...formData, contactInstagram: e.target.value })}
                     className={inputClass}
@@ -764,11 +766,11 @@ const CreateEvent = () => {
                 <div className="space-y-3">
                   <Label htmlFor="contactFacebook" className={`${labelClass} flex items-center gap-2`}>
                     <Facebook className="w-4 h-4 text-[#ee9d2b]" />
-                    Facebook
+                    {t('form.facebook')}
                   </Label>
                   <Input
                     id="contactFacebook"
-                    placeholder="Nom de votre page"
+                    placeholder={t('form.pagePlaceholder')}
                     value={formData.contactFacebook}
                     onChange={e => setFormData({ ...formData, contactFacebook: e.target.value })}
                     className={inputClass}
@@ -778,11 +780,11 @@ const CreateEvent = () => {
                 <div className="space-y-3">
                   <Label htmlFor="contactTiktok" className={`${labelClass} flex items-center gap-2`}>
                     <TikTokIcon className="w-4 h-4 text-[#ee9d2b]" />
-                    TikTok
+                    {t('form.tiktok')}
                   </Label>
                   <Input
                     id="contactTiktok"
-                    placeholder="@votre_compte"
+                    placeholder={t('form.accountPlaceholder')}
                     value={formData.contactTiktok}
                     onChange={e => setFormData({ ...formData, contactTiktok: e.target.value })}
                     className={inputClass}
@@ -792,11 +794,11 @@ const CreateEvent = () => {
                 <div className="space-y-3">
                   <Label htmlFor="contactTwitter" className={`${labelClass} flex items-center gap-2`}>
                     <Twitter className="w-4 h-4 text-[#ee9d2b]" />
-                    Twitter / X
+                    {t('form.twitter')}
                   </Label>
                   <Input
                     id="contactTwitter"
-                    placeholder="@votre_compte"
+                    placeholder={t('form.accountPlaceholder')}
                     value={formData.contactTwitter}
                     onChange={e => setFormData({ ...formData, contactTwitter: e.target.value })}
                     className={inputClass}
@@ -815,10 +817,10 @@ const CreateEvent = () => {
                 {submitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Création en cours...
+                    {t('event.creating')}
                   </>
                 ) : (
-                  'Publier l\'événement'
+                  t('event.publish')
                 )}
               </Button>
             </div>

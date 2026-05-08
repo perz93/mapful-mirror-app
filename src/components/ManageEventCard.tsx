@@ -5,6 +5,7 @@ import { Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
 import { Event } from '@/hooks/useEvents';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +25,7 @@ interface ManageEventCardProps {
 }
 
 const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) => {
+  const { t } = useLanguage();
   const formatEventDate = (date: string, time: string) => {
     const eventDate = new Date(date);
     const [hours] = time.split(':');
@@ -48,11 +50,11 @@ const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) 
 
       if (error) throw error;
 
-      toast.success('Événement supprimé');
+      toast.success(t('event.deleted'));
       onDeleted(event.id);
     } catch (error: any) {
       console.error('Error deleting event:', error);
-      toast.error('Erreur lors de la suppression');
+      toast.error(t('event.deleteError'));
     }
   };
 
@@ -65,11 +67,11 @@ const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) 
 
       if (error) throw error;
 
-      toast.success(event.is_published ? 'Événement dépublié' : 'Événement publié');
+      toast.success(event.is_published ? t('event.unpublished') : t('event.published'));
       onUpdated();
     } catch (error: any) {
       console.error('Error toggling publish:', error);
-      toast.error('Erreur lors de la modification');
+      toast.error(t('event.publishError'));
     }
   };
 
@@ -84,7 +86,7 @@ const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) 
               </p>
               {!event.is_published && (
                 <span className="px-2 py-0.5 text-xs bg-muted text-muted-foreground rounded-full">
-                  Non publié
+                  {t('event.unpublishedBadge')}
                 </span>
               )}
             </div>
@@ -102,7 +104,7 @@ const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) 
               className="flex items-center justify-center gap-1 rounded-full h-7 px-3 bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 transition-all"
             >
               <Pencil className="w-3 h-3" />
-              <span>Modifier</span>
+              <span>{t('event.editBtn')}</span>
             </Link>
             
             <button
@@ -112,12 +114,12 @@ const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) 
               {event.is_published ? (
                 <>
                   <EyeOff className="w-3 h-3" />
-                  <span>Dépublier</span>
+                  <span>{t('event.unpublishBtn')}</span>
                 </>
               ) : (
                 <>
                   <Eye className="w-3 h-3" />
-                  <span>Publier</span>
+                  <span>{t('event.publishBtn')}</span>
                 </>
               )}
             </button>
@@ -130,14 +132,14 @@ const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) 
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Supprimer l'événement ?</AlertDialogTitle>
+                  <AlertDialogTitle>{t('event.deleteConfirm')}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Cette action est irréversible. L'événement sera définitivement supprimé.
+                    {t('event.deleteConfirmDesc')}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Annuler</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDelete}>Supprimer</AlertDialogAction>
+                  <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDelete}>{t('delete')}</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
