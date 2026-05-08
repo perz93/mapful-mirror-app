@@ -16,6 +16,7 @@ import CountdownTimer from '@/components/CountdownTimer';
 import HypeBar from '@/components/HypeBar';
 import { EventDetailsSkeleton } from '@/components/PageSkeleton';
 import ShimmerImage from '@/components/ShimmerImage';
+import { useFavorite } from '@/hooks/useFavorite';
 
 
 const EventDetails = () => {
@@ -43,6 +44,8 @@ const EventDetails = () => {
     },
     enabled: !!id,
   });
+
+  const { isFavorite, toggleFavorite, loading: favLoading } = useFavorite(id || '');
 
   // Check if reminder already set
   useEffect(() => {
@@ -171,8 +174,16 @@ const EventDetails = () => {
               >
                 <Share2 size={20} />
               </button>
-              <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors">
-                <Heart size={20} />
+              <button
+                onClick={toggleFavorite}
+                disabled={favLoading}
+                className={`flex h-10 w-10 items-center justify-center rounded-full backdrop-blur-sm transition-all active:scale-90 disabled:opacity-50 ${
+                  isFavorite
+                    ? 'bg-red-500 text-white shadow-lg shadow-red-500/30'
+                    : 'bg-white/20 text-white hover:bg-white/30'
+                }`}
+              >
+                <Heart size={20} fill={isFavorite ? 'currentColor' : 'none'} />
               </button>
             </div>
           </div>
