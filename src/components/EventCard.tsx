@@ -34,7 +34,6 @@ const EventCard = () => {
       <div className="pointer-events-auto touch-auto">
         <div
           className={`flex items-stretch justify-between gap-4 rounded-3xl backdrop-blur-xl bg-white/65 dark:bg-stone-900/60 p-4 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.12)] border border-white/70 dark:border-stone-700/30 transition-all duration-700 ease-in-out ${isTransitioning ? 'opacity-0 scale-95 translate-y-2' : 'opacity-100 scale-100 translate-y-0'}`}
-          style={{ animation: 'float 6s ease-in-out infinite' }}
         >
           <div className="flex flex-col justify-between gap-1.5 flex-[2_2_0px]">
             <div className="flex flex-col gap-1.5">
@@ -61,17 +60,11 @@ const EventCard = () => {
               <span>Voir détails</span>
             </Link>
           </div>
-          <div className="w-24 h-24 flex-shrink-0 rounded-2xl shadow-lg border border-white/30 transition-all duration-700 ease-in-out overflow-hidden">
-            <img
-              src={currentEvent.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=200&q=75&fm=webp'}
-              alt={currentEvent.title}
-              loading="lazy"
-              decoding="async"
-              className="w-full h-full object-cover"
-            />
-          </div>
+          <div style={{
+          backgroundImage: `url('${currentEvent.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=400&fit=crop'}')`
+        }} className="w-24 h-24 flex-shrink-0 bg-center bg-no-repeat bg-cover rounded-2xl shadow-lg border border-white/30 transition-all duration-700 ease-in-out" />
         </div>
-        
+
         {/* Progress indicators */}
         <div className="flex justify-center gap-1.5 mt-3">
           {events.map((_, index) => <div key={index} className={`h-1 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-8 bg-primary' : 'w-1 bg-stone-300 dark:bg-stone-600'}`} />)}
