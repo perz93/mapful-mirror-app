@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export interface NotificationItem {
   id: string;
@@ -20,6 +21,7 @@ export interface NotificationItem {
 
 export function useNotificationInbox() {
   const { user } = useAuth();
+  const { lang } = useLanguage();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -39,7 +41,7 @@ export function useNotificationInbox() {
         id: n.id,
         event_id: n.event_id,
         notification_type: n.notification_type,
-        title: n.title || (n.events?.title ? getDefaultTitle(n.notification_type, n.events.title) : 'Notification'),
+        title: n.title || (n.events?.title ? getDefaultTitle(n.notification_type, n.events.title, lang) : 'Notification'),
         body: n.body || n.events?.venue || '',
         url: n.url || (n.event_id ? `/event/${n.event_id}` : '/'),
         image_url: n.image_url || n.events?.image_url || null,
@@ -88,10 +90,34 @@ export function useNotificationInbox() {
     return () => document.removeEventListener('visibilitychange', handler);
   }, [fetchNotifications]);
 
+  // Realtime: refresh inbox when new notification arrives
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel(`notif-inbox-${user.id}`)
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'notification_log', filter: `user_id=eq.${user.id}` },
+        () => { fetchNotifications(); }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [user, fetchNotifications]);
+
   return { notifications, unreadCount, loading, markAsRead, markAllAsRead, refresh: fetchNotifications };
 }
 
-function getDefaultTitle(type: string, eventTitle: string): string {
+function getDefaultTitle(type: string, eventTitle: string, lang: string): string {
+  if (lang === 'en') {
+    switch (type) {
+      case 'new_event': return `New event: ${eventTitle}`;
+      case 'proximity': return `${eventTitle} is near you!`;
+      case 'event_reminder': return `Reminder: ${eventTitle}`;
+      case 'event_tomorrow': return `Tomorrow: ${eventTitle}`;
+      default: return eventTitle;
+    }
+  }
   switch (type) {
     case 'new_event': return `Nouvel event : ${eventTitle}`;
     case 'proximity': return `${eventTitle} est près de toi !`;

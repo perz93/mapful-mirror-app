@@ -5,12 +5,10 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
  * notify-events — Scheduled Edge Function
  *
  * Called by pg_cron every 30 minutes. Handles:
- * 1. NEW_EVENT: Notify all users when a new event is published (last 30 min)
- * 2. EVENT_TOMORROW: Remind attendees of events happening tomorrow
- * 3. EVENT_STARTING: Notify attendees 1h before event starts
- *
- * Proximity-based notifications are handled client-side (see useProximityNotifications hook)
- * because the server doesn't know user locations in real-time.
+ * 1. NEW_EVENT: Notify all users when a new event is published (last 35 min)
+ * 2. EVENT_TOMORROW: Remind attendees of events happening tomorrow (at ~18h)
+ * 3. EVENT_STARTING: Notify attendees ~1h before event starts
+ * 4. EVENT_REMINDER: Send user-set reminders (from event_reminders table)
  */
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "";
@@ -57,7 +55,7 @@ serve(async (req) => {
       const newEventResults = [];
       for (const event of newEvents) {
         const result = await callSendPush({
-          title: `Nouvel event: ${event.title}`,
+          title: `🎉 ${event.title}`,
           body: `${event.venue} — ${event.category}`,
           url: `/event/${event.id}`,
           image: event.image_url,
@@ -88,7 +86,6 @@ serve(async (req) => {
       if (tomorrowEvents && tomorrowEvents.length > 0) {
         const tomorrowResults = [];
         for (const event of tomorrowEvents) {
-          // Get attendees for this event
           const { data: attendees } = await supabase
             .from("event_attendees")
             .select("user_id")
@@ -97,8 +94,8 @@ serve(async (req) => {
           if (attendees && attendees.length > 0) {
             const userIds = attendees.map((a) => a.user_id);
             const result = await callSendPush({
-              title: `Demain: ${event.title}`,
-              body: `${event.venue} a ${event.time.substring(0, 5)} — N'oublie pas !`,
+              title: `📅 ${event.title}`,
+              body: `${event.venue} — ${event.time.substring(0, 5)}`,
               url: `/event/${event.id}`,
               tag: `tomorrow-${event.id}`,
               user_ids: userIds,
@@ -113,7 +110,7 @@ serve(async (req) => {
       }
     }
 
-    // --- 3. EVENTS STARTING SOON (within next 60-90 minutes) ---
+    // --- 3. EVENTS STARTING SOON (within next 30-65 minutes) ---
     const todayStr = now.toISOString().split("T")[0];
     const { data: todayEvents } = await supabase
       .from("events")
@@ -130,7 +127,6 @@ serve(async (req) => {
 
         const diffMinutes = (eventTime.getTime() - now.getTime()) / (60 * 1000);
 
-        // Between 30 and 65 minutes from now (catch window for 30min cron)
         if (diffMinutes >= 30 && diffMinutes <= 65) {
           const { data: attendees } = await supabase
             .from("event_attendees")
@@ -140,8 +136,8 @@ serve(async (req) => {
           if (attendees && attendees.length > 0) {
             const userIds = attendees.map((a) => a.user_id);
             const result = await callSendPush({
-              title: `Ca commence bientot !`,
-              body: `${event.title} a ${event.venue} dans ~1h`,
+              title: `⏰ ${event.title}`,
+              body: `${event.venue} — dans ~1h`,
               url: `/event/${event.id}`,
               tag: `starting-${event.id}`,
               user_ids: userIds,
@@ -158,7 +154,54 @@ serve(async (req) => {
       }
     }
 
-    return new Response(JSON.stringify({ success: true, results }), {
+    // --- 4. USER-SET REMINDERS (from event_reminders table) ---
+    const thirtyFiveMinFromNow = new Date(now.getTime() + 35 * 60 * 1000).toISOString();
+    const { data: dueReminders } = await supabase
+      .from("event_reminders")
+      .select("id, user_id, event_id, events(title, venue, time, image_url)")
+      .eq("sent", false)
+      .lte("remind_at", thirtyFiveMinFromNow)
+      .gte("remind_at", now.toISOString().replace('T', ' ').substring(0, 19));
+
+    // Also get reminders that are past due but not sent (catch missed ones)
+    const { data: pastDueReminders } = await supabase
+      .from("event_reminders")
+      .select("id, user_id, event_id, events(title, venue, time, image_url)")
+      .eq("sent", false)
+      .lt("remind_at", now.toISOString());
+
+    const allDueReminders = [...(dueReminders || []), ...(pastDueReminders || [])];
+    // Dedupe by id
+    const uniqueReminders = Array.from(new Map(allDueReminders.map(r => [r.id, r])).values());
+
+    if (uniqueReminders.length > 0) {
+      const reminderResults = [];
+      for (const reminder of uniqueReminders) {
+        const event = (reminder as any).events;
+        if (!event) continue;
+
+        const result = await callSendPush({
+          title: `🔔 ${event.title}`,
+          body: `${event.venue} — ${event.time?.substring(0, 5)}`,
+          url: `/event/${reminder.event_id}`,
+          tag: `reminder-${reminder.event_id}`,
+          user_ids: [reminder.user_id],
+          check_duplicates: true,
+          notification_type: "event_reminder",
+          event_id: reminder.event_id,
+        });
+        reminderResults.push(result);
+
+        // Mark as sent
+        await supabase
+          .from("event_reminders")
+          .update({ sent: true })
+          .eq("id", reminder.id);
+      }
+      results.reminders = { count: uniqueReminders.length, results: reminderResults };
+    }
+
+    return new Response(JSON.stringify({ success: true, results, timestamp: now.toISOString() }), {
       headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
     });
   } catch (err) {

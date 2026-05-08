@@ -17,12 +17,14 @@ import HypeBar from '@/components/HypeBar';
 import { EventDetailsSkeleton } from '@/components/PageSkeleton';
 import ShimmerImage from '@/components/ShimmerImage';
 import { useFavorite } from '@/hooks/useFavorite';
+import { useAuth } from '@/contexts/AuthContext';
 
 
 const EventDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t, lang } = useLanguage();
+  const { user } = useAuth();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [reminderSet, setReminderSet] = useState(false);
 
@@ -47,22 +49,30 @@ const EventDetails = () => {
 
   const { isFavorite, toggleFavorite, loading: favLoading } = useFavorite(id || '');
 
-  // Check if reminder already set
+  // Check if reminder already set (from Supabase)
   useEffect(() => {
-    if (!id) return;
-    try {
-      const reminders = JSON.parse(localStorage.getItem('event_reminders') || '{}');
-      setReminderSet(!!reminders[id]);
-    } catch { /* */ }
-  }, [id]);
+    if (!id || !user) return;
+    const checkReminder = async () => {
+      const { data } = await supabase
+        .from('event_reminders')
+        .select('id')
+        .eq('event_id', id)
+        .eq('user_id', user.id)
+        .maybeSingle();
+      setReminderSet(!!data);
+    };
+    checkReminder();
+  }, [id, user]);
 
   const toggleReminder = useCallback(async () => {
-    if (!id || !event) return;
-    const reminders = JSON.parse(localStorage.getItem('event_reminders') || '{}');
+    if (!id || !event || !user) return;
 
     if (reminderSet) {
-      delete reminders[id];
-      localStorage.setItem('event_reminders', JSON.stringify(reminders));
+      await supabase
+        .from('event_reminders')
+        .delete()
+        .eq('event_id', id)
+        .eq('user_id', user.id);
       setReminderSet(false);
       toast.success(t('reminder.removed'));
       return;
@@ -79,29 +89,17 @@ const EventDetails = () => {
     const eventDateTime = new Date(`${event.date}T${event.time}`);
     const reminderTime = new Date(eventDateTime.getTime() - 60 * 60 * 1000);
 
-    reminders[id] = {
-      title: event.title,
-      venue: event.venue,
-      date: event.date,
-      time: event.time,
-      reminderAt: reminderTime.toISOString(),
-    };
-    localStorage.setItem('event_reminders', JSON.stringify(reminders));
+    await supabase
+      .from('event_reminders')
+      .upsert({
+        user_id: user.id,
+        event_id: id,
+        remind_at: reminderTime.toISOString(),
+      }, { onConflict: 'user_id,event_id' });
+
     setReminderSet(true);
-
-    const msUntilReminder = reminderTime.getTime() - Date.now();
-    if (msUntilReminder > 0 && 'Notification' in window && Notification.permission === 'granted') {
-      setTimeout(() => {
-        new Notification(`${event.title} ${t('reminder.title')}`, {
-          body: `${event.venue} — ${event.time}`,
-          icon: '/icon-192.png',
-          tag: `reminder-${id}`,
-        });
-      }, Math.min(msUntilReminder, 2147483647));
-    }
-
     toast.success(t('reminder.set'));
-  }, [id, event, reminderSet]);
+  }, [id, event, reminderSet, user]);
 
   if (isLoading) {
     return <EventDetailsSkeleton />;

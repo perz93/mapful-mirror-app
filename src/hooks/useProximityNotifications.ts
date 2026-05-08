@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { getDistanceKm } from '@/hooks/useNearbyEvents';
 import { sendLocalNotification } from '@/lib/pushNotifications';
 
@@ -45,6 +46,7 @@ async function getUserPosition(): Promise<{ lat: number; lng: number } | null> {
 
 export function useProximityNotifications() {
   const { user } = useAuth();
+  const { lang } = useLanguage();
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -80,11 +82,14 @@ export function useProximityNotifications() {
               ? `${Math.round(distance * 1000)}m`
               : `${distance.toFixed(1)}km`;
 
-            await sendLocalNotification(
-              `${event.title} est pres de toi !`,
-              `A ${distText} — ${event.venue}`,
-              `/event/${event.id}`
-            );
+            const notifTitle = lang === 'fr'
+              ? `${event.title} est près de toi !`
+              : `${event.title} is near you!`;
+            const notifBody = lang === 'fr'
+              ? `À ${distText} — ${event.venue}`
+              : `${distText} away — ${event.venue}`;
+
+            await sendLocalNotification(notifTitle, notifBody, `/event/${event.id}`);
 
             markNotified(event.id);
 
