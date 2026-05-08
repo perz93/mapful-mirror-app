@@ -9,6 +9,7 @@ import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign, ArrowLe
 import TikTokIcon from '@/components/icons/TikTokIcon';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { useQueryClient } from '@tanstack/react-query';
 import { useLanguage } from '@/contexts/LanguageContext';
 import mapBackground from '@/assets/map-background.jpg';
 import { supabase } from '@/integrations/supabase/client';
@@ -50,6 +51,7 @@ const CreateEvent = () => {
   const { user, loading } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -348,6 +350,9 @@ const CreateEvent = () => {
       setKeyPoints(['']);
       setImageFile(null);
       setImagePreview(null);
+
+      // Invalidate events cache so the map shows the new event immediately
+      await queryClient.invalidateQueries({ queryKey: ['events'] });
 
       // Navigate to home
       navigate('/');

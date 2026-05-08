@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 import mapBackground from '@/assets/map-background.jpg';
 import { EditEventSkeleton } from '@/components/PageSkeleton';
 
@@ -18,6 +19,7 @@ const EditEvent = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -157,6 +159,7 @@ const EditEvent = () => {
         .eq('id', id);
 
       if (error) throw error;
+      await queryClient.invalidateQueries({ queryKey: ['events'] });
       toast.success(t('event.updated'));
       navigate('/manage-events');
     } catch (error: any) {
