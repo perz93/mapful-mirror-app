@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ArrowLeft, MapPin, Calendar, Users, Share2, Heart, Flame, CheckCircle2, Sparkles } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { ArrowLeft, MapPin, Calendar, Users, Share2, Heart, Flame, CheckCircle2, Sparkles, Bell, BellRing } from 'lucide-react';
 import { useAttendees } from '@/hooks/useAttendees';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -18,6 +18,67 @@ const EventDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [reminderSet, setReminderSet] = useState(false);
+
+  // Check if reminder already set
+  useEffect(() => {
+    if (!id) return;
+    try {
+      const reminders = JSON.parse(localStorage.getItem('event_reminders') || '{}');
+      setReminderSet(!!reminders[id]);
+    } catch { /* */ }
+  }, [id]);
+
+  const toggleReminder = useCallback(async () => {
+    if (!id || !event) return;
+    const reminders = JSON.parse(localStorage.getItem('event_reminders') || '{}');
+
+    if (reminderSet) {
+      delete reminders[id];
+      localStorage.setItem('event_reminders', JSON.stringify(reminders));
+      setReminderSet(false);
+      toast.success('Rappel supprimé');
+      return;
+    }
+
+    // Request notification permission if needed
+    if ('Notification' in window && Notification.permission === 'default') {
+      const perm = await Notification.requestPermission();
+      if (perm !== 'granted') {
+        toast.error('Active les notifications pour les rappels');
+        return;
+      }
+    }
+
+    // Schedule reminder (1 hour before event)
+    const eventDateTime = new Date(`${event.date}T${event.time}`);
+    const reminderTime = new Date(eventDateTime.getTime() - 60 * 60 * 1000); // 1h before
+
+    reminders[id] = {
+      title: event.title,
+      venue: event.venue,
+      date: event.date,
+      time: event.time,
+      reminderAt: reminderTime.toISOString(),
+    };
+    localStorage.setItem('event_reminders', JSON.stringify(reminders));
+    setReminderSet(true);
+
+    // If event is more than 1h away, schedule a local notification timer
+    const msUntilReminder = reminderTime.getTime() - Date.now();
+    if (msUntilReminder > 0 && 'Notification' in window && Notification.permission === 'granted') {
+      // For same-session reminder
+      setTimeout(() => {
+        new Notification(`🔔 ${event.title} dans 1h !`, {
+          body: `${event.venue} — ${event.time}`,
+          icon: '/icon-192.png',
+          tag: `reminder-${id}`,
+        });
+      }, Math.min(msUntilReminder, 2147483647)); // setTimeout max value
+    }
+
+    toast.success('Rappel activé — 1h avant l\'événement');
+  }, [id, event, reminderSet]);
 
   const { data: event, isLoading, error } = useQuery({
     queryKey: ['event', id],
@@ -68,11 +129,15 @@ const EventDetails = () => {
       <div className="mx-auto max-w-md" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <div
           onClick={() => event.image_url && setLightboxOpen(true)}
-          className="relative h-80 bg-cover bg-center rounded-3xl overflow-hidden mx-4 mt-2 cursor-zoom-in transition-transform active:scale-[0.99]"
-          style={{
-            backgroundImage: `url('${event.image_url || 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&h=600&fit=crop'}')`
-          }}
+          className="relative h-80 rounded-3xl overflow-hidden mx-4 mt-2 cursor-zoom-in transition-transform active:scale-[0.99]"
         >
+          <img
+            src={event.image_url || 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=640&q=75&fm=webp'}
+            alt={event.title}
+            loading="eager"
+            decoding="async"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
           
           <div className="absolute left-4 right-4 flex items-center justify-between top-3">
@@ -83,6 +148,16 @@ const EventDetails = () => {
               <ArrowLeft className="w-5 h-5 text-white" />
             </button>
             <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+              <button
+                onClick={toggleReminder}
+                className={`flex h-10 w-10 items-center justify-center rounded-full backdrop-blur-sm transition-all ${
+                  reminderSet
+                    ? 'bg-[#ee9d2b] text-white shadow-lg shadow-[#ee9d2b]/30'
+                    : 'bg-white/20 text-white hover:bg-white/30'
+                }`}
+              >
+                {reminderSet ? <BellRing size={20} /> : <Bell size={20} />}
+              </button>
               <button
                 onClick={() => {
                   if (navigator.share) {

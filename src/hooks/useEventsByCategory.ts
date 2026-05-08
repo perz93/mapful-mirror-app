@@ -20,5 +20,6 @@ export const useEventsByCategory = (category: string) => {
 
       return data as Event[];
     },
+    staleTime: 3 * 60 * 1000, // Fresh for 3 minutes
   });
 };

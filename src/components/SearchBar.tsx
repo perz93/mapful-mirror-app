@@ -1,4 +1,4 @@
-import { Search, Plus, Calendar, User, Settings, Filter, MapPin, Navigation, Loader2, X, Clock } from 'lucide-react';
+import { Search, Plus, Calendar, User, Settings, Filter, MapPin, Navigation, Loader2, X, Clock, DollarSign, Ruler } from 'lucide-react';
 import { useEffect, useRef, useState } from "react";
 import {
   DropdownMenu,
@@ -35,7 +35,7 @@ interface AddressResult {
 const SearchBar = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const debounceRef = useRef<number | null>(null);
-  const { searchQuery, setSearchQuery, selectedCategories, setSelectedCategories, toggleCategory, setRouteDestination } = useSearch();
+  const { searchQuery, setSearchQuery, selectedCategories, setSelectedCategories, toggleCategory, setRouteDestination, dateFilter, setDateFilter, priceFilter, setPriceFilter, distanceFilter, setDistanceFilter } = useSearch();
   const { data: events } = useEvents();
   const [showFilters, setShowFilters] = useState(false);
   const [focused, setFocused] = useState(false);
@@ -202,21 +202,26 @@ const SearchBar = () => {
             )}
           </div>
 
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={`h-11 w-11 rounded-2xl backdrop-blur-2xl shadow-xl hover:scale-105 transition-all active:scale-95 flex items-center justify-center border relative ${
-              selectedCategories.length > 0
-                ? 'bg-primary text-primary-foreground border-primary'
-                : 'bg-white/95 dark:bg-stone-900/95 text-stone-900 dark:text-white border-white/50 dark:border-stone-800/50'
-            }`}
-          >
-            <Filter size={20} strokeWidth={1.5} />
-            {selectedCategories.length > 0 && (
-              <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center font-semibold">
-                {selectedCategories.length}
-              </span>
-            )}
-          </button>
+          {(() => {
+            const activeCount = selectedCategories.length + (dateFilter !== 'all' ? 1 : 0) + (priceFilter !== 'all' ? 1 : 0) + (distanceFilter !== null ? 1 : 0);
+            return (
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`h-11 w-11 rounded-2xl backdrop-blur-2xl shadow-xl hover:scale-105 transition-all active:scale-95 flex items-center justify-center border relative ${
+                  activeCount > 0
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-white/95 dark:bg-stone-900/95 text-stone-900 dark:text-white border-white/50 dark:border-stone-800/50'
+                }`}
+              >
+                <Filter size={20} strokeWidth={1.5} />
+                {activeCount > 0 && (
+                  <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center font-semibold">
+                    {activeCount}
+                  </span>
+                )}
+              </button>
+            );
+          })()}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -409,6 +414,104 @@ const SearchBar = () => {
                   </button>
                 ))}
               </div>
+
+              {/* Date filter */}
+              <div className="mt-4 pt-3 border-t border-stone-200/50 dark:border-stone-700/50">
+                <p className="text-sm font-semibold text-stone-900 dark:text-white mb-2 flex items-center gap-1.5">
+                  <Calendar size={14} className="text-primary" /> Quand
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {([
+                    { id: 'all', label: 'Tous' },
+                    { id: 'today', label: "Aujourd'hui" },
+                    { id: 'week', label: 'Cette semaine' },
+                    { id: 'month', label: 'Ce mois' },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.id}
+                      onClick={() => setDateFilter(opt.id)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                        dateFilter === opt.id
+                          ? 'bg-primary text-white shadow-lg scale-105'
+                          : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:scale-105'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Price filter */}
+              <div className="mt-3 pt-3 border-t border-stone-200/50 dark:border-stone-700/50">
+                <p className="text-sm font-semibold text-stone-900 dark:text-white mb-2 flex items-center gap-1.5">
+                  <DollarSign size={14} className="text-primary" /> Prix
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {([
+                    { id: 'all', label: 'Tous' },
+                    { id: 'free', label: 'Gratuit' },
+                    { id: 'paid', label: 'Payant' },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.id}
+                      onClick={() => setPriceFilter(opt.id)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                        priceFilter === opt.id
+                          ? 'bg-primary text-white shadow-lg scale-105'
+                          : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:scale-105'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Distance filter */}
+              <div className="mt-3 pt-3 border-t border-stone-200/50 dark:border-stone-700/50">
+                <p className="text-sm font-semibold text-stone-900 dark:text-white mb-2 flex items-center gap-1.5">
+                  <Ruler size={14} className="text-primary" /> Distance max
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {([
+                    { id: null, label: 'Tous' },
+                    { id: 2, label: '2 km' },
+                    { id: 5, label: '5 km' },
+                    { id: 10, label: '10 km' },
+                    { id: 25, label: '25 km' },
+                  ] as const).map((opt) => (
+                    <button
+                      key={String(opt.id)}
+                      onClick={() => setDistanceFilter(opt.id)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                        distanceFilter === opt.id
+                          ? 'bg-primary text-white shadow-lg scale-105'
+                          : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:scale-105'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Active filters count */}
+              {(selectedCategories.length > 0 || dateFilter !== 'all' || priceFilter !== 'all' || distanceFilter !== null) && (
+                <div className="mt-3 pt-3 border-t border-stone-200/50 dark:border-stone-700/50">
+                  <button
+                    onClick={() => {
+                      setSelectedCategories([]);
+                      setDateFilter('all');
+                      setPriceFilter('all');
+                      setDistanceFilter(null);
+                    }}
+                    className="w-full py-2 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-semibold hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                  >
+                    Réinitialiser tous les filtres
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}

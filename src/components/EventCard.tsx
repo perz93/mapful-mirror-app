@@ -61,9 +61,15 @@ const EventCard = () => {
               <span>Voir détails</span>
             </Link>
           </div>
-          <div style={{
-          backgroundImage: `url('${currentEvent.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=400&fit=crop'}')`
-        }} className="w-24 h-24 flex-shrink-0 bg-center bg-no-repeat bg-cover rounded-2xl shadow-lg border border-white/30 transition-all duration-700 ease-in-out" />
+          <div className="w-24 h-24 flex-shrink-0 rounded-2xl shadow-lg border border-white/30 transition-all duration-700 ease-in-out overflow-hidden">
+            <img
+              src={currentEvent.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=200&q=75&fm=webp'}
+              alt={currentEvent.title}
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover"
+            />
+          </div>
         </div>
         
         {/* Progress indicators */}

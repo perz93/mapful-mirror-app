@@ -2,8 +2,9 @@
 import { cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
 import { clientsClaim } from 'workbox-core';
 import { registerRoute, NavigationRoute } from 'workbox-routing';
-import { CacheFirst, NetworkFirst } from 'workbox-strategies';
+import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies';
 import { ExpirationPlugin } from 'workbox-expiration';
+import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -24,22 +25,76 @@ registerRoute(navigationRoute);
 // Runtime caching
 // ============================================
 
-// Map tiles — cache first
+// Map tiles — cache first (30 days)
 registerRoute(
   ({ url }) => url.hostname.includes('tile.openstreetmap.org') || url.hostname.includes('basemaps.cartocdn.com'),
   new CacheFirst({
     cacheName: 'map-tiles',
-    plugins: [new ExpirationPlugin({ maxEntries: 500, maxAgeSeconds: 60 * 60 * 24 * 30 })],
+    plugins: [
+      new ExpirationPlugin({ maxEntries: 500, maxAgeSeconds: 60 * 60 * 24 * 30 }),
+      new CacheableResponsePlugin({ statuses: [0, 200] }),
+    ],
   })
 );
 
-// Supabase API — network first
+// Unsplash images — cache first (7 days, up to 200 images)
+registerRoute(
+  ({ url }) => url.hostname.includes('images.unsplash.com'),
+  new CacheFirst({
+    cacheName: 'unsplash-images',
+    plugins: [
+      new ExpirationPlugin({ maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 7 }),
+      new CacheableResponsePlugin({ statuses: [0, 200] }),
+    ],
+  })
+);
+
+// Supabase Storage images — cache first (7 days)
+registerRoute(
+  ({ url }) => url.hostname.includes('supabase.co') && (url.pathname.includes('/storage/') || url.pathname.includes('/object/')),
+  new CacheFirst({
+    cacheName: 'supabase-images',
+    plugins: [
+      new ExpirationPlugin({ maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 7 }),
+      new CacheableResponsePlugin({ statuses: [0, 200] }),
+    ],
+  })
+);
+
+// Any other external images (generic image cache)
+registerRoute(
+  ({ request }) => request.destination === 'image',
+  new CacheFirst({
+    cacheName: 'images-cache',
+    plugins: [
+      new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 7 }),
+      new CacheableResponsePlugin({ statuses: [0, 200] }),
+    ],
+  })
+);
+
+// Supabase API — stale-while-revalidate (serve cached then update in background)
+// Much better for 4G: user sees data instantly, fresh data loads silently
 registerRoute(
   ({ url }) => url.hostname.includes('supabase.co') && url.pathname.startsWith('/rest/'),
-  new NetworkFirst({
+  new StaleWhileRevalidate({
     cacheName: 'supabase-api',
-    plugins: [new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 60 * 5 })],
-    networkTimeoutSeconds: 5,
+    plugins: [
+      new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 60 * 30 }), // 30min cache
+      new CacheableResponsePlugin({ statuses: [0, 200] }),
+    ],
+  })
+);
+
+// Google Fonts — cache first
+registerRoute(
+  ({ url }) => url.hostname.includes('fonts.googleapis.com') || url.hostname.includes('fonts.gstatic.com'),
+  new CacheFirst({
+    cacheName: 'google-fonts',
+    plugins: [
+      new ExpirationPlugin({ maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 }),
+      new CacheableResponsePlugin({ statuses: [0, 200] }),
+    ],
   })
 );
 

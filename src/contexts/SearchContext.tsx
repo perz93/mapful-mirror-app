@@ -6,6 +6,9 @@ export interface RouteDestination {
   label: string;
 }
 
+export type DateFilter = 'all' | 'today' | 'week' | 'month';
+export type PriceFilter = 'all' | 'free' | 'paid';
+
 interface SearchContextType {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
@@ -16,6 +19,10 @@ interface SearchContextType {
   setRouteDestination: (dest: RouteDestination | null) => void;
   distanceFilter: number | null;
   setDistanceFilter: (km: number | null) => void;
+  dateFilter: DateFilter;
+  setDateFilter: (f: DateFilter) => void;
+  priceFilter: PriceFilter;
+  setPriceFilter: (f: PriceFilter) => void;
 }
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
@@ -25,6 +32,8 @@ export const SearchProvider = ({ children }: { children: ReactNode }) => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [routeDestination, setRouteDestination] = useState<RouteDestination | null>(null);
   const [distanceFilter, setDistanceFilter] = useState<number | null>(null);
+  const [dateFilter, setDateFilter] = useState<DateFilter>('all');
+  const [priceFilter, setPriceFilter] = useState<PriceFilter>('all');
 
   const toggleCategory = (category: string) => {
     setSelectedCategories(prev => {
@@ -47,6 +56,10 @@ export const SearchProvider = ({ children }: { children: ReactNode }) => {
       setRouteDestination,
       distanceFilter,
       setDistanceFilter,
+      dateFilter,
+      setDateFilter,
+      priceFilter,
+      setPriceFilter,
     }}>
       {children}
     </SearchContext.Provider>

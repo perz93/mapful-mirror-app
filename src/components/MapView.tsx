@@ -30,7 +30,7 @@ const MapView = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const navigate = useNavigate();
-  const { searchQuery, selectedCategories, routeDestination, setRouteDestination, distanceFilter } = useSearch();
+  const { searchQuery, selectedCategories, routeDestination, setRouteDestination, distanceFilter, dateFilter, priceFilter } = useSearch();
   const { data: events, isLoading } = useEvents();
   const geo = useGeolocation();
 
@@ -304,13 +304,13 @@ const MapView = () => {
     }
 
     const createCustomIcon = (imageUrl: string, eventType: string) => {
-      const defaultImage = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=300&fit=crop';
+      const defaultImage = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=80&q=60&fm=webp';
       return L.divIcon({
         className: 'custom-marker',
         html: `
           <div class="marker-image-container">
             <div class="marker-image-wrapper marker-${eventType}">
-              <img src="${imageUrl || defaultImage}" alt="Event" class="marker-event-image" loading="lazy" />
+              <img src="${(imageUrl ? imageUrl.split('?')[0] + '?w=80&q=60&fm=webp' : defaultImage)}" alt="Event" class="marker-event-image" loading="lazy" />
             </div>
           </div>
         `,
@@ -354,7 +354,7 @@ const MapView = () => {
 
       const dateFormatted = formatEventDate(event.date);
       const timeFormatted = formatEventTime(event.time);
-      const defaultImage = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=300&fit=crop';
+      const defaultImage = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=320&q=70&fm=webp';
 
       const popupContent = `
         <div class="event-popup-card">
@@ -709,6 +709,15 @@ const MapView = () => {
 
     clusterGroup.clearLayers();
 
+    // Date filter boundaries
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    const weekEnd = new Date(now);
+    weekEnd.setDate(weekEnd.getDate() + 7);
+    const weekEndStr = weekEnd.toISOString().split('T')[0];
+    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const monthEndStr = monthEnd.toISOString().split('T')[0];
+
     markersRef.current.forEach((marker) => {
       const eventData = (marker as any).eventData;
       if (!eventData) return;
@@ -730,11 +739,29 @@ const MapView = () => {
         matchesDistance = dist <= distanceFilter;
       }
 
-      if (matchesSearch && matchesCategory && matchesDistance) {
+      // Date filter
+      let matchesDate = true;
+      if (dateFilter === 'today') {
+        matchesDate = eventData.date === todayStr;
+      } else if (dateFilter === 'week') {
+        matchesDate = eventData.date >= todayStr && eventData.date <= weekEndStr;
+      } else if (dateFilter === 'month') {
+        matchesDate = eventData.date >= todayStr && eventData.date <= monthEndStr;
+      }
+
+      // Price filter
+      let matchesPrice = true;
+      if (priceFilter === 'free') {
+        matchesPrice = !eventData.is_paid;
+      } else if (priceFilter === 'paid') {
+        matchesPrice = !!eventData.is_paid;
+      }
+
+      if (matchesSearch && matchesCategory && matchesDistance && matchesDate && matchesPrice) {
         clusterGroup.addLayer(marker);
       }
     });
-  }, [searchQuery, selectedCategories, distanceFilter, geo.position]);
+  }, [searchQuery, selectedCategories, distanceFilter, dateFilter, priceFilter, geo.position]);
 
   return (
     <>
