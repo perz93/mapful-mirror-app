@@ -20,6 +20,25 @@ const EventDetails = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [reminderSet, setReminderSet] = useState(false);
 
+  const { data: event, isLoading, error } = useQuery({
+    queryKey: ['event', id],
+    queryFn: async () => {
+      if (!id) throw new Error('Event ID is required');
+
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!data) throw new Error('Event not found');
+
+      return data;
+    },
+    enabled: !!id,
+  });
+
   // Check if reminder already set
   useEffect(() => {
     if (!id) return;
@@ -41,7 +60,6 @@ const EventDetails = () => {
       return;
     }
 
-    // Request notification permission if needed
     if ('Notification' in window && Notification.permission === 'default') {
       const perm = await Notification.requestPermission();
       if (perm !== 'granted') {
@@ -50,9 +68,8 @@ const EventDetails = () => {
       }
     }
 
-    // Schedule reminder (1 hour before event)
     const eventDateTime = new Date(`${event.date}T${event.time}`);
-    const reminderTime = new Date(eventDateTime.getTime() - 60 * 60 * 1000); // 1h before
+    const reminderTime = new Date(eventDateTime.getTime() - 60 * 60 * 1000);
 
     reminders[id] = {
       title: event.title,
@@ -64,40 +81,19 @@ const EventDetails = () => {
     localStorage.setItem('event_reminders', JSON.stringify(reminders));
     setReminderSet(true);
 
-    // If event is more than 1h away, schedule a local notification timer
     const msUntilReminder = reminderTime.getTime() - Date.now();
     if (msUntilReminder > 0 && 'Notification' in window && Notification.permission === 'granted') {
-      // For same-session reminder
       setTimeout(() => {
-        new Notification(`🔔 ${event.title} dans 1h !`, {
+        new Notification(`${event.title} dans 1h !`, {
           body: `${event.venue} — ${event.time}`,
           icon: '/icon-192.png',
           tag: `reminder-${id}`,
         });
-      }, Math.min(msUntilReminder, 2147483647)); // setTimeout max value
+      }, Math.min(msUntilReminder, 2147483647));
     }
 
     toast.success('Rappel activé — 1h avant l\'événement');
   }, [id, event, reminderSet]);
-
-  const { data: event, isLoading, error } = useQuery({
-    queryKey: ['event', id],
-    queryFn: async () => {
-      if (!id) throw new Error('Event ID is required');
-      
-      const { data, error } = await supabase
-        .from('events')
-        .select('*')
-        .eq('id', id)
-        .maybeSingle();
-
-      if (error) throw error;
-      if (!data) throw new Error('Event not found');
-      
-      return data;
-    },
-    enabled: !!id,
-  });
 
   if (isLoading) {
     return (

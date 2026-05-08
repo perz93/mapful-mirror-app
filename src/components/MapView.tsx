@@ -310,7 +310,7 @@ const MapView = () => {
         html: `
           <div class="marker-image-container">
             <div class="marker-image-wrapper marker-${eventType}">
-              <img src="${(imageUrl ? imageUrl.split('?')[0] + '?w=80&q=60&fm=webp' : defaultImage)}" alt="Event" class="marker-event-image" loading="lazy" />
+              <img src="${imageUrl || defaultImage}" alt="Event" class="marker-event-image" loading="lazy" />
             </div>
           </div>
         `,
