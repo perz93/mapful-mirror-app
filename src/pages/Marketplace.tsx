@@ -171,19 +171,24 @@ const Marketplace = () => {
                       )}
                     </div>
                   )}
-                  <div className="p-4 pt-3 space-y-2">
+                  <div className="p-4 pt-3 space-y-2.5">
                     {listing.description && (
                       <p className="text-sm text-stone-500 dark:text-stone-400 line-clamp-2 leading-relaxed">{listing.description}</p>
                     )}
-                    <div className="flex items-center gap-3 pt-1">
+                    <div className="flex items-center flex-wrap gap-2">
                       {listing.location && (
-                        <span className="flex items-center gap-1 text-xs text-stone-400 dark:text-stone-500">
-                          <MapPin size={11} />
-                          <span className="truncate max-w-[140px]">{listing.location}</span>
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-100 dark:bg-stone-800 border border-stone-200/60 dark:border-stone-700/60">
+                          <MapPin size={11} className="text-[#ee9d2b]" />
+                          <span className="text-xs font-semibold text-stone-600 dark:text-stone-300 truncate max-w-[160px] italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{listing.location}</span>
                         </span>
                       )}
-                      {listing.price_type && listing.price_type !== 'fixed' && listing.image_url && (
-                        <span className="text-xs text-stone-400">
+                      {listing.price_type && listing.price_type !== 'fixed' && !listing.image_url && listing.price !== null && (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#ee9d2b]/10 border border-[#ee9d2b]/20 text-[10px] font-semibold text-[#ee9d2b]">
+                          {listing.price.toLocaleString()} FCFA
+                        </span>
+                      )}
+                      {listing.price_type && listing.price_type !== 'fixed' && (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#ee9d2b]/10 border border-[#ee9d2b]/20 text-[10px] font-semibold text-[#ee9d2b]">
                           {listing.price_type === 'hourly' && t('market.perHour')}
                           {listing.price_type === 'daily' && t('market.perDay')}
                           {listing.price_type === 'negotiable' && t('market.negotiable')}
