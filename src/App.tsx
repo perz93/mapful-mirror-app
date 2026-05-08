@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SearchProvider } from "@/contexts/SearchContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import NotificationPrompt from "@/components/NotificationPrompt";
 import InstallGuide from "@/components/InstallGuide";
 import SplashScreenWrapper from "@/components/SplashScreen";
@@ -85,6 +86,7 @@ const App = () => (
     <Toaster />
     <Sonner />
     <BrowserRouter>
+      <LanguageProvider>
       <AuthProvider>
         <SearchProvider>
           <NotificationProvider>
@@ -96,6 +98,7 @@ const App = () => (
           </NotificationProvider>
         </SearchProvider>
       </AuthProvider>
+      </LanguageProvider>
     </BrowserRouter>
   </QueryClientProvider>
 );
