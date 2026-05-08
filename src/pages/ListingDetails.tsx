@@ -6,6 +6,7 @@ import { ArrowLeft, MapPin, Phone, Mail, Tag, Share2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import ImageLightbox from '@/components/ImageLightbox';
+import ShimmerImage from '@/components/ShimmerImage';
 import mapBackground from '@/assets/map-background.jpg';
 
 const categoryLabels: Record<string, Record<string, string>> = {
@@ -150,10 +151,10 @@ const ListingDetails = () => {
               onClick={() => setLightboxOpen(true)}
               className="relative h-72 mx-4 mt-2 rounded-3xl overflow-hidden cursor-zoom-in transition-transform active:scale-[0.99]"
             >
-              <img
+              <ShimmerImage
                 src={listing.image_url}
                 alt={listing.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full"
               />
               <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
 

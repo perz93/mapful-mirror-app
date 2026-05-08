@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { Tables } from '@/integrations/supabase/types';
 import { useAttendees } from '@/hooks/useAttendees';
 import mapBackground from '@/assets/map-background.jpg';
+import ShimmerImage from '@/components/ShimmerImage';
 
 type MarketplaceListing = Tables<'marketplace_listings'>;
 
@@ -342,7 +343,7 @@ const MyAccount = () => {
                         className="rounded-2xl backdrop-blur-2xl bg-white/90 dark:bg-stone-900/80 border border-white/60 dark:border-stone-700/30 overflow-hidden shadow-lg"
                       >
                         {listing.image_url && (
-                          <img src={listing.image_url} alt={listing.title} className="w-full h-28 object-cover" />
+                          <ShimmerImage src={listing.image_url} alt={listing.title} className="w-full h-28" />
                         )}
                         <div className="p-3.5">
                           <div className="flex items-start justify-between">

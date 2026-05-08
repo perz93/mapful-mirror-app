@@ -7,6 +7,7 @@ import HypeBadge from './HypeBadge';
 import HypeBar from './HypeBar';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { CategoryPageSkeleton } from './PageSkeleton';
+import ShimmerImage from './ShimmerImage';
 interface CategoryPageProps {
   category: string;
   title: string;
@@ -91,12 +92,10 @@ const CategoryPage = ({
                 >
                   {/* Image section */}
                   <div className="h-48 relative overflow-hidden">
-                    <img
+                    <ShimmerImage
                       src={event.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&q=75&fm=webp'}
                       alt={event.title}
-                      loading="lazy"
-                      decoding="async"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
                     {/* Hype + Countdown badges top-right */}

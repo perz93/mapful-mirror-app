@@ -15,6 +15,7 @@ import ImageLightbox from '@/components/ImageLightbox';
 import CountdownTimer from '@/components/CountdownTimer';
 import HypeBar from '@/components/HypeBar';
 import { EventDetailsSkeleton } from '@/components/PageSkeleton';
+import ShimmerImage from '@/components/ShimmerImage';
 
 
 const EventDetails = () => {
@@ -127,12 +128,11 @@ const EventDetails = () => {
           onClick={() => event.image_url && setLightboxOpen(true)}
           className="relative h-80 rounded-3xl overflow-hidden mx-4 mt-2 cursor-zoom-in transition-transform active:scale-[0.99]"
         >
-          <img
+          <ShimmerImage
             src={event.image_url || 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=640&q=75&fm=webp'}
             alt={event.title}
+            className="absolute inset-0 w-full h-full"
             loading="eager"
-            decoding="async"
-            className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
           

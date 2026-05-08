@@ -6,8 +6,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 import mapBackground from '@/assets/map-background.jpg';
+import ShimmerImage from '@/components/ShimmerImage';
 
 const categoryConfig = {
   location_espaces: { label: 'Location espaces', icon: Building2, color: 'bg-blue-500' },
@@ -154,12 +154,10 @@ const Marketplace = () => {
                 >
                   {listing.image_url ? (
                     <div className="h-44 overflow-hidden relative">
-                      <img
+                      <ShimmerImage
                         src={listing.image_url}
                         alt={listing.title}
-                        loading="lazy"
-                        decoding="async"
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="h-full w-full [&_img]:transition-transform [&_img]:duration-500 [&_img]:group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                       {/* Price on image */}
