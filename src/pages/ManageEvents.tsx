@@ -6,6 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Event } from '@/hooks/useEvents';
 import ManageEventCard from '@/components/ManageEventCard';
+import { ManageEventsSkeleton } from '@/components/PageSkeleton';
 import mapBackground from '@/assets/map-background.jpg';
 
 const ManageEvents = () => {
@@ -80,9 +81,7 @@ const ManageEvents = () => {
         {/* Events List */}
         <div className="flex-1 px-6 pb-8 pt-4">
           {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-            </div>
+            <ManageEventsSkeleton />
           ) : events.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground mb-4">{t('manage.noEvents')}</p>

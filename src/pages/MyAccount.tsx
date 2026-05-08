@@ -11,6 +11,7 @@ import { Tables } from '@/integrations/supabase/types';
 import { useAttendees } from '@/hooks/useAttendees';
 import mapBackground from '@/assets/map-background.jpg';
 import ShimmerImage from '@/components/ShimmerImage';
+import { AccountSkeleton } from '@/components/PageSkeleton';
 
 type MarketplaceListing = Tables<'marketplace_listings'>;
 
@@ -179,6 +180,8 @@ const MyAccount = () => {
     { id: 'activity', label: t('account.activity'), icon: Zap },
   ];
 
+  const isProfileLoading = !profile && !!user;
+
   return (
     <div className="min-h-screen relative overflow-hidden animate-fade-in animate-zoom-smooth bg-stone-200">
       {/* Map Background — light natural */}
@@ -201,6 +204,9 @@ const MyAccount = () => {
         </div>
 
         {/* Profile Section */}
+        {isProfileLoading ? (
+          <AccountSkeleton />
+        ) : (
         <div className="flex flex-col items-center px-6 pt-4">
           {/* Avatar */}
           <div className="relative mb-4">
@@ -436,6 +442,7 @@ const MyAccount = () => {
             )}
           </div>
         </div>
+        )}
       </div>
     </div>
   );

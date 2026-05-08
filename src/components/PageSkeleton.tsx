@@ -108,4 +108,77 @@ export const SettingsSkeleton = () => (
   </div>
 );
 
+/** Skeleton for MyAccount profile page */
+export const AccountSkeleton = () => (
+  <div className="flex flex-col items-center px-6 pt-4">
+    {/* Avatar */}
+    <ShimmerBlock className="w-28 h-28 rounded-full mb-4" />
+    {/* Name */}
+    <ShimmerBlock className="h-7 w-40 rounded-lg mb-2" />
+    <ShimmerBlock className="h-4 w-32 rounded-md mb-5" />
+    {/* Stats */}
+    <div className="grid grid-cols-3 gap-3 w-full mb-6">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="flex flex-col items-center gap-2 rounded-2xl bg-white/50 border border-white/60 p-3">
+          <ShimmerBlock className="w-4 h-4 rounded" />
+          <ShimmerBlock className="h-6 w-8 rounded" />
+          <ShimmerBlock className="h-2 w-12 rounded" />
+        </div>
+      ))}
+    </div>
+    {/* Tabs */}
+    <ShimmerBlock className="h-12 w-full rounded-2xl mb-6" />
+    {/* List items */}
+    <div className="w-full space-y-3">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="flex items-stretch gap-3 rounded-2xl bg-white/80 p-4">
+          <div className="flex-1 space-y-2">
+            <ShimmerBlock className="h-3 w-20" />
+            <ShimmerBlock className="h-4 w-3/4" />
+            <ShimmerBlock className="h-3 w-1/2" />
+            <ShimmerBlock className="h-7 w-20 rounded-full" />
+          </div>
+          <ShimmerBlock className="w-20 h-20 rounded flex-shrink-0" />
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+/** Skeleton for ManageEvents list */
+export const ManageEventsSkeleton = () => (
+  <div className="space-y-4">
+    {[1, 2, 3].map((i) => (
+      <div key={i} className="rounded-2xl bg-white/80 border border-white/60 p-4 space-y-3">
+        <div className="flex items-center gap-3">
+          <ShimmerBlock className="w-16 h-16 rounded-xl flex-shrink-0" />
+          <div className="flex-1 space-y-2">
+            <ShimmerBlock className="h-4 w-3/4" />
+            <ShimmerBlock className="h-3 w-1/2" />
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <ShimmerBlock className="h-8 w-20 rounded-full" />
+          <ShimmerBlock className="h-8 w-24 rounded-full" />
+          <ShimmerBlock className="h-8 w-20 rounded-full" />
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+/** Skeleton for EditEvent form page */
+export const EditEventSkeleton = () => (
+  <div className="mx-auto max-w-md px-4 pt-20 space-y-4">
+    <ShimmerBlock className="h-48 rounded-2xl" />
+    {[1, 2, 3].map((i) => (
+      <div key={i} className="rounded-2xl bg-white/50 border border-white/60 p-4 space-y-3">
+        <ShimmerBlock className="h-5 w-32" />
+        <ShimmerBlock className="h-9 w-full rounded-xl" />
+        <ShimmerBlock className="h-9 w-full rounded-xl" />
+      </div>
+    ))}
+  </div>
+);
+
 export default ShimmerBlock;

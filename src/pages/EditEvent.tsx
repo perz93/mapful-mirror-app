@@ -7,6 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import mapBackground from '@/assets/map-background.jpg';
+import { EditEventSkeleton } from '@/components/PageSkeleton';
 
 const inputClass = "h-9 rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50 w-full px-3";
 const labelClass = "text-sm text-stone-600 font-normal";
@@ -168,8 +169,14 @@ const EditEvent = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen relative overflow-hidden bg-stone-200">
+        <div className="fixed inset-0 pointer-events-none">
+          <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
+        </div>
+        <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
+        <div className="relative z-10">
+          <EditEventSkeleton />
+        </div>
       </div>
     );
   }

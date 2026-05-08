@@ -8,6 +8,7 @@ import { useLanguage, Lang } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import mapBackground from '@/assets/map-background.jpg';
+import { SettingsSkeleton } from '@/components/PageSkeleton';
 
 const Settings = () => {
   const { user, loading } = useAuth();
@@ -128,8 +129,14 @@ const Settings = () => {
 
   if (loading || loadingPreferences) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-10 h-10 border-3 border-[#ee9d2b] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen relative overflow-hidden bg-stone-200">
+        <div className="fixed inset-0 pointer-events-none">
+          <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
+        </div>
+        <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
+        <div className="relative z-10">
+          <SettingsSkeleton />
+        </div>
       </div>
     );
   }
