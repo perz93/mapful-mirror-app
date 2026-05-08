@@ -60,6 +60,13 @@ const CreateEvent = () => {
       navigate('/auth');
     }
   }, [user, loading, navigate, toast]);
+  // Load saved contacts from localStorage
+  const savedContacts = (() => {
+    try {
+      return JSON.parse(localStorage.getItem('saved_contacts') || '{}');
+    } catch { return {}; }
+  })();
+
   const [formData, setFormData] = useState({
     title: '',
     category: '',
@@ -69,12 +76,12 @@ const CreateEvent = () => {
     price: '',
     capacity: '',
     description: '',
-    contactPhone: '',
-    contactWhatsapp: '',
-    contactInstagram: '',
-    contactFacebook: '',
-    contactTiktok: '',
-    contactTwitter: ''
+    contactPhone: savedContacts.contactPhone || '',
+    contactWhatsapp: savedContacts.contactWhatsapp || '',
+    contactInstagram: savedContacts.contactInstagram || '',
+    contactFacebook: savedContacts.contactFacebook || '',
+    contactTiktok: savedContacts.contactTiktok || '',
+    contactTwitter: savedContacts.contactTwitter || '',
   });
 
   const [keyPoints, setKeyPoints] = useState<string[]>(['']);
@@ -307,7 +314,19 @@ const CreateEvent = () => {
         description: "Votre événement a été publié avec succès."
       });
 
-      // Reset form
+      // Save contacts for next time
+      try {
+        localStorage.setItem('saved_contacts', JSON.stringify({
+          contactPhone: formData.contactPhone,
+          contactWhatsapp: formData.contactWhatsapp,
+          contactInstagram: formData.contactInstagram,
+          contactFacebook: formData.contactFacebook,
+          contactTiktok: formData.contactTiktok,
+          contactTwitter: formData.contactTwitter,
+        }));
+      } catch { /* */ }
+
+      // Reset form (contacts kept in localStorage for next creation)
       setFormData({
         title: '',
         category: '',
@@ -317,12 +336,12 @@ const CreateEvent = () => {
         price: '',
         capacity: '',
         description: '',
-        contactPhone: '',
-        contactWhatsapp: '',
-        contactInstagram: '',
-        contactFacebook: '',
-        contactTiktok: '',
-        contactTwitter: ''
+        contactPhone: formData.contactPhone,
+        contactWhatsapp: formData.contactWhatsapp,
+        contactInstagram: formData.contactInstagram,
+        contactFacebook: formData.contactFacebook,
+        contactTiktok: formData.contactTiktok,
+        contactTwitter: formData.contactTwitter,
       });
       setKeyPoints(['']);
       setImageFile(null);
