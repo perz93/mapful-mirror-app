@@ -6,6 +6,7 @@ import { fr } from 'date-fns/locale';
 import HypeBadge from './HypeBadge';
 import HypeBar from './HypeBar';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { CategoryPageSkeleton } from './PageSkeleton';
 interface CategoryPageProps {
   category: string;
   title: string;
@@ -39,9 +40,7 @@ const CategoryPage = ({
               </div>
             </div>
           </header>
-          <div className="p-4 flex items-center justify-center min-h-[50vh]">
-            <p className="text-stone-600 dark:text-stone-400">{t('loading')}</p>
-          </div>
+          <CategoryPageSkeleton />
         </div>
       </div>;
   }

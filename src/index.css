@@ -872,6 +872,13 @@ All colors MUST be HSL.
   .stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
   .stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
 
+  /* Facebook-style shimmer animation */
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
   /* Optimize for mobile performance */
   @media (prefers-reduced-motion: reduce) {
     *, button, a, .card {

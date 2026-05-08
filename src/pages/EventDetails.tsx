@@ -14,6 +14,7 @@ import ContactFab from '@/components/ContactFab';
 import ImageLightbox from '@/components/ImageLightbox';
 import CountdownTimer from '@/components/CountdownTimer';
 import HypeBar from '@/components/HypeBar';
+import { EventDetailsSkeleton } from '@/components/PageSkeleton';
 
 
 const EventDetails = () => {
@@ -99,11 +100,7 @@ const EventDetails = () => {
   }, [id, event, reminderSet]);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center">
-        <div className="text-stone-600 dark:text-stone-400">{t('loading')}</div>
-      </div>
-    );
+    return <EventDetailsSkeleton />;
   }
 
   if (error || !event) {

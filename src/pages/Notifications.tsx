@@ -71,12 +71,18 @@ const Notifications = () => {
       <div className="pt-24 pb-8 px-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 70px)' }}>
         {loading ? (
           <div className="flex flex-col gap-3">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="animate-pulse flex gap-3 p-4 rounded-2xl bg-white dark:bg-stone-900">
-                <div className="w-12 h-12 rounded-xl bg-stone-200 dark:bg-stone-700" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-stone-200 dark:bg-stone-700 rounded w-3/4" />
-                  <div className="h-3 bg-stone-200 dark:bg-stone-700 rounded w-1/2" />
+            {[1, 2, 3, 4, 5].map(i => (
+              <div key={i} className="flex gap-3 p-4 rounded-2xl bg-white dark:bg-stone-900">
+                <div className="w-12 h-12 rounded-xl bg-stone-200/70 dark:bg-stone-800/50 relative overflow-hidden flex-shrink-0">
+                  <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent" />
+                </div>
+                <div className="flex-1 space-y-2.5">
+                  <div className="h-4 bg-stone-200/70 dark:bg-stone-800/50 rounded-md w-3/4 relative overflow-hidden">
+                    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent" />
+                  </div>
+                  <div className="h-3 bg-stone-200/70 dark:bg-stone-800/50 rounded-md w-1/2 relative overflow-hidden">
+                    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent" />
+                  </div>
                 </div>
               </div>
             ))}

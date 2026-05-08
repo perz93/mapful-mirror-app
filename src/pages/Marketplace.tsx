@@ -117,7 +117,27 @@ const Marketplace = () => {
         {isLoading ? (
           <div className="grid gap-4 animate-fade-in">
             {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-48 rounded-2xl" />
+              <div key={i} className="overflow-hidden rounded-3xl bg-white dark:bg-stone-900 border border-white/80 dark:border-stone-700/40 shadow-sm">
+                <div className="h-44 bg-stone-200/70 dark:bg-stone-800/50 relative overflow-hidden">
+                  <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent" />
+                </div>
+                <div className="p-4 space-y-3">
+                  <div className="h-4 bg-stone-200/70 dark:bg-stone-800/50 rounded-md w-3/4 relative overflow-hidden">
+                    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent" />
+                  </div>
+                  <div className="h-3 bg-stone-200/70 dark:bg-stone-800/50 rounded-md w-full relative overflow-hidden">
+                    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent" />
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="h-6 bg-stone-200/70 dark:bg-stone-800/50 rounded-full w-24 relative overflow-hidden">
+                      <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent" />
+                    </div>
+                    <div className="h-6 bg-stone-200/70 dark:bg-stone-800/50 rounded-full w-16 relative overflow-hidden">
+                      <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent" />
+                    </div>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         ) : listings && listings.length > 0 ? (

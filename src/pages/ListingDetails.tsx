@@ -64,8 +64,46 @@ const ListingDetails = () => {
           <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
         </div>
         <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
-        <div className="relative z-10 flex items-center justify-center min-h-screen">
-          <div className="w-8 h-8 border-3 border-[#ee9d2b] border-t-transparent rounded-full animate-spin" />
+        <div className="relative z-10 mx-auto max-w-md">
+          <div className="mx-4 mt-2">
+            <div className="h-72 rounded-3xl bg-stone-200/70 relative overflow-hidden">
+              <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+            </div>
+          </div>
+          <div className="px-4 pt-5 space-y-4">
+            <div className="rounded-2xl bg-white/50 border border-white/60 p-5 space-y-3">
+              <div className="h-6 bg-stone-200/70 rounded-lg w-3/4 relative overflow-hidden">
+                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              </div>
+              <div className="h-8 bg-stone-200/70 rounded-lg w-1/2 relative overflow-hidden">
+                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              </div>
+            </div>
+            <div className="rounded-2xl bg-white/50 border border-white/60 p-4 flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-stone-200/70 relative overflow-hidden flex-shrink-0">
+                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              </div>
+              <div className="flex-1 space-y-2">
+                <div className="h-3 bg-stone-200/70 rounded w-16 relative overflow-hidden">
+                  <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+                </div>
+                <div className="h-4 bg-stone-200/70 rounded w-2/3 relative overflow-hidden">
+                  <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+                </div>
+              </div>
+            </div>
+            <div className="rounded-2xl bg-white/50 border border-white/60 p-5 space-y-3">
+              <div className="h-5 bg-stone-200/70 rounded w-1/3 relative overflow-hidden">
+                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              </div>
+              <div className="h-4 bg-stone-200/70 rounded w-full relative overflow-hidden">
+                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              </div>
+              <div className="h-4 bg-stone-200/70 rounded w-4/5 relative overflow-hidden">
+                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );

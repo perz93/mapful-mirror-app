@@ -129,7 +129,7 @@ const Settings = () => {
   if (loading || loadingPreferences) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">{t('common.loading')}</p>
+        <div className="w-10 h-10 border-3 border-[#ee9d2b] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
