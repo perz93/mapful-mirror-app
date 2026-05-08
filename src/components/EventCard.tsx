@@ -14,6 +14,17 @@ const EventCard = () => {
   } = useFeaturedEvents();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  // Preload all featured event images so switching is instant
+  useEffect(() => {
+    if (!events || events.length === 0) return;
+    events.forEach((event) => {
+      if (event.image_url) {
+        const img = new Image();
+        img.src = event.image_url;
+      }
+    });
+  }, [events]);
+
   useEffect(() => {
     if (!events || events.length === 0) return;
     const interval = setInterval(() => {
