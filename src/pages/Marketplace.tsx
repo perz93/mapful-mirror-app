@@ -130,51 +130,63 @@ const Marketplace = () => {
                   key={listing.id}
                   to={`/listing/${listing.id}`}
                   style={{ animationDelay: `${Math.min(index * 60, 360)}ms`, animationFillMode: 'backwards' }}
-                  className="group relative overflow-hidden rounded-2xl bg-white/70 dark:bg-stone-800/70 backdrop-blur-md shadow-lg animate-fade-in transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98]"
+                  className="group relative overflow-hidden rounded-3xl bg-white dark:bg-stone-900 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.1)] hover:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.18)] animate-fade-in transition-all duration-500 hover:scale-[1.02] active:scale-[0.98] border border-white/80 dark:border-stone-700/40"
                 >
-                  {listing.image_url && (
-                    <div className="h-32 overflow-hidden">
+                  {listing.image_url ? (
+                    <div className="h-44 overflow-hidden relative">
                       <img
                         src={listing.image_url}
                         alt={listing.title}
-                        className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                        loading="lazy"
+                        decoding="async"
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
-                    </div>
-                  )}
-                  <div className="p-4">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1">
-                        <div className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs text-white ${config?.color || 'bg-gray-500'} mb-2`}>
-                          <Icon size={12} />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      {/* Price on image */}
+                      {listing.price !== null && (
+                        <div className="absolute top-3 right-3">
+                          <span className="inline-flex items-center px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-sm text-stone-900 text-xs font-bold whitespace-nowrap shadow-sm">
+                            {listing.price.toLocaleString()} FCFA
+                          </span>
+                        </div>
+                      )}
+                      {/* Category + Title on image */}
+                      <div className="absolute bottom-3 left-3 right-3">
+                        <div className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-semibold text-white ${config?.color || 'bg-gray-500'} mb-1.5 shadow-sm`}>
+                          <Icon size={10} />
                           {config?.label || 'Autre'}
                         </div>
-                        <h3 className="font-semibold text-foreground line-clamp-1">{listing.title}</h3>
-                        {listing.description && (
-                          <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{listing.description}</p>
-                        )}
+                        <h3 className="text-white text-base font-bold leading-tight line-clamp-1 drop-shadow-sm">{listing.title}</h3>
                       </div>
-                      {listing.price && (
-                        <div className="text-right">
-                          <p className="font-bold text-primary">{listing.price.toLocaleString()} FCFA</p>
-                          <p className="text-xs text-muted-foreground">
-                            {listing.price_type === 'hourly' && t('market.perHour')}
-                            {listing.price_type === 'daily' && t('market.perDay')}
-                            {listing.price_type === 'negotiable' && t('market.negotiable')}
-                          </p>
-                        </div>
+                    </div>
+                  ) : (
+                    <div className="p-4 pb-0">
+                      <div className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-semibold text-white ${config?.color || 'bg-gray-500'} mb-2`}>
+                        <Icon size={10} />
+                        {config?.label || 'Autre'}
+                      </div>
+                      <h3 className="font-bold text-stone-900 dark:text-white text-base line-clamp-1">{listing.title}</h3>
+                      {listing.price !== null && (
+                        <p className="text-[#ee9d2b] font-bold text-sm mt-1">{listing.price.toLocaleString()} FCFA</p>
                       )}
                     </div>
-                    <div className="mt-3 flex flex-wrap gap-2 text-xs text-muted-foreground">
+                  )}
+                  <div className="p-4 pt-3 space-y-2">
+                    {listing.description && (
+                      <p className="text-sm text-stone-500 dark:text-stone-400 line-clamp-2 leading-relaxed">{listing.description}</p>
+                    )}
+                    <div className="flex items-center gap-3 pt-1">
                       {listing.location && (
-                        <span className="flex items-center gap-1">
-                          <MapPin size={12} />
-                          {listing.location}
+                        <span className="flex items-center gap-1 text-xs text-stone-400 dark:text-stone-500">
+                          <MapPin size={11} />
+                          <span className="truncate max-w-[140px]">{listing.location}</span>
                         </span>
                       )}
-                      {listing.contact_phone && (
-                        <span className="flex items-center gap-1">
-                          <Phone size={12} />
-                          {listing.contact_phone}
+                      {listing.price_type && listing.price_type !== 'fixed' && listing.image_url && (
+                        <span className="text-xs text-stone-400">
+                          {listing.price_type === 'hourly' && t('market.perHour')}
+                          {listing.price_type === 'daily' && t('market.perDay')}
+                          {listing.price_type === 'negotiable' && t('market.negotiable')}
                         </span>
                       )}
                     </div>
