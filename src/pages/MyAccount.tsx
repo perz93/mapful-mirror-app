@@ -89,17 +89,23 @@ const MyAccount = () => {
     if (allEvents && user) loadFavorites();
   }, [allEvents, user]);
 
-  // Load events where user clicked "J'y vais"
+  // Load events where user clicked "J'y vais" from Supabase
   useEffect(() => {
-    if (!allEvents) return;
-    try {
-      const raw = localStorage.getItem('event_attendees');
-      if (!raw) return;
-      const data = JSON.parse(raw);
-      const goingIds = Object.keys(data).filter(id => data[id]?.going);
-      setGoingEvents(allEvents.filter(e => goingIds.includes(e.id)));
-    } catch { /* */ }
-  }, [allEvents]);
+    if (!allEvents || !user) return;
+    const loadGoingEvents = async () => {
+      const { data } = await supabase
+        .from('event_attendees')
+        .select('event_id')
+        .eq('user_id', user.id);
+      if (data && data.length > 0) {
+        const goingIds = data.map(d => d.event_id);
+        setGoingEvents(allEvents.filter(e => goingIds.includes(e.id)));
+      } else {
+        setGoingEvents([]);
+      }
+    };
+    loadGoingEvents();
+  }, [allEvents, user]);
 
   const loadUserListings = async () => {
     if (!user) return;
