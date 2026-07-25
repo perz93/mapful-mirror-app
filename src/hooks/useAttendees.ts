@@ -14,7 +14,7 @@ export function useAttendees(eventId: string) {
     // Fetch count + check if current user is going
     const fetch = async () => {
       const { count: total } = await supabase
-        .from('event_attendees')
+        .from('event_attendees' as any)
         .select('*', { count: 'exact', head: true })
         .eq('event_id', eventId);
 
@@ -22,7 +22,7 @@ export function useAttendees(eventId: string) {
 
       if (user) {
         const { data } = await supabase
-          .from('event_attendees')
+          .from('event_attendees' as any)
           .select('id')
           .eq('event_id', eventId)
           .eq('user_id', user.id)
@@ -54,7 +54,7 @@ export function useAttendees(eventId: string) {
     try {
       if (isGoing) {
         await supabase
-          .from('event_attendees')
+          .from('event_attendees' as any)
           .delete()
           .eq('event_id', eventId)
           .eq('user_id', user.id);
@@ -63,7 +63,7 @@ export function useAttendees(eventId: string) {
         setCount(prev => Math.max(0, prev - 1));
       } else {
         await supabase
-          .from('event_attendees')
+          .from('event_attendees' as any)
           .insert({ event_id: eventId, user_id: user.id });
 
         setIsGoing(true);

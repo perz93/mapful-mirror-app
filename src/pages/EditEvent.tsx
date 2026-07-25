@@ -81,7 +81,7 @@ const EditEvent = () => {
         contact_whatsapp: data.contact_whatsapp || '',
         contact_instagram: data.contact_instagram || '',
         contact_facebook: data.contact_facebook || '',
-        contact_tiktok: data.contact_tiktok || '',
+        contact_tiktok: (data as any).contact_tiktok || '',
         contact_twitter: data.contact_twitter || '',
       });
 

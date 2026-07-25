@@ -107,7 +107,7 @@ self.addEventListener('push', (event) => {
 
   const data = event.data.json();
 
-  const options: NotificationOptions = {
+  const options: NotificationOptions & { image?: string } = {
     body: data.body || '',
     icon: '/icon-192.png',
     badge: '/icon-192.png',

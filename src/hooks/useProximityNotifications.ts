@@ -94,7 +94,7 @@ export function useProximityNotifications() {
             markNotified(event.id);
 
             // Also log server-side if possible
-            await supabase.from('notification_log').upsert(
+            await (supabase as any).from('notification_log').upsert(
               {
                 user_id: user.id,
                 event_id: event.id,
