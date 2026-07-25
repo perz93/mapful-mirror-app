@@ -102,32 +102,94 @@ body {
 }
 
 @layer utilities {
-  /* Neo-soft signature: subtle offset ink shadow + soft border */
+  /* Neo-brutalist signature — assumé et visible */
   .neo-soft {
-    border: 1px solid hsl(var(--foreground) / 0.15);
-    box-shadow: var(--shadow-neo-sm);
-    transition: box-shadow 200ms ease, transform 200ms ease;
+    border: 2px solid hsl(var(--foreground));
+    box-shadow: var(--shadow-neo);
+    transition: box-shadow 150ms ease, transform 150ms ease;
+    border-radius: 0.75rem;
   }
   .neo-soft:hover {
-    box-shadow: var(--shadow-neo);
-    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-neo-lg);
+    transform: translate(-2px, -2px);
   }
   .neo-soft-lg {
-    border: 1.5px solid hsl(var(--foreground) / 0.2);
-    box-shadow: var(--shadow-neo);
+    border: 2.5px solid hsl(var(--foreground));
+    box-shadow: var(--shadow-neo-lg);
+    border-radius: 0.75rem;
   }
   .neo-btn {
-    border: 1.5px solid hsl(var(--foreground));
-    box-shadow: var(--shadow-neo-sm);
-    transition: box-shadow 150ms ease, transform 150ms ease;
+    border: 2px solid hsl(var(--foreground));
+    box-shadow: var(--shadow-neo);
+    transition: box-shadow 120ms ease, transform 120ms ease;
+    border-radius: 0.75rem;
   }
   .neo-btn:hover {
-    box-shadow: var(--shadow-neo);
-    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-neo-lg);
+    transform: translate(-2px, -2px);
   }
   .neo-btn:active {
-    box-shadow: none;
-    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 0 hsl(var(--foreground));
+    transform: translate(3px, 3px);
+  }
+}
+
+/* Global neo-brutalist pass — applique l'effet automatiquement aux
+   surfaces shadcn (cards, buttons, inputs, dialogs) sans toucher aux composants. */
+@layer components {
+  /* Cards */
+  [class*="rounded-"][class*="bg-card"],
+  .bg-card {
+    border: 2px solid hsl(var(--foreground)) !important;
+    box-shadow: var(--shadow-neo) !important;
+  }
+
+  /* Inputs & textareas */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select {
+    border: 2px solid hsl(var(--foreground)) !important;
+    box-shadow: var(--shadow-neo-sm) !important;
+    border-radius: 0.6rem !important;
+    background: hsl(var(--card)) !important;
+  }
+  input:focus, textarea:focus, select:focus {
+    box-shadow: var(--shadow-neo) !important;
+    transform: translate(-1px, -1px);
+  }
+
+  /* Primary/solid buttons — shadcn */
+  button.bg-primary,
+  button.bg-foreground,
+  button.bg-accent,
+  button.bg-destructive,
+  a.bg-primary,
+  a.bg-foreground,
+  [role="button"].bg-primary {
+    border: 2px solid hsl(var(--foreground)) !important;
+    box-shadow: var(--shadow-neo) !important;
+    transition: box-shadow 120ms ease, transform 120ms ease !important;
+  }
+  button.bg-primary:hover,
+  button.bg-foreground:hover,
+  button.bg-accent:hover,
+  a.bg-primary:hover {
+    box-shadow: var(--shadow-neo-lg) !important;
+    transform: translate(-2px, -2px) !important;
+  }
+  button.bg-primary:active,
+  button.bg-foreground:active,
+  button.bg-accent:active,
+  a.bg-primary:active {
+    box-shadow: 0 0 0 0 hsl(var(--foreground)) !important;
+    transform: translate(3px, 3px) !important;
+  }
+
+  /* Dialogs / popovers */
+  [role="dialog"] > div,
+  [data-radix-popper-content-wrapper] > * {
+    border: 2px solid hsl(var(--foreground)) !important;
+    box-shadow: var(--shadow-neo-lg) !important;
   }
 }
 
