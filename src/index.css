@@ -681,47 +681,53 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Sable & Terracotta — Neo-soft palette */
+    --background: 38 44% 96%;         /* #faf6ef cream */
+    --foreground: 0 0% 10%;           /* #1a1a1a ink */
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 0 0% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 0 0% 10%;
 
-    --primary: 36 85% 54%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 36 85% 54%;            /* keep orange #ee9d2b for brand continuity */
+    --primary-foreground: 0 0% 10%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 34 44% 88%;          /* #f0e4d3 sand */
+    --secondary-foreground: 0 0% 10%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 34 44% 92%;
+    --muted-foreground: 0 0% 30%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 12 51% 53%;             /* #c4654a terracotta */
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 34 30% 82%;             /* soft sand border */
+    --input: 34 30% 82%;
+    --ring: 12 51% 53%;
 
-    --radius: 0.5rem;
+    --radius: 1rem;                   /* softer corners */
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Neo-soft signature: offset ink shadow */
+    --shadow-neo: 3px 3px 0 0 hsl(0 0% 10% / 0.9);
+    --shadow-neo-sm: 2px 2px 0 0 hsl(0 0% 10% / 0.9);
+    --shadow-neo-lg: 5px 5px 0 0 hsl(0 0% 10% / 0.9);
 
-    /* Scroll indicator (pure black) */
-    --scroll-indicator: 0 0% 0%;
+    --sidebar-background: 38 44% 96%;
+    --sidebar-foreground: 0 0% 10%;
+    --sidebar-primary: 12 51% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 34 44% 88%;
+    --sidebar-accent-foreground: 0 0% 10%;
+    --sidebar-border: 34 30% 82%;
+    --sidebar-ring: 12 51% 53%;
+
+    /* Scroll indicator (pure ink) */
+    --scroll-indicator: 0 0% 10%;
   }
 
   .dark {
