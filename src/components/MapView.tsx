@@ -453,7 +453,7 @@ const MapView = () => {
 
         if (hypeNumber) {
           const { count } = await supabase
-            .from('event_attendees')
+            .from('event_attendees' as any)
             .select('*', { count: 'exact', head: true })
             .eq('event_id', event.id);
           hypeNumber.textContent = String(count ?? 0);
@@ -463,7 +463,7 @@ const MapView = () => {
           const { data: { user } } = await supabase.auth.getUser();
           if (user) {
             const { data } = await supabase
-              .from('event_attendees')
+              .from('event_attendees' as any)
               .select('id')
               .eq('event_id', event.id)
               .eq('user_id', user.id)
@@ -478,7 +478,7 @@ const MapView = () => {
               e.stopPropagation();
               const isActive = goingBtn.classList.contains('popup-going-active');
               if (isActive) {
-                await supabase.from('event_attendees').delete()
+                await (supabase as any).from('event_attendees').delete()
                   .eq('event_id', event.id).eq('user_id', user.id);
                 goingBtn.classList.remove('popup-going-active');
                 goingBtn.textContent = "J'y vais";
@@ -486,7 +486,7 @@ const MapView = () => {
                   hypeNumber.textContent = String(Math.max(0, parseInt(hypeNumber.textContent || '0') - 1));
                 }
               } else {
-                await supabase.from('event_attendees').insert({ event_id: event.id, user_id: user.id });
+                await (supabase as any).from('event_attendees').insert({ event_id: event.id, user_id: user.id });
                 goingBtn.classList.add('popup-going-active');
                 goingBtn.textContent = "J'y serai !";
                 if (hypeNumber) {
@@ -511,7 +511,7 @@ const MapView = () => {
       try {
         const eventIds = events.map((e) => e.id);
         const { data: attendeeCounts } = await supabase
-          .from('event_attendees')
+          .from('event_attendees' as any)
           .select('event_id')
           .in('event_id', eventIds);
 

@@ -54,7 +54,7 @@ const EventDetails = () => {
     if (!id || !user) return;
     const checkReminder = async () => {
       const { data } = await supabase
-        .from('event_reminders')
+        .from('event_reminders' as any)
         .select('id')
         .eq('event_id', id)
         .eq('user_id', user.id)
@@ -69,7 +69,7 @@ const EventDetails = () => {
 
     if (reminderSet) {
       await supabase
-        .from('event_reminders')
+        .from('event_reminders' as any)
         .delete()
         .eq('event_id', id)
         .eq('user_id', user.id);
@@ -90,7 +90,7 @@ const EventDetails = () => {
     const reminderTime = new Date(eventDateTime.getTime() - 60 * 60 * 1000);
 
     await supabase
-      .from('event_reminders')
+      .from('event_reminders' as any)
       .upsert({
         user_id: user.id,
         event_id: id,

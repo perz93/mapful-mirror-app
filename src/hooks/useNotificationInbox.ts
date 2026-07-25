@@ -30,7 +30,7 @@ export function useNotificationInbox() {
     if (!user) { setNotifications([]); setUnreadCount(0); setLoading(false); return; }
 
     const { data, error } = await supabase
-      .from('notification_log')
+      .from('notification_log' as any)
       .select('id, event_id, notification_type, title, body, url, image_url, is_read, created_at, events(title, image_url, venue)')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
@@ -59,7 +59,7 @@ export function useNotificationInbox() {
 
   const markAsRead = useCallback(async (id: string) => {
     await supabase
-      .from('notification_log')
+      .from('notification_log' as any)
       .update({ is_read: true } as any)
       .eq('id', id);
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
@@ -69,7 +69,7 @@ export function useNotificationInbox() {
   const markAllAsRead = useCallback(async () => {
     if (!user) return;
     await supabase
-      .from('notification_log')
+      .from('notification_log' as any)
       .update({ is_read: true } as any)
       .eq('user_id', user.id)
       .eq('is_read', false);
