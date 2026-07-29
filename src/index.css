@@ -191,7 +191,37 @@ body {
     border: 2px solid hsl(var(--foreground)) !important;
     box-shadow: var(--shadow-neo-lg) !important;
   }
+
+  /* Surfaces "maison" (cards glassmorphism / blanches) — event card, marketplace,
+     détails d'événement, réglages, formulaires. */
+  [class*="rounded-xl"][class*="bg-white"],
+  [class*="rounded-2xl"][class*="bg-white"],
+  [class*="rounded-3xl"][class*="bg-white"],
+  [class*="rounded-xl"][class*="bg-card"],
+  [class*="rounded-2xl"][class*="backdrop-blur"],
+  [class*="rounded-3xl"][class*="backdrop-blur"],
+  [class*="rounded-2xl"][class*="bg-amber-50"],
+  [class*="rounded-2xl"][class*="bg-stone-50"],
+  [class*="rounded-3xl"][class*="bg-stone-900"],
+  [class*="rounded-2xl"][class*="bg-stone-900"] {
+    border: 2px solid hsl(var(--foreground)) !important;
+    box-shadow: var(--shadow-neo) !important;
+  }
+
+  /* Image héro des détails d'événement */
+  [class*="rounded-3xl"][class*="overflow-hidden"] {
+    border: 2px solid hsl(var(--foreground)) !important;
+    box-shadow: var(--shadow-neo) !important;
+  }
+
+  /* Chips / badges pilule → contour net */
+  [class*="rounded-full"][class*="bg-[#ee9d2b]/10"],
+  [class*="rounded-full"][class*="bg-stone-100"],
+  [class*="rounded-full"][class*="bg-stone-500/15"] {
+    border: 1.5px solid hsl(var(--foreground)) !important;
+  }
 }
+
 
 
 .leaflet-container {
