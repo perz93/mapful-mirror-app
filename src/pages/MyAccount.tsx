@@ -102,7 +102,7 @@ const MyAccount = () => {
         .select('event_id')
         .eq('user_id', user.id);
       if (data && data.length > 0) {
-        const goingIds = data.map(d => d.event_id);
+        const goingIds = (data as any[]).map((d) => d.event_id);
         setGoingEvents(allEvents.filter(e => goingIds.includes(e.id)));
       } else {
         setGoingEvents([]);
