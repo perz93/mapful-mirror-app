@@ -61,9 +61,9 @@ export default {
         },
       },
       fontFamily: {
-        display: ['Righteous', 'Be Vietnam Pro', 'sans-serif'],
-        sans: ['Raleway', 'Open Sans', 'sans-serif'],
-        heading: ['Righteous', 'sans-serif'],
+        display: ['Kanit', 'sans-serif'],
+        sans: ['Kanit', 'sans-serif'],
+        heading: ['Kanit', 'sans-serif'],
       },
       borderRadius: {
         DEFAULT: "1rem",

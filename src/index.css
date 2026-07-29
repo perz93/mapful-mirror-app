@@ -95,7 +95,7 @@ div:focus, div:focus-visible,
 
 body {
   min-height: 100dvh;
-  font-family: 'Be Vietnam Pro', sans-serif;
+  font-family: 'Kanit', sans-serif;
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
   -webkit-tap-highlight-color: transparent;
@@ -688,7 +688,7 @@ body {
   font-size: 12px;
   font-weight: 600;
   font-style: italic;
-  font-family: 'Source Serif 4', Georgia, serif;
+  font-family: 'Kanit', sans-serif;
   text-shadow: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -1043,4 +1043,43 @@ input[type="time"] {
   max-width: 100% !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
+}
+
+
+/* ===== Kanit : police unique du site ===== */
+*,
+*::before,
+*::after,
+body,
+button,
+input,
+textarea,
+select,
+optgroup,
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Kanit', sans-serif !important;
+}
+
+body { font-weight: 400; }
+
+nav, nav a, nav button, label, .nav-item {
+  font-weight: 500;
+}
+
+h3, h4, h5, h6, button, .btn, [role="button"] {
+  font-weight: 600;
+}
+
+h1, h2 {
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+h1 { font-size: 36px; }
+h2 { font-size: 30px; }
+
+@media (min-width: 768px) {
+  h1 { font-size: 56px; }
+  h2 { font-size: 40px; }
 }
