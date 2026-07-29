@@ -161,7 +161,7 @@ const Settings = () => {
           >
             <ArrowLeft className="w-5 h-5 text-stone-700" />
           </Link>
-          <h1 className="text-3xl font-bold italic text-stone-800" style={{ fontFamily: "'Source Serif 4', serif" }}>
+          <h1 className="text-3xl font-bold  text-stone-800">
             {t('settings.title')}
           </h1>
           <p className="mt-2 text-stone-500">{t('settings.subtitle')}</p>
@@ -172,7 +172,7 @@ const Settings = () => {
           <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
             <div className="flex items-center gap-2 mb-1">
               <Mail className="h-5 w-5 text-[#ee9d2b]" />
-              <h2 className="text-lg font-semibold italic text-stone-800" style={{ fontFamily: "'Source Serif 4', serif" }}>
+              <h2 className="text-lg font-semibold  text-stone-800">
                 {t('settings.email')}
               </h2>
             </div>
@@ -207,7 +207,7 @@ const Settings = () => {
           <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
             <div className="flex items-center gap-2 mb-1">
               <Lock className="h-5 w-5 text-[#ee9d2b]" />
-              <h2 className="text-lg font-semibold italic text-stone-800" style={{ fontFamily: "'Source Serif 4', serif" }}>
+              <h2 className="text-lg font-semibold  text-stone-800">
                 {t('settings.password')}
               </h2>
             </div>
@@ -258,7 +258,7 @@ const Settings = () => {
           <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
             <div className="flex items-center gap-2 mb-1">
               <Bell className="h-5 w-5 text-[#ee9d2b]" />
-              <h2 className="text-lg font-semibold italic text-stone-800" style={{ fontFamily: "'Source Serif 4', serif" }}>
+              <h2 className="text-lg font-semibold  text-stone-800">
                 {t('settings.notifPrefs')}
               </h2>
             </div>
@@ -310,7 +310,7 @@ const Settings = () => {
           <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
             <div className="flex items-center gap-2 mb-1">
               <Globe className="h-5 w-5 text-[#ee9d2b]" />
-              <h2 className="text-lg font-semibold italic text-stone-800" style={{ fontFamily: "'Source Serif 4', serif" }}>
+              <h2 className="text-lg font-semibold  text-stone-800">
                 {t('settings.language')}
               </h2>
             </div>
@@ -346,7 +346,7 @@ const Settings = () => {
             <div className="p-5 pb-3">
               <div className="flex items-center gap-2 mb-1">
                 <Shield className="h-5 w-5 text-[#ee9d2b]" />
-                <h2 className="text-lg font-semibold italic text-stone-800" style={{ fontFamily: "'Source Serif 4', serif" }}>
+                <h2 className="text-lg font-semibold  text-stone-800">
                   {t('settings.legal')}
                 </h2>
               </div>
@@ -414,7 +414,7 @@ const PushNotificationSection = () => {
     <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
       <div className="flex items-center gap-2 mb-1">
         <Smartphone className="h-5 w-5 text-[#ee9d2b]" />
-        <h2 className="text-lg font-semibold italic text-stone-800" style={{ fontFamily: "'Source Serif 4', serif" }}>
+        <h2 className="text-lg font-semibold  text-stone-800">
           {t('settings.push')}
         </h2>
       </div>

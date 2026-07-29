@@ -110,7 +110,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
           <div className="backdrop-blur-2xl bg-white/85 rounded-3xl border border-white/60 shadow-[0_8px_40px_-8px_rgba(0,0,0,0.2)] overflow-hidden">
             {/* Header */}
             <div className="px-5 pt-5 pb-3 flex items-center justify-between">
-              <h2 className="text-xl font-bold italic text-stone-800" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+              <h2 className="text-xl font-bold  text-stone-800">
                 {t('nav.search')}
               </h2>
               <button
@@ -246,7 +246,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                           isActive ? 'opacity-100' : 'opacity-60'
                         }`}
                       />
-                      <p className="text-xs font-medium italic leading-none transition-all duration-300 ease-in-out" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+                      <p className="text-xs font-medium  leading-none transition-all duration-300 ease-in-out">
                         {item.label}
                       </p>
                     </Link>

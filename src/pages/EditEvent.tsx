@@ -13,7 +13,7 @@ import { EditEventSkeleton } from '@/components/PageSkeleton';
 const inputClass = "h-9 rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50 w-full px-3";
 const labelClass = "text-sm text-stone-600 font-normal";
 const cardClass = "rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.08)] p-4 space-y-3";
-const sectionTitleClass = "text-lg italic text-stone-800 mb-4 flex items-center gap-2";
+const sectionTitleClass = "text-lg  text-stone-800 mb-4 flex items-center gap-2";
 
 const EditEvent = () => {
   const { id } = useParams();
@@ -202,7 +202,7 @@ const EditEvent = () => {
           >
             <ArrowLeft className="w-5 h-5 text-stone-700" />
           </Link>
-          <h1 className="text-3xl italic text-stone-800 mb-2 text-center" style={{ fontFamily: '"Source Serif 4", serif' }}>
+          <h1 className="text-3xl  text-stone-800 mb-2 text-center">
             {t('event.edit')}
           </h1>
           <p className="text-stone-500 font-light text-center text-sm">{t('form.updateInfo')}</p>
@@ -231,7 +231,7 @@ const EditEvent = () => {
 
             {/* Basic Info */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>{t('form.info')}</h2>
+              <h2 className={sectionTitleClass}>{t('form.info')}</h2>
 
               <div className="space-y-2">
                 <label className={labelClass}>{t('form.titleShort')}</label>
@@ -273,7 +273,7 @@ const EditEvent = () => {
 
             {/* Date & Time — stacked */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>{t('form.dateTime')}</h2>
+              <h2 className={sectionTitleClass}>{t('form.dateTime')}</h2>
 
               <div className="space-y-2">
                 <label className={labelClass}>{t('form.date')}</label>
@@ -287,7 +287,7 @@ const EditEvent = () => {
 
             {/* Price & Capacity */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>{t('form.priceCapacity')}</h2>
+              <h2 className={sectionTitleClass}>{t('form.priceCapacity')}</h2>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
@@ -308,7 +308,7 @@ const EditEvent = () => {
 
             {/* Contact / Réseaux sociaux */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
+              <h2 className={sectionTitleClass}>
                 <Phone className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
                 {t('form.contactNetworks')}
               </h2>

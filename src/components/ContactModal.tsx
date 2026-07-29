@@ -46,14 +46,14 @@ const ContactModal = ({
   return (
     <div 
       className={cn(
-        "fixed inset-0 z-50 flex items-center justify-center px-4 transition-all duration-300",
+"fixed inset-0 z-50 flex items-center justify-center px-4 transition-all duration-300",
         isAnimating ? "bg-black/60 backdrop-blur-sm" : "bg-black/0"
       )}
       onClick={onClose}
     >
       <div 
         className={cn(
-          "relative bg-white/95 backdrop-blur-xl rounded-3xl p-6 w-full max-w-sm shadow-2xl transition-all duration-500",
+"relative bg-white/95 backdrop-blur-xl rounded-3xl p-6 w-full max-w-sm shadow-2xl transition-all duration-500",
           isAnimating 
             ? "opacity-100 scale-100 translate-y-0" 
             : "opacity-0 scale-75 translate-y-8"

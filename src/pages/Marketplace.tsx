@@ -68,7 +68,7 @@ const Marketplace = () => {
         >
           <ArrowLeft className="text-stone-700" size={20} />
         </Link>
-        <h1 className="text-xl font-bold italic text-stone-800" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{t('market.title')}</h1>
+        <h1 className="text-xl font-bold  text-stone-800">{t('market.title')}</h1>
         <Button
           onClick={handleCreateListing}
           size="icon"
@@ -197,7 +197,7 @@ const Marketplace = () => {
                       {listing.location && (
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-100 dark:bg-stone-800 border border-stone-200/60 dark:border-stone-700/60">
                           <MapPin size={11} className="text-[#ee9d2b]" />
-                          <span className="text-xs font-semibold text-stone-600 dark:text-stone-300 truncate max-w-[160px] italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{listing.location}</span>
+                          <span className="text-xs font-semibold text-stone-600 dark:text-stone-300 truncate max-w-[160px] ">{listing.location}</span>
                         </span>
                       )}
                       {listing.price_type && listing.price_type !== 'fixed' && !listing.image_url && listing.price !== null && (
@@ -223,7 +223,7 @@ const Marketplace = () => {
             <div className="mb-4 rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 p-6">
               <Building2 className="text-stone-400" size={48} />
             </div>
-            <h3 className="mb-2 text-lg font-semibold text-stone-800 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{t('market.noListings')}</h3>
+            <h3 className="mb-2 text-lg font-semibold text-stone-800 ">{t('market.noListings')}</h3>
             <p className="mb-4 text-sm text-stone-500">
               {t('market.beFirst')}
             </p>

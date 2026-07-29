@@ -197,7 +197,7 @@ const MyAccount = () => {
           <Link to="/" className="w-11 h-11 rounded-full bg-white/70 backdrop-blur-md flex items-center justify-center shadow-sm border border-white/60 hover:scale-105 active:scale-95 transition-all">
             <ArrowLeft className="w-5 h-5 text-stone-700" />
           </Link>
-          <h1 className="text-lg font-bold italic text-stone-800" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+          <h1 className="text-lg font-bold  text-stone-800">
             {t('account.title')}
           </h1>
           <div className="w-11 h-11" />
@@ -236,7 +236,7 @@ const MyAccount = () => {
           </div>
 
           {/* Name */}
-          <h2 className="text-2xl font-bold text-stone-800 mb-1 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+          <h2 className="text-2xl font-bold text-stone-800 mb-1 ">
             {displayName}
           </h2>
           <p className="text-stone-500 text-xs mb-5">{user?.email}</p>
@@ -287,7 +287,7 @@ const MyAccount = () => {
             {activeTab === 'events' && (
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-base font-bold text-stone-800 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+                  <h3 className="text-base font-bold text-stone-800 ">
                     {t('account.myEvents')}
                   </h3>
                   <Link to="/manage-events" className="text-[#ee9d2b] text-xs font-semibold hover:underline">
@@ -323,7 +323,7 @@ const MyAccount = () => {
             {activeTab === 'listings' && (
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-base font-bold text-stone-800 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+                  <h3 className="text-base font-bold text-stone-800 ">
                     {t('account.myListings')}
                   </h3>
                   <Link to="/create-listing" className="text-[#ee9d2b] text-xs font-semibold hover:underline">
@@ -355,7 +355,7 @@ const MyAccount = () => {
                           <div className="flex items-start justify-between">
                             <div className="flex-1 min-w-0">
                               <h4 className="font-bold text-stone-900 dark:text-white text-sm truncate">{listing.title}</h4>
-                              <p className="text-xs text-stone-500 capitalize italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{listing.category}</p>
+                              <p className="text-xs text-stone-500 capitalize ">{listing.category}</p>
                               {listing.price && (
                                 <p className="text-[#ee9d2b] font-bold text-sm mt-1">{listing.price.toLocaleString()} FCFA</p>
                               )}
@@ -385,7 +385,7 @@ const MyAccount = () => {
 
             {activeTab === 'favorites' && (
               <div>
-                <h3 className="text-base font-bold text-stone-800 italic mb-4" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+                <h3 className="text-base font-bold text-stone-800  mb-4">
                   {t('account.myFavorites')}
                 </h3>
                 {favoriteEvents.length === 0 ? (
@@ -411,7 +411,7 @@ const MyAccount = () => {
 
             {activeTab === 'activity' && (
               <div>
-                <h3 className="text-base font-bold text-stone-800 italic mb-4" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+                <h3 className="text-base font-bold text-stone-800  mb-4">
                   {t('account.goingTitle')}
                 </h3>
                 {goingEvents.length === 0 ? (

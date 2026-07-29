@@ -142,7 +142,7 @@ const CreateListing = () => {
         >
           <ArrowLeft className="w-5 h-5 text-stone-700" />
         </Link>
-        <h1 className="text-3xl italic text-stone-800 text-center" style={{ fontFamily: '"Source Serif 4", serif' }}>{t('market.newListing')}</h1>
+        <h1 className="text-3xl  text-stone-800 text-center">{t('market.newListing')}</h1>
         <p className="text-stone-500 font-light text-center mt-1">{t('market.offerServices')}</p>
       </div>
 

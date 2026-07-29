@@ -44,7 +44,7 @@ const categoryIcons: Record<string, string> = {
 const inputClass = "h-9 rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50 [&]:ring-0 [&]:outline-none";
 const labelClass = "text-sm text-stone-600 font-normal";
 const cardClass = "rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.08)] p-4 space-y-3";
-const sectionTitleClass = "text-lg italic text-stone-800 mb-4 flex items-center gap-2";
+const sectionTitleClass = "text-lg  text-stone-800 mb-4 flex items-center gap-2";
 
 const CreateEvent = () => {
   const { toast } = useToast();
@@ -407,7 +407,7 @@ const CreateEvent = () => {
           >
             <ArrowLeft className="w-5 h-5 text-stone-700" />
           </Link>
-          <h1 className="text-4xl italic text-stone-800 mb-3 text-center" style={{ fontFamily: '"Source Serif 4", serif' }}>
+          <h1 className="text-4xl  text-stone-800 mb-3 text-center">
             {t('event.create')}
           </h1>
           <p className="text-stone-500 font-light text-center">{t('form.shareEvent')}</p>
@@ -452,7 +452,7 @@ const CreateEvent = () => {
 
             {/* Basic Information Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
+              <h2 className={sectionTitleClass}>
                 {t('form.basicInfo')}
               </h2>
 
@@ -545,7 +545,7 @@ const CreateEvent = () => {
 
             {/* Location Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
+              <h2 className={sectionTitleClass}>
                 <MapPin className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
                 {t('form.location')}
               </h2>
@@ -584,7 +584,7 @@ const CreateEvent = () => {
 
             {/* Date and Time Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
+              <h2 className={sectionTitleClass}>
                 <Calendar className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
                 {t('form.dateTime')}
               </h2>
@@ -629,7 +629,7 @@ const CreateEvent = () => {
 
             {/* Price and Capacity Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
+              <h2 className={sectionTitleClass}>
                 {t('form.priceCapacity')}
               </h2>
 
@@ -660,7 +660,7 @@ const CreateEvent = () => {
 
             {/* Description Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
+              <h2 className={sectionTitleClass}>
                 {t('form.description')}
               </h2>
 
@@ -678,7 +678,7 @@ const CreateEvent = () => {
 
             {/* Key Points Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
+              <h2 className={sectionTitleClass}>
                 <Sparkles className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
                 {t('form.keyPoints')}
               </h2>
@@ -720,7 +720,7 @@ const CreateEvent = () => {
 
             {/* Contact Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass} style={{ fontFamily: '"Source Serif 4", serif' }}>
+              <h2 className={sectionTitleClass}>
                 <Phone className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
                 {t('form.contact')}
               </h2>

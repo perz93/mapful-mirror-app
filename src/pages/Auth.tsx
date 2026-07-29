@@ -113,7 +113,7 @@ const Auth = () => {
 
             {/* Header */}
             <div className="text-center mt-6 mb-6">
-              <h1 className="text-2xl font-bold italic mb-2" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{t('auth.welcome')}</h1>
+              <h1 className="text-2xl font-bold  mb-2">{t('auth.welcome')}</h1>
               <p className="text-muted-foreground text-base">
                 {t('auth.discoverCity')}
               </p>
@@ -213,7 +213,7 @@ const Auth = () => {
 
             {/* Header */}
             <div className="text-center mt-6 mb-6">
-              <h1 className="text-2xl font-bold italic mb-2" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{t('auth.joinUs')}</h1>
+              <h1 className="text-2xl font-bold  mb-2">{t('auth.joinUs')}</h1>
               <p className="text-muted-foreground text-base">
                 {t('auth.liveEveryMoment')}
               </p>
