@@ -517,7 +517,7 @@ const MapView = () => {
 
         const countMap: Record<string, number> = {};
         if (attendeeCounts) {
-          for (const row of attendeeCounts) {
+          for (const row of attendeeCounts as any[]) {
             countMap[row.event_id] = (countMap[row.event_id] || 0) + 1;
           }
         }

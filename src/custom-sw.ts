@@ -107,7 +107,7 @@ self.addEventListener('push', (event) => {
 
   const data = event.data.json();
 
-  const options: NotificationOptions & { image?: string } = {
+  const options: NotificationOptions & { image?: string; vibrate?: number[]; renotify?: boolean; actions?: unknown[] } = {
     body: data.body || '',
     icon: '/icon-192.png',
     badge: '/icon-192.png',
