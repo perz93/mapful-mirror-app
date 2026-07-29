@@ -376,13 +376,6 @@ const MapView = () => {
                   </div>
                 </div>
               </div>
-              <div class="popup-hype-row" data-event-id="${event.id}">
-                <span class="popup-hype-count">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
-                  <span class="popup-hype-number">...</span> y vont
-                </span>
-                <button class="popup-going-btn" data-event-id="${event.id}">J'y vais</button>
-              </div>
               <div class="popup-actions" style="display:flex;gap:6px;margin-top:6px;">
                 <button class="popup-route-btn popup-btn-glass"><img src="${itineraryIcon}" alt="" style="width:20px;height:20px;object-fit:contain;" />Itinéraire</button>
                 <button class="popup-details-btn" style="flex:1;">Voir détails</button>
@@ -448,51 +441,6 @@ const MapView = () => {
           });
         }
 
-        const hypeNumber = popupElement.querySelector('.popup-hype-number') as HTMLElement | null;
-        const goingBtn = popupElement.querySelector('.popup-going-btn') as HTMLElement | null;
-
-        if (hypeNumber) {
-          const { count } = await supabase
-            .from('event_attendees' as any)
-            .select('*', { count: 'exact', head: true })
-            .eq('event_id', event.id);
-          hypeNumber.textContent = String(count ?? 0);
-        }
-
-        if (goingBtn) {
-          const { data: { user } } = await supabase.auth.getUser();
-          if (user) {
-            const { data } = await supabase
-              .from('event_attendees' as any)
-              .select('id')
-              .eq('event_id', event.id)
-              .eq('user_id', user.id)
-              .maybeSingle();
-
-            if (data) {
-              goingBtn.classList.add('popup-going-active');
-              goingBtn.textContent = "J'y serai !";
-            }
-
-            goingBtn.addEventListener('click', async (e) => {
-              e.stopPropagation();
-              const isActive = goingBtn.classList.contains('popup-going-active');
-              if (isActive) {
-                await (supabase as any).from('event_attendees').delete()
-                  .eq('event_id', event.id).eq('user_id', user.id);
-                goingBtn.classList.remove('popup-going-active');
-                goingBtn.textContent = "J'y vais";
-                if (hypeNumber) {
-                  hypeNumber.textContent = String(Math.max(0, parseInt(hypeNumber.textContent || '0') - 1));
-                }
-              } else {
-                await (supabase as any).from('event_attendees').insert({ event_id: event.id, user_id: user.id });
-                goingBtn.classList.add('popup-going-active');
-                goingBtn.textContent = "J'y serai !";
-                if (hypeNumber) {
-                  hypeNumber.textContent = String(parseInt(hypeNumber.textContent || '0') + 1);
-                }
-              }
             });
           } else {
             goingBtn.addEventListener('click', (e) => {
