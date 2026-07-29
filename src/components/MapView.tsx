@@ -441,14 +441,6 @@ const MapView = () => {
           });
         }
 
-            });
-          } else {
-            goingBtn.addEventListener('click', (e) => {
-              e.stopPropagation();
-              navigate('/auth');
-            });
-          }
-        }
       });
     });
 
