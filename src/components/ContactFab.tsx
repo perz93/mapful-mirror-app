@@ -149,7 +149,7 @@ const ContactFab = ({
               setIsOpen(false);
             }}
             className={cn(
-              "absolute w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-10",
+"absolute w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-10",
               contact.bgColor
             )}
             style={{
@@ -179,7 +179,7 @@ const ContactFab = ({
           setIsOpen(!isOpen);
         }}
         className={cn(
-          "w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all duration-300",
+"w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all duration-300",
           isOpen 
             ? "bg-stone-800 rotate-180" 
             : "bg-primary hover:bg-primary/90"
@@ -199,7 +199,7 @@ const ContactFab = ({
       {shouldRender && (
         <div 
           className={cn(
-            "fixed inset-0 bg-black/30 backdrop-blur-sm -z-10 transition-opacity duration-300",
+"fixed inset-0 bg-black/30 backdrop-blur-sm -z-10 transition-opacity duration-300",
             isOpen ? "opacity-100" : "opacity-0"
           )}
           onClick={() => setIsOpen(false)}

@@ -68,7 +68,7 @@ const ManageEvents = () => {
             <ArrowLeft className="w-5 h-5 text-stone-700" />
           </Link>
 
-          <h1 className="text-stone-800 text-lg font-semibold italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{t('manage.title')}</h1>
+          <h1 className="text-stone-800 text-lg font-semibold ">{t('manage.title')}</h1>
 
           <Link
             to="/create-event"

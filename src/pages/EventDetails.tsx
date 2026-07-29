@@ -209,7 +209,7 @@ const EventDetails = () => {
                 <MapPin size={20} className="text-primary" />
               </div>
               <div className="flex-1">
-                <p className="font-semibold text-stone-900 dark:text-white italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{event.venue}</p>
+                <p className="font-semibold text-stone-900 dark:text-white ">{event.venue}</p>
                 <p className="text-sm text-stone-600 dark:text-stone-400">{event.address || t('event.addressUnspecified')}</p>
               </div>
             </div>
@@ -295,7 +295,7 @@ const EventDetails = () => {
 
           {event.description && (
             <div className="border-t border-stone-200 dark:border-stone-800 pt-6">
-              <h2 className="text-xl font-bold text-stone-900 dark:text-white mb-3 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{t('event.about')}</h2>
+              <h2 className="text-xl font-bold text-stone-900 dark:text-white mb-3 ">{t('event.about')}</h2>
               <p className="text-stone-600 dark:text-stone-400 leading-relaxed text-[15px]">
                 {event.description}
               </p>

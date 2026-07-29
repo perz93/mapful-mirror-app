@@ -195,7 +195,7 @@ const ListingDetails = () => {
         <div className="px-4 pt-5 pb-8 space-y-4 flex-1">
           {/* Title + Price card */}
           <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
-            <h1 className="text-2xl font-bold text-stone-800 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+            <h1 className="text-2xl font-bold text-stone-800 ">
               {listing.title}
             </h1>
 
@@ -226,7 +226,7 @@ const ListingDetails = () => {
                 <p className="text-xs text-stone-500 uppercase tracking-wider font-semibold mb-0.5">
                   {lang === 'fr' ? 'Localisation' : 'Location'}
                 </p>
-                <p className="text-stone-800 font-medium italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+                <p className="text-stone-800 font-medium ">
                   {listing.location}
                 </p>
               </div>
@@ -236,7 +236,7 @@ const ListingDetails = () => {
           {/* Description */}
           {listing.description && (
             <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
-              <h2 className="text-lg font-bold text-stone-800 italic mb-3" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+              <h2 className="text-lg font-bold text-stone-800  mb-3">
                 {t('form.description')}
               </h2>
               <p className="text-stone-600 leading-relaxed whitespace-pre-line text-sm">
@@ -247,7 +247,7 @@ const ListingDetails = () => {
 
           {/* Contact */}
           <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
-            <h2 className="text-lg font-bold text-stone-800 italic mb-4" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+            <h2 className="text-lg font-bold text-stone-800  mb-4">
               {lang === 'fr' ? 'Contacter le vendeur' : 'Contact seller'}
             </h2>
 

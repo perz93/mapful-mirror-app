@@ -45,8 +45,8 @@ const MapControls = () => {
         </button>
         <span style={{
         animationDelay: '0.1s'
-      }} className="text-xs font-medium italic backdrop-blur-sm px-2.5 py-1 rounded-full text-white animate-fade-in bg-muted-foreground">
-          <span style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>Marketplace</span>
+      }} className="text-xs font-medium  backdrop-blur-sm px-2.5 py-1 rounded-full text-white animate-fade-in bg-muted-foreground">
+          <span>Marketplace</span>
         </span>
       </div>
     </>;

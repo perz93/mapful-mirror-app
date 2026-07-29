@@ -194,7 +194,7 @@ const InstallGuide = () => {
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl backdrop-blur-xl bg-[#ee9d2b]/15 border border-[#ee9d2b]/20 mb-3 shadow-lg shadow-[#ee9d2b]/10">
                 <Smartphone size={32} className="text-[#ee9d2b]" />
               </div>
-              <h2 className="text-2xl font-bold text-stone-900 dark:text-white italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+              <h2 className="text-2xl font-bold text-stone-900 dark:text-white ">
                 Installe l'app !
               </h2>
               <p className="text-sm text-stone-600 dark:text-stone-300 mt-1.5">

@@ -48,7 +48,7 @@ const TonightSection = () => {
               Ce soir
             </p>
             <span className="h-4 w-px bg-stone-300/50 dark:bg-stone-600/50" />
-            <p className="text-[11px] text-stone-400 dark:text-stone-500 italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+            <p className="text-[11px] text-stone-400 dark:text-stone-500 ">
               {format(new Date(), 'EEEE d MMM', { locale: fr })}
             </p>
           </div>
@@ -85,7 +85,7 @@ const TonightSection = () => {
                   <Clock size={9} />
                   <span>{event.time.substring(0, 5)}</span>
                 </div>
-                <p className="text-[10px] text-stone-400 dark:text-stone-500 truncate italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+                <p className="text-[10px] text-stone-400 dark:text-stone-500 truncate ">
                   {event.venue}
                 </p>
                 <HypeBadge eventId={event.id} eventDate={event.date} eventTime={event.time} size="sm" />

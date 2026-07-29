@@ -50,7 +50,7 @@ const EventCard = () => {
         >
           <div className="flex flex-col justify-between gap-1.5 flex-[2_2_0px]">
             <div className="flex flex-col gap-1.5">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-base backdrop-blur-xl bg-stone-500/15 text-stone-600 dark:bg-white/10 dark:text-stone-300 border border-stone-300/30 dark:border-white/10 shadow-sm w-fit italic" style={{ fontFamily: "'Source Serif 4', Georgia, serif", fontWeight: 600 }}>
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-base backdrop-blur-xl bg-stone-500/15 text-stone-600 dark:bg-white/10 dark:text-stone-300 border border-stone-300/30 dark:border-white/10 shadow-sm w-fit " style={{ fontWeight: 600 }}>
                 {currentEvent.venue}
               </span>
               <p className="text-stone-900 dark:text-white text-[15px] font-bold leading-tight">
