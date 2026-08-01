@@ -46,7 +46,7 @@ const EventCard = () => {
   return <div className="fixed bottom-36 left-0 right-0 max-w-md mx-auto px-4 pointer-events-none z-10 touch-none">
       <div className="pointer-events-auto touch-auto">
         <div
-          className={`flex items-stretch justify-between gap-4 rounded-3xl backdrop-blur-xl bg-white/65 dark:bg-stone-900/60 p-4 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.12)] border border-white/70 dark:border-stone-700/30 transition-all duration-700 ease-in-out ${isTransitioning ? 'opacity-0 scale-95 translate-y-2' : 'opacity-100 scale-100 translate-y-0'}`}
+          className={`flex items-stretch justify-between gap-4 rounded-3xl backdrop-blur-xl bg-white/65 dark:bg-stone-900/60 p-4 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.12)] border border-white/70 dark:border-stone-700/30 !border-b-white transition-all duration-700 ease-in-out ${isTransitioning ? 'opacity-0 scale-95 translate-y-2' : 'opacity-100 scale-100 translate-y-0'}`}
         >
           <div className="flex flex-col justify-between gap-1.5 flex-[2_2_0px]">
             <div className="flex flex-col gap-1.5">
