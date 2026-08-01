@@ -224,10 +224,12 @@ body {
 
 /* White lower edge for the two floating map frames.
    Kept outside Tailwind layers so it wins over the global neo pass. */
+/* Cadres doux (EventCard + BottomNavigation) : pas de contour noir, ombre douce */
 .neo-white-bottom.neo-white-bottom {
-  border-bottom-color: white !important;
-  box-shadow: 3px 3px 0 0 white !important;
+  border: 1px solid hsl(0 0% 100% / 0.7) !important;
+  box-shadow: 0 10px 20px -6px hsl(220 15% 40% / 0.28), 0 2px 6px -2px hsl(220 15% 40% / 0.18) !important;
 }
+
 
 
 
