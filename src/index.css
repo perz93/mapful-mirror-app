@@ -224,9 +224,9 @@ body {
 
 /* White lower edge for the two floating map frames.
    Kept outside Tailwind layers so it wins over the global neo pass. */
-.neo-white-bottom {
-  border-bottom-color: hsl(var(--card)) !important;
-  box-shadow: 3px 3px 0 0 hsl(var(--card)) !important;
+.neo-white-bottom.neo-white-bottom {
+  border-bottom-color: white !important;
+  box-shadow: 3px 3px 0 0 white !important;
 }
 
 
