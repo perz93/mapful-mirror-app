@@ -26,14 +26,14 @@ const MapControls = () => {
       {/* Left side controls: Zoom + Position */}
       <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col items-start gap-3">
         <div className="flex flex-col gap-0 shadow-lg rounded-full overflow-hidden">
-          <button onClick={handleZoomIn} className="flex size-10 items-center justify-center bg-white/95 dark:bg-stone-900/95 backdrop-blur-md hover:bg-white dark:hover:bg-stone-800 transition-colors border-b border-stone-200 dark:border-stone-700/50" aria-label="Zoom in">
+          <button onClick={handleZoomIn} className="flex size-10 items-center justify-center bg-white dark:bg-stone-900/95 hover:bg-white dark:hover:bg-stone-800 transition-colors border-b border-stone-200 dark:border-stone-700/50" aria-label="Zoom in">
             <Plus className="text-ink dark:text-white" size={18} strokeWidth={1.75} />
           </button>
-          <button onClick={handleZoomOut} className="flex size-10 items-center justify-center bg-white/95 dark:bg-stone-900/95 backdrop-blur-md hover:bg-white dark:hover:bg-stone-800 transition-colors" aria-label="Zoom out">
+          <button onClick={handleZoomOut} className="flex size-10 items-center justify-center bg-white dark:bg-stone-900/95 hover:bg-white dark:hover:bg-stone-800 transition-colors" aria-label="Zoom out">
             <Minus className="text-ink dark:text-white" size={18} strokeWidth={1.75} />
           </button>
         </div>
-        <button onClick={handleRecenter} className="flex size-10 items-center justify-center rounded-full bg-white/95 dark:bg-stone-900/95 backdrop-blur-md shadow-lg hover:bg-white dark:hover:bg-stone-800 transition-colors" aria-label="Recentrer sur ma position">
+        <button onClick={handleRecenter} className="flex size-10 items-center justify-center rounded-full bg-white dark:bg-stone-900/95 shadow-lg hover:bg-white dark:hover:bg-stone-800 transition-colors" aria-label="Recentrer sur ma position">
           <Crosshair className="text-ink dark:text-white" size={18} strokeWidth={1.75} />
         </button>
       </div>

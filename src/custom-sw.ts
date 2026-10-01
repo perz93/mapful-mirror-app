@@ -27,7 +27,7 @@ registerRoute(navigationRoute);
 
 // Map tiles — cache first (30 days)
 registerRoute(
-  ({ url }) => url.hostname.includes('tile.openstreetmap.org') || url.hostname.includes('basemaps.cartocdn.com'),
+  ({ url }) => url.hostname.includes('tile.openstreetmap.org') || url.hostname.includes('basemaps.cartocdn.com') || url.hostname.includes('tiles.openfreemap.org'),
   new CacheFirst({
     cacheName: 'map-tiles',
     plugins: [

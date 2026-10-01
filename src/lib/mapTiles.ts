@@ -1,5 +1,17 @@
-// Fond de carte OpenStreetMap : aucune clé API requise.
-// (Les tuiles CARTO renvoyaient « API key required » sur les domaines non autorisés.)
+import L from 'leaflet';
+
+/**
+ * Fond de carte VIBE.
+ *
+ * Carte vectorielle OpenFreeMap (aucune clé API) rendue par MapLibre sous les
+ * marqueurs Leaflet, et recolorée pour un rendu doux : fond crème, routes
+ * beige, eau bleu pâle, parcs vert tendre, quartiers en capitales grises.
+ * Si WebGL ou le style ne sont pas disponibles, on retombe sur les tuiles
+ * raster OpenStreetMap.
+ */
+
+const VECTOR_STYLE_URL = 'https://tiles.openfreemap.org/styles/positron';
+
 export const MAP_TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 
 export const MAP_TILE_OPTIONS = {
@@ -7,3 +19,149 @@ export const MAP_TILE_OPTIONS = {
   maxZoom: 19,
   className: 'map-tiles',
 } as const;
+
+const VECTOR_ATTRIBUTION =
+  '<a href="https://openfreemap.org" target="_blank">OpenFreeMap</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>';
+
+const C = {
+  land: '#f6f3ea',
+  residential: '#f2eee3',
+  building: '#ebe6d8',
+  water: '#c9dcee',
+  park: '#dcebcb',
+  wood: '#d3e5c0',
+  road: '#ece2c6',
+  roadMajor: '#e6d8b0',
+  roadCasing: '#ddd0aa',
+  rail: '#c6c1b4',
+  boundary: '#d4cfc0',
+  label: '#8c887c',
+  labelStrong: '#4a473f',
+  halo: '#f6f3ea',
+};
+
+type StyleLayer = {
+  id: string;
+  type: string;
+  'source-layer'?: string;
+  paint?: Record<string, unknown>;
+  layout?: Record<string, unknown>;
+};
+type StyleSpec = { layers: StyleLayer[]; [key: string]: unknown };
+
+const has = (id: string, ...parts: string[]) => parts.some((p) => id.includes(p));
+
+/** Recolore le style Positron par couche, sans dépendre de ses identifiants exacts. */
+export function recolorStyle(style: StyleSpec): StyleSpec {
+  const layers: StyleLayer[] = [];
+
+  for (const layer of style.layers) {
+    const id = layer.id.toLowerCase();
+    const src = layer['source-layer'] ?? '';
+    const paint = { ...(layer.paint ?? {}) };
+    const layout = { ...(layer.layout ?? {}) };
+
+    // On épure : pas de pictos de POI ni d'étiquettes de numéros.
+    if (src === 'poi' || src === 'housenumber' || src === 'aerodrome_label') continue;
+
+    if (layer.type === 'background') {
+      paint['background-color'] = C.land;
+    } else if (layer.type === 'fill') {
+      if (src === 'water') paint['fill-color'] = C.water;
+      else if (src === 'park' || has(id, 'park', 'grass')) paint['fill-color'] = C.park;
+      else if (src === 'landcover') paint['fill-color'] = has(id, 'wood', 'forest') ? C.wood : C.park;
+      else if (src === 'building') {
+        paint['fill-color'] = C.building;
+        paint['fill-outline-color'] = C.building;
+      } else if (src === 'landuse') paint['fill-color'] = C.residential;
+      if ('fill-pattern' in paint) delete paint['fill-pattern'];
+    } else if (layer.type === 'line') {
+      if (src === 'waterway' || src === 'water') paint['line-color'] = C.water;
+      else if (src === 'boundary') paint['line-color'] = C.boundary;
+      else if (src === 'transportation') {
+        if (has(id, 'rail', 'transit')) paint['line-color'] = C.rail;
+        else if (has(id, 'casing')) paint['line-color'] = C.roadCasing;
+        else if (has(id, 'motorway', 'trunk', 'primary', 'major')) paint['line-color'] = C.roadMajor;
+        else paint['line-color'] = C.road;
+      }
+    } else if (layer.type === 'symbol') {
+      if (src === 'water_name' || src === 'waterway') {
+        paint['text-color'] = '#7f9ab3';
+      } else if (src === 'place') {
+        const isCity = has(id, 'city', 'capital', 'town');
+        paint['text-color'] = isCity ? C.labelStrong : C.label;
+        if (!isCity && !has(id, 'country', 'state', 'continent')) {
+          layout['text-transform'] = 'uppercase';
+          layout['text-letter-spacing'] = 0.08;
+        }
+      } else {
+        paint['text-color'] = C.label;
+      }
+      paint['text-halo-color'] = C.halo;
+      paint['text-halo-width'] = 1.4;
+    }
+
+    layers.push({ ...layer, paint, layout });
+  }
+
+  return { ...style, layers };
+}
+
+const supportsWebGL = () => {
+  try {
+    const canvas = document.createElement('canvas');
+    return !!(canvas.getContext('webgl2') || canvas.getContext('webgl'));
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Ajoute le fond de carte stylé et son attribution. Renvoie une fonction de nettoyage.
+ * Pendant le chargement, le conteneur affiche déjà la couleur du fond (crème) :
+ * pas de flash de tuiles colorées. En cas d'échec, tuiles OSM.
+ */
+export function addBaseMap(map: L.Map): () => void {
+  let disposed = false;
+  let current: L.Layer | null = null;
+  const attribution = L.control.attribution({ position: 'topright', prefix: false }).addTo(map);
+
+  const showRaster = () => {
+    if (disposed || current) return;
+    current = L.tileLayer(MAP_TILE_URL, MAP_TILE_OPTIONS).addTo(map);
+  };
+
+  if (!supportsWebGL()) {
+    showRaster();
+  } else {
+    (async () => {
+      try {
+        const [res] = await Promise.all([
+          fetch(VECTOR_STYLE_URL),
+          import('maplibre-gl/dist/maplibre-gl.css'),
+        ]);
+        if (!res.ok) throw new Error(`style ${res.status}`);
+        const style = recolorStyle(await res.json());
+        const { maplibreGL } = await import('@maplibre/maplibre-gl-leaflet');
+        if (disposed) return;
+
+        current = maplibreGL({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          style: style as any,
+          attributionControl: false,
+        }).addTo(map);
+        attribution.addAttribution(VECTOR_ATTRIBUTION);
+      } catch (err) {
+        console.warn('[map] fond vectoriel indisponible, tuiles OSM utilisées', err);
+        current = null;
+        showRaster();
+      }
+    })();
+  }
+
+  return () => {
+    disposed = true;
+    if (current && map.hasLayer(current)) map.removeLayer(current);
+    attribution.remove();
+  };
+}

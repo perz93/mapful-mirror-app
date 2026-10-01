@@ -211,7 +211,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
       </Dialog>
 
       <div className={`fixed bottom-0 left-0 right-0 max-w-md mx-auto flex-shrink-0 px-4 pb-safe z-40 ${className}`}>
-        <div className="neo-white-bottom h-[72px] rounded-full backdrop-blur-xl bg-white/95 dark:bg-stone-900/90 mb-2 overflow-hidden">
+        <div className="neo-white-bottom h-[72px] rounded-full bg-white dark:bg-stone-900/90 mb-2 overflow-hidden">
           <div className="relative h-full flex items-center">
             <button
               onClick={() => setSearchOpen(true)}

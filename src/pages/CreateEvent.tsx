@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { MAP_TILE_URL, MAP_TILE_OPTIONS } from '@/lib/mapTiles';
+import { addBaseMap } from '@/lib/mapTiles';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -152,9 +152,9 @@ const CreateEvent = () => {
       if (!mapContainerRef.current || mapRef.current) return;
 
       try {
-        mapRef.current = L.map(mapContainerRef.current).setView([5.3600, -4.0083], 12);
+        mapRef.current = L.map(mapContainerRef.current, { attributionControl: false, maxZoom: 19 }).setView([5.3600, -4.0083], 12);
 
-        L.tileLayer(MAP_TILE_URL, MAP_TILE_OPTIONS).addTo(mapRef.current);
+        addBaseMap(mapRef.current);
 
         // Add initial marker
         const customIcon = L.divIcon({

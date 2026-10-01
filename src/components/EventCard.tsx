@@ -27,14 +27,19 @@ const EventCard = () => {
 
   useEffect(() => {
     if (!events || events.length === 0) return;
+    let swapTimer: ReturnType<typeof setTimeout>;
     const interval = setInterval(() => {
+      // Fondu sortant (300 ms), changement de contenu, puis fondu entrant.
       setIsTransitioning(true);
-      setTimeout(() => {
+      swapTimer = setTimeout(() => {
         setCurrentIndex(prev => (prev + 1) % events.length);
         setIsTransitioning(false);
-      }, 300); // Half of the transition duration
+      }, 300);
     }, 5000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(swapTimer);
+    };
   }, [events]);
   if (isLoading) {
     return <EventCardSkeleton />;
@@ -46,14 +51,19 @@ const EventCard = () => {
   return <div className="fixed bottom-36 left-0 right-0 max-w-md mx-auto px-4 pointer-events-none z-10 touch-none">
       <div className="pointer-events-auto touch-auto">
         <div
-          className={`neo-white-bottom flex items-stretch justify-between gap-4 rounded-3xl bg-white/95 backdrop-blur-xl dark:bg-stone-900/90 p-3 pl-4 transition-all duration-700 ease-in-out ${isTransitioning ? 'opacity-0 scale-95 translate-y-2' : 'opacity-100 scale-100 translate-y-0'}`}
+          className="neo-white-bottom rounded-3xl bg-white dark:bg-stone-900 p-3 pl-4"
         >
+          {/* Seul le contenu s'anime (opacité + léger glissement, accéléré GPU) ;
+              le cadre et son ombre restent fixes pour éviter les saccades. */}
+          <div
+            className={`flex items-stretch justify-between gap-4 transition-[opacity,transform] duration-300 ease-out will-change-[opacity,transform] ${isTransitioning ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'}`}
+          >
           <div className="flex flex-col justify-between gap-2 flex-[2_2_0px] min-w-0 py-1">
             <div className="flex flex-col gap-1.5 min-w-0">
               <span className="eyebrow text-stone-500 dark:text-stone-400 truncate">
                 {currentEvent.venue}
               </span>
-              <p className="text-ink dark:text-white text-[17px] font-medium leading-[1.15] tracking-tight line-clamp-2">
+              <p className="text-ink dark:text-white text-[17px] font-medium leading-[1.15] tracking-tight line-clamp-2 min-h-[2.3em]">
                 {currentEvent.title}
               </p>
               {/* Date & heure */}
@@ -74,7 +84,8 @@ const EventCard = () => {
           </div>
           <div style={{
           backgroundImage: `url('${currentEvent.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=400&fit=crop'}')`
-        }} className="w-[104px] h-[104px] flex-shrink-0 bg-center bg-no-repeat bg-cover rounded-2xl transition-all duration-700 ease-in-out" />
+        }} className="w-[104px] h-[104px] flex-shrink-0 bg-center bg-no-repeat bg-cover rounded-2xl bg-parchment" />
+          </div>
         </div>
 
         {/* Progress indicators */}

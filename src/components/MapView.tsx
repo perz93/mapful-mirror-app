@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { MAP_TILE_URL, MAP_TILE_OPTIONS } from '@/lib/mapTiles';
+import { addBaseMap } from '@/lib/mapTiles';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster';
@@ -20,14 +20,6 @@ import { fuzzyMatch } from '@/lib/fuzzyMatch';
 import { getDistanceKm } from '@/hooks/useNearbyEvents';
 import { supabase } from '@/integrations/supabase/client';
 
-// Tile layer URLs
-const TILE_LIGHT = MAP_TILE_URL;
-const TILE_DARK = MAP_TILE_URL;
-
-function getPrefersDark(): boolean {
-  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
-}
-
 const MapView = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -43,7 +35,6 @@ const MapView = () => {
   const didAutoRecenterRef = useRef(false);
   const routeLayerRef = useRef<L.Polyline | null>(null);
   const destinationMarkerRef = useRef<L.Marker | null>(null);
-  const tileLayerRef = useRef<L.TileLayer | null>(null);
   const heatLayerRef = useRef<any>(null);
   const didFlyToUserRef = useRef(false);
 
@@ -80,24 +71,14 @@ const MapView = () => {
       zoom: initialZoom,
       zoomControl: false,
       attributionControl: false,
+      maxZoom: 19,
       preferCanvas: true,
       fadeAnimation: true,
       zoomAnimation: true,
       markerZoomAnimation: true,
     });
 
-    const isDark = getPrefersDark();
-    const tileLayer = L.tileLayer(isDark ? TILE_DARK : TILE_LIGHT, MAP_TILE_OPTIONS).addTo(map);
-    L.control.attribution({ position: 'topright', prefix: false }).addTo(map);
-    tileLayerRef.current = tileLayer;
-
-    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleDarkModeChange = (e: MediaQueryListEvent) => {
-      if (tileLayerRef.current) {
-        tileLayerRef.current.setUrl(e.matches ? TILE_DARK : TILE_LIGHT);
-      }
-    };
-    darkModeQuery.addEventListener('change', handleDarkModeChange);
+    const removeBaseMap = addBaseMap(map);
 
     map.on('moveend', () => {
       const center = map.getCenter();
@@ -164,7 +145,7 @@ const MapView = () => {
 
     return () => {
       sizeTimers.forEach(t => clearTimeout(t));
-      darkModeQuery.removeEventListener('change', handleDarkModeChange);
+      removeBaseMap();
       markersRef.current = [];
       if (heatLayerRef.current && mapInstanceRef.current) {
         mapInstanceRef.current.removeLayer(heatLayerRef.current);

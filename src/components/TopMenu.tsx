@@ -24,7 +24,7 @@ const TopMenu = () => {
           {/* Bell icon — left */}
           <button
             onClick={() => navigate(isLoggedIn ? '/notifications' : '/auth')}
-            className="relative h-12 w-12 rounded-full bg-white/95 dark:bg-stone-900/90 backdrop-blur-md hover:bg-white transition-all duration-300 active:scale-95 flex items-center justify-center mt-2 shadow-lg"
+            className="relative h-12 w-12 rounded-full bg-white dark:bg-stone-900/90 hover:bg-white transition-all duration-300 active:scale-95 flex items-center justify-center mt-2 shadow-lg"
           >
             <Bell size={20} strokeWidth={1.75} className="text-ink" />
             {unreadCount > 0 && (
@@ -37,7 +37,7 @@ const TopMenu = () => {
           {/* Menu burger — right */}
         <DropdownMenu onOpenChange={setIsOpen}>
           <DropdownMenuTrigger asChild>
-            <button className="relative h-12 w-12 rounded-full bg-white/95 dark:bg-stone-900/90 backdrop-blur-md hover:bg-white transition-all duration-300 active:scale-95 flex items-center justify-center mt-2 shadow-lg">
+            <button className="relative h-12 w-12 rounded-full bg-white dark:bg-stone-900/90 hover:bg-white transition-all duration-300 active:scale-95 flex items-center justify-center mt-2 shadow-lg">
               <div className={`relative transition-transform duration-500 ease-in-out ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
                 {isOpen ? <X size={22} strokeWidth={1.75} className="text-ink dark:text-white" /> : <div className="flex flex-col gap-1 items-center">
                     <div className="w-5 h-[1.5px] bg-ink dark:bg-white rounded-full"></div>

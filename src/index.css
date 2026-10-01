@@ -197,6 +197,8 @@ body {
 .leaflet-container {
   width: 100%;
   height: 100%;
+  /* Couleur du fond de carte : visible pendant le chargement des tuiles */
+  background: #f6f3ea !important;
 }
 
 .map-tiles {
@@ -826,13 +828,13 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 
-  /* Performance-optimized smooth animations */
+  /* Transitions légères. Pas de will-change global : sur mobile, une couche
+     GPU par bouton/lien sature la mémoire et fait saccader la carte. */
   button, a, .card {
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
                 opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
                 background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
                 border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform;
   }
 
   button:active, a:active {
