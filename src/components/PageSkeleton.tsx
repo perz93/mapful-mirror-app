@@ -66,11 +66,13 @@ export const EventDetailsSkeleton = () => (
 
 /** Skeleton for CategoryPage (list of events) */
 export const CategoryPageSkeleton = () => (
-  <div className="p-4 space-y-5">
+  <div className="p-4 pt-5 space-y-4">
     {[1, 2, 3].map((i) => (
-      <div key={i} className="overflow-hidden rounded-3xl bg-white dark:bg-stone-900 border border-white/80 dark:border-stone-700/40 shadow-sm">
-        <ShimmerBlock className="h-48 rounded-none" />
-        <div className="p-4 space-y-3">
+      <div key={i} className="overflow-hidden rounded-3xl bg-white dark:bg-stone-900 p-2">
+        <ShimmerBlock className="h-52 rounded-[20px]" />
+        <div className="px-3 pt-4 pb-3 space-y-3">
+          <ShimmerBlock className="h-3 w-24 rounded-full" />
+          <ShimmerBlock className="h-6 w-3/4 rounded-md" />
           <div className="flex items-center gap-2">
             <ShimmerBlock className="h-7 w-28 rounded-full" />
             <ShimmerBlock className="h-7 w-20 rounded-full" />
@@ -86,7 +88,7 @@ export const CategoryPageSkeleton = () => (
 export const FormPageSkeleton = () => (
   <div className="min-h-screen flex items-center justify-center">
     <div className="flex flex-col items-center gap-3">
-      <div className="w-10 h-10 border-3 border-[#ee9d2b] border-t-transparent rounded-full animate-spin" />
+      <div className="w-10 h-10 border-2 border-ink border-t-transparent rounded-full animate-spin" />
     </div>
   </div>
 );
@@ -95,7 +97,7 @@ export const FormPageSkeleton = () => (
 export const SettingsSkeleton = () => (
   <div className="mx-auto max-w-md px-4 pt-20 space-y-6">
     {[1, 2, 3, 4].map((i) => (
-      <div key={i} className="rounded-2xl bg-white/50 border border-white/60 p-5 space-y-4">
+      <div key={i} className="rounded-3xl bg-white p-5 space-y-4">
         <div className="flex items-center gap-2">
           <ShimmerBlock className="w-5 h-5 rounded" />
           <ShimmerBlock className="h-5 w-32" />

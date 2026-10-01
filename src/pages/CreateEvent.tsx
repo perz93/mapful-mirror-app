@@ -41,9 +41,9 @@ const categoryIcons: Record<string, string> = {
   sports: sportIcon,
 };
 
-const inputClass = "h-9 rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50 [&]:ring-0 [&]:outline-none";
+const inputClass = "h-9 rounded-xl bg-white border border-stone-300 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-ink [&]:ring-0 [&]:outline-none";
 const labelClass = "text-sm text-stone-600 font-normal";
-const cardClass = "rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.08)] p-4 space-y-3";
+const cardClass = "rounded-3xl bg-white p-5 space-y-3";
 const sectionTitleClass = "text-lg  text-stone-800 mb-4 flex items-center gap-2";
 
 const CreateEvent = () => {
@@ -373,7 +373,7 @@ const CreateEvent = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-10 h-10 border-3 border-[#ee9d2b] border-t-transparent rounded-full animate-spin" />
+        <div className="w-10 h-10 border-3 border-ink border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -395,7 +395,7 @@ const CreateEvent = () => {
       </div>
 
       {/* Light blur overlay — less dark, more natural */}
-      <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
+      <div className="fixed inset-0 bg-parchment pointer-events-none" />
 
       {/* Content */}
       <div className="relative mx-auto max-w-md">
@@ -403,7 +403,7 @@ const CreateEvent = () => {
         <div className="px-4 sm:px-6 pt-12 sm:pt-16 pb-8 sm:pb-10">
           <Link
             to="/"
-            className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white/70 backdrop-blur-md shadow-sm border border-white/60 hover:scale-105 active:scale-95 transition-all mb-8"
+            className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white shadow-sm hover:scale-105 active:scale-95 transition-all mb-8"
           >
             <ArrowLeft className="w-5 h-5 text-stone-700" />
           </Link>
@@ -442,7 +442,7 @@ const CreateEvent = () => {
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-center">
-                    <ImageIcon className="h-10 w-10 text-[#ee9d2b] mb-4" strokeWidth={1.5} />
+                    <ImageIcon className="h-10 w-10 text-ink mb-4" strokeWidth={1.5} />
                     <h3 className="font-light text-stone-700 mb-1">{t('form.addImage')}</h3>
                     <p className="text-sm text-stone-400 font-light">{t('form.clickToUpload')}</p>
                   </div>
@@ -477,7 +477,7 @@ const CreateEvent = () => {
                   <SelectTrigger className={inputClass}>
                     <SelectValue placeholder={t('form.selectCategory')} />
                   </SelectTrigger>
-                  <SelectContent className="backdrop-blur-2xl bg-white/95 border-stone-200/60">
+                  <SelectContent className="bg-white border-stone-200">
                     <SelectItem value="workshops">
                       <span className="flex items-center gap-2">
                         <img src={categoryIcons.workshops} alt="" className="w-5 h-5" />
@@ -546,7 +546,7 @@ const CreateEvent = () => {
             {/* Location Card */}
             <div className={cardClass}>
               <h2 className={sectionTitleClass}>
-                <MapPin className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
+                <MapPin className="h-5 w-5 text-ink" strokeWidth={1.5} />
                 {t('form.location')}
               </h2>
 
@@ -585,7 +585,7 @@ const CreateEvent = () => {
             {/* Date and Time Card */}
             <div className={cardClass}>
               <h2 className={sectionTitleClass}>
-                <Calendar className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
+                <Calendar className="h-5 w-5 text-ink" strokeWidth={1.5} />
                 {t('form.dateTime')}
               </h2>
 
@@ -671,7 +671,7 @@ const CreateEvent = () => {
                   value={formData.description}
                   onChange={e => setFormData({ ...formData, description: e.target.value })}
                   rows={5}
-                  className="rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50 resize-none"
+                  className="rounded-xl bg-white border border-stone-300 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-ink resize-none"
                 />
               </div>
             </div>
@@ -679,7 +679,7 @@ const CreateEvent = () => {
             {/* Key Points Card */}
             <div className={cardClass}>
               <h2 className={sectionTitleClass}>
-                <Sparkles className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
+                <Sparkles className="h-5 w-5 text-ink" strokeWidth={1.5} />
                 {t('form.keyPoints')}
               </h2>
 
@@ -708,7 +708,7 @@ const CreateEvent = () => {
                   <button
                     type="button"
                     onClick={addKeyPoint}
-                    className="flex items-center gap-2 text-[#ee9d2b] hover:text-[#ee9d2b]/80 transition-colors text-sm font-medium"
+                    className="flex items-center gap-2 text-ink hover:text-graphite transition-colors text-sm font-medium"
                   >
                     <Plus className="w-4 h-4" />
                     {t('form.addKeyPoint')}
@@ -721,14 +721,14 @@ const CreateEvent = () => {
             {/* Contact Card */}
             <div className={cardClass}>
               <h2 className={sectionTitleClass}>
-                <Phone className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
+                <Phone className="h-5 w-5 text-ink" strokeWidth={1.5} />
                 {t('form.contact')}
               </h2>
 
               <div className="space-y-4">
                 <div className="space-y-3">
                   <Label htmlFor="contactPhone" className={`${labelClass} flex items-center gap-2`}>
-                    <Phone className="w-4 h-4 text-[#ee9d2b]" />
+                    <Phone className="w-4 h-4 text-ink" />
                     {t('form.phone')}
                   </Label>
                   <Input
@@ -742,7 +742,7 @@ const CreateEvent = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="contactWhatsapp" className={`${labelClass} flex items-center gap-2`}>
-                    <MessageCircle className="w-4 h-4 text-[#ee9d2b]" />
+                    <MessageCircle className="w-4 h-4 text-ink" />
                     {t('form.whatsapp')}
                   </Label>
                   <Input
@@ -756,7 +756,7 @@ const CreateEvent = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="contactInstagram" className={`${labelClass} flex items-center gap-2`}>
-                    <Instagram className="w-4 h-4 text-[#ee9d2b]" />
+                    <Instagram className="w-4 h-4 text-ink" />
                     {t('form.instagram')}
                   </Label>
                   <Input
@@ -770,7 +770,7 @@ const CreateEvent = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="contactFacebook" className={`${labelClass} flex items-center gap-2`}>
-                    <Facebook className="w-4 h-4 text-[#ee9d2b]" />
+                    <Facebook className="w-4 h-4 text-ink" />
                     {t('form.facebook')}
                   </Label>
                   <Input
@@ -784,7 +784,7 @@ const CreateEvent = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="contactTiktok" className={`${labelClass} flex items-center gap-2`}>
-                    <TikTokIcon className="w-4 h-4 text-[#ee9d2b]" />
+                    <TikTokIcon className="w-4 h-4 text-ink" />
                     {t('form.tiktok')}
                   </Label>
                   <Input
@@ -798,7 +798,7 @@ const CreateEvent = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="contactTwitter" className={`${labelClass} flex items-center gap-2`}>
-                    <Twitter className="w-4 h-4 text-[#ee9d2b]" />
+                    <Twitter className="w-4 h-4 text-ink" />
                     {t('form.twitter')}
                   </Label>
                   <Input
@@ -817,7 +817,7 @@ const CreateEvent = () => {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="w-full h-12 rounded-full bg-[#ee9d2b] text-white font-semibold text-base hover:opacity-90 transition-all active:scale-[0.98]"
+                className="w-full h-12 rounded-full bg-lime text-ink font-semibold text-base hover:opacity-90 transition-all active:scale-[0.98]"
               >
                 {submitting ? (
                   <>

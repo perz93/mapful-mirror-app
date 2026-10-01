@@ -15,16 +15,16 @@ const HISTORY_KEY = 'search_history';
 const MAX_HISTORY = 8;
 
 const CATEGORIES = [
-  { id: 'music', labelKey: 'cat.music', color: 'bg-purple-500' },
-  { id: 'sports', labelKey: 'cat.sports', color: 'bg-green-500' },
-  { id: 'food', labelKey: 'Food', color: 'bg-orange-500' },
-  { id: 'arts', labelKey: 'Arts', color: 'bg-pink-500' },
-  { id: 'meetups', labelKey: 'cat.meetups', color: 'bg-blue-500' },
-  { id: 'conferences', labelKey: 'cat.conferences', color: 'bg-indigo-500' },
-  { id: 'workshops', labelKey: 'cat.workshops', color: 'bg-yellow-500' },
-  { id: 'festivals', labelKey: 'cat.festivals', color: 'bg-red-500' },
-  { id: 'shows', labelKey: 'cat.shows', color: 'bg-teal-500' },
-  { id: 'exhibitions', labelKey: 'cat.exhibitions', color: 'bg-cyan-500' },
+  { id: 'music', labelKey: 'cat.music', color: 'bg-ink' },
+  { id: 'sports', labelKey: 'cat.sports', color: 'bg-ink' },
+  { id: 'food', labelKey: 'Food', color: 'bg-ink' },
+  { id: 'arts', labelKey: 'Arts', color: 'bg-ink' },
+  { id: 'meetups', labelKey: 'cat.meetups', color: 'bg-ink' },
+  { id: 'conferences', labelKey: 'cat.conferences', color: 'bg-ink' },
+  { id: 'workshops', labelKey: 'cat.workshops', color: 'bg-ink' },
+  { id: 'festivals', labelKey: 'cat.festivals', color: 'bg-ink' },
+  { id: 'shows', labelKey: 'cat.shows', color: 'bg-ink' },
+  { id: 'exhibitions', labelKey: 'cat.exhibitions', color: 'bg-ink' },
 ];
 
 interface AddressResult {
@@ -183,7 +183,7 @@ const SearchBar = () => {
                 // Delay so click on suggestion can register
                 setTimeout(() => setFocused(false), 200);
               }}
-              className="h-11 w-full rounded-2xl backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 pl-10 pr-10 text-sm shadow-xl transition-all placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:shadow-2xl border border-white/50 dark:border-stone-800/50 focus:outline-none focus:ring-2 focus:ring-primary/30 text-stone-900 dark:text-white caret-stone-900 dark:caret-white"
+              className="h-11 w-full rounded-2xl bg-white dark:bg-stone-900/95 pl-10 pr-10 text-sm shadow-xl transition-all placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:shadow-2xl focus:outline-none focus:ring-2 focus:ring-ink/20 text-stone-900 dark:text-white caret-stone-900 dark:caret-white"
               style={{
                 WebkitTapHighlightColor: 'transparent',
                 WebkitUserSelect: 'text',
@@ -211,7 +211,7 @@ const SearchBar = () => {
                 onClick={() => setShowFilters(!showFilters)}
                 className={`h-11 w-11 rounded-2xl backdrop-blur-2xl shadow-xl hover:scale-105 transition-all active:scale-95 flex items-center justify-center border relative ${
                   activeCount > 0
-                    ? 'bg-primary text-primary-foreground border-primary'
+                    ? 'bg-primary text-primary-foreground border-ink'
                     : 'bg-white/95 dark:bg-stone-900/95 text-stone-900 dark:text-white border-white/50 dark:border-stone-800/50'
                 }`}
               >
@@ -227,18 +227,18 @@ const SearchBar = () => {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="h-11 w-11 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-2xl text-stone-900 dark:text-white shadow-xl hover:scale-105 transition-all active:scale-95 flex items-center justify-center border border-white/50 dark:border-stone-800/50">
+              <button className="h-11 w-11 rounded-2xl bg-white dark:bg-stone-900/95 text-stone-900 dark:text-white shadow-xl hover:scale-105 transition-all active:scale-95 flex items-center justify-center">
                 <Plus size={20} strokeWidth={1.5} />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="w-72 animate-fade-in backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 border border-white/60 dark:border-stone-800/60 shadow-2xl p-2 rounded-3xl z-50"
+              className="w-72 animate-fade-in bg-white dark:bg-stone-900/95 shadow-2xl p-2 rounded-3xl z-50"
             >
               <DropdownMenuItem className="cursor-pointer rounded-2xl p-3.5 hover:bg-stone-100/50 dark:hover:bg-stone-800/30 transition-all mb-1" asChild>
                 <a href="/create-event" className="flex items-center gap-3">
-                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
-                    <Calendar className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                  <div className="h-12 w-12 rounded-xl bg-lime/40 flex items-center justify-center">
+                    <Calendar className="h-5 w-5 text-ink" strokeWidth={1.5} />
                   </div>
                   <div className="flex-1">
                     <p className="font-semibold text-stone-900 dark:text-white text-sm">{t('menu.createEvent')}</p>
@@ -248,8 +248,8 @@ const SearchBar = () => {
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer rounded-2xl p-3.5 hover:bg-stone-100/50 dark:hover:bg-stone-800/30 transition-all mb-1" asChild>
                 <a href="/my-account" className="flex items-center gap-3">
-                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
-                    <User className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                  <div className="h-12 w-12 rounded-xl bg-lime/40 flex items-center justify-center">
+                    <User className="h-5 w-5 text-ink" strokeWidth={1.5} />
                   </div>
                   <div className="flex-1">
                     <p className="font-semibold text-stone-900 dark:text-white text-sm">{t('menu.account')}</p>
@@ -259,8 +259,8 @@ const SearchBar = () => {
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer rounded-2xl p-3.5 hover:bg-stone-100/50 dark:hover:bg-stone-800/30 transition-all">
                 <div className="flex items-center gap-3">
-                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
-                    <Settings className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                  <div className="h-12 w-12 rounded-xl bg-lime/40 flex items-center justify-center">
+                    <Settings className="h-5 w-5 text-ink" strokeWidth={1.5} />
                   </div>
                   <div className="flex-1">
                     <p className="font-semibold text-stone-900 dark:text-white text-sm">{t('menu.settings')}</p>
@@ -275,7 +275,7 @@ const SearchBar = () => {
         {/* Unified suggestions panel (events + addresses) */}
         {showSuggestions && (matchingEvents.length > 0 || addressResults.length > 0 || searchingAddress || (searchQuery.trim().length === 0 && history.length > 0)) && (
           <div className="px-4 -mt-2 animate-fade-in">
-            <div className="rounded-2xl backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 border border-white/60 dark:border-stone-800/60 shadow-2xl overflow-hidden max-h-[60vh] overflow-y-auto">
+            <div className="rounded-2xl bg-white dark:bg-stone-900/95 shadow-2xl overflow-hidden max-h-[60vh] overflow-y-auto">
               {searchQuery.trim().length === 0 && history.length > 0 && (
                 <div className="p-2">
                   <div className="flex items-center justify-between px-3 py-1.5">
@@ -285,7 +285,7 @@ const SearchBar = () => {
                     <button
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={clearAllHistory}
-                      className="text-[11px] text-primary hover:underline font-medium"
+                      className="text-[11px] text-ink hover:underline font-medium"
                     >
                       {t('search.clearAll')}
                     </button>
@@ -328,7 +328,7 @@ const SearchBar = () => {
                       className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors text-left"
                     >
                       <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Calendar size={16} className="text-primary" />
+                        <Calendar size={16} className="text-ink" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-stone-900 dark:text-white truncate">{ev.title}</p>
@@ -353,7 +353,7 @@ const SearchBar = () => {
                       className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors text-left"
                     >
                       <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <MapPin size={16} className="text-primary" />
+                        <MapPin size={16} className="text-ink" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-stone-900 dark:text-white truncate">
@@ -372,7 +372,7 @@ const SearchBar = () => {
         {/* Category Filters Dropdown */}
         {showFilters && (
           <div className="px-4 pb-4 animate-fade-in">
-            <div className="rounded-2xl backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 border border-white/60 dark:border-stone-800/60 shadow-2xl p-4">
+            <div className="rounded-2xl bg-white dark:bg-stone-900/95 shadow-2xl p-4">
               {searchQuery.trim().length > 0 && (
                 <div className="mb-3">
                   <p className="text-[11px] uppercase tracking-wider font-semibold text-stone-500 dark:text-stone-400 mb-2">{t('search.activeSearch')}</p>
@@ -395,7 +395,7 @@ const SearchBar = () => {
                 {selectedCategories.length > 0 && (
                   <button
                     onClick={() => setSelectedCategories([])}
-                    className="text-xs text-primary hover:underline font-medium"
+                    className="text-xs text-ink hover:underline font-medium"
                   >
                     {t('search.clearAll')}
                   </button>
@@ -408,7 +408,7 @@ const SearchBar = () => {
                     onClick={() => toggleCategory(category.id)}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                       selectedCategories.includes(category.id)
-                        ? `${category.color} text-white shadow-lg scale-105`
+                        ? `${category.color} text-parchment`
                         : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:scale-105'
                     }`}
                   >
@@ -418,9 +418,9 @@ const SearchBar = () => {
               </div>
 
               {/* Date filter */}
-              <div className="mt-4 pt-3 border-t border-stone-200/50 dark:border-stone-700/50">
+              <div className="mt-4 pt-3 border-t border-stone-200 dark:border-stone-700/50">
                 <p className="text-sm font-semibold text-stone-900 dark:text-white mb-2 flex items-center gap-1.5">
-                  <Calendar size={14} className="text-primary" /> {t('filter.when')}
+                  <Calendar size={14} className="text-ink" /> {t('filter.when')}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {([
@@ -445,9 +445,9 @@ const SearchBar = () => {
               </div>
 
               {/* Price filter */}
-              <div className="mt-3 pt-3 border-t border-stone-200/50 dark:border-stone-700/50">
+              <div className="mt-3 pt-3 border-t border-stone-200 dark:border-stone-700/50">
                 <p className="text-sm font-semibold text-stone-900 dark:text-white mb-2 flex items-center gap-1.5">
-                  <DollarSign size={14} className="text-primary" /> {t('filter.price')}
+                  <DollarSign size={14} className="text-ink" /> {t('filter.price')}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {([
@@ -471,9 +471,9 @@ const SearchBar = () => {
               </div>
 
               {/* Distance filter */}
-              <div className="mt-3 pt-3 border-t border-stone-200/50 dark:border-stone-700/50">
+              <div className="mt-3 pt-3 border-t border-stone-200 dark:border-stone-700/50">
                 <p className="text-sm font-semibold text-stone-900 dark:text-white mb-2 flex items-center gap-1.5">
-                  <Ruler size={14} className="text-primary" /> {t('filter.distance')}
+                  <Ruler size={14} className="text-ink" /> {t('filter.distance')}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {([
@@ -500,7 +500,7 @@ const SearchBar = () => {
 
               {/* Active filters count */}
               {(selectedCategories.length > 0 || dateFilter !== 'all' || priceFilter !== 'all' || distanceFilter !== null) && (
-                <div className="mt-3 pt-3 border-t border-stone-200/50 dark:border-stone-700/50">
+                <div className="mt-3 pt-3 border-t border-stone-200 dark:border-stone-700/50">
                   <button
                     onClick={() => {
                       setSelectedCategories([]);

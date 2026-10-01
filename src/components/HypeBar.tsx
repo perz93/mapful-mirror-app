@@ -13,11 +13,8 @@ const HypeBar = ({ eventId, maxCapacity = 50 }: HypeBarProps) => {
   const percentage = Math.min((count / maxCapacity) * 100, 100);
 
   const getBarColor = () => {
-    if (percentage >= 90) return 'from-red-500 to-rose-600';
-    if (percentage >= 60) return 'from-orange-500 to-red-500';
-    if (percentage >= 35) return 'from-amber-500 to-orange-500';
-    if (percentage >= 15) return 'from-yellow-400 to-amber-500';
-    return 'from-lime-400 to-yellow-400';
+    if (percentage >= 90) return 'bg-ink';
+    return 'bg-lime';
   };
 
   const getLabel = () => {
@@ -29,15 +26,12 @@ const HypeBar = ({ eventId, maxCapacity = 50 }: HypeBarProps) => {
   };
 
   const getLabelColor = () => {
-    if (percentage >= 90) return 'text-red-500';
-    if (percentage >= 60) return 'text-orange-500';
-    return 'text-amber-500';
+    return 'text-ink';
   };
 
   const getIcon = () => {
-    if (percentage >= 90) return <Zap size={14} className="text-red-500 animate-pulse" />;
-    if (percentage >= 60) return <Flame size={14} className="text-orange-500 animate-pulse" />;
-    if (percentage >= 35) return <Flame size={14} className="text-amber-500" />;
+    if (percentage >= 90) return <Zap size={14} className="text-ink" />;
+    if (percentage >= 35) return <Flame size={14} className="text-ink" />;
     return <Users size={14} className="text-stone-400" />;
   };
 
@@ -51,26 +45,20 @@ const HypeBar = ({ eventId, maxCapacity = 50 }: HypeBarProps) => {
           </span>
         </div>
         {getLabel() && (
-          <span className={`text-[10px] font-bold uppercase tracking-wider ${getLabelColor()}`}>
+          <span className={`eyebrow ${getLabelColor()}`}>
             {getLabel()}
           </span>
         )}
       </div>
-      <div className="relative h-2.5 w-full rounded-full bg-stone-200/60 dark:bg-stone-700/40 overflow-hidden">
+      <div className="relative h-2 w-full rounded-full bg-stone-200 dark:bg-stone-700/40 overflow-hidden">
         <div
-          className={`absolute inset-y-0 left-0 rounded-full bg-gradient-to-r ${getBarColor()} transition-all duration-1000 ease-out`}
+          className={`absolute inset-y-0 left-0 rounded-full ${getBarColor()} transition-all duration-1000 ease-out`}
           style={{ width: `${percentage}%` }}
         />
-        {percentage >= 35 && (
-          <div
-            className={`absolute inset-y-0 left-0 rounded-full bg-gradient-to-r ${getBarColor()} opacity-40 animate-pulse`}
-            style={{ width: `${percentage}%` }}
-          />
-        )}
       </div>
       {percentage > 0 && (
         <div className="flex justify-end">
-          <span className="text-[10px] text-stone-400 dark:text-stone-500">
+          <span className="text-[11px] text-stone-500 dark:text-stone-500 tabular">
             {Math.round(percentage)}{t('hype.filled')}
           </span>
         </div>

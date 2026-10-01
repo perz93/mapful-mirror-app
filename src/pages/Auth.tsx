@@ -78,7 +78,7 @@ const Auth = () => {
       <div className="absolute inset-0">
         <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
       </div>
-      <div className="absolute inset-0 bg-white/30 backdrop-blur-xl" />
+      <div className="absolute inset-0 bg-parchment/70 backdrop-blur-md" />
 
       {/* Content Card with 3D flip */}
       <div
@@ -94,7 +94,7 @@ const Auth = () => {
         >
           {/* Login Face (Front) */}
           <div
-            className="backdrop-blur-2xl bg-white/85 border border-white/60 rounded-[2.5rem] shadow-[0_8px_40px_-8px_rgba(0,0,0,0.15)] p-6 w-full"
+            className="bg-white rounded-3xl shadow-2xl p-6 pt-5 w-full"
             style={{
               backfaceVisibility: "hidden",
               WebkitBackfaceVisibility: "hidden",
@@ -105,16 +105,17 @@ const Auth = () => {
             {/* Close Button */}
             <button
               onClick={() => navigate("/")}
-              className="absolute top-4 left-4 w-11 h-11 rounded-full bg-white/80 dark:bg-stone-900/80 backdrop-blur-md hover:bg-white dark:hover:bg-stone-900 flex items-center justify-center shadow-[0_8px_24px_-6px_rgba(0,0,0,0.25)] hover:shadow-[0_12px_32px_-6px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-95 transition-all duration-300 z-10"
+              className="absolute top-5 right-5 w-10 h-10 rounded-full bg-parchment hover:bg-stone-200 flex items-center justify-center active:scale-95 transition-all duration-200 z-10"
               aria-label={t('close')}
             >
-              <X className="w-4 h-4 text-stone-800 dark:text-stone-100" strokeWidth={2.5} />
+              <X className="w-4 h-4 text-ink" strokeWidth={1.75} />
             </button>
 
             {/* Header */}
-            <div className="text-center mt-6 mb-6">
-              <h1 className="text-2xl font-bold  mb-2">{t('auth.welcome')}</h1>
-              <p className="text-muted-foreground text-base">
+            <div className="mt-1 mb-7 pr-12">
+              <p className="eyebrow text-stone-500 mb-4">VIBE · Abidjan</p>
+              <h1 className="text-[40px] leading-[0.95] font-medium tracking-tighter text-ink mb-3">{t('auth.welcome')}</h1>
+              <p className="text-stone-500 text-[15px]">
                 {t('auth.discoverCity')}
               </p>
             </div>
@@ -127,7 +128,7 @@ const Auth = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-5 py-3 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all text-sm"
+                className="w-full h-12 px-4 rounded-xl bg-white border border-stone-300 focus:outline-none transition-all text-[15px]"
               />
               <div className="relative">
                 <input
@@ -137,7 +138,7 @@ const Auth = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={6}
-                  className="w-full px-5 py-3 pr-11 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all text-sm"
+                  className="w-full h-12 px-4 pr-11 rounded-xl bg-white border border-stone-300 focus:outline-none transition-all text-[15px]"
                 />
                 <button
                   type="button"
@@ -149,11 +150,11 @@ const Auth = () => {
               </div>
 
               {/* Forgot Password */}
-              <div className="flex justify-end px-2">
+              <div className="flex justify-end px-1">
                 <button
                   type="button"
                   onClick={handleForgotPassword}
-                  className="text-xs text-muted-foreground hover:text-foreground transition-colors underline"
+                  className="text-xs text-stone-600 hover:text-ink transition-colors link-underline"
                 >
                   {t('auth.forgotPassword')}
                 </button>
@@ -165,7 +166,7 @@ const Auth = () => {
               <Button
                 type="button"
                 variant="outline"
-                className="flex-1 h-12 rounded-full text-sm font-medium bg-background text-foreground border-2 border-border hover:bg-muted"
+                className="flex-1 h-12 rounded-full text-[15px] font-medium bg-white text-ink border border-stone-300 hover:border-ink"
                 onClick={() => {
                   setIsLogin(false);
                   setPassword("");
@@ -177,7 +178,7 @@ const Auth = () => {
               </Button>
               <Button
                 type="submit"
-                className="flex-1 h-12 rounded-full text-sm font-medium bg-foreground text-background border-2 border-foreground hover:bg-foreground/90"
+                className="flex-1 h-12 rounded-full text-[15px] font-medium bg-lime text-ink hover:bg-lime-deep"
                 onClick={handleSubmit}
                 disabled={loading}
               >
@@ -186,14 +187,14 @@ const Auth = () => {
             </div>
 
             {/* Footer Text */}
-            <p className="text-center text-xs text-muted-foreground">
+            <p className="text-center text-xs text-stone-500 pt-4 border-t border-stone-200">
               {t('auth.exploreNearby')}
             </p>
           </div>
 
           {/* Signup Face (Back) */}
           <div
-            className="backdrop-blur-2xl bg-white/85 border border-white/60 rounded-[2.5rem] shadow-[0_8px_40px_-8px_rgba(0,0,0,0.15)] p-6 w-full"
+            className="bg-white rounded-3xl shadow-2xl p-6 pt-5 w-full"
             style={{
               backfaceVisibility: "hidden",
               WebkitBackfaceVisibility: "hidden",
@@ -205,16 +206,17 @@ const Auth = () => {
             {/* Close Button */}
             <button
               onClick={() => navigate("/")}
-              className="absolute top-4 left-4 w-11 h-11 rounded-full bg-white/80 dark:bg-stone-900/80 backdrop-blur-md hover:bg-white dark:hover:bg-stone-900 flex items-center justify-center shadow-[0_8px_24px_-6px_rgba(0,0,0,0.25)] hover:shadow-[0_12px_32px_-6px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-95 transition-all duration-300 z-10"
+              className="absolute top-5 right-5 w-10 h-10 rounded-full bg-parchment hover:bg-stone-200 flex items-center justify-center active:scale-95 transition-all duration-200 z-10"
               aria-label={t('close')}
             >
-              <X className="w-4 h-4 text-stone-800 dark:text-stone-100" strokeWidth={2.5} />
+              <X className="w-4 h-4 text-ink" strokeWidth={1.75} />
             </button>
 
             {/* Header */}
-            <div className="text-center mt-6 mb-6">
-              <h1 className="text-2xl font-bold  mb-2">{t('auth.joinUs')}</h1>
-              <p className="text-muted-foreground text-base">
+            <div className="mt-1 mb-7 pr-12">
+              <p className="eyebrow text-stone-500 mb-4">VIBE · Abidjan</p>
+              <h1 className="text-[40px] leading-[0.95] font-medium tracking-tighter text-ink mb-3">{t('auth.joinUs')}</h1>
+              <p className="text-stone-500 text-[15px]">
                 {t('auth.liveEveryMoment')}
               </p>
             </div>
@@ -226,7 +228,7 @@ const Auth = () => {
                 placeholder={t('auth.fullName')}
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="w-full px-5 py-3 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all text-sm"
+                className="w-full h-12 px-4 rounded-xl bg-white border border-stone-300 focus:outline-none transition-all text-[15px]"
               />
               <input
                 type="email"
@@ -234,7 +236,7 @@ const Auth = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-5 py-3 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all text-sm"
+                className="w-full h-12 px-4 rounded-xl bg-white border border-stone-300 focus:outline-none transition-all text-[15px]"
               />
               <div className="relative">
                 <input
@@ -244,7 +246,7 @@ const Auth = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={6}
-                  className="w-full px-5 py-3 pr-11 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all text-sm"
+                  className="w-full h-12 px-4 pr-11 rounded-xl bg-white border border-stone-300 focus:outline-none transition-all text-[15px]"
                 />
                 <button
                   type="button"
@@ -262,7 +264,7 @@ const Auth = () => {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   minLength={6}
-                  className="w-full px-5 py-3 pr-11 rounded-full bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring transition-all text-sm"
+                  className="w-full h-12 px-4 pr-11 rounded-xl bg-white border border-stone-300 focus:outline-none transition-all text-[15px]"
                 />
                 <button
                   type="button"
@@ -302,7 +304,7 @@ const Auth = () => {
               <Button
                 type="button"
                 variant="outline"
-                className="flex-1 h-12 rounded-full text-sm font-medium border-2 bg-background text-foreground border-border"
+                className="flex-1 h-12 rounded-full text-[15px] font-medium bg-white text-ink border border-stone-300 hover:border-ink"
                 onClick={() => {
                   setIsLogin(true);
                   setPassword("");
@@ -314,7 +316,7 @@ const Auth = () => {
               </Button>
               <Button
                 type="submit"
-                className="flex-1 h-12 rounded-full text-sm font-medium bg-foreground text-background hover:bg-foreground/90"
+                className="flex-1 h-12 rounded-full text-[15px] font-medium bg-lime text-ink hover:bg-lime-deep"
                 onClick={handleSubmit}
                 disabled={loading}
               >
@@ -323,7 +325,7 @@ const Auth = () => {
             </div>
 
             {/* Footer Text */}
-            <p className="text-center text-xs text-muted-foreground">
+            <p className="text-center text-xs text-stone-500 pt-4 border-t border-stone-200">
               {t('auth.shareWithCommunity')}
             </p>
           </div>

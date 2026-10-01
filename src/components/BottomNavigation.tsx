@@ -23,16 +23,16 @@ import spectacleIcon from '@/assets/icons/spectacle.png';
 import sportIcon from '@/assets/icons/sport.png';
 
 const CATEGORIES_META = [
-  { id: 'workshops', tKey: 'cat.workshops', color: 'bg-yellow-500' },
-  { id: 'brunch', tKey: 'cat.brunch', color: 'bg-amber-500' },
-  { id: 'music', tKey: 'cat.music', color: 'bg-purple-500' },
-  { id: 'conferences', tKey: 'cat.conferences', color: 'bg-indigo-500' },
-  { id: 'exhibitions', tKey: 'cat.exhibitions', color: 'bg-cyan-500' },
-  { id: 'festivals', tKey: 'cat.festivals', color: 'bg-red-500' },
-  { id: 'meetups', tKey: 'cat.meetups', color: 'bg-blue-500' },
-  { id: 'religious', tKey: 'cat.religious', color: 'bg-violet-500' },
-  { id: 'shows', tKey: 'cat.shows', color: 'bg-teal-500' },
-  { id: 'sports', tKey: 'cat.sports', color: 'bg-green-500' },
+  { id: 'workshops', tKey: 'cat.workshops', color: 'bg-ink' },
+  { id: 'brunch', tKey: 'cat.brunch', color: 'bg-ink' },
+  { id: 'music', tKey: 'cat.music', color: 'bg-ink' },
+  { id: 'conferences', tKey: 'cat.conferences', color: 'bg-ink' },
+  { id: 'exhibitions', tKey: 'cat.exhibitions', color: 'bg-ink' },
+  { id: 'festivals', tKey: 'cat.festivals', color: 'bg-ink' },
+  { id: 'meetups', tKey: 'cat.meetups', color: 'bg-ink' },
+  { id: 'religious', tKey: 'cat.religious', color: 'bg-ink' },
+  { id: 'shows', tKey: 'cat.shows', color: 'bg-ink' },
+  { id: 'sports', tKey: 'cat.sports', color: 'bg-ink' },
 ];
 
 interface BottomNavigationProps {
@@ -107,45 +107,45 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
     <>
       <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
         <DialogContent className="max-w-[90vw] sm:max-w-md mx-auto top-[12%] translate-y-0 sm:top-[50%] sm:translate-y-[-50%] w-[90vw] sm:w-full p-0 rounded-3xl border-0 bg-transparent shadow-none [&>button]:hidden">
-          <div className="backdrop-blur-2xl bg-white/85 rounded-3xl border border-white/60 shadow-[0_8px_40px_-8px_rgba(0,0,0,0.2)] overflow-hidden">
+          <div className="bg-white rounded-3xl border border-stone-200 overflow-hidden">
             {/* Header */}
             <div className="px-5 pt-5 pb-3 flex items-center justify-between">
-              <h2 className="text-xl font-bold  text-stone-800">
+              <h2 className="text-[28px] leading-none font-medium tracking-tighter text-ink">
                 {t('nav.search')}
               </h2>
               <button
                 onClick={() => setSearchOpen(false)}
-                className="h-8 w-8 rounded-full bg-stone-100 flex items-center justify-center hover:bg-stone-200 transition-all active:scale-95"
+                className="h-9 w-9 rounded-full bg-parchment flex items-center justify-center hover:bg-stone-200 transition-all active:scale-95"
               >
-                <span className="text-stone-400 text-sm font-medium">✕</span>
+                <span className="text-ink text-sm">✕</span>
               </button>
             </div>
 
             {/* Search input */}
             <div className="px-5 pb-4">
               <div className="relative">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" size={16} />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-500" size={16} />
                 <input
                   type="text"
                   placeholder={t('nav.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
-                  className="w-full h-10 pl-10 pr-4 rounded-2xl bg-stone-100/80 border-0 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#ee9d2b]/30 text-sm"
+                  className="w-full h-12 pl-10 pr-4 rounded-full bg-parchment border border-transparent text-ink placeholder:text-stone-400 focus:outline-none focus:bg-white text-[15px]"
                   autoFocus
                 />
               </div>
             </div>
 
             {/* Divider */}
-            <div className="h-px bg-stone-200/60 mx-5" />
+            <div className="h-px bg-stone-200 mx-5" />
 
             {/* Categories */}
             <div className="px-5 py-4 space-y-3">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-bold uppercase tracking-[0.1em] text-stone-500">{t('nav.categories')}</p>
+                <p className="eyebrow text-stone-500">{t('nav.categories')}</p>
                 {selectedCategories.length > 0 && (
-                  <button onClick={() => setSelectedCategories([])} className="text-[11px] text-[#ee9d2b] font-semibold">
+                  <button onClick={() => setSelectedCategories([])} className="text-xs text-ink font-medium link-underline">
                     {t('nav.clearBtn')}
                   </button>
                 )}
@@ -155,10 +155,10 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                   <button
                     key={category.id}
                     onClick={() => toggleCategory(category.id)}
-                    className={`px-3 py-1.5 rounded-full text-[11px] font-medium transition-all active:scale-95 ${
+                    className={`h-8 px-3.5 rounded-full border text-[13px] font-medium transition-all active:scale-95 ${
                       selectedCategories.includes(category.id)
-                        ? 'bg-[#ee9d2b] text-white shadow-md'
-                        : 'bg-stone-100/80 text-stone-600 hover:bg-stone-200/80'
+                        ? 'bg-ink text-parchment border-ink'
+                        : 'bg-white text-stone-700 border-stone-200 hover:border-ink'
                     }`}
                   >
                     {t(category.tKey)}
@@ -168,11 +168,11 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
             </div>
 
             {/* Divider */}
-            <div className="h-px bg-stone-200/60 mx-5" />
+            <div className="h-px bg-stone-200 mx-5" />
 
             {/* Distance */}
             <div className="px-5 py-4 space-y-3">
-              <p className="text-xs font-bold uppercase tracking-[0.1em] text-stone-500">{t('nav.nearMe')}</p>
+              <p className="eyebrow text-stone-500">{t('nav.nearMe')}</p>
               <div className="flex flex-wrap gap-1.5">
                 {[
                   { label: t('nav.allDistance'), value: null },
@@ -185,10 +185,10 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                   <button
                     key={opt.label}
                     onClick={() => setDistanceFilter(opt.value)}
-                    className={`px-3 py-1.5 rounded-full text-[11px] font-medium transition-all active:scale-95 ${
+                    className={`h-8 px-3.5 rounded-full border text-[13px] font-medium transition-all active:scale-95 ${
                       distanceFilter === opt.value
-                        ? 'bg-[#ee9d2b] text-white shadow-md'
-                        : 'bg-stone-100/80 text-stone-600 hover:bg-stone-200/80'
+                        ? 'bg-ink text-parchment border-ink'
+                        : 'bg-white text-stone-700 border-stone-200 hover:border-ink'
                     }`}
                   >
                     {opt.label}
@@ -201,7 +201,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
             <div className="px-5 pb-5 pt-1">
               <button
                 onClick={handleSearch}
-                className="w-full h-11 rounded-2xl bg-[#ee9d2b] text-white font-semibold hover:opacity-90 transition-all active:scale-[0.98] text-sm shadow-lg shadow-[#ee9d2b]/20"
+                className="w-full h-12 rounded-full btn-lime text-[15px]"
               >
                 {t('nav.search')}
               </button>
@@ -211,14 +211,14 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
       </Dialog>
 
       <div className={`fixed bottom-0 left-0 right-0 max-w-md mx-auto flex-shrink-0 px-4 pb-safe z-40 ${className}`}>
-        <div className="neo-white-bottom h-[72px] rounded-xl backdrop-blur-xl bg-white/80 dark:bg-stone-900/80 mb-2 border border-stone-200/50 dark:border-stone-700/50 overflow-hidden">
+        <div className="neo-white-bottom h-[72px] rounded-full backdrop-blur-xl bg-white/95 dark:bg-stone-900/90 mb-2 overflow-hidden">
           <div className="relative h-full flex items-center">
             <button
               onClick={() => setSearchOpen(true)}
-              className="flex-shrink-0 h-14 w-14 ml-2 flex items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-all duration-300 hover:scale-105 active:scale-95"
+              className="flex-shrink-0 h-14 w-14 ml-2 flex items-center justify-center rounded-full bg-lime text-ink hover:bg-lime-deep transition-all duration-300 active:scale-95"
               aria-label={t('nav.search')}
             >
-              <Search size={24} strokeWidth={2} />
+              <Search size={22} strokeWidth={1.75} />
             </button>
 
             <div className="flex-1 relative h-full min-w-0">
@@ -232,9 +232,9 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                     <Link
                       key={index}
                       to={item.path}
-                      className={`flex-shrink-0 flex h-12 min-w-[90px] flex-col items-center justify-center gap-1 rounded-lg transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 ${
+                      className={`flex-shrink-0 flex h-14 min-w-[84px] flex-col items-center justify-center gap-1 rounded-full transition-all duration-300 ease-in-out active:scale-95 ${
                         isActive
-                          ? 'bg-primary/20 text-primary dark:bg-primary/30'
+                          ? 'bg-parchment text-ink dark:bg-stone-800'
                           : 'text-stone-500 dark:text-stone-400'
                       }`}
                       style={{ transitionProperty: 'all' }}
@@ -243,10 +243,10 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                         src={item.icon}
                         alt={item.label}
                         className={`w-6 h-6 transition-all duration-300 ease-in-out ${
-                          isActive ? 'opacity-100' : 'opacity-60'
+                          isActive ? 'opacity-100' : 'opacity-55'
                         }`}
                       />
-                      <p className="text-xs font-medium  leading-none transition-all duration-300 ease-in-out">
+                      <p className="text-[11px] font-medium leading-none tracking-[0.01em] transition-all duration-300 ease-in-out">
                         {item.label}
                       </p>
                     </Link>
@@ -255,9 +255,9 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
               </div>
 
               {indicator.canScroll && (
-                <div className="pointer-events-none absolute bottom-1 left-2 right-2 h-[2px] rounded-full bg-black/[0.06]">
+                <div className="pointer-events-none absolute bottom-1.5 left-6 right-6 h-[2px] rounded-full bg-ink/[0.06]">
                   <div
-                    className="absolute top-0 h-full rounded-full bg-stone-400/50"
+                    className="absolute top-0 h-full rounded-full bg-ink/40"
                     style={{
                       width: `${indicator.thumbWidth}%`,
                       left: `${indicator.thumbLeft}%`,

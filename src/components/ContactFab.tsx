@@ -54,7 +54,7 @@ const ContactFab = ({
     contacts.push({
       icon: <Phone className="w-5 h-5 text-white" />,
       href: `tel:${contactPhone}`,
-      bgColor: 'bg-green-500',
+      bgColor: 'bg-ink',
       label: 'Téléphone'
     });
   }
@@ -63,7 +63,7 @@ const ContactFab = ({
     contacts.push({
       icon: <MessageCircle className="w-5 h-5 text-white" />,
       href: getDisplayUrl('whatsapp', contactWhatsapp),
-      bgColor: 'bg-green-600',
+      bgColor: 'bg-ink',
       label: 'WhatsApp'
     });
   }
@@ -72,7 +72,7 @@ const ContactFab = ({
     contacts.push({
       icon: <Instagram className="w-5 h-5 text-white" />,
       href: getDisplayUrl('instagram', contactInstagram),
-      bgColor: 'bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400',
+      bgColor: 'bg-ink',
       label: 'Instagram'
     });
   }
@@ -81,7 +81,7 @@ const ContactFab = ({
     contacts.push({
       icon: <Facebook className="w-5 h-5 text-white" />,
       href: getDisplayUrl('facebook', contactFacebook),
-      bgColor: 'bg-blue-600',
+      bgColor: 'bg-ink',
       label: 'Facebook'
     });
   }
@@ -90,7 +90,7 @@ const ContactFab = ({
     contacts.push({
       icon: <TikTokIcon className="w-5 h-5 text-white" />,
       href: getDisplayUrl('tiktok', contactTiktok),
-      bgColor: 'bg-black',
+      bgColor: 'bg-ink',
       label: 'TikTok'
     });
   }
@@ -99,7 +99,7 @@ const ContactFab = ({
     contacts.push({
       icon: <span className="text-white font-bold text-base">𝕏</span>,
       href: getDisplayUrl('twitter', contactTwitter),
-      bgColor: 'bg-black',
+      bgColor: 'bg-ink',
       label: 'X'
     });
   }

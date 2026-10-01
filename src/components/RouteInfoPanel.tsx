@@ -216,14 +216,14 @@ const RouteInfoPanel = ({
         >
           <button
             onClick={() => setRouteDestination(null)}
-            className="absolute -top-3 -right-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/80 dark:bg-stone-900/80 backdrop-blur-md hover:bg-white dark:hover:bg-stone-900 text-stone-800 dark:text-stone-100 shadow-[0_8px_24px_-6px_rgba(0,0,0,0.25)] hover:shadow-[0_12px_32px_-6px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-95 transition-all duration-300"
+            className="absolute -top-3 -right-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white dark:bg-stone-900/80 hover:bg-white dark:hover:bg-stone-900 text-stone-800 dark:text-stone-100 hover:scale-105 active:scale-95 transition-all duration-300"
             style={{ animation: 'close-btn-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.18s both' }}
             aria-label={t('map.closeRoute')}
           >
             <X size={16} strokeWidth={2.5} />
           </button>
 
-          <div className="relative overflow-hidden rounded-[28px] border border-border/60 bg-background/80 px-3.5 py-3 shadow-[0_22px_60px_-20px_hsl(var(--foreground)/0.35)] backdrop-blur-2xl">
+          <div className="relative overflow-hidden rounded-[28px] bg-white/95 px-3.5 py-3 shadow-2xl backdrop-blur-xl">
             <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-border/70" />
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-primary/10">
@@ -245,12 +245,12 @@ const RouteInfoPanel = ({
                 {!loading && !error && distanceKm !== null && durationMin !== null && (
                   <div className="mt-1.5 flex items-center gap-2.5">
                     <span className="flex items-center gap-1 text-xs font-semibold text-foreground/80">
-                      <RouteIcon size={11} className="text-primary" />
+                      <RouteIcon size={11} className="text-ink" />
                       {distanceKm.toFixed(1)} km
                     </span>
                     <span className="h-3 w-px bg-border" />
                     <span className="flex items-center gap-1 text-xs font-semibold text-foreground/80">
-                      <Clock size={11} className="text-primary" />
+                      <Clock size={11} className="text-ink" />
                       {durationMin < 60
                         ? `${Math.round(durationMin)} min`
                         : `${Math.floor(durationMin / 60)}h${String(Math.round(durationMin % 60)).padStart(2, '0')}`}

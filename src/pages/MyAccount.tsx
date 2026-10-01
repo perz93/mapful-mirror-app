@@ -18,7 +18,7 @@ type MarketplaceListing = Tables<'marketplace_listings'>;
 const GoingBadge = ({ eventId }: { eventId: string }) => {
   const { count } = useAttendees(eventId);
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#ee9d2b]/10 text-[#ee9d2b]">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-lime/30 text-ink">
       <Flame size={9} />{count}
     </span>
   );
@@ -188,16 +188,16 @@ const MyAccount = () => {
       <div className="fixed inset-0 pointer-events-none">
         <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
       </div>
-      <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
+      <div className="fixed inset-0 bg-parchment pointer-events-none" />
 
       {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
-          <Link to="/" className="w-11 h-11 rounded-full bg-white/70 backdrop-blur-md flex items-center justify-center shadow-sm border border-white/60 hover:scale-105 active:scale-95 transition-all">
+          <Link to="/" className="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm hover:scale-105 active:scale-95 transition-all">
             <ArrowLeft className="w-5 h-5 text-stone-700" />
           </Link>
-          <h1 className="text-lg font-bold  text-stone-800">
+          <h1 className="text-lg font-medium tracking-tight  text-stone-800">
             {t('account.title')}
           </h1>
           <div className="w-11 h-11" />
@@ -210,13 +210,13 @@ const MyAccount = () => {
         <div className="flex flex-col items-center px-6 pt-4">
           {/* Avatar */}
           <div className="relative mb-4">
-            <div className="w-28 h-28 rounded-full bg-gradient-to-br from-[#ee9d2b]/30 to-[#ee9d2b]/10 backdrop-blur-sm flex items-center justify-center border-2 border-white/40 shadow-xl">
+            <div className="w-28 h-28 rounded-full bg-white flex items-center justify-center border border-stone-200">
               <div className="w-24 h-24 rounded-full overflow-hidden">
                 {profile?.avatar_url ? (
                   <img src={profile.avatar_url} alt={displayName} className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-[#ee9d2b] to-[#e08820] flex items-center justify-center">
-                    <span className="text-white text-2xl font-bold">{initials}</span>
+                  <div className="w-full h-full bg-lime flex items-center justify-center">
+                    <span className="text-ink text-2xl font-medium tracking-tight">{initials}</span>
                   </div>
                 )}
               </div>
@@ -230,38 +230,38 @@ const MyAccount = () => {
               {uploading ? (
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
-                <Pencil className="w-3.5 h-3.5 text-[#ee9d2b]" />
+                <Pencil className="w-3.5 h-3.5 text-ink" />
               )}
             </button>
           </div>
 
           {/* Name */}
-          <h2 className="text-2xl font-bold text-stone-800 mb-1 ">
+          <h2 className="text-[28px] leading-none font-medium tracking-tighter text-stone-800 mb-1 ">
             {displayName}
           </h2>
           <p className="text-stone-500 text-xs mb-5">{user?.email}</p>
 
           {/* Stats Cards */}
           <div className="grid grid-cols-3 gap-3 w-full mb-6">
-            <div className="flex flex-col items-center gap-1 rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-3">
-              <Calendar size={16} className="text-[#ee9d2b]" />
-              <p className="text-xl font-bold text-stone-800">{stats.eventsCreated}</p>
+            <div className="flex flex-col items-center gap-1 rounded-2xl bg-white shadow-sm p-3">
+              <Calendar size={16} className="text-ink" />
+              <p className="text-[22px] leading-tight font-medium tracking-tight text-stone-800">{stats.eventsCreated}</p>
               <p className="text-[10px] text-stone-500 uppercase tracking-wider">Events</p>
             </div>
-            <div className="flex flex-col items-center gap-1 rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-3">
-              <Heart size={16} className="text-[#ee9d2b]" />
-              <p className="text-xl font-bold text-stone-800">{stats.favorites}</p>
+            <div className="flex flex-col items-center gap-1 rounded-2xl bg-white shadow-sm p-3">
+              <Heart size={16} className="text-ink" />
+              <p className="text-[22px] leading-tight font-medium tracking-tight text-stone-800">{stats.favorites}</p>
               <p className="text-[10px] text-stone-500 uppercase tracking-wider">{t('account.favorites')}</p>
             </div>
-            <div className="flex flex-col items-center gap-1 rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-3">
-              <Zap size={16} className="text-[#ee9d2b]" />
-              <p className="text-xl font-bold text-stone-800">{goingEvents.length}</p>
+            <div className="flex flex-col items-center gap-1 rounded-2xl bg-white shadow-sm p-3">
+              <Zap size={16} className="text-ink" />
+              <p className="text-[22px] leading-tight font-medium tracking-tight text-stone-800">{goingEvents.length}</p>
               <p className="text-[10px] text-stone-500 uppercase tracking-wider">{t('account.goingTitle')}</p>
             </div>
           </div>
 
           {/* Tabs */}
-          <div className="flex w-full rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-1 mb-6">
+          <div className="flex w-full rounded-2xl bg-white shadow-sm p-1 mb-6">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -271,7 +271,7 @@ const MyAccount = () => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl text-[11px] font-medium transition-all ${
                     isActive
-                      ? 'bg-[#ee9d2b] text-white shadow-lg'
+                      ? 'bg-lime text-ink shadow-lg'
                       : 'text-stone-500 hover:text-stone-700'
                   }`}
                 >
@@ -290,17 +290,17 @@ const MyAccount = () => {
                   <h3 className="text-base font-bold text-stone-800 ">
                     {t('account.myEvents')}
                   </h3>
-                  <Link to="/manage-events" className="text-[#ee9d2b] text-xs font-semibold hover:underline">
+                  <Link to="/manage-events" className="text-ink text-xs font-semibold hover:underline">
                     {t('account.manageAll')}
                   </Link>
                 </div>
                 {userEvents.length === 0 ? (
-                  <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-8 text-center">
+                  <div className="rounded-2xl bg-white shadow-sm p-8 text-center">
                     <Calendar size={32} className="text-stone-300 mx-auto mb-3" />
                     <p className="text-stone-500 text-sm mb-3">{t('account.noEvents')}</p>
                     <Link
                       to="/create-event"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ee9d2b] text-white text-xs font-semibold hover:opacity-90 transition-all active:scale-95"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lime text-ink text-xs font-semibold hover:opacity-90 transition-all active:scale-95"
                     >
                       {t('account.createFirst')}
                     </Link>
@@ -326,17 +326,17 @@ const MyAccount = () => {
                   <h3 className="text-base font-bold text-stone-800 ">
                     {t('account.myListings')}
                   </h3>
-                  <Link to="/create-listing" className="text-[#ee9d2b] text-xs font-semibold hover:underline">
+                  <Link to="/create-listing" className="text-ink text-xs font-semibold hover:underline">
                     {t('account.createListing')}
                   </Link>
                 </div>
                 {userListings.length === 0 ? (
-                  <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-8 text-center">
+                  <div className="rounded-2xl bg-white shadow-sm p-8 text-center">
                     <ShoppingBag size={32} className="text-stone-300 mx-auto mb-3" />
                     <p className="text-stone-500 text-sm mb-3">{t('account.noListings')}</p>
                     <Link
                       to="/create-listing"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ee9d2b] text-white text-xs font-semibold hover:opacity-90 transition-all active:scale-95"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lime text-ink text-xs font-semibold hover:opacity-90 transition-all active:scale-95"
                     >
                       {t('account.publishListing')}
                     </Link>
@@ -346,7 +346,7 @@ const MyAccount = () => {
                     {userListings.map(listing => (
                       <div
                         key={listing.id}
-                        className="rounded-2xl backdrop-blur-2xl bg-white/90 dark:bg-stone-900/80 border border-white/60 dark:border-stone-700/30 overflow-hidden shadow-lg"
+                        className="rounded-2xl bg-white dark:bg-stone-900/80 overflow-hidden shadow-lg"
                       >
                         {listing.image_url && (
                           <ShimmerImage src={listing.image_url} alt={listing.title} className="w-full h-28" />
@@ -357,15 +357,15 @@ const MyAccount = () => {
                               <h4 className="font-bold text-stone-900 dark:text-white text-sm truncate">{listing.title}</h4>
                               <p className="text-xs text-stone-500 capitalize ">{listing.category}</p>
                               {listing.price && (
-                                <p className="text-[#ee9d2b] font-bold text-sm mt-1">{listing.price.toLocaleString()} FCFA</p>
+                                <p className="text-ink font-bold text-sm mt-1">{listing.price.toLocaleString()} FCFA</p>
                               )}
                             </div>
                             <div className="flex gap-1.5 ml-2">
                               <button
                                 onClick={() => navigate(`/edit-listing/${listing.id}`)}
-                                className="p-2 rounded-full bg-[#ee9d2b]/10 hover:bg-[#ee9d2b]/20 transition-colors"
+                                className="p-2 rounded-full bg-lime/30 hover:bg-lime/60 transition-colors"
                               >
-                                <Edit className="w-3.5 h-3.5 text-[#ee9d2b]" />
+                                <Edit className="w-3.5 h-3.5 text-ink" />
                               </button>
                               <button
                                 onClick={() => handleDeleteListing(listing.id)}
@@ -389,7 +389,7 @@ const MyAccount = () => {
                   {t('account.myFavorites')}
                 </h3>
                 {favoriteEvents.length === 0 ? (
-                  <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-8 text-center">
+                  <div className="rounded-2xl bg-white shadow-sm p-8 text-center">
                     <Heart size={32} className="text-stone-300 mx-auto mb-3" />
                     <p className="text-stone-500 text-sm mb-1">{t('account.noFavorites')}</p>
                     <p className="text-stone-400 text-xs">{t('account.favoritesHint')}</p>
@@ -415,13 +415,13 @@ const MyAccount = () => {
                   {t('account.goingTitle')}
                 </h3>
                 {goingEvents.length === 0 ? (
-                  <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-8 text-center">
+                  <div className="rounded-2xl bg-white shadow-sm p-8 text-center">
                     <Zap size={32} className="text-stone-300 mx-auto mb-3" />
                     <p className="text-stone-500 text-sm mb-1">{t('account.noActivity')}</p>
                     <p className="text-stone-400 text-xs">{t('account.activityHint')}</p>
                     <Link
                       to="/"
-                      className="inline-flex items-center gap-2 px-4 py-2 mt-4 rounded-full bg-[#ee9d2b] text-white text-xs font-semibold hover:opacity-90 transition-all active:scale-95"
+                      className="inline-flex items-center gap-2 px-4 py-2 mt-4 rounded-full bg-lime text-ink text-xs font-semibold hover:opacity-90 transition-all active:scale-95"
                     >
                       {t('account.explore')}
                     </Link>

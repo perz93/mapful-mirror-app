@@ -14,12 +14,37 @@ export default {
     },
     extend: {
       colors: {
-        primary: {
-          DEFAULT: "#ee9d2b",
-          foreground: "#181511",
+        /* VIBE — encre, parchemin et un seul accent lime (Perk × Notion) */
+        ink: "#14140f",
+        lime: {
+          DEFAULT: "#beff50",
+          deep: "#a6e83a",
         },
-        "background-light": "#f8f7f6",
-        "background-dark": "#181511",
+        parchment: "#f5f5eb",
+        ash: "#d2d2c8",
+        graphite: "#6e6e64",
+        charcoal: "#30302a",
+        /* Neutres chauds : on remappe "stone" pour que tout le site
+           bascule sur la gamme parchemin → encre sans toucher chaque classe. */
+        stone: {
+          50: "#f5f5eb",
+          100: "#edede2",
+          200: "#e2e2d7",
+          300: "#d2d2c8",
+          400: "#919183",
+          500: "#6e6e64",
+          600: "#55554c",
+          700: "#3d3d36",
+          800: "#30302a",
+          900: "#1d1d18",
+          950: "#14140f",
+        },
+        primary: {
+          DEFAULT: "#beff50",
+          foreground: "#14140f",
+        },
+        "background-light": "#f5f5eb",
+        "background-dark": "#14140f",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -61,17 +86,44 @@ export default {
         },
       },
       fontFamily: {
-        display: ['Kanit', 'sans-serif'],
-        sans: ['Kanit', 'sans-serif'],
-        heading: ['Kanit', 'sans-serif'],
+        display: ['"Sono Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['"Sono Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        heading: ['"Sono Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
+      /* Deux voix seulement : 400 (texte) et 500 (titres, labels, CTA).
+         "bold" reste un cran au-dessus pour les chiffres et gros titres. */
+      fontWeight: {
+        semibold: "500",
+        bold: "600",
+        extrabold: "600",
+        black: "600",
+      },
+      letterSpacing: {
+        tighter: "-0.03em",
+        tight: "-0.02em",
+        eyebrow: "0.1em",
+      },
+      /* Rayons Perk : 8 (inputs) · 18 (blocs internes) · 28 (cartes, boutons) · pilule */
       borderRadius: {
-        DEFAULT: "1rem",
-        lg: "1.5rem",
-        xl: "2rem",
-        md: "calc(1rem - 2px)",
-        sm: "calc(1rem - 4px)",
+        DEFAULT: "8px",
+        sm: "6px",
+        md: "8px",
+        lg: "12px",
+        xl: "14px",
+        "2xl": "18px",
+        "3xl": "28px",
         full: "9999px",
+      },
+      /* Pas d'élévation : les surfaces se séparent par le ton.
+         Seuls les éléments flottant au-dessus de la carte gardent une ombre douce. */
+      boxShadow: {
+        sm: "none",
+        DEFAULT: "none",
+        md: "none",
+        lg: "0 1px 2px rgb(20 20 15 / 0.06), 0 12px 28px -14px rgb(20 20 15 / 0.28)",
+        xl: "0 1px 2px rgb(20 20 15 / 0.06), 0 12px 28px -14px rgb(20 20 15 / 0.28)",
+        "2xl": "0 1px 2px rgb(20 20 15 / 0.08), 0 16px 36px -16px rgb(20 20 15 / 0.32)",
+        none: "none",
       },
       keyframes: {
         "accordion-down": {

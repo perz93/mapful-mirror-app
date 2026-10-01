@@ -179,7 +179,7 @@ const EditListing = () => {
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-ink border-t-transparent" />
       </div>
     );
   }
@@ -190,11 +190,11 @@ const EditListing = () => {
       <div className="relative z-10 flex items-center gap-4 px-4 pt-12 pb-4">
         <Link
           to="/my-account"
-          className="flex size-10 items-center justify-center rounded-full bg-black/70 backdrop-blur-md"
+          className="flex size-10 items-center justify-center rounded-full bg-white"
         >
-          <ArrowLeft className="text-white" size={20} />
+          <ArrowLeft className="text-ink" size={18} strokeWidth={1.75} />
         </Link>
-        <h1 className="text-xl font-bold">Modifier l'annonce</h1>
+        <h1 className="text-[22px] leading-tight font-medium tracking-tight">Modifier l'annonce</h1>
       </div>
 
       {/* Form */}
@@ -220,7 +220,7 @@ const EditListing = () => {
                   </button>
                 </div>
               ) : (
-                <label className="flex h-48 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-muted-foreground/30 bg-white/50 dark:bg-stone-800/50 transition-colors hover:border-primary">
+                <label className="flex h-48 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-muted-foreground/30 bg-white/50 dark:bg-stone-800/50 transition-colors hover:border-ink">
                   <Upload className="mb-2 text-muted-foreground" size={32} />
                   <span className="text-sm text-muted-foreground">Ajouter une photo</span>
                   <input
@@ -354,7 +354,7 @@ const EditListing = () => {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-amber-500 hover:bg-amber-600"
+            className="w-full h-12"
           >
             {isSubmitting ? 'Mise à jour...' : 'Mettre à jour'}
           </Button>
@@ -362,7 +362,7 @@ const EditListing = () => {
       </form>
 
       {/* Background */}
-      <div className="fixed inset-0 -z-10 bg-gradient-to-b from-amber-50/50 to-background dark:from-amber-950/20" />
+      <div className="fixed inset-0 -z-10 bg-parchment" />
     </div>
   );
 };

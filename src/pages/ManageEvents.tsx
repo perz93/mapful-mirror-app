@@ -55,7 +55,7 @@ const ManageEvents = () => {
       <div className="fixed inset-0 pointer-events-none">
         <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
       </div>
-      <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
+      <div className="fixed inset-0 bg-parchment pointer-events-none" />
 
       {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col">
@@ -63,7 +63,7 @@ const ManageEvents = () => {
         <div className="flex items-center justify-between px-5" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)', paddingBottom: '12px' }}>
           <Link
             to="/my-account"
-            className="w-11 h-11 rounded-full bg-white/70 backdrop-blur-md flex items-center justify-center shadow-sm border border-white/60 hover:scale-105 active:scale-95 transition-all"
+            className="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm hover:scale-105 active:scale-95 transition-all"
           >
             <ArrowLeft className="w-5 h-5 text-stone-700" />
           </Link>

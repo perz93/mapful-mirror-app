@@ -24,28 +24,28 @@ function isStandalone(): boolean {
 // ==========================================
 
 const IOSShareIcon = () => (
-  <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl backdrop-blur-xl bg-blue-500/15 border border-blue-500/20">
-    <Share size={24} className="text-blue-500" />
-    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center animate-bounce">
-      <span className="text-white text-[10px] font-bold">1</span>
+  <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-parchment">
+    <Share size={24} className="text-ink" />
+    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-lime flex items-center justify-center">
+      <span className="text-ink text-[10px] font-medium tabular">1</span>
     </div>
   </div>
 );
 
 const IOSAddIcon = () => (
-  <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl backdrop-blur-xl bg-green-500/15 border border-green-500/20">
-    <Plus size={24} className="text-green-500" />
-    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center animate-bounce" style={{ animationDelay: '150ms' }}>
-      <span className="text-white text-[10px] font-bold">2</span>
+  <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-parchment">
+    <Plus size={24} className="text-ink" />
+    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-lime flex items-center justify-center" style={{ animationDelay: '150ms' }}>
+      <span className="text-ink text-[10px] font-medium tabular">2</span>
     </div>
   </div>
 );
 
 const IOSConfirmIcon = () => (
-  <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl backdrop-blur-xl bg-[#ee9d2b]/15 border border-[#ee9d2b]/20">
-    <Smartphone size={24} className="text-[#ee9d2b]" />
-    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#ee9d2b] flex items-center justify-center animate-bounce" style={{ animationDelay: '300ms' }}>
-      <span className="text-white text-[10px] font-bold">3</span>
+  <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-parchment">
+    <Smartphone size={24} className="text-ink" />
+    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-lime flex items-center justify-center" style={{ animationDelay: '300ms' }}>
+      <span className="text-ink text-[10px] font-medium tabular">3</span>
     </div>
   </div>
 );
@@ -55,19 +55,19 @@ const IOSConfirmIcon = () => (
 // ==========================================
 
 const AndroidMenuIcon = () => (
-  <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl backdrop-blur-xl bg-green-500/15 border border-green-500/20">
-    <MoreVertical size={24} className="text-green-500" />
-    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center animate-bounce">
-      <span className="text-white text-[10px] font-bold">1</span>
+  <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-parchment">
+    <MoreVertical size={24} className="text-ink" />
+    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-lime flex items-center justify-center">
+      <span className="text-ink text-[10px] font-medium tabular">1</span>
     </div>
   </div>
 );
 
 const AndroidInstallIcon = () => (
-  <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl backdrop-blur-xl bg-[#ee9d2b]/15 border border-[#ee9d2b]/20">
-    <Download size={24} className="text-[#ee9d2b]" />
-    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#ee9d2b] flex items-center justify-center animate-bounce" style={{ animationDelay: '150ms' }}>
-      <span className="text-white text-[10px] font-bold">2</span>
+  <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-parchment">
+    <Download size={24} className="text-ink" />
+    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-lime flex items-center justify-center" style={{ animationDelay: '150ms' }}>
+      <span className="text-ink text-[10px] font-medium tabular">2</span>
     </div>
   </div>
 );
@@ -88,7 +88,7 @@ const Step = ({ icon, title, description, delay, isActive }: StepProps) => (
   <div
     className={`flex items-center gap-3.5 p-3.5 rounded-2xl transition-all duration-500 ${
       isActive
-        ? 'backdrop-blur-2xl bg-white/70 dark:bg-stone-800/60 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.1)] border border-white/80 dark:border-stone-600/30 scale-100 opacity-100'
+        ? 'bg-parchment dark:bg-stone-800/60 scale-100 opacity-100'
         : 'backdrop-blur-xl bg-white/35 dark:bg-stone-800/25 border border-white/50 dark:border-stone-700/20 scale-95 opacity-50'
     }`}
     style={{ transitionDelay: `${delay}ms` }}
@@ -99,7 +99,7 @@ const Step = ({ icon, title, description, delay, isActive }: StepProps) => (
       <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">{description}</p>
     </div>
     {isActive && (
-      <ChevronRight size={16} className="text-[#ee9d2b] animate-pulse" />
+      <ChevronRight size={16} className="text-ink animate-pulse" />
     )}
   </div>
 );
@@ -186,15 +186,15 @@ const InstallGuide = () => {
           animating ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-8 opacity-0 scale-95'
         }`}
       >
-        <div className="rounded-3xl backdrop-blur-2xl bg-white/85 dark:bg-stone-900/80 border border-white/70 dark:border-stone-700/30 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] overflow-hidden">
+        <div className="rounded-3xl bg-white dark:bg-stone-900 shadow-2xl overflow-hidden">
           {/* Content */}
           <div className="px-5 py-6">
             {/* Header */}
             <div className="text-center mb-6">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl backdrop-blur-xl bg-[#ee9d2b]/15 border border-[#ee9d2b]/20 mb-3 shadow-lg shadow-[#ee9d2b]/10">
-                <Smartphone size={32} className="text-[#ee9d2b]" />
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-parchment mb-3">
+                <Smartphone size={32} className="text-ink" />
               </div>
-              <h2 className="text-2xl font-bold text-stone-900 dark:text-white ">
+              <h2 className="text-[32px] leading-none font-medium tracking-tighter text-ink dark:text-white">
                 Installe l'app !
               </h2>
               <p className="text-sm text-stone-600 dark:text-stone-300 mt-1.5">
@@ -233,13 +233,13 @@ const InstallGuide = () => {
                   {deferredPrompt ? (
                     <button
                       onClick={handleInstallAndroid}
-                      className="w-full flex items-center gap-4 p-4 rounded-2xl bg-[#ee9d2b] text-white shadow-lg shadow-[#ee9d2b]/30 hover:opacity-90 active:scale-[0.98] transition-all"
+                      className="w-full flex items-center gap-4 p-3 pr-5 rounded-full bg-lime text-ink hover:bg-lime-deep active:scale-[0.98] transition-all"
                     >
-                      <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-xl">
-                        <Download size={28} />
+                      <div className="flex items-center justify-center w-12 h-12 rounded-full bg-ink text-lime">
+                        <Download size={20} strokeWidth={1.75} />
                       </div>
                       <div className="flex-1 text-left">
-                        <p className="text-base font-bold">Installer l'application</p>
+                        <p className="text-base font-medium">Installer l'application</p>
                         <p className="text-xs opacity-80 mt-0.5">Un tap et c'est fait !</p>
                       </div>
                       <ChevronRight size={20} />

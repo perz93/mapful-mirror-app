@@ -10,7 +10,7 @@ import HypeBadge from './HypeBadge';
 const AttendeesBadge = ({ eventId }: { eventId: string }) => {
   const { count } = useAttendees(eventId);
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#ee9d2b]/15 text-[#ee9d2b] border border-[#ee9d2b]/20">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-lime/30 text-ink border border-ink/10">
       <Flame size={10} />
       {count} y vont
     </span>
@@ -37,12 +37,12 @@ const TonightSection = () => {
         showSection ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
       }`}
     >
-      <div className="pointer-events-auto rounded-2xl backdrop-blur-2xl bg-white/50 dark:bg-stone-900/50 border border-white/60 dark:border-stone-700/30 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.12)] overflow-hidden">
+      <div className="pointer-events-auto rounded-3xl bg-white dark:bg-stone-900/90 shadow-lg overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-3.5 pt-3 pb-1.5">
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#ee9d2b]/15">
-              <Flame size={14} className="text-[#ee9d2b]" />
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-lime/30">
+              <Flame size={14} className="text-ink" />
             </div>
             <p className="text-xs font-bold uppercase tracking-[0.15em] text-stone-600 dark:text-stone-300">
               Ce soir

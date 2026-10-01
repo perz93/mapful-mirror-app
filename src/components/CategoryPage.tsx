@@ -24,113 +24,92 @@ const CategoryPage = ({
     isLoading,
     error
   } = useEventsByCategory(category);
-  const HeaderIcon = () => <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-200">
-      <img src={iconSrc} alt={title} className="w-6 h-6" />
-    </div>;
+  const count = events?.length ?? 0;
+  const Header = () => <header className="sticky top-0 z-10 bg-parchment/90 dark:bg-stone-950/90 backdrop-blur-md">
+      <div className="px-4 pb-5" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
+        <div className="flex items-center justify-between">
+          <Link to="/" aria-label="Retour" className="flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-stone-900 text-ink dark:text-white active:scale-95 transition-transform">
+            <ArrowLeft size={18} strokeWidth={1.75} />
+          </Link>
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-lime">
+            <img src={iconSrc} alt="" className="w-5 h-5" />
+          </div>
+        </div>
+        <p className="eyebrow text-stone-500 mt-6">
+          {isLoading || error ? t('category.eyebrow') : `${count} ${t(count > 1 ? 'category.count' : 'category.countOne')}`}
+        </p>
+        <h1 className="mt-1.5 text-[44px] leading-[0.95] font-medium tracking-tighter text-ink dark:text-white">{title}</h1>
+      </div>
+      <div className="h-px bg-stone-200 dark:bg-stone-800 mx-4" />
+    </header>;
   if (isLoading) {
-    return <div className="min-h-screen bg-gradient-to-b from-stone-50 to-white dark:from-stone-950 dark:to-stone-900 animate-fade-in animate-zoom-smooth">
+    return <div className="min-h-screen bg-parchment dark:bg-stone-950 animate-fade-in">
         <div className="mx-auto max-w-md">
-          <header className="sticky top-0 z-10 backdrop-blur-xl bg-white/80 dark:bg-stone-900/80 border-b border-stone-200/50 dark:border-stone-800/50">
-            <div className="flex items-center gap-4 px-4 py-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
-              <Link to="/" className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-stone-100 to-stone-50 dark:from-stone-800 dark:to-stone-900 text-stone-900 dark:text-white hover:scale-105 active:scale-95 transition-all duration-200 shadow-sm hover:shadow-md border border-stone-200/50 dark:border-stone-700/50">
-                <ArrowLeft size={20} strokeWidth={2} />
-              </Link>
-              <div className="flex items-center gap-3">
-                <HeaderIcon />
-                <h1 className="text-2xl font-bold text-stone-900 dark:text-white">{title}</h1>
-              </div>
-            </div>
-          </header>
+          <Header />
           <CategoryPageSkeleton />
         </div>
       </div>;
   }
   if (error) {
-    return <div className="min-h-screen bg-gradient-to-b from-stone-50 to-white dark:from-stone-950 dark:to-stone-900 animate-fade-in animate-zoom-smooth">
+    return <div className="min-h-screen bg-parchment dark:bg-stone-950 animate-fade-in">
         <div className="mx-auto max-w-md">
-          <header className="sticky top-0 z-10 backdrop-blur-xl bg-white/80 dark:bg-stone-900/80 border-b border-stone-200/50 dark:border-stone-800/50">
-            <div className="flex items-center gap-4 px-4 py-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
-              <Link to="/" className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-stone-100 to-stone-50 dark:from-stone-800 dark:to-stone-900 text-stone-900 dark:text-white hover:scale-105 active:scale-95 transition-all duration-200 shadow-sm hover:shadow-md border border-stone-200/50 dark:border-stone-700/50">
-                <ArrowLeft size={20} strokeWidth={2} />
-              </Link>
-              <div className="flex items-center gap-3">
-                <HeaderIcon />
-                <h1 className="text-2xl font-bold text-stone-900 dark:text-white">{title}</h1>
-              </div>
-            </div>
-          </header>
+          <Header />
           <div className="p-4 flex items-center justify-center min-h-[50vh]">
-            <p className="text-red-600 dark:text-red-400">{t('form.loadError')}</p>
+            <p className="text-stone-600 dark:text-stone-400">{t('form.loadError')}</p>
           </div>
         </div>
       </div>;
   }
-  return <div className="min-h-screen bg-gradient-to-b from-stone-50 to-white dark:from-stone-950 dark:to-stone-900 animate-fade-in animate-zoom-smooth">
+  return <div className="min-h-screen bg-parchment dark:bg-stone-950 animate-fade-in">
       <div className="mx-auto max-w-md">
-        <header className="sticky top-0 z-10 backdrop-blur-xl bg-white/80 dark:bg-stone-900/80 border-b border-stone-200/50 dark:border-stone-800/50">
-          <div className="flex items-center gap-4 px-4 py-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
-            <Link to="/" className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-stone-100 to-stone-50 dark:from-stone-800 dark:to-stone-900 text-stone-900 dark:text-white hover:scale-105 active:scale-95 transition-all duration-200 shadow-sm hover:shadow-md border border-stone-200/50 dark:border-stone-700/50">
-              <ArrowLeft size={20} strokeWidth={2} />
-            </Link>
-            <div className="flex items-center gap-3">
-              <HeaderIcon />
-              <h1 className="text-2xl font-bold text-stone-900 dark:text-white">{title}</h1>
-            </div>
-          </div>
-        </header>
+        <Header />
 
-        <div className="p-4 space-y-5">
+        <div className="p-4 pt-5 space-y-4 pb-10">
           {!events || events.length === 0 ? <div className="flex items-center justify-center min-h-[50vh]">
-              <p className="text-stone-600 dark:text-stone-400">{t('event.noEvents')}</p>
+              <p className="text-stone-500 dark:text-stone-400">{t('event.noEvents')}</p>
             </div> : events.map((event, i) => <Link key={event.id} to={`/event/${event.id}`} className="block group">
-                <div
-                  className="overflow-hidden rounded-3xl bg-white dark:bg-stone-900 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.1)] hover:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.18)] transition-all duration-500 hover:scale-[1.02] border border-white/80 dark:border-stone-700/40 animate-fade-in"
-                  style={{
-                    animation: `float 6s ease-in-out infinite, fade-in 0.5s ease-out`,
-                    animationDelay: `${i * 0.8}s, ${i * 0.1}s`,
-                  }}
+                <article
+                  className="overflow-hidden rounded-3xl bg-white dark:bg-stone-900 p-2 transition-transform duration-300 active:scale-[0.99] animate-fade-in"
+                  style={{ animationDelay: `${i * 0.06}s` }}
                 >
-                  {/* Image section */}
-                  <div className="h-48 relative overflow-hidden">
+                  {/* Image */}
+                  <div className="h-52 relative overflow-hidden rounded-[20px]">
                     <ShimmerImage
                       src={event.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&q=75&fm=webp'}
                       alt={event.title}
-                      className="w-full h-full"
+                      className="w-full h-full transition-transform duration-500 group-hover:scale-[1.03]"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
-                    {/* Hype + Countdown badges top-right */}
-                    <div className="absolute top-3 right-3">
+                    <div className="absolute top-3 left-3">
                       <HypeBadge eventId={event.id} eventDate={event.date} eventTime={event.time} capacity={event.capacity} size="sm" />
                     </div>
-                    <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
-                      <div className="flex-1">
-                        <p className="text-white/90 text-xs font-semibold mb-1 ">{event.venue}</p>
-                        <h3 className="text-white text-lg font-bold leading-tight pr-2 drop-shadow-sm">{event.title}</h3>
-                      </div>
-                      {event.price && <span className="inline-flex items-center px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-sm text-stone-900 text-xs font-bold whitespace-nowrap shadow-sm">
-                          {event.price} FCFA
-                        </span>}
-                    </div>
+                    {event.price && <span className="absolute bottom-3 right-3 inline-flex items-center h-7 px-3 rounded-full bg-white text-ink text-xs font-medium whitespace-nowrap tabular">
+                        {event.price} FCFA
+                      </span>}
                   </div>
 
-                  {/* Info section */}
-                  <div className="p-4 space-y-3">
-                    {/* Date & Time badges */}
-                    <div className="flex items-center gap-2">
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#ee9d2b]/10 border border-[#ee9d2b]/20">
-                        <Calendar size={13} strokeWidth={2.5} className="text-[#ee9d2b]" />
-                        <span className="text-xs font-semibold text-[#ee9d2b]">
+                  {/* Texte */}
+                  <div className="px-3 pt-4 pb-3 space-y-3">
+                    <div>
+                      <p className="eyebrow text-stone-500 truncate">{event.venue}</p>
+                      <h3 className="mt-1 text-[22px] leading-[1.1] font-medium tracking-tight text-ink dark:text-white">{event.title}</h3>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="inline-flex items-center gap-1.5 h-7 px-3 rounded-full bg-lime">
+                        <Calendar size={12} strokeWidth={2} className="text-ink" />
+                        <span className="text-xs font-medium text-ink capitalize">
                           {format(new Date(event.date), 'EEE dd MMM', { locale: fr })}
                         </span>
-                      </div>
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-stone-100 dark:bg-stone-800 border border-stone-200/60 dark:border-stone-700/60">
-                        <Clock size={13} strokeWidth={2.5} className="text-stone-500 dark:text-stone-400" />
-                        <span className="text-xs font-semibold text-stone-600 dark:text-stone-300">{event.time}</span>
-                      </div>
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 h-7 px-3 rounded-full bg-parchment dark:bg-stone-800">
+                        <Clock size={12} strokeWidth={2} className="text-stone-500 dark:text-stone-400" />
+                        <span className="text-xs font-medium text-stone-600 dark:text-stone-300 tabular">{event.time?.slice(0, 5)}</span>
+                      </span>
                     </div>
-                    <HypeBar eventId={event.id} maxCapacity={event.capacity || 50} />
+                    <div className="pt-3 border-t border-stone-200 dark:border-stone-800">
+                      <HypeBar eventId={event.id} maxCapacity={event.capacity || 50} />
+                    </div>
                   </div>
-                </div>
+                </article>
               </Link>)}
         </div>
       </div>

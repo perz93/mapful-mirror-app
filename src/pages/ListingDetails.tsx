@@ -64,7 +64,7 @@ const ListingDetails = () => {
         <div className="fixed inset-0 pointer-events-none">
           <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
         </div>
-        <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
+        <div className="fixed inset-0 bg-parchment pointer-events-none" />
         <div className="relative z-10 mx-auto max-w-md">
           <div className="mx-4 mt-2">
             <div className="h-72 rounded-3xl bg-stone-200/70 relative overflow-hidden">
@@ -72,7 +72,7 @@ const ListingDetails = () => {
             </div>
           </div>
           <div className="px-4 pt-5 space-y-4">
-            <div className="rounded-2xl bg-white/50 border border-white/60 p-5 space-y-3">
+            <div className="rounded-2xl bg-white/50 p-5 space-y-3">
               <div className="h-6 bg-stone-200/70 rounded-lg w-3/4 relative overflow-hidden">
                 <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
               </div>
@@ -80,7 +80,7 @@ const ListingDetails = () => {
                 <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
               </div>
             </div>
-            <div className="rounded-2xl bg-white/50 border border-white/60 p-4 flex items-start gap-3">
+            <div className="rounded-2xl bg-white/50 p-4 flex items-start gap-3">
               <div className="w-10 h-10 rounded-full bg-stone-200/70 relative overflow-hidden flex-shrink-0">
                 <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
               </div>
@@ -93,7 +93,7 @@ const ListingDetails = () => {
                 </div>
               </div>
             </div>
-            <div className="rounded-2xl bg-white/50 border border-white/60 p-5 space-y-3">
+            <div className="rounded-2xl bg-white/50 p-5 space-y-3">
               <div className="h-5 bg-stone-200/70 rounded w-1/3 relative overflow-hidden">
                 <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
               </div>
@@ -116,13 +116,13 @@ const ListingDetails = () => {
         <div className="fixed inset-0 pointer-events-none">
           <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
         </div>
-        <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
+        <div className="fixed inset-0 bg-parchment pointer-events-none" />
         <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 gap-4">
           <Tag size={48} className="text-stone-300" />
           <p className="text-stone-600">{lang === 'fr' ? 'Annonce introuvable' : 'Listing not found'}</p>
           <button
             onClick={() => navigate('/marketplace')}
-            className="px-6 py-3 rounded-full bg-[#ee9d2b] text-white font-semibold text-sm hover:opacity-90 transition-all active:scale-95"
+            className="px-6 py-3 rounded-full bg-lime text-ink font-semibold text-sm hover:opacity-90 transition-all active:scale-95"
           >
             {lang === 'fr' ? 'Retour au marketplace' : 'Back to marketplace'}
           </button>
@@ -140,7 +140,7 @@ const ListingDetails = () => {
       <div className="fixed inset-0 pointer-events-none">
         <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
       </div>
-      <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
+      <div className="fixed inset-0 bg-parchment pointer-events-none" />
 
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-md min-h-screen flex flex-col">
@@ -160,15 +160,15 @@ const ListingDetails = () => {
 
               {/* Category badge */}
               <div className="absolute bottom-4 left-4">
-                <span className="px-3 py-1.5 rounded-full bg-[#ee9d2b] text-white text-xs font-semibold shadow-lg">
+                <span className="px-3 py-1.5 rounded-full bg-lime text-ink text-xs font-semibold shadow-lg">
                   {catLabel}
                 </span>
               </div>
             </div>
           ) : (
-            <div className="h-48 mx-4 mt-2 rounded-3xl bg-white/40 backdrop-blur-sm border border-white/60 flex flex-col items-center justify-center gap-2">
+            <div className="h-48 mx-4 mt-2 rounded-3xl bg-white flex flex-col items-center justify-center gap-2">
               <Tag size={40} className="text-stone-300" />
-              <span className="px-3 py-1 rounded-full bg-[#ee9d2b]/10 text-[#ee9d2b] text-xs font-semibold">
+              <span className="px-3 py-1 rounded-full bg-lime/30 text-ink text-xs font-semibold">
                 {catLabel}
               </span>
             </div>
@@ -194,14 +194,14 @@ const ListingDetails = () => {
         {/* Info */}
         <div className="px-4 pt-5 pb-8 space-y-4 flex-1">
           {/* Title + Price card */}
-          <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
-            <h1 className="text-2xl font-bold text-stone-800 ">
+          <div className="rounded-2xl bg-white shadow-sm p-5">
+            <h1 className="text-[28px] leading-none font-medium tracking-tighter text-stone-800 ">
               {listing.title}
             </h1>
 
             {listing.price !== null && (
               <div className="flex items-baseline gap-2 mt-3">
-                <p className="text-2xl font-bold text-[#ee9d2b]">
+                <p className="text-[28px] leading-none font-medium tracking-tighter text-ink">
                   {listing.price.toLocaleString()} FCFA
                 </p>
                 {listing.price_type && listing.price_type !== 'fixed' && (
@@ -212,15 +212,15 @@ const ListingDetails = () => {
               </div>
             )}
             {listing.price === null && listing.price_type === 'negotiable' && (
-              <p className="text-lg text-[#ee9d2b] font-semibold mt-3">{priceLabel}</p>
+              <p className="text-lg text-ink font-semibold mt-3">{priceLabel}</p>
             )}
           </div>
 
           {/* Location */}
           {listing.location && (
-            <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-4 flex items-start gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#ee9d2b]/10 flex-shrink-0">
-                <MapPin size={20} className="text-[#ee9d2b]" />
+            <div className="rounded-2xl bg-white shadow-sm p-4 flex items-start gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-lime/30 flex-shrink-0">
+                <MapPin size={20} className="text-ink" />
               </div>
               <div>
                 <p className="text-xs text-stone-500 uppercase tracking-wider font-semibold mb-0.5">
@@ -235,8 +235,8 @@ const ListingDetails = () => {
 
           {/* Description */}
           {listing.description && (
-            <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
-              <h2 className="text-lg font-bold text-stone-800  mb-3">
+            <div className="rounded-2xl bg-white shadow-sm p-5">
+              <h2 className="text-lg font-medium tracking-tight text-stone-800  mb-3">
                 {t('form.description')}
               </h2>
               <p className="text-stone-600 leading-relaxed whitespace-pre-line text-sm">
@@ -246,8 +246,8 @@ const ListingDetails = () => {
           )}
 
           {/* Contact */}
-          <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
-            <h2 className="text-lg font-bold text-stone-800  mb-4">
+          <div className="rounded-2xl bg-white shadow-sm p-5">
+            <h2 className="text-lg font-medium tracking-tight text-stone-800  mb-4">
               {lang === 'fr' ? 'Contacter le vendeur' : 'Contact seller'}
             </h2>
 
@@ -255,7 +255,7 @@ const ListingDetails = () => {
               {listing.contact_phone && (
                 <a
                   href={`tel:${listing.contact_phone}`}
-                  className="flex items-center gap-3 w-full py-3 px-4 rounded-xl bg-[#ee9d2b] text-white font-semibold text-sm shadow-lg shadow-[#ee9d2b]/20 hover:opacity-90 transition-all active:scale-[0.98]"
+                  className="flex items-center gap-3 w-full py-3 px-4 rounded-xl bg-lime text-ink font-semibold text-sm hover:opacity-90 transition-all active:scale-[0.98]"
                 >
                   <Phone size={18} />
                   {lang === 'fr' ? 'Appeler' : 'Call'} — {listing.contact_phone}
@@ -265,9 +265,9 @@ const ListingDetails = () => {
               {listing.contact_email && (
                 <a
                   href={`mailto:${listing.contact_email}?subject=${encodeURIComponent(listing.title)}`}
-                  className="flex items-center gap-3 w-full py-3 px-4 rounded-xl bg-white/70 border border-stone-200/50 text-stone-700 font-semibold text-sm hover:bg-white/90 transition-all active:scale-[0.98]"
+                  className="flex items-center gap-3 w-full py-3 px-4 rounded-xl bg-white/70 border border-stone-200 text-stone-700 font-semibold text-sm hover:bg-white/90 transition-all active:scale-[0.98]"
                 >
-                  <Mail size={18} className="text-[#ee9d2b]" />
+                  <Mail size={18} className="text-ink" />
                   {lang === 'fr' ? 'Envoyer un email' : 'Send email'}
                 </a>
               )}

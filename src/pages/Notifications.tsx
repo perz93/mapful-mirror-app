@@ -23,17 +23,17 @@ const Notifications = () => {
     return (
       <div className="relative min-h-screen bg-stone-50 dark:bg-stone-950 animate-fade-in animate-zoom-smooth">
         <div className="fixed inset-x-0 top-0 z-10 max-w-md mx-auto" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
-          <div className="flex items-center gap-3 px-4 py-3 bg-white/80 dark:bg-stone-900/80 backdrop-blur-xl border-b border-stone-200/50 dark:border-stone-800/50">
+          <div className="flex items-center gap-3 px-4 py-3 bg-white dark:bg-stone-900/80 border-b border-stone-200 dark:border-stone-800/50">
             <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800">
               <ArrowLeft size={22} />
             </button>
-            <h1 className="text-lg font-bold">{t('notif.title')}</h1>
+            <h1 className="text-lg font-medium tracking-tight">{t('notif.title')}</h1>
           </div>
         </div>
         <div className="flex flex-col items-center justify-center h-screen gap-4 px-6">
           <BellOff size={48} className="text-stone-300" />
           <p className="text-stone-500 text-center">{t('auth.loginToSee')}</p>
-          <button onClick={() => navigate('/auth')} className="px-6 py-3 rounded-2xl bg-[#ee9d2b] text-white font-semibold">
+          <button onClick={() => navigate('/auth')} className="px-6 py-3 rounded-2xl bg-lime text-ink font-semibold">
             {t('auth.login')}
           </button>
         </div>
@@ -45,12 +45,12 @@ const Notifications = () => {
     <div className="relative min-h-screen bg-stone-50 dark:bg-stone-950 max-w-md mx-auto animate-fade-in animate-zoom-smooth">
       {/* Header */}
       <div className="fixed inset-x-0 top-0 z-10 max-w-md mx-auto" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
-        <div className="flex items-center gap-3 px-4 py-3 bg-white/80 dark:bg-stone-900/80 backdrop-blur-xl border-b border-stone-200/50 dark:border-stone-800/50">
+        <div className="flex items-center gap-3 px-4 py-3 bg-white dark:bg-stone-900/80 border-b border-stone-200 dark:border-stone-800/50">
           <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors">
             <ArrowLeft size={22} className="text-stone-900 dark:text-white" />
           </button>
           <div className="flex-1">
-            <h1 className="text-lg font-bold text-stone-900 dark:text-white">{t('notif.title')}</h1>
+            <h1 className="text-lg font-medium tracking-tight text-stone-900 dark:text-white">{t('notif.title')}</h1>
             {unreadCount > 0 && (
               <p className="text-xs text-stone-500">{unreadCount} {unreadCount > 1 ? t('notif.unreadPlural') : t('notif.unread')}</p>
             )}
@@ -58,7 +58,7 @@ const Notifications = () => {
           {unreadCount > 0 && (
             <button
               onClick={markAllAsRead}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#ee9d2b]/10 text-[#ee9d2b] text-xs font-semibold hover:bg-[#ee9d2b]/20 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-lime/30 text-ink text-xs font-semibold hover:bg-lime/60 transition-colors"
             >
               <CheckCheck size={14} />
               {t('notif.markAllRead')}
@@ -111,7 +111,7 @@ const Notifications = () => {
                 className={`w-full flex items-start gap-3 p-3.5 rounded-2xl text-left transition-all active:scale-[0.98] ${
                   notif.is_read
                     ? 'bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800'
-                    : 'bg-[#ee9d2b]/5 dark:bg-[#ee9d2b]/10 border border-[#ee9d2b]/20'
+                    : 'bg-lime/30 dark:bg-lime/30 border border-ink/10'
                 }`}
               >
                 {/* Image or icon */}
@@ -136,7 +136,7 @@ const Notifications = () => {
                       {notif.title}
                     </p>
                     {!notif.is_read && (
-                      <div className="flex-shrink-0 w-2 h-2 mt-1.5 rounded-full bg-[#ee9d2b]" />
+                      <div className="flex-shrink-0 w-2 h-2 mt-1.5 rounded-full bg-lime" />
                     )}
                   </div>
                   {notif.body && (

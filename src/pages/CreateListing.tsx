@@ -131,14 +131,14 @@ const CreateListing = () => {
       {/* Background map */}
       <div className="fixed inset-0 pointer-events-none">
         <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
-        <div className="absolute inset-0 bg-white/30 backdrop-blur-xl" />
+        <div className="absolute inset-0 bg-parchment" />
       </div>
 
       {/* Header */}
       <div className="relative z-10 px-4 sm:px-6 pb-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         <Link
           to="/marketplace"
-          className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white/70 backdrop-blur-md shadow-sm border border-white/60 hover:scale-105 active:scale-95 transition-all mb-4"
+          className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white shadow-sm hover:scale-105 active:scale-95 transition-all mb-4"
         >
           <ArrowLeft className="w-5 h-5 text-stone-700" />
         </Link>
@@ -169,7 +169,7 @@ const CreateListing = () => {
                   </button>
                 </div>
               ) : (
-                <label className="flex h-48 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-muted-foreground/30 bg-white/50 dark:bg-stone-800/50 transition-colors hover:border-primary">
+                <label className="flex h-48 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-muted-foreground/30 bg-white/50 dark:bg-stone-800/50 transition-colors hover:border-ink">
                   <Upload className="mb-2 text-muted-foreground" size={32} />
                   <span className="text-sm text-muted-foreground">{t('market.addPhoto')}</span>
                   <input
@@ -303,7 +303,7 @@ const CreateListing = () => {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-amber-500 hover:bg-amber-600"
+            className="w-full h-12"
           >
             {isSubmitting ? t('market.publishing') : t('market.publishListing')}
           </Button>

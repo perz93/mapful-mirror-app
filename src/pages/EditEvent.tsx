@@ -10,9 +10,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import mapBackground from '@/assets/map-background.jpg';
 import { EditEventSkeleton } from '@/components/PageSkeleton';
 
-const inputClass = "h-9 rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50 w-full px-3";
+const inputClass = "h-9 rounded-xl bg-white border border-stone-300 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-ink w-full px-3";
 const labelClass = "text-sm text-stone-600 font-normal";
-const cardClass = "rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.08)] p-4 space-y-3";
+const cardClass = "rounded-3xl bg-white p-5 space-y-3";
 const sectionTitleClass = "text-lg  text-stone-800 mb-4 flex items-center gap-2";
 
 const EditEvent = () => {
@@ -176,7 +176,7 @@ const EditEvent = () => {
         <div className="fixed inset-0 pointer-events-none">
           <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
         </div>
-        <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
+        <div className="fixed inset-0 bg-parchment pointer-events-none" />
         <div className="relative z-10">
           <EditEventSkeleton />
         </div>
@@ -190,7 +190,7 @@ const EditEvent = () => {
       <div className="fixed inset-0 pointer-events-none">
         <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
       </div>
-      <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
+      <div className="fixed inset-0 bg-parchment pointer-events-none" />
 
       {/* Content */}
       <div className="relative mx-auto max-w-md">
@@ -198,7 +198,7 @@ const EditEvent = () => {
         <div className="px-4 pb-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
           <Link
             to="/manage-events"
-            className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white/70 backdrop-blur-md shadow-sm border border-white/60 hover:scale-105 active:scale-95 transition-all mb-6"
+            className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white shadow-sm hover:scale-105 active:scale-95 transition-all mb-6"
           >
             <ArrowLeft className="w-5 h-5 text-stone-700" />
           </Link>
@@ -222,7 +222,7 @@ const EditEvent = () => {
                   <img src={imagePreview} alt="Preview" className="w-full h-48 object-cover rounded-xl" />
                 ) : (
                   <div className="flex flex-col items-center justify-center text-center py-4">
-                    <ImageIcon className="h-10 w-10 text-[#ee9d2b] mb-3" strokeWidth={1.5} />
+                    <ImageIcon className="h-10 w-10 text-ink mb-3" strokeWidth={1.5} />
                     <p className="text-stone-600 text-sm">{t('form.clickToChangeImage')}</p>
                   </div>
                 )}
@@ -240,7 +240,7 @@ const EditEvent = () => {
 
               <div className="space-y-2">
                 <label className={labelClass}>{t('form.description')}</label>
-                <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} rows={4} className="rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50 w-full px-3 py-2 resize-none" />
+                <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} rows={4} className="rounded-xl bg-white border border-stone-300 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-ink w-full px-3 py-2 resize-none" />
               </div>
 
               <div className="space-y-2">
@@ -301,7 +301,7 @@ const EditEvent = () => {
               </div>
 
               <div className="flex items-center gap-2 pt-1">
-                <input type="checkbox" id="is_paid" checked={formData.is_paid} onChange={e => setFormData({...formData, is_paid: e.target.checked})} className="w-4 h-4 accent-[#ee9d2b]" />
+                <input type="checkbox" id="is_paid" checked={formData.is_paid} onChange={e => setFormData({...formData, is_paid: e.target.checked})} className="w-4 h-4 accent-[#14140f]" />
                 <label htmlFor="is_paid" className="text-sm text-stone-600">{t('form.isPaid')}</label>
               </div>
             </div>
@@ -309,48 +309,48 @@ const EditEvent = () => {
             {/* Contact / Réseaux sociaux */}
             <div className={cardClass}>
               <h2 className={sectionTitleClass}>
-                <Phone className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
+                <Phone className="h-5 w-5 text-ink" strokeWidth={1.5} />
                 {t('form.contactNetworks')}
               </h2>
 
               <div className="space-y-2">
                 <label className={`${labelClass} flex items-center gap-2`}>
-                  <Phone className="w-4 h-4 text-[#ee9d2b]" /> {t('form.phoneShort')}
+                  <Phone className="w-4 h-4 text-ink" /> {t('form.phoneShort')}
                 </label>
                 <input type="tel" placeholder="+225 XX XX XX XX" value={formData.contact_phone} onChange={e => setFormData({...formData, contact_phone: e.target.value})} className={inputClass} />
               </div>
 
               <div className="space-y-2">
                 <label className={`${labelClass} flex items-center gap-2`}>
-                  <MessageCircle className="w-4 h-4 text-[#ee9d2b]" /> {t('form.whatsapp')}
+                  <MessageCircle className="w-4 h-4 text-ink" /> {t('form.whatsapp')}
                 </label>
                 <input type="tel" placeholder="+225 XX XX XX XX" value={formData.contact_whatsapp} onChange={e => setFormData({...formData, contact_whatsapp: e.target.value})} className={inputClass} />
               </div>
 
               <div className="space-y-2">
                 <label className={`${labelClass} flex items-center gap-2`}>
-                  <Instagram className="w-4 h-4 text-[#ee9d2b]" /> {t('form.instagram')}
+                  <Instagram className="w-4 h-4 text-ink" /> {t('form.instagram')}
                 </label>
                 <input type="text" placeholder="@votre_compte" value={formData.contact_instagram} onChange={e => setFormData({...formData, contact_instagram: e.target.value})} className={inputClass} />
               </div>
 
               <div className="space-y-2">
                 <label className={`${labelClass} flex items-center gap-2`}>
-                  <Facebook className="w-4 h-4 text-[#ee9d2b]" /> {t('form.facebook')}
+                  <Facebook className="w-4 h-4 text-ink" /> {t('form.facebook')}
                 </label>
                 <input type="text" placeholder="Nom de page" value={formData.contact_facebook} onChange={e => setFormData({...formData, contact_facebook: e.target.value})} className={inputClass} />
               </div>
 
               <div className="space-y-2">
                 <label className={`${labelClass} flex items-center gap-2`}>
-                  <TikTokIcon className="w-4 h-4 text-[#ee9d2b]" /> {t('form.tiktok')}
+                  <TikTokIcon className="w-4 h-4 text-ink" /> {t('form.tiktok')}
                 </label>
                 <input type="text" placeholder="@votre_compte" value={formData.contact_tiktok} onChange={e => setFormData({...formData, contact_tiktok: e.target.value})} className={inputClass} />
               </div>
 
               <div className="space-y-2">
                 <label className={`${labelClass} flex items-center gap-2`}>
-                  <span className="text-[#ee9d2b] font-bold text-sm">𝕏</span> X (Twitter)
+                  <span className="text-ink font-bold text-sm">𝕏</span> X (Twitter)
                 </label>
                 <input type="text" placeholder="@votre_compte" value={formData.contact_twitter} onChange={e => setFormData({...formData, contact_twitter: e.target.value})} className={inputClass} />
               </div>
@@ -361,7 +361,7 @@ const EditEvent = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full h-12 rounded-full bg-[#ee9d2b] text-white font-semibold text-base hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full h-12 rounded-full bg-lime text-ink font-semibold text-base hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {submitting ? (
                   <>
