@@ -84,7 +84,7 @@ const CountdownTimer = ({ eventDate, eventTime }: CountdownTimerProps) => {
       <div className="grid grid-cols-4 gap-2">
         {blocks.map((block) => (
           <div key={block.label} className="flex flex-col items-center">
-            <div className={`w-full aspect-square rounded-2xl flex items-center justify-center text-[30px] font-medium tracking-tighter tabular ${isUrgent ? 'bg-white/70 text-ink' : 'bg-parchment dark:bg-stone-800 text-ink dark:text-white'} transition-all`}>
+            <div className={`w-full aspect-square rounded-2xl flex items-center justify-center font-display text-[30px] tracking-tighter tabular ${isUrgent ? 'bg-white/70 text-ink' : 'bg-parchment dark:bg-stone-800 text-ink dark:text-white'} transition-all`}>
               {String(block.value).padStart(2, '0')}
             </div>
             <span className="eyebrow !text-[10px] text-stone-500 mt-1.5">

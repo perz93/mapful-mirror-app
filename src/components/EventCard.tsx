@@ -88,7 +88,7 @@ const EventCard = () => {
               <span className="eyebrow text-stone-500 dark:text-stone-400 truncate">
                 {currentEvent.venue}
               </span>
-              <p className="text-ink dark:text-white text-[17px] font-medium leading-[1.15] tracking-tight line-clamp-2 min-h-[2.3em]">
+              <p className="text-ink dark:text-white font-display text-[18px] leading-[1.1] tracking-tight line-clamp-2 min-h-[2.3em]">
                 {currentEvent.title}
               </p>
               {/* Date & heure */}

@@ -62,7 +62,7 @@ const HypeBadge = ({ eventId, eventDate, eventTime, capacity, size = 'sm' }: Hyp
     <div className="flex items-center gap-1.5 flex-wrap">
       {/* Countdown badge */}
       {countdownText && (
-        <span className={`inline-flex items-center rounded-full font-medium tracking-[0.06em] uppercase bg-ink text-parchment font-mono-sono ${sizeClasses[size]}`}>
+        <span className={`inline-flex items-center rounded-full font-medium tracking-[0.06em] uppercase bg-ink text-parchment tabular ${sizeClasses[size]}`}>
           <Clock size={size === 'sm' ? 10 : size === 'md' ? 12 : 14} />
           {countdownText}
         </span>
@@ -70,7 +70,7 @@ const HypeBadge = ({ eventId, eventDate, eventTime, capacity, size = 'sm' }: Hyp
 
       {/* Hype level badge */}
       {hype.level && (
-        <span className={`inline-flex items-center rounded-full font-medium tracking-[0.06em] font-mono-sono ${hype.color} ${sizeClasses[size]}`}>
+        <span className={`inline-flex items-center rounded-full font-medium tracking-[0.06em] tabular ${hype.color} ${sizeClasses[size]}`}>
           {hype.level === 'SOLD OUT' ? (
             <Zap size={size === 'sm' ? 10 : size === 'md' ? 12 : 14} />
           ) : (

@@ -86,9 +86,9 @@ export default {
         },
       },
       fontFamily: {
-        display: ['"Sono Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        sans: ['"Sono Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        heading: ['"Sono Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['"Bricolage Grotesque Variable"', '"Instrument Sans Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['"Instrument Sans Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        heading: ['"Bricolage Grotesque Variable"', '"Instrument Sans Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       /* Deux voix seulement : 400 (texte) et 500 (titres, labels, CTA).
          "bold" reste un cran au-dessus pour les chiffres et gros titres. */

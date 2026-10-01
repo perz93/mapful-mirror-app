@@ -1,4 +1,5 @@
-@import '@fontsource-variable/sono/full.css';
+@import '@fontsource-variable/bricolage-grotesque/opsz.css';
+@import '@fontsource-variable/instrument-sans/index.css';
 
 @tailwind base;
 @tailwind components;
@@ -94,9 +95,7 @@ div:focus, div:focus-visible,
 
 body {
   min-height: 100dvh;
-  font-family: 'Sono Variable', ui-sans-serif, system-ui, sans-serif;
-  /* Sono est une variable avec un axe MONO : 0 = proportionnelle (texte courant) */
-  font-variation-settings: "MONO" 0;
+  font-family: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif;
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
   -webkit-tap-highlight-color: transparent;
@@ -106,17 +105,13 @@ body {
 }
 
 @layer utilities {
-  /* Micro-label en capitales, version mono de Sono — la signature éditoriale */
+  /* Micro-label en capitales espacées — la signature éditoriale */
   .eyebrow {
     font-size: 11px;
     line-height: 1.4;
-    font-weight: 500;
-    letter-spacing: 0.1em;
+    font-weight: 600;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
-    font-variation-settings: "MONO" 1;
-  }
-  .font-mono-sono {
-    font-variation-settings: "MONO" 1;
   }
   .tabular {
     font-variant-numeric: tabular-nums;
@@ -500,8 +495,13 @@ body {
 }
 
 .custom-popup-card, .event-popup-card, .event-popup-card * {
-  font-family: 'Sono Variable', ui-sans-serif, system-ui, sans-serif !important;
+  font-family: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif !important;
   font-style: normal !important;
+}
+
+.popup-card-title, .popup-date-day {
+  font-family: 'Bricolage Grotesque Variable', 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif !important;
+  font-weight: 600 !important;
 }
 
 .event-popup-card {
@@ -575,7 +575,6 @@ body {
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  font-variation-settings: "MONO" 1;
 }
 
 .popup-date-day {
@@ -593,7 +592,6 @@ body {
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  font-variation-settings: "MONO" 1;
 }
 
 .popup-card-info {
@@ -679,7 +677,7 @@ body {
   color: #14140f;
   font-size: 12px;
   font-weight: 500;
-  font-family: 'Sono Variable', ui-sans-serif, system-ui, sans-serif;
+  font-family: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif;
   text-shadow: none;
   box-shadow: none;
 }
@@ -969,7 +967,7 @@ input[type="time"] {
 }
 
 
-/* ===== Sono : police unique du site ===== */
+/* ===== Polices : Instrument Sans (texte, UI) + Bricolage Grotesque (titres) ===== */
 *,
 *::before,
 *::after,
@@ -979,8 +977,13 @@ input,
 textarea,
 select,
 optgroup,
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Sono Variable', ui-sans-serif, system-ui, sans-serif !important;
+h4, h5, h6 {
+  font-family: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif !important;
+}
+
+h1, h2, h3, .font-display, .font-heading {
+  font-family: 'Bricolage Grotesque Variable', 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif !important;
+  font-optical-sizing: auto;
 }
 
 body { font-weight: 400; }
@@ -990,14 +993,18 @@ h3, h4, h5, h6, button, .btn, [role="button"] {
   font-weight: 500;
 }
 
-/* Titres : poids 500, interlignage serré, tracking négatif dès 28px */
+/* Titres : Bricolage en 600, interlignage serré, tracking négatif */
+h1, h2, h3, .font-display {
+  font-weight: 600 !important;
+}
+
 h1, h2 {
-  font-weight: 500;
   line-height: 1;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.035em;
 }
 
 h3 {
+  line-height: 1.1;
   letter-spacing: -0.02em;
 }
 
@@ -1015,7 +1022,7 @@ textarea::placeholder {
   opacity: 1;
 }
 
-/* Groupes de marqueurs : pastille encre + anneau lime, chiffre en Sono mono */
+/* Groupes de marqueurs : pastille encre + anneau lime, chiffre en chiffres tabulaires */
 .marker-cluster.marker-cluster-small,
 .marker-cluster.marker-cluster-medium,
 .marker-cluster.marker-cluster-large {
@@ -1031,8 +1038,17 @@ textarea::placeholder {
   border-radius: 9999px;
 }
 .marker-cluster span {
-  font-family: 'Sono Variable', ui-sans-serif, system-ui, sans-serif;
-  font-variation-settings: "MONO" 1;
-  font-weight: 500;
+  font-family: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
   color: #a6e22e;
+}
+
+/* Les micro-labels restent en Instrument Sans, même posés sur un titre (h2.eyebrow…) */
+.eyebrow,
+h1.eyebrow, h2.eyebrow, h3.eyebrow {
+  font-family: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif !important;
+  font-weight: 600 !important;
+  line-height: 1.4;
+  letter-spacing: 0.09em;
 }

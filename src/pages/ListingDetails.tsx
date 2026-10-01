@@ -197,7 +197,7 @@ const ListingDetails = () => {
 
             {listing.price !== null && (
               <div className="flex items-baseline gap-2 mt-3">
-                <p className="text-[28px] leading-none font-medium tracking-tighter text-ink">
+                <p className="font-display text-[28px] !leading-none tracking-tighter text-ink">
                   {listing.price.toLocaleString()} FCFA
                 </p>
                 {listing.price_type && listing.price_type !== 'fixed' && (

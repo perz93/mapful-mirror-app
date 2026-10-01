@@ -241,7 +241,7 @@ const EventDetails = () => {
               <ol className="rounded-3xl bg-white dark:bg-stone-900 px-5 divide-y divide-stone-200 dark:divide-stone-800">
                 {keyPoints.map((point, index) => (
                   <li key={index} className="flex items-baseline gap-4 py-4">
-                    <span className="font-mono-sono text-xs font-medium text-stone-400 tabular w-6 flex-shrink-0">
+                    <span className="tabular text-xs font-medium text-stone-400 tabular w-6 flex-shrink-0">
                       {String(index + 1).padStart(2, '0')}
                     </span>
                     <p className="text-ink dark:text-stone-200 text-[15px] leading-relaxed">
@@ -267,7 +267,7 @@ const EventDetails = () => {
               <p className="eyebrow text-stone-400">
                 {event.is_paid ? t('event.price') : t('event.entry')}
               </p>
-              <p className="mt-2 text-[44px] leading-none font-medium tracking-tighter tabular">
+              <p className="font-display mt-2 text-[44px] !leading-none tracking-tighter tabular">
                 {event.is_paid && event.price ? <>{event.price} <span className="text-lime text-2xl tracking-tight">FCFA</span></> : t('event.free')}
               </p>
             </div>
@@ -326,7 +326,7 @@ const GoingSection = ({ eventId, capacity }: { eventId: string; capacity?: numbe
               )}
             </div>
             <div>
-              <p className="text-xl font-medium tracking-tight text-ink dark:text-white tabular">
+              <p className="font-display text-xl tracking-tight text-ink dark:text-white tabular">
                 {count} <span className="font-normal text-stone-600 dark:text-stone-400 text-sm tracking-normal">{t('event.attendees')}</span>
               </p>
               {pct !== null && (

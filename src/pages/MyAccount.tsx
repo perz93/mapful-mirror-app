@@ -214,7 +214,7 @@ const MyAccount = () => {
                   <img src={profile.avatar_url} alt={displayName} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full bg-lime flex items-center justify-center">
-                    <span className="text-ink text-2xl font-medium tracking-tight">{initials}</span>
+                    <span className="font-display text-ink text-2xl tracking-tight">{initials}</span>
                   </div>
                 )}
               </div>
@@ -243,17 +243,17 @@ const MyAccount = () => {
           <div className="grid grid-cols-3 gap-3 w-full mb-6">
             <div className="flex flex-col items-center gap-1 rounded-2xl bg-white shadow-sm p-3">
               <Calendar size={16} className="text-ink" />
-              <p className="text-[22px] leading-tight font-medium tracking-tight text-stone-800">{stats.eventsCreated}</p>
+              <p className="font-display text-[22px] leading-tight tracking-tight text-stone-800">{stats.eventsCreated}</p>
               <p className="text-[10px] text-stone-500 uppercase tracking-wider">Events</p>
             </div>
             <div className="flex flex-col items-center gap-1 rounded-2xl bg-white shadow-sm p-3">
               <Heart size={16} className="text-ink" />
-              <p className="text-[22px] leading-tight font-medium tracking-tight text-stone-800">{stats.favorites}</p>
+              <p className="font-display text-[22px] leading-tight tracking-tight text-stone-800">{stats.favorites}</p>
               <p className="text-[10px] text-stone-500 uppercase tracking-wider">{t('account.favorites')}</p>
             </div>
             <div className="flex flex-col items-center gap-1 rounded-2xl bg-white shadow-sm p-3">
               <Zap size={16} className="text-ink" />
-              <p className="text-[22px] leading-tight font-medium tracking-tight text-stone-800">{goingEvents.length}</p>
+              <p className="font-display text-[22px] leading-tight tracking-tight text-stone-800">{goingEvents.length}</p>
               <p className="text-[10px] text-stone-500 uppercase tracking-wider">{t('account.goingTitle')}</p>
             </div>
           </div>
