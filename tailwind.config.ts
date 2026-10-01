@@ -17,8 +17,8 @@ export default {
         /* VIBE — encre, parchemin et un seul accent lime (Perk × Notion) */
         ink: "#14140f",
         lime: {
-          DEFAULT: "#beff50",
-          deep: "#a6e83a",
+          DEFAULT: "#a6e22e",
+          deep: "#93cc1f",
         },
         parchment: "#f5f5eb",
         ash: "#d2d2c8",
@@ -40,7 +40,7 @@ export default {
           950: "#14140f",
         },
         primary: {
-          DEFAULT: "#beff50",
+          DEFAULT: "#a6e22e",
           foreground: "#14140f",
         },
         "background-light": "#f5f5eb",

@@ -140,13 +140,13 @@ body {
 
   /* Bouton principal : la pilule lime, seul aplat chromatique du système */
   .btn-lime {
-    background: #beff50;
+    background: #a6e22e;
     color: #14140f;
     font-weight: 500;
     border-radius: 9999px;
     transition: background-color 150ms ease, transform 150ms ease;
   }
-  .btn-lime:hover { background: #b2f53f; }
+  .btn-lime:hover { background: #93cc1f; }
   .btn-lime:active { transform: scale(0.98); }
 
   .btn-ink {
@@ -183,7 +183,7 @@ body {
     color: #919183;
   }
   ::selection {
-    background: #beff50;
+    background: #a6e22e;
     color: #14140f;
   }
 }
@@ -200,7 +200,21 @@ body {
 }
 
 .map-tiles {
-  /* Removed grayscale filter for colorful map */
+  /* Teinte chaude et désaturée pour rester dans la palette parchemin */
+  filter: saturate(0.7) sepia(0.12) brightness(1.03) contrast(0.96);
+}
+
+.leaflet-control-attribution {
+  margin-top: calc(env(safe-area-inset-top, 0px) + 76px) !important;
+  margin-right: 16px !important;
+  padding: 1px 6px !important;
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.7) !important;
+  font-size: 9px !important;
+  color: #6e6e64 !important;
+}
+.leaflet-control-attribution a {
+  color: #30302a !important;
 }
 
 
@@ -543,7 +557,7 @@ body {
 }
 
 .popup-date-box {
-  background: #beff50;
+  background: #a6e22e;
   padding: 6px 8px 5px;
   border-radius: 12px;
   text-align: center;
@@ -671,7 +685,7 @@ body {
 /* Bouton itinéraire dans la popup — l'action lime */
 .popup-btn-glass {
   flex: 1;
-  background: #beff50 !important;
+  background: #a6e22e !important;
   color: #14140f !important;
   border: 0 !important;
   border-radius: 9999px;
@@ -693,7 +707,7 @@ body {
 }
 
 .popup-btn-glass:hover {
-  background: #b2f53f !important;
+  background: #93cc1f !important;
 }
 
 .popup-btn-glass:active {
@@ -729,7 +743,7 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 60 14% 7%;
 
-    --primary: 82 100% 66%;           /* #beff50 lime électrique */
+    --primary: 80 76% 53%;            /* #a6e22e lime */
     --primary-foreground: 60 14% 7%;
 
     --secondary: 60 22% 91%;          /* #edede2 */
@@ -772,7 +786,7 @@ All colors MUST be HSL.
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 36 85% 54%;
+    --primary: 80 76% 53%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -1003,7 +1017,7 @@ textarea::placeholder {
 .marker-cluster.marker-cluster-small,
 .marker-cluster.marker-cluster-medium,
 .marker-cluster.marker-cluster-large {
-  background: rgb(190 255 80 / 0.55) !important;
+  background: rgb(166 226 46 / 0.5) !important;
   border-radius: 9999px;
 }
 .marker-cluster .cluster-inner,
@@ -1011,12 +1025,12 @@ textarea::placeholder {
 .marker-cluster.marker-cluster-medium div,
 .marker-cluster.marker-cluster-large div {
   background: #14140f !important;
-  color: #beff50 !important;
+  color: #a6e22e !important;
   border-radius: 9999px;
 }
 .marker-cluster span {
   font-family: 'Sono Variable', ui-sans-serif, system-ui, sans-serif;
   font-variation-settings: "MONO" 1;
   font-weight: 500;
-  color: #beff50;
+  color: #a6e22e;
 }

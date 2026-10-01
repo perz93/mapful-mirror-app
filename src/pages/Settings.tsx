@@ -7,7 +7,6 @@ import { useNotifications } from '@/contexts/NotificationContext';
 import { useLanguage, Lang } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import mapBackground from '@/assets/map-background.jpg';
 import { SettingsSkeleton } from '@/components/PageSkeleton';
 
 const Settings = () => {
@@ -131,7 +130,6 @@ const Settings = () => {
     return (
       <div className="min-h-screen relative overflow-hidden bg-stone-200">
         <div className="fixed inset-0 pointer-events-none">
-          <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
         </div>
         <div className="fixed inset-0 bg-parchment pointer-events-none" />
         <div className="relative z-10">
@@ -147,7 +145,6 @@ const Settings = () => {
     <div className="min-h-screen relative overflow-hidden pb-32 animate-fade-in animate-zoom-smooth bg-stone-200">
       {/* Map Background */}
       <div className="fixed inset-0 pointer-events-none">
-        <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
       </div>
       <div className="fixed inset-0 bg-parchment pointer-events-none" />
 

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { MAP_TILE_URL, MAP_TILE_OPTIONS } from '@/lib/mapTiles';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster';
@@ -20,8 +21,8 @@ import { getDistanceKm } from '@/hooks/useNearbyEvents';
 import { supabase } from '@/integrations/supabase/client';
 
 // Tile layer URLs
-const TILE_LIGHT = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
-const TILE_DARK = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+const TILE_LIGHT = MAP_TILE_URL;
+const TILE_DARK = MAP_TILE_URL;
 
 function getPrefersDark(): boolean {
   return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
@@ -86,10 +87,8 @@ const MapView = () => {
     });
 
     const isDark = getPrefersDark();
-    const tileLayer = L.tileLayer(isDark ? TILE_DARK : TILE_LIGHT, {
-      attribution: '© OpenStreetMap contributors © CARTO',
-      maxZoom: 20,
-    }).addTo(map);
+    const tileLayer = L.tileLayer(isDark ? TILE_DARK : TILE_LIGHT, MAP_TILE_OPTIONS).addTo(map);
+    L.control.attribution({ position: 'topright', prefix: false }).addTo(map);
     tileLayerRef.current = tileLayer;
 
     const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');

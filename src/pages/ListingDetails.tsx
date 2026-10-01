@@ -7,7 +7,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import ImageLightbox from '@/components/ImageLightbox';
 import ShimmerImage from '@/components/ShimmerImage';
-import mapBackground from '@/assets/map-background.jpg';
 
 const categoryLabels: Record<string, Record<string, string>> = {
   location_espaces: { fr: 'Location espaces', en: 'Venue rental' },
@@ -62,7 +61,6 @@ const ListingDetails = () => {
     return (
       <div className="min-h-screen relative overflow-hidden bg-stone-200 animate-fade-in animate-zoom-smooth">
         <div className="fixed inset-0 pointer-events-none">
-          <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
         </div>
         <div className="fixed inset-0 bg-parchment pointer-events-none" />
         <div className="relative z-10 mx-auto max-w-md">
@@ -114,7 +112,6 @@ const ListingDetails = () => {
     return (
       <div className="min-h-screen relative overflow-hidden bg-stone-200 animate-fade-in animate-zoom-smooth">
         <div className="fixed inset-0 pointer-events-none">
-          <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
         </div>
         <div className="fixed inset-0 bg-parchment pointer-events-none" />
         <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 gap-4">
@@ -138,7 +135,6 @@ const ListingDetails = () => {
     <div className="min-h-screen relative overflow-hidden bg-stone-200 animate-fade-in animate-zoom-smooth">
       {/* Map Background */}
       <div className="fixed inset-0 pointer-events-none">
-        <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
       </div>
       <div className="fixed inset-0 bg-parchment pointer-events-none" />
 

@@ -6,7 +6,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
-import mapBackground from '@/assets/map-background.jpg';
 import ShimmerImage from '@/components/ShimmerImage';
 
 const categoryConfig = {
@@ -56,7 +55,6 @@ const Marketplace = () => {
     <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-stone-200 animate-fade-in animate-zoom-smooth">
       {/* Map Background — light natural */}
       <div className="fixed inset-0 pointer-events-none">
-        <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
       </div>
       <div className="fixed inset-0 bg-parchment pointer-events-none" />
 

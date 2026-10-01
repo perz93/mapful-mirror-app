@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { MAP_TILE_URL, MAP_TILE_OPTIONS } from '@/lib/mapTiles';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +12,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLanguage } from '@/contexts/LanguageContext';
-import mapBackground from '@/assets/map-background.jpg';
 import { supabase } from '@/integrations/supabase/client';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -154,10 +154,7 @@ const CreateEvent = () => {
       try {
         mapRef.current = L.map(mapContainerRef.current).setView([5.3600, -4.0083], 12);
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-          maxZoom: 20,
-        }).addTo(mapRef.current);
+        L.tileLayer(MAP_TILE_URL, MAP_TILE_OPTIONS).addTo(mapRef.current);
 
         // Add initial marker
         const customIcon = L.divIcon({
@@ -387,11 +384,6 @@ const CreateEvent = () => {
     <div className="relative min-h-screen pb-32 animate-fade-in animate-zoom-smooth overflow-hidden overscroll-none bg-stone-200">
       {/* Static Map Background — lighter, more natural */}
       <div className="fixed inset-0 pointer-events-none">
-        <img
-          src={mapBackground}
-          alt=""
-          className="w-full h-full object-cover opacity-60"
-        />
       </div>
 
       {/* Light blur overlay — less dark, more natural */}

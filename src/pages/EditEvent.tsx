@@ -7,7 +7,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
-import mapBackground from '@/assets/map-background.jpg';
 import { EditEventSkeleton } from '@/components/PageSkeleton';
 
 const inputClass = "h-9 rounded-xl bg-white border border-stone-300 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-ink w-full px-3";
@@ -174,7 +173,6 @@ const EditEvent = () => {
     return (
       <div className="min-h-screen relative overflow-hidden bg-stone-200">
         <div className="fixed inset-0 pointer-events-none">
-          <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
         </div>
         <div className="fixed inset-0 bg-parchment pointer-events-none" />
         <div className="relative z-10">
@@ -188,7 +186,6 @@ const EditEvent = () => {
     <div className="relative min-h-screen pb-32 animate-fade-in animate-zoom-smooth overflow-hidden overscroll-none bg-stone-200">
       {/* Map Background */}
       <div className="fixed inset-0 pointer-events-none">
-        <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
       </div>
       <div className="fixed inset-0 bg-parchment pointer-events-none" />
 

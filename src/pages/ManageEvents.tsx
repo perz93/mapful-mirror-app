@@ -7,7 +7,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { Event } from '@/hooks/useEvents';
 import ManageEventCard from '@/components/ManageEventCard';
 import { ManageEventsSkeleton } from '@/components/PageSkeleton';
-import mapBackground from '@/assets/map-background.jpg';
 
 const ManageEvents = () => {
   const { user } = useAuth();
@@ -53,7 +52,6 @@ const ManageEvents = () => {
     <div className="min-h-screen relative overflow-hidden animate-fade-in animate-zoom-smooth bg-stone-200">
       {/* Map Background — light natural */}
       <div className="fixed inset-0 pointer-events-none">
-        <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
       </div>
       <div className="fixed inset-0 bg-parchment pointer-events-none" />
 

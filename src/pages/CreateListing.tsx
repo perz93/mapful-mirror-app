@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Upload, X } from 'lucide-react';
-import mapBackground from '@/assets/map-background.jpg';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -130,7 +129,6 @@ const CreateListing = () => {
     <div className="relative mx-auto flex min-h-screen max-w-md flex-col overflow-hidden animate-fade-in animate-zoom-smooth">
       {/* Background map */}
       <div className="fixed inset-0 pointer-events-none">
-        <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
         <div className="absolute inset-0 bg-parchment" />
       </div>
 

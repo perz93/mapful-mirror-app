@@ -7,7 +7,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import mapBackground from "@/assets/map-background.jpg";
 import { getSiteUrl } from "@/lib/siteUrl";
 
 const Auth = () => {
@@ -73,12 +72,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="fixed inset-0 w-full h-screen overflow-hidden overscroll-none bg-stone-200 animate-fade-in animate-zoom-smooth">
-      {/* Map Background — light natural */}
-      <div className="absolute inset-0">
-        <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
-      </div>
-      <div className="absolute inset-0 bg-parchment/70 backdrop-blur-md" />
+    <div className="fixed inset-0 w-full h-screen overflow-hidden overscroll-none bg-parchment animate-fade-in">
 
       {/* Content Card with 3D flip */}
       <div
@@ -100,6 +94,10 @@ const Auth = () => {
               WebkitBackfaceVisibility: "hidden",
               position: isLogin ? "relative" : "absolute",
               inset: 0,
+              // Certains navigateurs (Safari iOS) laissent passer les boutons de la face cachée :
+              // on masque la face inactive à mi-rotation.
+              visibility: isLogin ? "visible" : "hidden",
+              transition: "visibility 0s linear 350ms",
             }}
           >
             {/* Close Button */}
@@ -201,6 +199,8 @@ const Auth = () => {
               transform: "rotateY(180deg)",
               position: isLogin ? "absolute" : "relative",
               inset: 0,
+              visibility: isLogin ? "hidden" : "visible",
+              transition: "visibility 0s linear 350ms",
             }}
           >
             {/* Close Button */}
