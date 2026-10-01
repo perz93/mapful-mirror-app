@@ -128,10 +128,7 @@ const Settings = () => {
 
   if (loading || loadingPreferences) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-stone-200">
-        <div className="fixed inset-0 pointer-events-none">
-        </div>
-        <div className="fixed inset-0 bg-parchment pointer-events-none" />
+      <div className="min-h-screen relative overflow-hidden bg-parchment">
         <div className="relative z-10">
           <SettingsSkeleton />
         </div>
@@ -142,11 +139,7 @@ const Settings = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen relative overflow-hidden pb-32 animate-fade-in animate-zoom-smooth bg-stone-200">
-      {/* Map Background */}
-      <div className="fixed inset-0 pointer-events-none">
-      </div>
-      <div className="fixed inset-0 bg-parchment pointer-events-none" />
+    <div className="min-h-screen relative overflow-hidden pb-32 animate-fade-in animate-zoom-smooth bg-parchment">
 
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-md px-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 24px)' }}>

@@ -127,10 +127,6 @@ const CreateListing = () => {
 
   return (
     <div className="relative mx-auto flex min-h-screen max-w-md flex-col overflow-hidden animate-fade-in animate-zoom-smooth">
-      {/* Background map */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-parchment" />
-      </div>
 
       {/* Header */}
       <div className="relative z-10 px-4 sm:px-6 pb-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>

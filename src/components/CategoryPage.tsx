@@ -4,7 +4,6 @@ import { useEventsByCategory } from '@/hooks/useEventsByCategory';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import HypeBadge from './HypeBadge';
-import HypeBar from './HypeBar';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { CategoryPageSkeleton } from './PageSkeleton';
 import ShimmerImage from './ShimmerImage';
@@ -104,9 +103,6 @@ const CategoryPage = ({
                         <Clock size={12} strokeWidth={2} className="text-stone-500 dark:text-stone-400" />
                         <span className="text-xs font-medium text-stone-600 dark:text-stone-300 tabular">{event.time?.slice(0, 5)}</span>
                       </span>
-                    </div>
-                    <div className="pt-3 border-t border-stone-200 dark:border-stone-800">
-                      <HypeBar eventId={event.id} maxCapacity={event.capacity || 50} />
                     </div>
                   </div>
                 </article>

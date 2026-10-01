@@ -59,10 +59,7 @@ const ListingDetails = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-stone-200 animate-fade-in animate-zoom-smooth">
-        <div className="fixed inset-0 pointer-events-none">
-        </div>
-        <div className="fixed inset-0 bg-parchment pointer-events-none" />
+      <div className="min-h-screen relative overflow-hidden bg-parchment animate-fade-in animate-zoom-smooth">
         <div className="relative z-10 mx-auto max-w-md">
           <div className="mx-4 mt-2">
             <div className="h-72 rounded-3xl bg-stone-200/70 relative overflow-hidden">
@@ -110,10 +107,7 @@ const ListingDetails = () => {
 
   if (error || !listing) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-stone-200 animate-fade-in animate-zoom-smooth">
-        <div className="fixed inset-0 pointer-events-none">
-        </div>
-        <div className="fixed inset-0 bg-parchment pointer-events-none" />
+      <div className="min-h-screen relative overflow-hidden bg-parchment animate-fade-in animate-zoom-smooth">
         <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 gap-4">
           <Tag size={48} className="text-stone-300" />
           <p className="text-stone-600">{lang === 'fr' ? 'Annonce introuvable' : 'Listing not found'}</p>
@@ -132,11 +126,7 @@ const ListingDetails = () => {
   const priceLabel = listing.price_type ? (priceTypeLabels[listing.price_type]?.[lang] || listing.price_type) : '';
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-stone-200 animate-fade-in animate-zoom-smooth">
-      {/* Map Background */}
-      <div className="fixed inset-0 pointer-events-none">
-      </div>
-      <div className="fixed inset-0 bg-parchment pointer-events-none" />
+    <div className="min-h-screen relative overflow-hidden bg-parchment animate-fade-in animate-zoom-smooth">
 
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-md min-h-screen flex flex-col">

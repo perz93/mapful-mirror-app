@@ -171,10 +171,7 @@ const EditEvent = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-stone-200">
-        <div className="fixed inset-0 pointer-events-none">
-        </div>
-        <div className="fixed inset-0 bg-parchment pointer-events-none" />
+      <div className="min-h-screen relative overflow-hidden bg-parchment">
         <div className="relative z-10">
           <EditEventSkeleton />
         </div>
@@ -183,11 +180,7 @@ const EditEvent = () => {
   }
 
   return (
-    <div className="relative min-h-screen pb-32 animate-fade-in animate-zoom-smooth overflow-hidden overscroll-none bg-stone-200">
-      {/* Map Background */}
-      <div className="fixed inset-0 pointer-events-none">
-      </div>
-      <div className="fixed inset-0 bg-parchment pointer-events-none" />
+    <div className="relative min-h-screen pb-32 animate-fade-in animate-zoom-smooth overflow-hidden overscroll-none bg-parchment">
 
       {/* Content */}
       <div className="relative mx-auto max-w-md">

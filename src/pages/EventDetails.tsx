@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ArrowLeft, MapPin, Calendar, Users, Share2, Heart, Flame, CheckCircle2, Sparkles, Bell, BellRing } from 'lucide-react';
-import { useAttendees } from '@/hooks/useAttendees';
+import { ArrowLeft, MapPin, Clock, UsersRound, Share2, Heart, Bell, BellRing } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
@@ -13,7 +12,6 @@ import { toast } from 'sonner';
 import ContactFab from '@/components/ContactFab';
 import ImageLightbox from '@/components/ImageLightbox';
 import CountdownTimer from '@/components/CountdownTimer';
-import HypeBar from '@/components/HypeBar';
 import { EventDetailsSkeleton } from '@/components/PageSkeleton';
 import ShimmerImage from '@/components/ShimmerImage';
 import { useFavorite } from '@/hooks/useFavorite';
@@ -120,6 +118,8 @@ const EventDetails = () => {
 
   const formattedDate = format(new Date(event.date), "EEEE d MMMM yyyy", { locale: lang === 'fr' ? fr : enUS });
   const formattedTime = event.time.substring(0, 5);
+  const eventDate = new Date(event.date);
+  const showAddress = !!event.address && event.address.trim().toLowerCase() !== event.venue.trim().toLowerCase();
   const keyPoints = event.key_points as string[] | null;
 
   return (
@@ -193,42 +193,56 @@ const EventDetails = () => {
 
         {/* Titre éditorial sous l'image */}
         <div className="px-5 pt-6">
-          <p className="eyebrow text-stone-500 capitalize">{event.venue}</p>
-          <h1 className="mt-2 text-[40px] leading-[0.95] font-medium tracking-tighter text-ink dark:text-white">{event.title}</h1>
+          <h1 className="text-[40px] leading-[0.95] font-medium tracking-tighter text-ink dark:text-white">{event.title}</h1>
         </div>
 
         <div className="p-5 space-y-6">
           {/* Countdown Timer */}
           <CountdownTimer eventDate={event.date} eventTime={event.time} />
 
-          {/* Hype Bar */}
-          <div className="rounded-3xl bg-white dark:bg-stone-900 p-5">
-            <HypeBar eventId={event.id} maxCapacity={event.capacity || 50} />
-          </div>
-
           <dl className="rounded-3xl bg-white dark:bg-stone-900 px-5 divide-y divide-stone-200 dark:divide-stone-800">
-            <div className="flex items-start gap-4 py-4">
-              <MapPin size={18} strokeWidth={1.75} className="text-ink mt-0.5 flex-shrink-0" />
+            {/* Lieu : l'adresse n'apparaît que si elle apporte une info en plus */}
+            <div className="flex items-center gap-4 py-4">
+              <div className="flex size-12 flex-shrink-0 items-center justify-center rounded-2xl bg-lime">
+                <MapPin size={20} strokeWidth={1.75} className="text-ink" />
+              </div>
               <div className="flex-1 min-w-0">
-                <dt className="eyebrow text-stone-500 mb-1">{t('event.venueLabel')}</dt>
-                <dd className="font-medium text-ink dark:text-white">{event.venue}</dd>
-                <dd className="text-sm text-stone-500 dark:text-stone-400">{event.address || t('event.addressUnspecified')}</dd>
+                <dt className="eyebrow text-stone-500">{t('event.venueLabel')}</dt>
+                <dd className="mt-0.5 font-medium text-ink dark:text-white">{event.venue}</dd>
+                {showAddress && (
+                  <dd className="text-sm text-stone-500 dark:text-stone-400">{event.address}</dd>
+                )}
               </div>
             </div>
-            <div className="flex items-start gap-4 py-4">
-              <Calendar size={18} strokeWidth={1.75} className="text-ink mt-0.5 flex-shrink-0" />
+
+            {/* Date : mini-calendrier (mois + jour) au lieu d'une icône générique */}
+            <div className="flex items-center gap-4 py-4">
+              <div className="flex w-12 flex-shrink-0 flex-col overflow-hidden rounded-2xl border border-stone-200 dark:border-stone-700 text-center">
+                <span className="bg-ink py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-lime">
+                  {format(eventDate, 'MMM', { locale: lang === 'fr' ? fr : enUS }).replace('.', '')}
+                </span>
+                <span className="font-display bg-white dark:bg-stone-900 py-1 text-[20px] !leading-none tracking-tight text-ink dark:text-white tabular">
+                  {format(eventDate, 'd')}
+                </span>
+              </div>
               <div className="flex-1">
-                <dt className="eyebrow text-stone-500 mb-1">{t('event.dateLabel')}</dt>
-                <dd className="font-medium text-ink dark:text-white first-letter:uppercase">{formattedDate}</dd>
-                <dd className="text-sm text-stone-500 dark:text-stone-400 tabular">{formattedTime}</dd>
+                <dt className="eyebrow text-stone-500">{t('event.dateLabel')}</dt>
+                <dd className="mt-0.5 font-medium text-ink dark:text-white first-letter:uppercase">{formattedDate}</dd>
+                <dd className="inline-flex items-center gap-1.5 text-sm text-stone-500 dark:text-stone-400 tabular">
+                  <Clock size={13} strokeWidth={1.75} /> {formattedTime}
+                </dd>
               </div>
             </div>
-            <div className="flex items-start gap-4 py-4">
-              <Users size={18} strokeWidth={1.75} className="text-ink mt-0.5 flex-shrink-0" />
+
+            {/* Capacité : jauge visuelle de places */}
+            <div className="flex items-center gap-4 py-4">
+              <div className="flex size-12 flex-shrink-0 items-center justify-center rounded-2xl bg-parchment dark:bg-stone-800">
+                <UsersRound size={20} strokeWidth={1.75} className="text-ink dark:text-white" />
+              </div>
               <div className="flex-1">
-                <dt className="eyebrow text-stone-500 mb-1">{t('event.capacityLabel')}</dt>
-                <dd className="font-medium text-ink dark:text-white">
-                  {event.capacity ? `${event.capacity} ${t('event.capacity')}` : t('event.unlimitedCapacity')}
+                <dt className="eyebrow text-stone-500">{t('event.capacityLabel')}</dt>
+                <dd className="mt-0.5 font-medium text-ink dark:text-white">
+                  {event.capacity ? <><span className="tabular">{event.capacity}</span> {t('event.capacity')}</> : t('event.unlimitedCapacity')}
                 </dd>
               </div>
             </div>
@@ -262,7 +276,7 @@ const EventDetails = () => {
             </section>
           )}
 
-          <div className="pt-2 pb-24 space-y-3">
+          <div className="pt-2 pb-24">
             <div className="rounded-3xl bg-charcoal text-parchment p-6">
               <p className="eyebrow text-stone-400">
                 {event.is_paid ? t('event.price') : t('event.entry')}
@@ -271,7 +285,6 @@ const EventDetails = () => {
                 {event.is_paid && event.price ? <>{event.price} <span className="text-lime text-2xl tracking-tight">FCFA</span></> : t('event.free')}
               </p>
             </div>
-            <GoingSection eventId={event.id} capacity={event.capacity} />
           </div>
         </div>
       </div>
@@ -293,85 +306,6 @@ const EventDetails = () => {
           onClose={() => setLightboxOpen(false)}
         />
       )}
-    </div>
-  );
-};
-
-const GoingSection = ({ eventId, capacity }: { eventId: string; capacity?: number }) => {
-  const { t } = useLanguage();
-  const { isGoing, count, toggleGoing, loading } = useAttendees(eventId);
-  const pct = capacity ? Math.min(Math.round((count / capacity) * 100), 100) : null;
-
-  return (
-    <div className={`relative overflow-hidden rounded-3xl transition-all duration-300 ${
-      isGoing
-        ? 'bg-lime'
-        : 'bg-white dark:bg-stone-900'
-    }`}>
-      {/* Glow background when going */}
-
-      <div className="relative p-4 space-y-3">
-        {/* Top row: count + button */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={`flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300 ${
-              isGoing
-                ? 'bg-ink'
-                : 'bg-parchment dark:bg-stone-800'
-            }`}>
-              {isGoing ? (
-                <CheckCircle2 size={20} strokeWidth={1.75} className="text-lime" />
-              ) : (
-                <Flame size={20} strokeWidth={1.75} className="text-ink dark:text-stone-500" />
-              )}
-            </div>
-            <div>
-              <p className="font-display text-xl tracking-tight text-ink dark:text-white tabular">
-                {count} <span className="font-normal text-stone-600 dark:text-stone-400 text-sm tracking-normal">{t('event.attendees')}</span>
-              </p>
-              {pct !== null && (
-                <p className="text-[11px] text-stone-600 dark:text-stone-500 tabular">
-                  {pct}{t('event.percentFilled')}
-                </p>
-              )}
-            </div>
-          </div>
-
-          <button
-            onClick={toggleGoing}
-            disabled={loading}
-            className={`relative px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 active:scale-95 disabled:opacity-50 ${
-              isGoing
-                ? 'bg-ink text-parchment'
-                : 'bg-lime text-ink hover:bg-lime-deep'
-            }`}
-          >
-            <span className="flex items-center gap-1.5">
-              {isGoing ? (
-                <>
-                  <Sparkles size={14} />
-                  {t('event.goingConfirm')}
-                </>
-              ) : (
-                <>
-                  <Flame size={14} />
-                  {t('event.going')}
-                </>
-              )}
-            </span>
-          </button>
-        </div>
-
-        {/* Status message */}
-        {isGoing && (
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-lime/30 border border-ink/10">
-            <CheckCircle2 size={14} className="text-ink flex-shrink-0" />
-            <p className="text-xs font-medium text-ink">
-              {t('event.enrolled')}
-            </p>
-          </div>
-        )}
-      </div>
     </div>
   );
 };

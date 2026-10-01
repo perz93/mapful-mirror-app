@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Pencil, Users, Calendar, Heart, Flame, ShoppingBag, Trash2, Edit, Zap } from 'lucide-react';
+import { ArrowLeft, Pencil, Users, Calendar, Heart, ShoppingBag, Trash2, Edit } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -8,20 +8,10 @@ import { useEvents, Event } from '@/hooks/useEvents';
 import EventListCard from '@/components/EventListCard';
 import { toast } from 'sonner';
 import { Tables } from '@/integrations/supabase/types';
-import { useAttendees } from '@/hooks/useAttendees';
 import ShimmerImage from '@/components/ShimmerImage';
 import { AccountSkeleton } from '@/components/PageSkeleton';
 
 type MarketplaceListing = Tables<'marketplace_listings'>;
-
-const GoingBadge = ({ eventId }: { eventId: string }) => {
-  const { count } = useAttendees(eventId);
-  return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-lime/30 text-ink">
-      <Flame size={9} />{count}
-    </span>
-  );
-};
 
 const MyAccount = () => {
   const { user } = useAuth();
@@ -39,7 +29,6 @@ const MyAccount = () => {
   const [favoriteEvents, setFavoriteEvents] = useState<Event[]>([]);
   const [userListings, setUserListings] = useState<MarketplaceListing[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [goingEvents, setGoingEvents] = useState<Event[]>([]);
 
   useEffect(() => {
     if (user) {
@@ -90,24 +79,6 @@ const MyAccount = () => {
 
   useEffect(() => {
     if (allEvents && user) loadFavorites();
-  }, [allEvents, user]);
-
-  // Load events where user clicked "J'y vais" from Supabase
-  useEffect(() => {
-    if (!allEvents || !user) return;
-    const loadGoingEvents = async () => {
-      const { data } = await supabase
-        .from('event_attendees' as any)
-        .select('event_id')
-        .eq('user_id', user.id);
-      if (data && data.length > 0) {
-        const goingIds = (data as any[]).map((d) => d.event_id);
-        setGoingEvents(allEvents.filter(e => goingIds.includes(e.id)));
-      } else {
-        setGoingEvents([]);
-      }
-    };
-    loadGoingEvents();
   }, [allEvents, user]);
 
   const loadUserListings = async () => {
@@ -176,17 +147,12 @@ const MyAccount = () => {
     { id: 'events', label: t('account.events'), icon: Calendar },
     { id: 'listings', label: t('account.listings'), icon: ShoppingBag },
     { id: 'favorites', label: t('account.favorites'), icon: Heart },
-    { id: 'activity', label: t('account.activity'), icon: Zap },
   ];
 
   const isProfileLoading = !profile && !!user;
 
   return (
-    <div className="min-h-screen relative overflow-hidden animate-fade-in animate-zoom-smooth bg-stone-200">
-      {/* Map Background — light natural */}
-      <div className="fixed inset-0 pointer-events-none">
-      </div>
-      <div className="fixed inset-0 bg-parchment pointer-events-none" />
+    <div className="min-h-screen relative overflow-hidden animate-fade-in animate-zoom-smooth bg-parchment">
 
       {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto">
@@ -240,7 +206,7 @@ const MyAccount = () => {
           <p className="text-stone-500 text-xs mb-5">{user?.email}</p>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-3 gap-3 w-full mb-6">
+          <div className="grid grid-cols-2 gap-3 w-full mb-6">
             <div className="flex flex-col items-center gap-1 rounded-2xl bg-white shadow-sm p-3">
               <Calendar size={16} className="text-ink" />
               <p className="font-display text-[22px] leading-tight tracking-tight text-stone-800">{stats.eventsCreated}</p>
@@ -250,11 +216,6 @@ const MyAccount = () => {
               <Heart size={16} className="text-ink" />
               <p className="font-display text-[22px] leading-tight tracking-tight text-stone-800">{stats.favorites}</p>
               <p className="text-[10px] text-stone-500 uppercase tracking-wider">{t('account.favorites')}</p>
-            </div>
-            <div className="flex flex-col items-center gap-1 rounded-2xl bg-white shadow-sm p-3">
-              <Zap size={16} className="text-ink" />
-              <p className="font-display text-[22px] leading-tight tracking-tight text-stone-800">{goingEvents.length}</p>
-              <p className="text-[10px] text-stone-500 uppercase tracking-wider">{t('account.goingTitle')}</p>
             </div>
           </div>
 
@@ -308,9 +269,6 @@ const MyAccount = () => {
                     {userEvents.map(event => (
                       <div key={event.id} className="relative">
                         <EventListCard event={event} />
-                        <div className="absolute top-3 right-3">
-                          <GoingBadge eventId={event.id} />
-                        </div>
                       </div>
                     ))}
                   </div>
@@ -397,9 +355,6 @@ const MyAccount = () => {
                     {favoriteEvents.map(event => (
                       <div key={event.id} className="relative">
                         <EventListCard event={event} />
-                        <div className="absolute top-3 right-3">
-                          <GoingBadge eventId={event.id} />
-                        </div>
                       </div>
                     ))}
                   </div>
@@ -407,37 +362,6 @@ const MyAccount = () => {
               </div>
             )}
 
-            {activeTab === 'activity' && (
-              <div>
-                <h3 className="text-base font-bold text-stone-800  mb-4">
-                  {t('account.goingTitle')}
-                </h3>
-                {goingEvents.length === 0 ? (
-                  <div className="rounded-2xl bg-white shadow-sm p-8 text-center">
-                    <Zap size={32} className="text-stone-300 mx-auto mb-3" />
-                    <p className="text-stone-500 text-sm mb-1">{t('account.noActivity')}</p>
-                    <p className="text-stone-400 text-xs">{t('account.activityHint')}</p>
-                    <Link
-                      to="/"
-                      className="inline-flex items-center gap-2 px-4 py-2 mt-4 rounded-full bg-lime text-ink text-xs font-semibold hover:opacity-90 transition-all active:scale-95"
-                    >
-                      {t('account.explore')}
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {goingEvents.map(event => (
-                      <div key={event.id} className="relative">
-                        <EventListCard event={event} />
-                        <div className="absolute top-3 right-3">
-                          <GoingBadge eventId={event.id} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         </div>
         )}

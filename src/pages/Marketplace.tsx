@@ -52,11 +52,7 @@ const Marketplace = () => {
   };
 
   return (
-    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-stone-200 animate-fade-in animate-zoom-smooth">
-      {/* Map Background — light natural */}
-      <div className="fixed inset-0 pointer-events-none">
-      </div>
-      <div className="fixed inset-0 bg-parchment pointer-events-none" />
+    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-parchment animate-fade-in animate-zoom-smooth">
 
       {/* Header */}
       <div className="relative z-10 flex items-center justify-between px-4 pb-4 animate-fade-in" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
@@ -76,15 +72,16 @@ const Marketplace = () => {
         </Button>
       </div>
 
-      {/* Category Filters */}
-      <div className="px-4 pb-4 animate-fade-in" style={{ animationDelay: '50ms', animationFillMode: 'backwards' }}>
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+      {/* Filtres de catégorie — sans animation d'entrée : Safari iOS pouvait
+          laisser la rangée bloquée à opacity 0 (animation retardée + défilement). */}
+      <div className="pb-3">
+        <div className="flex gap-2 overflow-x-auto px-4 scroll-px-4 pb-1 scrollbar-hide snap-x">
           <button
             onClick={() => setSelectedCategory('all')}
-            className={`flex-shrink-0 rounded-full px-4 h-9 text-sm font-medium transition-all duration-200 active:scale-95 ${
+            className={`snap-start flex-shrink-0 inline-flex items-center h-10 rounded-full px-4 text-sm font-medium border transition-colors duration-200 active:scale-95 ${
               selectedCategory === 'all'
-                ? 'bg-ink text-parchment'
-                : 'bg-white text-stone-600'
+                ? 'bg-ink text-parchment border-ink'
+                : 'bg-white text-ink border-stone-200 hover:border-ink'
             }`}
           >
             {t('market.all')}
@@ -92,17 +89,20 @@ const Marketplace = () => {
           {(Object.keys(categoryConfig) as CategoryKey[]).map((key) => {
             const config = categoryConfig[key];
             const Icon = config.icon;
+            const active = selectedCategory === key;
             return (
               <button
                 key={key}
                 onClick={() => setSelectedCategory(key)}
-                className={`flex-shrink-0 flex items-center gap-2 rounded-full px-4 h-9 text-sm font-medium transition-all duration-200 active:scale-95 ${
-                  selectedCategory === key
-                    ? 'bg-ink text-parchment'
-                    : 'bg-white text-stone-600'
+                className={`snap-start flex-shrink-0 inline-flex items-center gap-2 h-10 rounded-full pl-1.5 pr-4 text-sm font-medium border transition-colors duration-200 active:scale-95 ${
+                  active
+                    ? 'bg-ink text-parchment border-ink'
+                    : 'bg-white text-ink border-stone-200 hover:border-ink'
                 }`}
               >
-                <Icon size={16} />
+                <span className={`flex size-7 items-center justify-center rounded-full ${active ? 'bg-lime text-ink' : 'bg-parchment text-ink'}`}>
+                  <Icon size={14} strokeWidth={1.75} />
+                </span>
                 {config.label}
               </button>
             );

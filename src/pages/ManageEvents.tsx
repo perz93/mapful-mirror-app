@@ -49,11 +49,7 @@ const ManageEvents = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden animate-fade-in animate-zoom-smooth bg-stone-200">
-      {/* Map Background — light natural */}
-      <div className="fixed inset-0 pointer-events-none">
-      </div>
-      <div className="fixed inset-0 bg-parchment pointer-events-none" />
+    <div className="min-h-screen relative overflow-hidden animate-fade-in animate-zoom-smooth bg-parchment">
 
       {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col">

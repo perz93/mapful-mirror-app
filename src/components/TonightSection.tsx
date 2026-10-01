@@ -2,20 +2,9 @@ import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { X, ChevronRight, Flame, MapPin, Clock } from 'lucide-react';
 import { useTonightEvents } from '@/hooks/useTonightEvents';
-import { useAttendees } from '@/hooks/useAttendees';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import HypeBadge from './HypeBadge';
-
-const AttendeesBadge = ({ eventId }: { eventId: string }) => {
-  const { count } = useAttendees(eventId);
-  return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-lime/30 text-ink border border-ink/10">
-      <Flame size={10} />
-      {count} y vont
-    </span>
-  );
-};
 
 const TonightSection = () => {
   const { data: events, isLoading } = useTonightEvents();

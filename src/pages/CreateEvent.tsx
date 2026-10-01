@@ -381,13 +381,8 @@ const CreateEvent = () => {
   }
 
   return (
-    <div className="relative min-h-screen pb-32 animate-fade-in animate-zoom-smooth overflow-hidden overscroll-none bg-stone-200">
-      {/* Static Map Background — lighter, more natural */}
-      <div className="fixed inset-0 pointer-events-none">
-      </div>
+    <div className="relative min-h-screen pb-32 animate-fade-in animate-zoom-smooth overflow-hidden overscroll-none bg-parchment">
 
-      {/* Light blur overlay — less dark, more natural */}
-      <div className="fixed inset-0 bg-parchment pointer-events-none" />
 
       {/* Content */}
       <div className="relative mx-auto max-w-md">
