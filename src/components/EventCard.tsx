@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useFeaturedEvents } from '@/hooks/useFeaturedEvents';
 import { format } from 'date-fns';
@@ -6,6 +6,9 @@ import { fr } from 'date-fns/locale';
 import EventCardSkeleton from './EventCardSkeleton';
 import HypeBadge from './HypeBadge';
 import { useLanguage } from '@/contexts/LanguageContext';
+const OUT_MS = 320;
+const IN_MS = 520;
+
 const EventCard = () => {
   const { t } = useLanguage();
   const {
@@ -14,33 +17,50 @@ const EventCard = () => {
   } = useFeaturedEvents();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  // Preload all featured event images so switching is instant
+  const currentIndexRef = useRef(0);
+  currentIndexRef.current = currentIndex;
+  // Images déjà décodées : le changement d'événement n'attend jamais le réseau.
+  const decodedRef = useRef<Map<string, Promise<void>>>(new Map());
+
+  const decodeImage = (url?: string | null) => {
+    if (!url) return Promise.resolve();
+    const cache = decodedRef.current;
+    if (!cache.has(url)) {
+      const img = new Image();
+      img.src = url;
+      cache.set(url, img.decode().catch(() => undefined));
+    }
+    return cache.get(url)!;
+  };
+
   useEffect(() => {
-    if (!events || events.length === 0) return;
-    events.forEach((event) => {
-      if (event.image_url) {
-        const img = new Image();
-        img.src = event.image_url;
-      }
-    });
+    events?.forEach((event) => decodeImage(event.image_url));
   }, [events]);
 
   useEffect(() => {
-    if (!events || events.length === 0) return;
+    if (!events || events.length < 2) return;
+    let cancelled = false;
     let swapTimer: ReturnType<typeof setTimeout>;
-    const interval = setInterval(() => {
-      // Fondu sortant (300 ms), changement de contenu, puis fondu entrant.
+    const interval = setInterval(async () => {
+      const next = (currentIndexRef.current + 1) % events.length;
+      // On attend que l'image suivante soit décodée avant de lancer l'animation.
+      await decodeImage(events[next].image_url);
+      if (cancelled) return;
       setIsTransitioning(true);
+      // Le contenu ne change qu'une fois la sortie terminée (OUT_MS),
+      // puis la carte revient avec une courbe plus douce (IN_MS).
       swapTimer = setTimeout(() => {
-        setCurrentIndex(prev => (prev + 1) % events.length);
-        setIsTransitioning(false);
-      }, 300);
+        setCurrentIndex(next);
+        requestAnimationFrame(() => setIsTransitioning(false));
+      }, OUT_MS);
     }, 5000);
     return () => {
+      cancelled = true;
       clearInterval(interval);
       clearTimeout(swapTimer);
     };
   }, [events]);
+
   if (isLoading) {
     return <EventCardSkeleton />;
   }
@@ -51,13 +71,18 @@ const EventCard = () => {
   return <div className="fixed bottom-36 left-0 right-0 max-w-md mx-auto px-4 pointer-events-none z-10 touch-none">
       <div className="pointer-events-auto touch-auto">
         <div
-          className="neo-white-bottom rounded-3xl bg-white dark:bg-stone-900 p-3 pl-4"
+          className="neo-white-bottom rounded-3xl bg-white dark:bg-stone-900 p-3 pl-4 transform-gpu will-change-[opacity,transform] motion-reduce:transition-none"
+          style={{
+            // Animation d'origine (fondu + léger rétrécissement + glissement),
+            // limitée à opacity/transform pour rester sur le GPU.
+            opacity: isTransitioning ? 0 : 1,
+            transform: isTransitioning ? 'translate3d(0, 8px, 0) scale(0.95)' : 'translate3d(0, 0, 0) scale(1)',
+            transition: isTransitioning
+              ? `opacity ${OUT_MS}ms cubic-bezier(0.4, 0, 1, 1), transform ${OUT_MS}ms cubic-bezier(0.4, 0, 1, 1)`
+              : `opacity ${IN_MS}ms cubic-bezier(0.16, 1, 0.3, 1), transform ${IN_MS}ms cubic-bezier(0.16, 1, 0.3, 1)`,
+          }}
         >
-          {/* Seul le contenu s'anime (opacité + léger glissement, accéléré GPU) ;
-              le cadre et son ombre restent fixes pour éviter les saccades. */}
-          <div
-            className={`flex items-stretch justify-between gap-4 transition-[opacity,transform] duration-300 ease-out will-change-[opacity,transform] ${isTransitioning ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'}`}
-          >
+          <div className="flex items-stretch justify-between gap-4">
           <div className="flex flex-col justify-between gap-2 flex-[2_2_0px] min-w-0 py-1">
             <div className="flex flex-col gap-1.5 min-w-0">
               <span className="eyebrow text-stone-500 dark:text-stone-400 truncate">
