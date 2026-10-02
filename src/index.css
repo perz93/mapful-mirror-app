@@ -1076,19 +1076,37 @@ h1.eyebrow, h2.eyebrow, h3.eyebrow {
   .skeleton::after { animation: none; }
 }
 
-/* Reflet de chargement sur la carte, sous les tuiles et les marqueurs */
-.leaflet-container.map-loading::after {
+/* Reflet de chargement sur la carte.
+   Posé AU-DESSUS du fond (le canvas MapLibre peint tout de suite un crème opaque
+   qui masquait l'effet) mais sous les contrôles ; translucide et sans clic.
+   Ton « squelette » légèrement plus soutenu que le fond pour que le balayage
+   se voie, puis fondu à la fin du chargement. */
+.leaflet-container::after {
   content: '';
   position: absolute;
   inset: 0;
-  z-index: 0;
-  transform: translateX(-100%);
+  z-index: 450;
+  pointer-events: none;
   background: linear-gradient(
     100deg,
-    rgb(251 250 243 / 0) 20%,
-    rgb(251 250 243 / 0.7) 50%,
-    rgb(251 250 243 / 0) 80%
+    #ebe9dd 30%,
+    #f8f6ee 50%,
+    #ebe9dd 70%
   );
-  animation: skeleton-shimmer 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  pointer-events: none;
+  background-size: 300% 100%;
+  opacity: 0;
+  transition: opacity 450ms ease-out;
+  animation: map-shimmer 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation-play-state: paused;
+}
+.leaflet-container.map-loading::after {
+  opacity: 0.92;
+  animation-play-state: running;
+}
+@keyframes map-shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: 0 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaflet-container::after { animation: none; }
 }

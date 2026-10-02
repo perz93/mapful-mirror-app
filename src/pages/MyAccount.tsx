@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Pencil, Users, Calendar, Heart, ShoppingBag, Trash2, Edit } from 'lucide-react';
+import { ArrowLeft, Camera, Users, Calendar, Heart, ShoppingBag, Trash2, Edit } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -144,9 +144,9 @@ const MyAccount = () => {
   const initials = displayName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
 
   const tabs = [
-    { id: 'events', label: t('account.events'), icon: Calendar },
-    { id: 'listings', label: t('account.listings'), icon: ShoppingBag },
-    { id: 'favorites', label: t('account.favorites'), icon: Heart },
+    { id: 'events', label: t('account.events'), count: stats.eventsCreated },
+    { id: 'listings', label: t('account.listings'), count: userListings.length },
+    { id: 'favorites', label: t('account.favorites'), count: stats.favorites },
   ];
 
   const isProfileLoading = !profile && !!user;
@@ -158,13 +158,13 @@ const MyAccount = () => {
       <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
-          <Link to="/" className="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm hover:scale-105 active:scale-95 transition-all">
-            <ArrowLeft className="w-5 h-5 text-stone-700" />
+          <Link to="/" aria-label="Retour" className="w-10 h-10 rounded-full bg-white flex items-center justify-center active:scale-95 transition-transform">
+            <ArrowLeft className="w-[18px] h-[18px] text-ink" strokeWidth={1.75} />
           </Link>
-          <h1 className="text-lg font-medium tracking-tight  text-stone-800">
+          <h1 className="eyebrow text-stone-500">
             {t('account.title')}
           </h1>
-          <div className="w-11 h-11" />
+          <div className="w-10 h-10" />
         </div>
 
         {/* Profile Section */}
@@ -174,13 +174,13 @@ const MyAccount = () => {
         <div className="flex flex-col items-center px-6 pt-4">
           {/* Avatar */}
           <div className="relative mb-4">
-            <div className="w-28 h-28 rounded-full bg-white flex items-center justify-center border border-stone-200">
-              <div className="w-24 h-24 rounded-full overflow-hidden">
+            <div className="w-24 h-24 rounded-full overflow-hidden">
+              <div className="w-full h-full">
                 {profile?.avatar_url ? (
                   <img src={profile.avatar_url} alt={displayName} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full bg-lime flex items-center justify-center">
-                    <span className="font-display text-ink text-2xl tracking-tight">{initials}</span>
+                    <span className="font-display text-ink text-[32px] tracking-tight">{initials}</span>
                   </div>
                 )}
               </div>
@@ -189,53 +189,44 @@ const MyAccount = () => {
             <button
               onClick={handleAvatarClick}
               disabled={uploading}
-              className="absolute bottom-0 right-0 w-9 h-9 rounded-full bg-black flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all border-2 border-white/80 disabled:opacity-50"
+              aria-label={t('account.changePhoto')}
+              className="absolute -bottom-0.5 -right-0.5 w-9 h-9 rounded-full bg-ink flex items-center justify-center ring-4 ring-parchment active:scale-95 transition-transform disabled:opacity-50"
             >
               {uploading ? (
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-lime border-t-transparent rounded-full animate-spin" />
               ) : (
-                <Pencil className="w-3.5 h-3.5 text-ink" />
+                <Camera className="w-4 h-4 text-lime" strokeWidth={1.75} />
               )}
             </button>
           </div>
 
           {/* Name */}
-          <h2 className="text-[28px] leading-none font-medium tracking-tighter text-stone-800 mb-1 ">
+          <h2 className="text-[32px] leading-none tracking-tighter text-ink mb-1.5 capitalize">
             {displayName}
           </h2>
-          <p className="text-stone-500 text-xs mb-5">{user?.email}</p>
+          <p className="text-stone-500 text-sm mb-7">{user?.email}</p>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-2 gap-3 w-full mb-6">
-            <div className="flex flex-col items-center gap-1 rounded-2xl bg-white shadow-sm p-3">
-              <Calendar size={16} className="text-ink" />
-              <p className="font-display text-[22px] leading-tight tracking-tight text-stone-800">{stats.eventsCreated}</p>
-              <p className="text-[10px] text-stone-500 uppercase tracking-wider">Events</p>
-            </div>
-            <div className="flex flex-col items-center gap-1 rounded-2xl bg-white shadow-sm p-3">
-              <Heart size={16} className="text-ink" />
-              <p className="font-display text-[22px] leading-tight tracking-tight text-stone-800">{stats.favorites}</p>
-              <p className="text-[10px] text-stone-500 uppercase tracking-wider">{t('account.favorites')}</p>
-            </div>
-          </div>
-
-          {/* Tabs */}
-          <div className="flex w-full rounded-2xl bg-white shadow-sm p-1 mb-6">
+          {/* Onglets avec compteurs (remplacent les cartes de stats à icônes) */}
+          <div role="tablist" className="flex w-full border-b border-stone-200 mb-6">
             {tabs.map((tab) => {
-              const Icon = tab.icon;
               const isActive = activeTab === tab.id;
               return (
                 <button
                   key={tab.id}
+                  role="tab"
+                  aria-selected={isActive}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl text-[11px] font-medium transition-all ${
-                    isActive
-                      ? 'bg-lime text-ink shadow-lg'
-                      : 'text-stone-500 hover:text-stone-700'
+                  className={`relative flex-1 flex items-center justify-center gap-1.5 pb-3 pt-1 text-sm font-medium transition-colors ${
+                    isActive ? 'text-ink' : 'text-stone-500 hover:text-ink'
                   }`}
                 >
-                  <Icon size={16} />
                   <span>{tab.label}</span>
+                  <span className={`tabular inline-flex min-w-[22px] h-[22px] items-center justify-center rounded-full px-1.5 text-[11px] font-semibold ${
+                    isActive ? 'bg-lime text-ink' : 'bg-stone-200/80 text-stone-600'
+                  }`}>
+                    {tab.count}
+                  </span>
+                  <span className={`absolute inset-x-3 -bottom-px h-[2px] rounded-full transition-colors ${isActive ? 'bg-ink' : 'bg-transparent'}`} />
                 </button>
               );
             })}
@@ -246,7 +237,7 @@ const MyAccount = () => {
             {activeTab === 'events' && (
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-base font-bold text-stone-800 ">
+                  <h3 className="text-[20px] text-ink">
                     {t('account.myEvents')}
                   </h3>
                   <Link to="/manage-events" className="text-ink text-xs font-semibold hover:underline">
@@ -254,8 +245,10 @@ const MyAccount = () => {
                   </Link>
                 </div>
                 {userEvents.length === 0 ? (
-                  <div className="rounded-2xl bg-white shadow-sm p-8 text-center">
-                    <Calendar size={32} className="text-stone-300 mx-auto mb-3" />
+                  <div className="rounded-3xl bg-white p-6">
+                    <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-parchment">
+                      <Calendar size={18} strokeWidth={1.75} className="text-ink" />
+                    </span>
                     <p className="text-stone-500 text-sm mb-3">{t('account.noEvents')}</p>
                     <Link
                       to="/create-event"
@@ -279,7 +272,7 @@ const MyAccount = () => {
             {activeTab === 'listings' && (
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-base font-bold text-stone-800 ">
+                  <h3 className="text-[20px] text-ink">
                     {t('account.myListings')}
                   </h3>
                   <Link to="/create-listing" className="text-ink text-xs font-semibold hover:underline">
@@ -287,8 +280,10 @@ const MyAccount = () => {
                   </Link>
                 </div>
                 {userListings.length === 0 ? (
-                  <div className="rounded-2xl bg-white shadow-sm p-8 text-center">
-                    <ShoppingBag size={32} className="text-stone-300 mx-auto mb-3" />
+                  <div className="rounded-3xl bg-white p-6">
+                    <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-parchment">
+                      <ShoppingBag size={18} strokeWidth={1.75} className="text-ink" />
+                    </span>
                     <p className="text-stone-500 text-sm mb-3">{t('account.noListings')}</p>
                     <Link
                       to="/create-listing"
@@ -341,14 +336,16 @@ const MyAccount = () => {
 
             {activeTab === 'favorites' && (
               <div>
-                <h3 className="text-base font-bold text-stone-800  mb-4">
+                <h3 className="text-[20px] text-ink mb-4">
                   {t('account.myFavorites')}
                 </h3>
                 {favoriteEvents.length === 0 ? (
-                  <div className="rounded-2xl bg-white shadow-sm p-8 text-center">
-                    <Heart size={32} className="text-stone-300 mx-auto mb-3" />
-                    <p className="text-stone-500 text-sm mb-1">{t('account.noFavorites')}</p>
-                    <p className="text-stone-400 text-xs">{t('account.favoritesHint')}</p>
+                  <div className="rounded-3xl bg-white p-6">
+                    <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-parchment">
+                      <Heart size={18} strokeWidth={1.75} className="text-ink" />
+                    </span>
+                    <p className="text-ink font-medium mb-1">{t('account.noFavorites')}</p>
+                    <p className="text-stone-500 text-sm">{t('account.favoritesHint')}</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
