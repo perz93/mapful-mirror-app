@@ -13,6 +13,34 @@ import { AccountSkeleton } from '@/components/PageSkeleton';
 
 type MarketplaceListing = Tables<'marketplace_listings'>;
 
+/** Squelette crème des listes de Mon compte (même forme que les cartes) */
+const ListSkeleton = ({ tall = false }: { tall?: boolean }) => (
+  <div className="space-y-3">
+    {[1, 2].map((i) => (
+      <div key={i} className="rounded-3xl bg-white p-3">
+        {tall ? (
+          <>
+            <div className="h-28 w-full rounded-2xl skeleton" />
+            <div className="mt-3 space-y-2 px-1">
+              <div className="h-4 w-2/3 rounded-md skeleton skeleton-on-white" />
+              <div className="h-3 w-1/3 rounded-md skeleton skeleton-on-white" />
+            </div>
+          </>
+        ) : (
+          <div className="flex items-center gap-4">
+            <div className="flex-1 space-y-2 pl-1">
+              <div className="h-3 w-24 rounded-full skeleton skeleton-on-white" />
+              <div className="h-4 w-3/4 rounded-md skeleton skeleton-on-white" />
+              <div className="h-3 w-1/2 rounded-md skeleton skeleton-on-white" />
+            </div>
+            <div className="size-20 flex-shrink-0 rounded-2xl skeleton" />
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+);
+
 const MyAccount = () => {
   const { user } = useAuth();
   const { t } = useLanguage();
@@ -24,7 +52,9 @@ const MyAccount = () => {
     favorites: 0,
     friends: 0
   });
-  const { data: allEvents } = useEvents();
+  const { data: allEvents, isLoading: eventsLoading } = useEvents();
+  const [listingsLoaded, setListingsLoaded] = useState(false);
+  const [favoritesLoaded, setFavoritesLoaded] = useState(false);
   const [userEvents, setUserEvents] = useState<Event[]>([]);
   const [favoriteEvents, setFavoriteEvents] = useState<Event[]>([]);
   const [userListings, setUserListings] = useState<MarketplaceListing[]>([]);
@@ -74,7 +104,10 @@ const MyAccount = () => {
     if (favs && favs.length > 0 && allEvents) {
       const favIds = favs.map(f => f.event_id);
       setFavoriteEvents(allEvents.filter(e => favIds.includes(e.id)));
+    } else {
+      setFavoriteEvents([]);
     }
+    if (allEvents) setFavoritesLoaded(true);
   };
 
   useEffect(() => {
@@ -89,6 +122,7 @@ const MyAccount = () => {
       .eq('user_id', user.id)
       .order('created_at', { ascending: false });
     setUserListings(data || []);
+    setListingsLoaded(true);
   };
 
   const handleDeleteListing = async (listingId: string) => {
@@ -244,7 +278,7 @@ const MyAccount = () => {
                     {t('account.manageAll')}
                   </Link>
                 </div>
-                {userEvents.length === 0 ? (
+                {eventsLoading ? <ListSkeleton /> : userEvents.length === 0 ? (
                   <div className="rounded-3xl bg-white p-6">
                     <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-parchment">
                       <Calendar size={18} strokeWidth={1.75} className="text-ink" />
@@ -279,7 +313,7 @@ const MyAccount = () => {
                     {t('account.createListing')}
                   </Link>
                 </div>
-                {userListings.length === 0 ? (
+                {!listingsLoaded ? <ListSkeleton tall /> : userListings.length === 0 ? (
                   <div className="rounded-3xl bg-white p-6">
                     <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-parchment">
                       <ShoppingBag size={18} strokeWidth={1.75} className="text-ink" />
@@ -339,7 +373,7 @@ const MyAccount = () => {
                 <h3 className="text-[20px] text-ink mb-4">
                   {t('account.myFavorites')}
                 </h3>
-                {favoriteEvents.length === 0 ? (
+                {!favoritesLoaded ? <ListSkeleton /> : favoriteEvents.length === 0 ? (
                   <div className="rounded-3xl bg-white p-6">
                     <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-parchment">
                       <Heart size={18} strokeWidth={1.75} className="text-ink" />
