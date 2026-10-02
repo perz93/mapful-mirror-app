@@ -15,7 +15,7 @@ const EventCategoryChips = ({ active }: { active: string }) => {
   }, [active]);
 
   const chip = (on: boolean) =>
-    `snap-start flex-shrink-0 inline-flex items-center gap-2 h-10 rounded-full text-sm font-medium border transition-colors duration-200 active:scale-95 ${
+    `snap-start flex-shrink-0 inline-flex items-center gap-2 h-12 rounded-full text-[13px] font-medium border transition-colors duration-200 active:scale-95 ${
       on ? 'bg-ink text-parchment border-ink' : 'bg-white text-ink border-stone-200 hover:border-ink'
     }`;
 
@@ -29,10 +29,13 @@ const EventCategoryChips = ({ active }: { active: string }) => {
           const on = active === c.value;
           return (
             <Link key={c.value} to={c.path} replace state={{ chip: true }} data-active={on} className={`${chip(on)} pl-1.5 pr-4`}>
-              <span className={`flex size-7 items-center justify-center rounded-full ${on ? 'bg-lime' : 'bg-parchment'}`}>
-                <img src={c.icon} alt="" className="size-4" />
+              <span className={`flex size-9 flex-shrink-0 items-center justify-center rounded-full ${on ? 'bg-lime' : 'bg-parchment'}`}>
+                <img src={c.icon} alt="" className="size-5" />
               </span>
-              {t(c.tKey)}
+              {/* Nom sur deux lignes (comme la barre du bas) ; « bien-être » ne se coupe pas */}
+              <span className="max-w-[92px] whitespace-normal text-left leading-[1.15]">
+                {t(c.tKey).replace(/-/g, '\u2011')}
+              </span>
             </Link>
           );
         })}
