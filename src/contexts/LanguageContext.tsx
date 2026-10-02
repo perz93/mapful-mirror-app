@@ -358,6 +358,10 @@ const translations: Record<string, Record<Lang, string>> = {
   'nav.searchPlaceholder': { fr: "Nom de l'événement...", en: 'Event name...' },
   'nav.categories': { fr: 'Catégories', en: 'Categories' },
   'nav.clearBtn': { fr: 'Effacer', en: 'Clear' },
+  'nav.reset': { fr: 'Réinitialiser', en: 'Reset' },
+  'nav.filters': { fr: 'filtres', en: 'filters' },
+  'nav.filter': { fr: 'filtre', en: 'filter' },
+  'nav.showAll': { fr: 'Tout afficher', en: 'Show all' },
   'nav.nearMe': { fr: 'Autour de moi', en: 'Near me' },
   'nav.allDistance': { fr: 'Tout', en: 'All' },
 };

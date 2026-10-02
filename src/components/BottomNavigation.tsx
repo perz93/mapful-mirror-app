@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   Dialog,
@@ -48,8 +48,10 @@ interface ScrollIndicatorState {
 const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
   const location = useLocation();
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const { searchQuery, setSearchQuery, selectedCategories, setSelectedCategories, toggleCategory, distanceFilter, setDistanceFilter } = useSearch();
+  const {
+    searchQuery, setSearchQuery, selectedCategories, setSelectedCategories, toggleCategory,
+    distanceFilter, setDistanceFilter, activeFilterCount, clearFilters, searchOpen, setSearchOpen,
+  } = useSearch();
   const { t } = useLanguage();
   const [indicator, setIndicator] = useState<ScrollIndicatorState>({
     thumbWidth: 0,
@@ -131,9 +133,21 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
-                  className="w-full h-12 pl-10 pr-4 rounded-full bg-parchment border border-transparent text-ink placeholder:text-stone-400 focus:outline-none focus:bg-white text-[15px]"
+                  onFocus={(e) => e.currentTarget.select()}
+                  enterKeyHint="search"
+                  className="w-full h-12 pl-10 pr-12 rounded-full bg-parchment border border-transparent text-ink placeholder:text-stone-400 focus:outline-none focus:bg-white focus:border-stone-300 text-[15px]"
                   autoFocus
                 />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    aria-label={t('nav.clearBtn')}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 flex size-8 items-center justify-center rounded-full bg-stone-200 text-ink active:scale-95 transition-transform"
+                  >
+                    <X size={14} strokeWidth={2} />
+                  </button>
+                )}
               </div>
             </div>
 
@@ -151,6 +165,16 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                 )}
               </div>
               <div className="flex flex-wrap gap-1.5">
+                <button
+                  onClick={() => setSelectedCategories([])}
+                  className={`h-8 px-3.5 rounded-full border text-[13px] font-medium transition-all active:scale-95 ${
+                    selectedCategories.length === 0
+                      ? 'bg-ink text-parchment border-ink'
+                      : 'bg-white text-stone-700 border-stone-200 hover:border-ink'
+                  }`}
+                >
+                  {t('nav.allDistance')}
+                </button>
                 {CATEGORIES_META.map((category) => (
                   <button
                     key={category.id}
@@ -198,10 +222,18 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
             </div>
 
             {/* Search button */}
-            <div className="px-5 pb-5 pt-1">
+            <div className="flex gap-2 px-5 pb-5 pt-1">
+              {activeFilterCount > 0 && (
+                <button
+                  onClick={clearFilters}
+                  className="h-12 px-5 rounded-full bg-parchment text-ink text-[15px] font-medium hover:bg-stone-200 transition-colors active:scale-[0.98]"
+                >
+                  {t('nav.reset')}
+                </button>
+              )}
               <button
                 onClick={handleSearch}
-                className="w-full h-12 rounded-full btn-lime text-[15px]"
+                className="flex-1 h-12 rounded-full btn-lime text-[15px]"
               >
                 {t('nav.search')}
               </button>

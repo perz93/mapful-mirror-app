@@ -1,3 +1,4 @@
+import ActiveFiltersPill from '@/components/ActiveFiltersPill';
 import { useState } from 'react';
 import { X, Plus, User, Settings, LogOut, Bell } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -33,6 +34,9 @@ const TopMenu = () => {
               </span>
             )}
           </button>
+
+          {/* Recherche active — centre */}
+          <ActiveFiltersPill />
 
           {/* Menu burger — right */}
         <DropdownMenu onOpenChange={setIsOpen}>
