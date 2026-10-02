@@ -141,7 +141,7 @@ const Settings = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen relative overflow-hidden pb-32 animate-fade-in animate-zoom-smooth bg-parchment">
+    <div className="min-h-screen relative overflow-hidden pb-32 page-enter bg-parchment">
 
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-md px-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>

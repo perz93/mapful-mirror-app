@@ -53,7 +53,7 @@ const Marketplace = () => {
   };
 
   return (
-    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-parchment animate-fade-in animate-zoom-smooth">
+    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-parchment page-enter">
 
       {/* Header */}
       <div className="relative z-10 flex items-center justify-between px-4 pb-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>

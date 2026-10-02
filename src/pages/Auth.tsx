@@ -12,6 +12,14 @@ type Mode = "login" | "signup" | "forgot" | "reset";
 
 const MIN_PASSWORD = 8;
 
+// Retournement de la carte (connexion ⇄ inscription) : la carte pivote
+// jusqu'à la tranche, le contenu change pendant qu'elle est invisible, puis
+// elle revient de l'autre côté. Une seule face → pas de doublon de champs ni
+// de bug de face cachée sur Safari.
+const FLIP_OUT_MS = 220;
+const FLIP_IN_MS = 480;
+type Flip = "idle" | "out" | "in";
+
 /** Traduit les erreurs Supabase (en anglais) en messages compréhensibles. */
 const errorKey = (error: unknown): string => {
   const raw = error instanceof Error ? error.message : String((error as { message?: string })?.message ?? error ?? "");
@@ -100,6 +108,48 @@ const Auth = () => {
   const [error, setError] = useState<string | null>(null);
   const [sentTo, setSentTo] = useState<string | null>(null); // écran « vérifiez votre boîte mail »
   const firstFieldRef = useRef<HTMLInputElement>(null);
+  const [flip, setFlip] = useState<Flip>("idle");
+  const [flipDir, setFlipDir] = useState<1 | -1>(1);
+  const [target, setTarget] = useState<Mode>(mode); // onglet visé, dès le tap
+  const flipTimer = useRef<number>();
+
+  useEffect(() => () => window.clearTimeout(flipTimer.current), []);
+
+  /** Change d'écran avec l'animation de retournement. */
+  const switchMode = (next: Mode) => {
+    if (next === mode || flip !== "idle") return;
+    const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      setMode(next);
+      return;
+    }
+    // Vers l'avant (inscription, mot de passe oublié) ou retour (connexion)
+    setFlipDir(next === "login" ? -1 : 1);
+    setTarget(next);
+    setFlip("out");
+    flipTimer.current = window.setTimeout(() => {
+      setMode(next);
+      setFlip("in");
+      // deux frames : la position de départ est peinte avant la transition
+      requestAnimationFrame(() => requestAnimationFrame(() => setFlip("idle")));
+    }, FLIP_OUT_MS);
+  };
+
+  // La pastille glisse dès le tap, sans attendre le retournement
+  const activeTab = flip === "out" ? target : mode;
+
+  const flipStyle: React.CSSProperties =
+    flip === "out"
+      ? {
+          transform: `rotateY(${90 * flipDir}deg) scale(0.94)`,
+          transition: `transform ${FLIP_OUT_MS}ms cubic-bezier(0.55, 0, 1, 0.45)`,
+        }
+      : flip === "in"
+        ? { transform: `rotateY(${-90 * flipDir}deg) scale(0.94)`, transition: "none" }
+        : {
+            transform: "rotateY(0deg) scale(1)",
+            transition: `transform ${FLIP_IN_MS}ms cubic-bezier(0.16, 1, 0.3, 1)`,
+          };
 
   // Arrivée via le lien de réinitialisation
   useEffect(() => {
@@ -118,7 +168,7 @@ const Auth = () => {
     setPassword("");
     setConfirmPassword("");
     setShowPassword(false);
-    const id = window.setTimeout(() => firstFieldRef.current?.focus({ preventScroll: true }), 50);
+    const id = window.setTimeout(() => firstFieldRef.current?.focus({ preventScroll: true }), FLIP_IN_MS);
     return () => window.clearTimeout(id);
   }, [mode]);
 
@@ -191,12 +241,15 @@ const Auth = () => {
   };
 
   return (
-    <div className="fixed inset-0 w-full h-[100dvh] overflow-y-auto overscroll-none bg-parchment animate-fade-in">
+    <div className="fixed inset-0 w-full h-[100dvh] overflow-y-auto overscroll-none bg-parchment page-enter">
       <div
-        className="mx-auto flex min-h-full w-full max-w-md flex-col justify-center px-4 py-8"
+        className="mx-auto flex min-h-full w-full max-w-md flex-col justify-center px-4 py-8 [perspective:1400px]"
         style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 24px)", paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 24px)" }}
       >
-        <div className="relative w-full rounded-3xl bg-white p-6 pt-5 shadow-2xl">
+        <div
+          className="relative w-full rounded-3xl bg-white p-6 pt-5 shadow-2xl transform-gpu will-change-transform [backface-visibility:hidden]"
+          style={flipStyle}
+        >
           {/* Fermer */}
           <button
             onClick={() => navigate("/")}
@@ -208,16 +261,23 @@ const Auth = () => {
 
           {/* Onglets Connexion / Inscription */}
           {(mode === "login" || mode === "signup") && !sentTo && (
-            <div role="tablist" className="mb-6 inline-flex rounded-full bg-parchment p-1">
+            <div role="tablist" className="relative mb-6 inline-grid grid-cols-2 rounded-full bg-parchment p-1">
+              {/* Pastille qui glisse sous l'onglet actif */}
+              <span
+                aria-hidden
+                className={`absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full bg-ink transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                  activeTab === "signup" ? "translate-x-full" : "translate-x-0"
+                }`}
+              />
               {(["login", "signup"] as const).map((m) => (
                 <button
                   key={m}
                   role="tab"
                   type="button"
-                  aria-selected={mode === m}
-                  onClick={() => setMode(m)}
-                  className={`h-9 rounded-full px-4 text-sm font-medium transition-colors ${
-                    mode === m ? "bg-ink text-parchment" : "text-stone-600 hover:text-ink"
+                  aria-selected={activeTab === m}
+                  onClick={() => switchMode(m)}
+                  className={`relative z-10 h-9 rounded-full px-4 text-sm font-medium transition-colors duration-300 ${
+                    activeTab === m ? "text-parchment" : "text-stone-600 hover:text-ink"
                   }`}
                 >
                   {m === "login" ? t("auth.tabLogin") : t("auth.tabSignup")}
@@ -229,7 +289,7 @@ const Auth = () => {
           {(mode === "forgot" || (sentTo && mode !== "reset")) && (
             <button
               type="button"
-              onClick={() => setMode("login")}
+              onClick={() => switchMode("login")}
               className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-stone-600 hover:text-ink"
             >
               <ArrowLeft size={16} strokeWidth={1.75} /> {t("auth.backToLogin")}
@@ -367,7 +427,7 @@ const Auth = () => {
                   <div className="flex justify-end px-1">
                     <button
                       type="button"
-                      onClick={() => setMode("forgot")}
+                      onClick={() => switchMode("forgot")}
                       className="text-xs text-stone-600 hover:text-ink transition-colors link-underline"
                     >
                       {t("auth.forgotPassword")}

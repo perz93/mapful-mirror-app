@@ -126,7 +126,7 @@ const EventDetails = () => {
   const keyPoints = event.key_points as string[] | null;
 
   return (
-    <div className="min-h-screen bg-background-light dark:bg-background-dark animate-fade-in animate-zoom-smooth">
+    <div className="min-h-screen bg-background-light dark:bg-background-dark page-enter">
       <div className="mx-auto max-w-md" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <div
           onClick={() => event.image_url && setLightboxOpen(true)}

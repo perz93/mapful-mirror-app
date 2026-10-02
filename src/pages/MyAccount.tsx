@@ -186,7 +186,7 @@ const MyAccount = () => {
   const isProfileLoading = !profile && !!user;
 
   return (
-    <div className="min-h-screen relative overflow-hidden animate-fade-in animate-zoom-smooth bg-parchment">
+    <div className="min-h-screen relative overflow-hidden page-enter bg-parchment">
 
       {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto">

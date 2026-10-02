@@ -380,7 +380,7 @@ const CreateEvent = () => {
   }
 
   return (
-    <div className="relative min-h-screen pb-32 animate-fade-in animate-zoom-smooth overflow-hidden overscroll-none bg-parchment">
+    <div className="relative min-h-screen pb-32 page-enter overflow-hidden overscroll-none bg-parchment">
 
 
       {/* Content */}

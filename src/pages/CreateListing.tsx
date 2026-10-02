@@ -131,7 +131,7 @@ const CreateListing = () => {
   };
 
   return (
-    <div className="relative mx-auto flex min-h-screen max-w-md flex-col bg-parchment animate-fade-in">
+    <div className="relative mx-auto flex min-h-screen max-w-md flex-col bg-parchment page-enter">
 
       {/* Header */}
       <div className="relative z-10 px-4 pb-6" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>

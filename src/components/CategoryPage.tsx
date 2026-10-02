@@ -44,7 +44,7 @@ const CategoryPage = ({
       <div className="h-px bg-stone-200 dark:bg-stone-800 mx-4" />
     </header>;
   if (isLoading) {
-    return <div className="min-h-screen bg-parchment dark:bg-stone-950 animate-fade-in">
+    return <div className="min-h-screen bg-parchment dark:bg-stone-950 page-enter">
         <div className="mx-auto max-w-md">
           <Header />
           <CategoryPageSkeleton />
@@ -52,7 +52,7 @@ const CategoryPage = ({
       </div>;
   }
   if (error) {
-    return <div className="min-h-screen bg-parchment dark:bg-stone-950 animate-fade-in">
+    return <div className="min-h-screen bg-parchment dark:bg-stone-950 page-enter">
         <div className="mx-auto max-w-md">
           <Header />
           <div className="p-4 flex items-center justify-center min-h-[50vh]">
@@ -61,7 +61,7 @@ const CategoryPage = ({
         </div>
       </div>;
   }
-  return <div className="min-h-screen bg-parchment dark:bg-stone-950 animate-fade-in">
+  return <div className="min-h-screen bg-parchment dark:bg-stone-950 page-enter">
       <div className="mx-auto max-w-md">
         <Header />
 

@@ -23,7 +23,7 @@ const Notifications = () => {
 
   if (!user) {
     return (
-      <div className="relative min-h-screen bg-parchment max-w-md mx-auto animate-fade-in">
+      <div className="relative min-h-screen bg-parchment max-w-md mx-auto page-enter">
         <div className="px-4 pb-6" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
           <button onClick={() => navigate(-1)} aria-label="Retour" className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform mb-6">
             <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
@@ -44,7 +44,7 @@ const Notifications = () => {
   }
 
   return (
-    <div className="relative min-h-screen bg-parchment max-w-md mx-auto animate-fade-in">
+    <div className="relative min-h-screen bg-parchment max-w-md mx-auto page-enter">
       {/* En-tête : même structure que les autres pages */}
       <div className="px-4 pb-6" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         <div className="flex items-center justify-between mb-6">
