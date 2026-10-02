@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, MapPin, Phone, Mail, Building2, UtensilsCrossed, Music, Palette, MoreHorizontal } from 'lucide-react';
+import { ArrowLeft, Plus, MapPin, Phone, Mail, DoorOpen, ChefHat, Disc3, Flower2, Shapes } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -9,11 +9,12 @@ import { Button } from '@/components/ui/button';
 import ShimmerImage from '@/components/ShimmerImage';
 
 const categoryConfig = {
-  location_espaces: { label: 'Location espaces', icon: Building2, color: 'bg-lime' },
-  traiteurs: { label: 'Traiteurs', icon: UtensilsCrossed, color: 'bg-lime' },
-  animation_dj: { label: 'Animation/DJ', icon: Music, color: 'bg-lime' },
-  decoration: { label: 'Décoration', icon: Palette, color: 'bg-lime' },
-  autre: { label: 'Autre', icon: MoreHorizontal, color: 'bg-lime' },
+  // Icônes choisies pour parler du métier, toutes au même trait (1.75)
+  location_espaces: { label: 'Location espaces', icon: DoorOpen, color: 'bg-lime' },
+  traiteurs: { label: 'Traiteurs', icon: ChefHat, color: 'bg-lime' },
+  animation_dj: { label: 'Animation/DJ', icon: Disc3, color: 'bg-lime' },
+  decoration: { label: 'Décoration', icon: Flower2, color: 'bg-lime' },
+  autre: { label: 'Autre', icon: Shapes, color: 'bg-lime' },
 };
 
 type CategoryKey = keyof typeof categoryConfig;
@@ -116,22 +117,17 @@ const Marketplace = () => {
           <div className="grid gap-4 animate-fade-in">
             {[1, 2, 3].map((i) => (
               <div key={i} className="overflow-hidden rounded-3xl bg-white dark:bg-stone-900 shadow-sm">
-                <div className="h-44 bg-stone-200/70 dark:bg-stone-800/50 relative overflow-hidden">
-                  <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent" />
+                <div className="h-44 skeleton relative overflow-hidden">
                 </div>
                 <div className="p-4 space-y-3">
-                  <div className="h-4 bg-stone-200/70 dark:bg-stone-800/50 rounded-md w-3/4 relative overflow-hidden">
-                    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent" />
+                  <div className="h-4 skeleton rounded-md w-3/4 relative overflow-hidden">
                   </div>
-                  <div className="h-3 bg-stone-200/70 dark:bg-stone-800/50 rounded-md w-full relative overflow-hidden">
-                    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent" />
+                  <div className="h-3 skeleton rounded-md w-full relative overflow-hidden">
                   </div>
                   <div className="flex gap-2">
-                    <div className="h-6 bg-stone-200/70 dark:bg-stone-800/50 rounded-full w-24 relative overflow-hidden">
-                      <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent" />
+                    <div className="h-6 skeleton rounded-full w-24 relative overflow-hidden">
                     </div>
-                    <div className="h-6 bg-stone-200/70 dark:bg-stone-800/50 rounded-full w-16 relative overflow-hidden">
-                      <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent" />
+                    <div className="h-6 skeleton rounded-full w-16 relative overflow-hidden">
                     </div>
                   </div>
                 </div>
@@ -142,7 +138,7 @@ const Marketplace = () => {
           <div key={selectedCategory} className="grid gap-4">
             {listings.map((listing, index) => {
               const config = categoryConfig[listing.category as CategoryKey];
-              const Icon = config?.icon || MoreHorizontal;
+              const Icon = config?.icon || Shapes;
               return (
                 <Link
                   key={listing.id}
@@ -169,7 +165,7 @@ const Marketplace = () => {
                       {/* Category + Title on image */}
                       <div className="absolute bottom-3 left-3 right-3">
                         <div className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-medium text-ink ${config?.color || 'bg-parchment'} mb-1.5`}>
-                          <Icon size={10} />
+                          <Icon size={12} strokeWidth={1.75} />
                           {config?.label || 'Autre'}
                         </div>
                         <h3 className="text-white text-base font-bold leading-tight line-clamp-1 drop-shadow-sm">{listing.title}</h3>
@@ -178,7 +174,7 @@ const Marketplace = () => {
                   ) : (
                     <div className="p-4 pb-0">
                       <div className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-medium text-ink ${config?.color || 'bg-parchment'} mb-2`}>
-                        <Icon size={10} />
+                        <Icon size={12} strokeWidth={1.75} />
                         {config?.label || 'Autre'}
                       </div>
                       <h3 className="font-bold text-stone-900 dark:text-white text-base line-clamp-1">{listing.title}</h3>
@@ -218,8 +214,8 @@ const Marketplace = () => {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="mb-4 rounded-3xl bg-white p-6">
-              <Building2 className="text-stone-400" size={48} />
+            <div className="mb-4 flex size-20 items-center justify-center rounded-3xl bg-white">
+              <Shapes className="text-ink" size={32} strokeWidth={1.5} />
             </div>
             <h3 className="mb-2 text-lg font-semibold text-stone-800 ">{t('market.noListings')}</h3>
             <p className="mb-4 text-sm text-stone-500">

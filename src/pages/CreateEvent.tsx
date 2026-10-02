@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import SectionTitle from '@/components/SectionTitle';
 import { addBaseMap } from '@/lib/mapTiles';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign, ArrowLeft, Loader2, Phone, Instagram, Facebook, Twitter, MessageCircle, Plus, X, Sparkles } from 'lucide-react';
+import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign, ArrowLeft, Loader2, Phone, Instagram, Facebook, Twitter, MessageCircle, Plus, X, Type, CalendarDays, Ticket, AlignLeft, ListOrdered } from 'lucide-react';
 import TikTokIcon from '@/components/icons/TikTokIcon';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -44,7 +45,6 @@ const categoryIcons: Record<string, string> = {
 const inputClass = "h-9 rounded-xl bg-white border border-stone-300 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-ink [&]:ring-0 [&]:outline-none";
 const labelClass = "text-sm text-stone-600 font-normal";
 const cardClass = "rounded-3xl bg-white p-5 space-y-3";
-const sectionTitleClass = "text-lg  text-stone-800 mb-4 flex items-center gap-2";
 
 const CreateEvent = () => {
   const { toast } = useToast();
@@ -159,7 +159,7 @@ const CreateEvent = () => {
         // Add initial marker
         const customIcon = L.divIcon({
           className: 'custom-marker',
-          html: `<div style="width: 40px; height: 40px; background: #ef4444; border: 3px solid white; border-radius: 50%; cursor: move; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>`,
+          html: `<div style="width: 40px; height: 40px; background: #14140f; border: 4px solid #a6e22e; border-radius: 50%; cursor: move; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>`,
           iconSize: [40, 40],
           iconAnchor: [20, 20],
         });
@@ -429,7 +429,9 @@ const CreateEvent = () => {
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-center">
-                    <ImageIcon className="h-10 w-10 text-ink mb-4" strokeWidth={1.5} />
+                    <span className="flex size-14 items-center justify-center rounded-2xl bg-lime mb-4">
+                      <ImageIcon size={24} strokeWidth={1.75} className="text-ink" />
+                    </span>
                     <h3 className="font-light text-stone-700 mb-1">{t('form.addImage')}</h3>
                     <p className="text-sm text-stone-400 font-light">{t('form.clickToUpload')}</p>
                   </div>
@@ -439,9 +441,7 @@ const CreateEvent = () => {
 
             {/* Basic Information Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                {t('form.basicInfo')}
-              </h2>
+              <SectionTitle icon={Type}>{t('form.basicInfo')}</SectionTitle>
 
               <div className="space-y-3">
                 <Label htmlFor="title" className={labelClass}>{t('form.title')}</Label>
@@ -532,10 +532,7 @@ const CreateEvent = () => {
 
             {/* Location Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                <MapPin className="h-5 w-5 text-ink" strokeWidth={1.5} />
-                {t('form.location')}
-              </h2>
+              <SectionTitle icon={MapPin}>{t('form.location')}</SectionTitle>
 
               <div className="space-y-3">
                 <Label htmlFor="address" className={labelClass}>{t('form.address')}</Label>
@@ -571,10 +568,7 @@ const CreateEvent = () => {
 
             {/* Date and Time Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                <Calendar className="h-5 w-5 text-ink" strokeWidth={1.5} />
-                {t('form.dateTime')}
-              </h2>
+              <SectionTitle icon={CalendarDays}>{t('form.dateTime')}</SectionTitle>
 
               <div className="space-y-3 overflow-hidden">
                 <Label htmlFor="date" className={labelClass}>{t('form.date')}</Label>
@@ -616,9 +610,7 @@ const CreateEvent = () => {
 
             {/* Price and Capacity Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                {t('form.priceCapacity')}
-              </h2>
+              <SectionTitle icon={Ticket}>{t('form.priceCapacity')}</SectionTitle>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-3">
@@ -647,9 +639,7 @@ const CreateEvent = () => {
 
             {/* Description Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                {t('form.description')}
-              </h2>
+              <SectionTitle icon={AlignLeft}>{t('form.description')}</SectionTitle>
 
               <div className="space-y-3">
                 <Textarea
@@ -665,10 +655,7 @@ const CreateEvent = () => {
 
             {/* Key Points Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                <Sparkles className="h-5 w-5 text-ink" strokeWidth={1.5} />
-                {t('form.keyPoints')}
-              </h2>
+              <SectionTitle icon={ListOrdered}>{t('form.keyPoints')}</SectionTitle>
 
               <div className="space-y-3">
                 {keyPoints.map((point, index) => (
@@ -707,10 +694,7 @@ const CreateEvent = () => {
 
             {/* Contact Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                <Phone className="h-5 w-5 text-ink" strokeWidth={1.5} />
-                {t('form.contact')}
-              </h2>
+              <SectionTitle icon={Phone}>{t('form.contact')}</SectionTitle>
 
               <div className="space-y-4">
                 <div className="space-y-3">

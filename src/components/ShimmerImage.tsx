@@ -19,9 +19,7 @@ const ShimmerImage = ({ src, alt, className = '', onClick, loading = 'lazy' }: S
     <div className={`relative overflow-hidden ${className}`} onClick={onClick}>
       {/* Shimmer placeholder */}
       {!loaded && (
-        <div className="absolute inset-0 bg-stone-200/70 dark:bg-stone-800/50">
-          <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent" />
-        </div>
+        <div className="absolute inset-0 skeleton" />
       )}
       <img
         src={src}

@@ -94,7 +94,7 @@ const OptimizedImage = ({
         />
       )}
       {!loaded && (
-        <div className="absolute inset-0 bg-stone-200 dark:bg-stone-800 animate-pulse" />
+        <div className="absolute inset-0 skeleton" />
       )}
       {children}
     </div>

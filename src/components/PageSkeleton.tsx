@@ -1,12 +1,10 @@
 /**
- * Facebook-style shimmer skeleton loaders for different page types.
- * Uses CSS shimmer animation for smooth loading effect.
+ * Squelettes de chargement par type de page.
+ * Classe `.skeleton` (index.css) : bloc parchemin + reflet crème discret.
  */
 
 const ShimmerBlock = ({ className = '' }: { className?: string }) => (
-  <div className={`relative overflow-hidden rounded-lg bg-stone-200/70 dark:bg-stone-800/50 ${className}`}>
-    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent" />
-  </div>
+  <div className={`rounded-lg skeleton ${className}`} />
 );
 
 /** Skeleton for EventDetails page */

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Upload, Loader2, Image as ImageIcon, Phone, MessageCircle, Instagram, Facebook } from 'lucide-react';
+import SectionTitle from '@/components/SectionTitle';
+import { ArrowLeft, Upload, Loader2, Image as ImageIcon, Phone, MessageCircle, Instagram, Facebook, Type, CalendarDays, Ticket } from 'lucide-react';
 import TikTokIcon from '@/components/icons/TikTokIcon';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -12,7 +13,6 @@ import { EditEventSkeleton } from '@/components/PageSkeleton';
 const inputClass = "h-9 rounded-xl bg-white border border-stone-300 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-ink w-full px-3";
 const labelClass = "text-sm text-stone-600 font-normal";
 const cardClass = "rounded-3xl bg-white p-5 space-y-3";
-const sectionTitleClass = "text-lg  text-stone-800 mb-4 flex items-center gap-2";
 
 const EditEvent = () => {
   const { id } = useParams();
@@ -212,7 +212,9 @@ const EditEvent = () => {
                   <img src={imagePreview} alt="Preview" className="w-full h-48 object-cover rounded-xl" />
                 ) : (
                   <div className="flex flex-col items-center justify-center text-center py-4">
-                    <ImageIcon className="h-10 w-10 text-ink mb-3" strokeWidth={1.5} />
+                    <span className="flex size-14 items-center justify-center rounded-2xl bg-lime mb-3">
+                      <ImageIcon size={24} strokeWidth={1.75} className="text-ink" />
+                    </span>
                     <p className="text-stone-600 text-sm">{t('form.clickToChangeImage')}</p>
                   </div>
                 )}
@@ -221,7 +223,7 @@ const EditEvent = () => {
 
             {/* Basic Info */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>{t('form.info')}</h2>
+              <SectionTitle icon={Type}>{t('form.info')}</SectionTitle>
 
               <div className="space-y-2">
                 <label className={labelClass}>{t('form.titleShort')}</label>
@@ -263,7 +265,7 @@ const EditEvent = () => {
 
             {/* Date & Time — stacked */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>{t('form.dateTime')}</h2>
+              <SectionTitle icon={CalendarDays}>{t('form.dateTime')}</SectionTitle>
 
               <div className="space-y-2">
                 <label className={labelClass}>{t('form.date')}</label>
@@ -277,7 +279,7 @@ const EditEvent = () => {
 
             {/* Price & Capacity */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>{t('form.priceCapacity')}</h2>
+              <SectionTitle icon={Ticket}>{t('form.priceCapacity')}</SectionTitle>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
@@ -298,10 +300,7 @@ const EditEvent = () => {
 
             {/* Contact / Réseaux sociaux */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                <Phone className="h-5 w-5 text-ink" strokeWidth={1.5} />
-                {t('form.contactNetworks')}
-              </h2>
+              <SectionTitle icon={Phone}>{t('form.contactNetworks')}</SectionTitle>
 
               <div className="space-y-2">
                 <label className={`${labelClass} flex items-center gap-2`}>

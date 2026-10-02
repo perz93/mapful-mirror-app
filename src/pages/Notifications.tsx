@@ -73,15 +73,12 @@ const Notifications = () => {
           <div className="flex flex-col gap-3">
             {[1, 2, 3, 4, 5].map(i => (
               <div key={i} className="flex gap-3 p-4 rounded-2xl bg-white dark:bg-stone-900">
-                <div className="w-12 h-12 rounded-xl bg-stone-200/70 dark:bg-stone-800/50 relative overflow-hidden flex-shrink-0">
-                  <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent" />
+                <div className="w-12 h-12 rounded-xl skeleton relative overflow-hidden flex-shrink-0">
                 </div>
                 <div className="flex-1 space-y-2.5">
-                  <div className="h-4 bg-stone-200/70 dark:bg-stone-800/50 rounded-md w-3/4 relative overflow-hidden">
-                    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent" />
+                  <div className="h-4 skeleton rounded-md w-3/4 relative overflow-hidden">
                   </div>
-                  <div className="h-3 bg-stone-200/70 dark:bg-stone-800/50 rounded-md w-1/2 relative overflow-hidden">
-                    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent" />
+                  <div className="h-3 skeleton rounded-md w-1/2 relative overflow-hidden">
                   </div>
                 </div>
               </div>

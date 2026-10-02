@@ -108,7 +108,7 @@ const translations: Record<string, Record<Lang, string>> = {
   'form.addressPlaceholder': { fr: 'Ex: Cocody Angré, Abidjan', en: 'E.g.: Cocody Angré, Abidjan' },
   'form.mapPosition': { fr: 'Position sur la carte', en: 'Position on map' },
   'form.locating': { fr: 'localisation...', en: 'locating...' },
-  'form.mapHint': { fr: 'Utilisez la mini-carte pour ajuster précisément la position via le marqueur rouge', en: 'Use the mini-map to precisely adjust the position via the red marker' },
+  'form.mapHint': { fr: 'Utilisez la mini-carte pour ajuster précisément la position en déplaçant le marqueur', en: 'Use the mini-map to precisely adjust the position by dragging the marker' },
   'form.dateTime': { fr: 'Date et heure', en: 'Date and time' },
   'form.date': { fr: 'Date *', en: 'Date *' },
   'form.time': { fr: 'Heure *', en: 'Time *' },

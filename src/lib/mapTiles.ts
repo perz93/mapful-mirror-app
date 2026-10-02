@@ -20,8 +20,12 @@ export const MAP_TILE_OPTIONS = {
   className: 'map-tiles',
 } as const;
 
-const VECTOR_ATTRIBUTION =
-  '<a href="https://openfreemap.org" target="_blank">OpenFreeMap</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>';
+/** Crédits cartographiques, affichés dans Paramètres (obligation de la licence ODbL). */
+export const MAP_CREDITS = [
+  { label: 'OpenStreetMap', href: 'https://www.openstreetmap.org/copyright' },
+  { label: 'OpenFreeMap', href: 'https://openfreemap.org' },
+  { label: 'OpenMapTiles', href: 'https://openmaptiles.org' },
+];
 
 const C = {
   land: '#f6f3ea',
@@ -117,18 +121,28 @@ const supportsWebGL = () => {
 };
 
 /**
- * Ajoute le fond de carte stylé et son attribution. Renvoie une fonction de nettoyage.
- * Pendant le chargement, le conteneur affiche déjà la couleur du fond (crème) :
- * pas de flash de tuiles colorées. En cas d'échec, tuiles OSM.
+ * Ajoute le fond de carte stylé. Renvoie une fonction de nettoyage.
+ * Pendant le chargement, le conteneur affiche le fond crème avec le reflet
+ * de chargement du site (classe .map-loading), retiré dès que les tuiles sont là.
+ * En cas d'échec du vectoriel, tuiles OSM.
+ *
+ * Pas de contrôle d'attribution sur la carte (choix produit) : les crédits
+ * OpenStreetMap / OpenFreeMap sont affichés dans Paramètres (MAP_CREDITS).
  */
 export function addBaseMap(map: L.Map): () => void {
   let disposed = false;
   let current: L.Layer | null = null;
-  const attribution = L.control.attribution({ position: 'topright', prefix: false }).addTo(map);
+  const container = map.getContainer();
+  container.classList.add('map-loading');
+  const doneLoading = () => container.classList.remove('map-loading');
+  // Filet de sécurité : jamais de reflet infini si un événement manque.
+  const safety = window.setTimeout(doneLoading, 8000);
 
   const showRaster = () => {
     if (disposed || current) return;
-    current = L.tileLayer(MAP_TILE_URL, MAP_TILE_OPTIONS).addTo(map);
+    const raster = L.tileLayer(MAP_TILE_URL, MAP_TILE_OPTIONS);
+    raster.once('load', doneLoading);
+    current = raster.addTo(map);
   };
 
   if (!supportsWebGL()) {
@@ -145,12 +159,13 @@ export function addBaseMap(map: L.Map): () => void {
         const { maplibreGL } = await import('@maplibre/maplibre-gl-leaflet');
         if (disposed) return;
 
-        current = maplibreGL({
+        const vector = maplibreGL({
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           style: style as any,
           attributionControl: false,
-        }).addTo(map);
-        attribution.addAttribution(VECTOR_ATTRIBUTION);
+        });
+        current = vector.addTo(map);
+        vector.getMaplibreMap().once('idle', doneLoading);
       } catch (err) {
         console.warn('[map] fond vectoriel indisponible, tuiles OSM utilisées', err);
         current = null;
@@ -161,7 +176,8 @@ export function addBaseMap(map: L.Map): () => void {
 
   return () => {
     disposed = true;
+    window.clearTimeout(safety);
+    doneLoading();
     if (current && map.hasLayer(current)) map.removeLayer(current);
-    attribution.remove();
   };
 }

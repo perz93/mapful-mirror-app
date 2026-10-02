@@ -201,17 +201,9 @@ body {
   filter: saturate(0.7) sepia(0.12) brightness(1.03) contrast(0.96);
 }
 
+/* Pas d'attribution posée sur la carte : crédits dans Paramètres */
 .leaflet-control-attribution {
-  margin-top: calc(env(safe-area-inset-top, 0px) + 76px) !important;
-  margin-right: 16px !important;
-  padding: 1px 6px !important;
-  border-radius: 9999px;
-  background: rgb(255 255 255 / 0.7) !important;
-  font-size: 9px !important;
-  color: #6e6e64 !important;
-}
-.leaflet-control-attribution a {
-  color: #30302a !important;
+  display: none !important;
 }
 
 
@@ -1051,4 +1043,52 @@ h1.eyebrow, h2.eyebrow, h3.eyebrow {
   font-weight: 600 !important;
   line-height: 1.4;
   letter-spacing: 0.09em;
+}
+
+
+/* ===== Chargement : bloc parchemin + reflet crème discret =====
+   Une seule classe pour tout le site (squelettes, images, carte). */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background-color: #ebe9dd;
+}
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    100deg,
+    rgb(251 250 243 / 0) 20%,
+    rgb(251 250 243 / 0.55) 50%,
+    rgb(251 250 243 / 0) 80%
+  );
+  animation: skeleton-shimmer 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+.skeleton-on-white { background-color: #f1efe6; }
+@keyframes skeleton-shimmer {
+  100% { transform: translateX(100%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after { animation: none; }
+}
+
+/* Reflet de chargement sur la carte, sous les tuiles et les marqueurs */
+.leaflet-container.map-loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    100deg,
+    rgb(251 250 243 / 0) 20%,
+    rgb(251 250 243 / 0.7) 50%,
+    rgb(251 250 243 / 0) 80%
+  );
+  animation: skeleton-shimmer 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
 }

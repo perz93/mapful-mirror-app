@@ -8,6 +8,7 @@ import { useLanguage, Lang } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { SettingsSkeleton } from '@/components/PageSkeleton';
+import { MAP_CREDITS } from '@/lib/mapTiles';
 
 const Settings = () => {
   const { user, loading } = useAuth();
@@ -370,9 +371,18 @@ const Settings = () => {
             </div>
           </div>
 
-          {/* App version */}
-          <div className="text-center py-4">
+          {/* App version + crédits cartographiques (licence ODbL) */}
+          <div className="text-center py-4 space-y-1.5">
             <p className="text-xs text-stone-400">VIBE v1.0 — Abidjan, Côte d'Ivoire</p>
+            <p className="text-[11px] text-stone-400">
+              {lang === 'fr' ? 'Carte' : 'Map'} ©{' '}
+              {MAP_CREDITS.map((c, i) => (
+                <span key={c.label}>
+                  {i > 0 && ' · '}
+                  <a href={c.href} target="_blank" rel="noopener noreferrer" className="link-underline hover:text-stone-600">{c.label}</a>
+                </span>
+              ))}
+            </p>
           </div>
         </div>
       </div>

@@ -62,41 +62,32 @@ const ListingDetails = () => {
       <div className="min-h-screen relative overflow-hidden bg-parchment animate-fade-in animate-zoom-smooth">
         <div className="relative z-10 mx-auto max-w-md">
           <div className="mx-4 mt-2">
-            <div className="h-72 rounded-3xl bg-stone-200/70 relative overflow-hidden">
-              <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+            <div className="h-72 rounded-3xl skeleton">
             </div>
           </div>
           <div className="px-4 pt-5 space-y-4">
             <div className="rounded-2xl bg-white/50 p-5 space-y-3">
-              <div className="h-6 bg-stone-200/70 rounded-lg w-3/4 relative overflow-hidden">
-                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              <div className="h-6 skeleton rounded-lg w-3/4">
               </div>
-              <div className="h-8 bg-stone-200/70 rounded-lg w-1/2 relative overflow-hidden">
-                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              <div className="h-8 skeleton rounded-lg w-1/2">
               </div>
             </div>
             <div className="rounded-2xl bg-white/50 p-4 flex items-start gap-3">
-              <div className="w-10 h-10 rounded-full bg-stone-200/70 relative overflow-hidden flex-shrink-0">
-                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              <div className="w-10 h-10 rounded-full skeleton flex-shrink-0">
               </div>
               <div className="flex-1 space-y-2">
-                <div className="h-3 bg-stone-200/70 rounded w-16 relative overflow-hidden">
-                  <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+                <div className="h-3 skeleton rounded w-16">
                 </div>
-                <div className="h-4 bg-stone-200/70 rounded w-2/3 relative overflow-hidden">
-                  <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+                <div className="h-4 skeleton rounded w-2/3">
                 </div>
               </div>
             </div>
             <div className="rounded-2xl bg-white/50 p-5 space-y-3">
-              <div className="h-5 bg-stone-200/70 rounded w-1/3 relative overflow-hidden">
-                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              <div className="h-5 skeleton rounded w-1/3">
               </div>
-              <div className="h-4 bg-stone-200/70 rounded w-full relative overflow-hidden">
-                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              <div className="h-4 skeleton rounded w-full">
               </div>
-              <div className="h-4 bg-stone-200/70 rounded w-4/5 relative overflow-hidden">
-                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              <div className="h-4 skeleton rounded w-4/5">
               </div>
             </div>
           </div>
