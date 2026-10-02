@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import ShimmerImage from './ShimmerImage';
 import { Link } from 'react-router-dom';
 import { useFeaturedEvents } from '@/hooks/useFeaturedEvents';
 import { format } from 'date-fns';
@@ -107,9 +108,13 @@ const EventCard = () => {
               <span aria-hidden className="transition-transform group-hover:translate-x-0.5">→</span>
             </Link>
           </div>
-          <div style={{
-          backgroundImage: `url('${currentEvent.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=400&fit=crop'}')`
-        }} className="w-[104px] h-[104px] flex-shrink-0 bg-center bg-no-repeat bg-cover rounded-2xl bg-parchment" />
+          <ShimmerImage
+            key={currentEvent.id}
+            src={currentEvent.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=400&fit=crop'}
+            alt=""
+            loading="eager"
+            className="w-[104px] h-[104px] flex-shrink-0 rounded-2xl"
+          />
           </div>
         </div>
 

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import ShimmerImage from './ShimmerImage';
 import { Link } from 'react-router-dom';
 import { X, ChevronRight, Flame, MapPin, Clock } from 'lucide-react';
 import { useTonightEvents } from '@/hooks/useTonightEvents';
@@ -58,13 +59,12 @@ const TonightSection = () => {
             <Link
               key={event.id}
               to={`/event/${event.id}`}
-              className="flex-shrink-0 w-[140px] rounded-xl bg-white/70 dark:bg-stone-800/50 border border-stone-100/60 dark:border-stone-700/30 overflow-hidden shadow-sm hover:shadow-md transition-all active:scale-[0.97]"
+              className="flex-shrink-0 w-[140px] rounded-2xl bg-white dark:bg-stone-800/50 overflow-hidden shadow-sm hover:shadow-md transition-all active:scale-[0.97]"
             >
-              <div
-                className="h-[80px] bg-cover bg-center"
-                style={{
-                  backgroundImage: `url('${event.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=300&h=200&fit=crop'}')`,
-                }}
+              <ShimmerImage
+                src={event.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=300&h=200&fit=crop'}
+                alt=""
+                className="h-[80px] w-full"
               />
               <div className="p-2 space-y-1">
                 <p className="text-[11px] font-bold text-stone-900 dark:text-white leading-tight line-clamp-2">

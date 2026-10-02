@@ -65,10 +65,10 @@ const ContactModal = ({
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-11 h-11 rounded-full bg-white dark:bg-stone-900/80 hover:bg-white dark:hover:bg-stone-900 flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-300"
+          className="absolute top-4 right-4 flex size-10 items-center justify-center rounded-full bg-parchment text-ink hover:bg-stone-200 active:scale-95 transition-colors"
           aria-label="Fermer"
         >
-          <X className="w-4 h-4 text-stone-800 dark:text-stone-100" strokeWidth={2.5} />
+          <X className="h-4 w-4" strokeWidth={1.75} />
         </button>
 
         <h3 className="text-xl font-semibold text-stone-900 mb-6 text-center">Contacter l'organisateur</h3>

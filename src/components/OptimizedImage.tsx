@@ -58,20 +58,41 @@ const OptimizedImage = ({
 
   const optimizedSrc = inView ? src : '';
 
+  // Mode « fond » : on précharge et décode l'image, le bloc crème reste jusque-là.
+  useEffect(() => {
+    if (!asBackground || !inView || !src) return;
+    let cancelled = false;
+    const img = new Image();
+    img.src = src;
+    const done = () => { if (!cancelled) setLoaded(true); };
+    img.decode().then(done, done);
+    return () => { cancelled = true; };
+  }, [asBackground, inView, src]);
+
+  // Mode <img> : attendre le décodage (sur iOS `load` arrive avant la peinture).
+  const handleImgLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const done = () => setLoaded(true);
+    e.currentTarget.decode().then(done, done);
+  };
+
   if (asBackground) {
     return (
       <div
         ref={ref}
-        className={`${className} transition-opacity duration-500 ${inView ? 'opacity-100' : 'opacity-0'}`}
+        className={`relative overflow-hidden ${className}`}
         style={{
           ...style,
-          backgroundImage: inView ? `url('${src}')` : undefined,
+          backgroundImage: loaded ? `url('${src}')` : undefined,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
         }}
         onClick={onClick}
       >
+        <div
+          aria-hidden
+          className={`absolute inset-0 skeleton pointer-events-none transition-opacity duration-500 ${loaded ? 'opacity-0' : 'opacity-100'}`}
+        />
         {children}
       </div>
     );
@@ -89,13 +110,15 @@ const OptimizedImage = ({
           alt={alt}
           loading="lazy"
           decoding="async"
-          onLoad={() => setLoaded(true)}
+          onLoad={handleImgLoad}
+          onError={() => setLoaded(true)}
           className={`w-full h-full object-cover transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
         />
       )}
-      {!loaded && (
-        <div className="absolute inset-0 skeleton" />
-      )}
+      <div
+        aria-hidden
+        className={`absolute inset-0 skeleton pointer-events-none transition-opacity duration-500 ${loaded ? 'opacity-0' : 'opacity-100'}`}
+      />
       {children}
     </div>
   );

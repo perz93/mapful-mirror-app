@@ -132,12 +132,12 @@ const CreateListing = () => {
       <div className="relative z-10 px-4 sm:px-6 pb-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         <Link
           to="/marketplace"
-          className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white shadow-sm hover:scale-105 active:scale-95 transition-all mb-4"
+          className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform mb-6"
         >
-          <ArrowLeft className="w-5 h-5 text-stone-700" />
+          <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
         </Link>
-        <h1 className="text-3xl  text-stone-800 text-center">{t('market.newListing')}</h1>
-        <p className="text-stone-500 font-light text-center mt-1">{t('market.offerServices')}</p>
+        <h1 className="text-[40px] leading-[0.95] tracking-tighter text-ink">{t('market.newListing')}</h1>
+        <p className="mt-2 text-stone-500">{t('market.offerServices')}</p>
       </div>
 
       {/* Form */}
@@ -157,9 +157,9 @@ const CreateListing = () => {
                   <button
                     type="button"
                     onClick={removeImage}
-                    className="absolute right-2 top-2 rounded-full bg-black/70 p-2"
+                    className="absolute right-3 top-3 flex size-8 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform"
                   >
-                    <X className="text-white" size={16} />
+                    <X size={16} strokeWidth={1.75} />
                   </button>
                 </div>
               ) : (

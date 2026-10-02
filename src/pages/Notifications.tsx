@@ -1,4 +1,6 @@
 import { useNavigate } from 'react-router-dom';
+import EmptyState from '@/components/EmptyState';
+import ShimmerImage from '@/components/ShimmerImage';
 import { ArrowLeft, Bell, BellOff, Check, CheckCheck } from 'lucide-react';
 import { useNotificationInbox } from '@/hooks/useNotificationInbox';
 import { useAuth } from '@/contexts/AuthContext';
@@ -21,19 +23,19 @@ const Notifications = () => {
 
   if (!user) {
     return (
-      <div className="relative min-h-screen bg-stone-50 dark:bg-stone-950 animate-fade-in animate-zoom-smooth">
-        <div className="fixed inset-x-0 top-0 z-10 max-w-md mx-auto" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
-          <div className="flex items-center gap-3 px-4 py-3 bg-white dark:bg-stone-900/80 border-b border-stone-200 dark:border-stone-800/50">
-            <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800">
-              <ArrowLeft size={22} />
-            </button>
-            <h1 className="text-lg font-medium tracking-tight">{t('notif.title')}</h1>
-          </div>
+      <div className="relative min-h-screen bg-parchment max-w-md mx-auto animate-fade-in">
+        <div className="px-4 pb-6" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
+          <button onClick={() => navigate(-1)} aria-label="Retour" className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform mb-6">
+            <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
+          </button>
+          <h1 className="text-[40px] leading-[0.95] tracking-tighter text-ink">{t('notif.title')}</h1>
         </div>
-        <div className="flex flex-col items-center justify-center h-screen gap-4 px-6">
-          <BellOff size={48} className="text-stone-300" />
-          <p className="text-stone-500 text-center">{t('auth.loginToSee')}</p>
-          <button onClick={() => navigate('/auth')} className="px-6 py-3 rounded-2xl bg-lime text-ink font-semibold">
+        <div className="mx-4 rounded-3xl bg-white p-6">
+          <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-parchment">
+            <BellOff size={18} strokeWidth={1.75} className="text-ink" />
+          </span>
+          <p className="text-ink font-medium mb-4">{t('auth.loginToSee')}</p>
+          <button onClick={() => navigate('/auth')} className="h-12 px-6 rounded-full bg-lime text-ink font-medium hover:bg-lime-deep transition-colors">
             {t('auth.login')}
           </button>
         </div>
@@ -42,33 +44,31 @@ const Notifications = () => {
   }
 
   return (
-    <div className="relative min-h-screen bg-stone-50 dark:bg-stone-950 max-w-md mx-auto animate-fade-in animate-zoom-smooth">
-      {/* Header */}
-      <div className="fixed inset-x-0 top-0 z-10 max-w-md mx-auto" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
-        <div className="flex items-center gap-3 px-4 py-3 bg-white dark:bg-stone-900/80 border-b border-stone-200 dark:border-stone-800/50">
-          <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors">
-            <ArrowLeft size={22} className="text-stone-900 dark:text-white" />
+    <div className="relative min-h-screen bg-parchment max-w-md mx-auto animate-fade-in">
+      {/* En-tête : même structure que les autres pages */}
+      <div className="px-4 pb-6" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
+        <div className="flex items-center justify-between mb-6">
+          <button onClick={() => navigate(-1)} aria-label="Retour" className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform">
+            <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
           </button>
-          <div className="flex-1">
-            <h1 className="text-lg font-medium tracking-tight text-stone-900 dark:text-white">{t('notif.title')}</h1>
-            {unreadCount > 0 && (
-              <p className="text-xs text-stone-500">{unreadCount} {unreadCount > 1 ? t('notif.unreadPlural') : t('notif.unread')}</p>
-            )}
-          </div>
           {unreadCount > 0 && (
             <button
               onClick={markAllAsRead}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-lime/30 text-ink text-xs font-semibold hover:bg-lime/60 transition-colors"
+              className="inline-flex items-center gap-1.5 h-10 px-4 rounded-full bg-white text-ink text-sm font-medium hover:bg-stone-100 transition-colors"
             >
-              <CheckCheck size={14} />
+              <CheckCheck size={16} strokeWidth={1.75} />
               {t('notif.markAllRead')}
             </button>
           )}
         </div>
+        <h1 className="text-[40px] leading-[0.95] tracking-tighter text-ink">{t('notif.title')}</h1>
+        {unreadCount > 0 && (
+          <p className="mt-2 text-stone-500">{unreadCount} {unreadCount > 1 ? t('notif.unreadPlural') : t('notif.unread')}</p>
+        )}
       </div>
 
       {/* Content */}
-      <div className="pt-24 pb-8 px-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 70px)' }}>
+      <div className="pb-8 px-4">
         {loading ? (
           <div className="flex flex-col gap-3">
             {[1, 2, 3, 4, 5].map(i => (
@@ -85,17 +85,7 @@ const Notifications = () => {
             ))}
           </div>
         ) : notifications.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-4">
-            <div className="w-20 h-20 rounded-full bg-stone-100 dark:bg-stone-800 flex items-center justify-center">
-              <Bell size={36} className="text-stone-300 dark:text-stone-600" />
-            </div>
-            <p className="text-stone-500 dark:text-stone-400 text-center text-sm">
-              {t('notif.empty')}
-            </p>
-            <p className="text-stone-400 dark:text-stone-500 text-center text-xs max-w-[250px]">
-              {t('notif.emptyHint')}
-            </p>
-          </div>
+          <EmptyState icon={Bell} title={t('notif.empty')} hint={t('notif.emptyHint')} />
         ) : (
           <div className="flex flex-col gap-2">
             {notifications.map((notif) => (
@@ -114,7 +104,7 @@ const Notifications = () => {
                 {/* Image or icon */}
                 <div className="flex-shrink-0 w-12 h-12 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800">
                   {notif.image_url ? (
-                    <img src={notif.image_url} alt="" className="w-full h-full object-cover" />
+                    <ShimmerImage src={notif.image_url} alt="" className="w-full h-full" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-xl">
                       {typeIcons[notif.notification_type] || '🔔'}

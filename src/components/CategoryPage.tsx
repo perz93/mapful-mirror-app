@@ -1,4 +1,6 @@
 import { Calendar, Clock, ArrowLeft } from 'lucide-react';
+import EmptyState from './EmptyState';
+import { CalendarDays } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useEventsByCategory } from '@/hooks/useEventsByCategory';
 import { format } from 'date-fns';
@@ -64,9 +66,7 @@ const CategoryPage = ({
         <Header />
 
         <div className="p-4 pt-5 space-y-4 pb-10">
-          {!events || events.length === 0 ? <div className="flex items-center justify-center min-h-[50vh]">
-              <p className="text-stone-500 dark:text-stone-400">{t('event.noEvents')}</p>
-            </div> : events.map((event, i) => <Link key={event.id} to={`/event/${event.id}`} className="block group">
+          {!events || events.length === 0 ? <EmptyState icon={CalendarDays} title={t('event.noEvents')} /> : events.map((event, i) => <Link key={event.id} to={`/event/${event.id}`} className="block group">
                 <article
                   className="overflow-hidden rounded-3xl bg-white dark:bg-stone-900 p-2 transition-transform duration-300 active:scale-[0.99] animate-fade-in"
                   style={{ animationDelay: `${i * 0.06}s` }}

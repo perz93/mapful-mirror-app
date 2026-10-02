@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { FormPageSkeleton } from '@/components/PageSkeleton';
 import SectionTitle from '@/components/SectionTitle';
 import { addBaseMap } from '@/lib/mapTiles';
 import { Link, useNavigate } from 'react-router-dom';
@@ -42,7 +43,7 @@ const categoryIcons: Record<string, string> = {
   sports: sportIcon,
 };
 
-const inputClass = "h-9 rounded-xl bg-white border border-stone-300 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-ink [&]:ring-0 [&]:outline-none";
+const inputClass = "h-12 px-4 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] focus:outline-none focus:ring-0 focus:border-ink [&]:ring-0 [&]:outline-none";
 const labelClass = "text-sm text-stone-600 font-normal";
 const cardClass = "rounded-3xl bg-white p-5 space-y-3";
 
@@ -369,9 +370,7 @@ const CreateEvent = () => {
   // Show loading state while checking authentication
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-10 h-10 border-3 border-ink border-t-transparent rounded-full animate-spin" />
-      </div>
+      <FormPageSkeleton />
     );
   }
 
@@ -387,17 +386,17 @@ const CreateEvent = () => {
       {/* Content */}
       <div className="relative mx-auto max-w-md">
         {/* Header */}
-        <div className="px-4 sm:px-6 pt-12 sm:pt-16 pb-8 sm:pb-10">
+        <div className="px-4 sm:px-6 pb-6" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
           <Link
             to="/"
-            className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white shadow-sm hover:scale-105 active:scale-95 transition-all mb-8"
+            className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform mb-6"
           >
-            <ArrowLeft className="w-5 h-5 text-stone-700" />
+            <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
           </Link>
-          <h1 className="text-4xl  text-stone-800 mb-3 text-center">
+          <h1 className="text-[40px] leading-[0.95] tracking-tighter text-ink">
             {t('event.create')}
           </h1>
-          <p className="text-stone-500 font-light text-center">{t('form.shareEvent')}</p>
+          <p className="mt-2 text-stone-500">{t('form.shareEvent')}</p>
         </div>
 
         {/* Form Cards */}
@@ -648,7 +647,7 @@ const CreateEvent = () => {
                   value={formData.description}
                   onChange={e => setFormData({ ...formData, description: e.target.value })}
                   rows={5}
-                  className="rounded-xl bg-white border border-stone-300 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-ink resize-none"
+                  className="rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 py-3 focus:outline-none focus:ring-0 focus:border-ink resize-none"
                 />
               </div>
             </div>
@@ -788,7 +787,7 @@ const CreateEvent = () => {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="w-full h-12 rounded-full bg-lime text-ink font-semibold text-base hover:opacity-90 transition-all active:scale-[0.98]"
+                className="w-full h-12 rounded-full bg-lime text-ink text-[15px] font-medium hover:bg-lime-deep transition-colors active:scale-[0.98]"
               >
                 {submitting ? (
                   <>

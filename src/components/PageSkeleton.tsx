@@ -84,9 +84,21 @@ export const CategoryPageSkeleton = () => (
 
 /** Skeleton for CreateEvent / form pages */
 export const FormPageSkeleton = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <div className="flex flex-col items-center gap-3">
-      <div className="w-10 h-10 border-2 border-ink border-t-transparent rounded-full animate-spin" />
+  <div className="min-h-screen bg-parchment">
+    <div className="mx-auto max-w-md px-4 space-y-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
+      <ShimmerBlock className="h-10 w-10 rounded-full" />
+      <ShimmerBlock className="h-9 w-3/4 rounded-xl" />
+      <ShimmerBlock className="h-4 w-1/2" />
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="rounded-3xl bg-white p-5 space-y-3">
+          <div className="flex items-center gap-3">
+            <ShimmerBlock className="size-10 rounded-2xl skeleton-on-white" />
+            <ShimmerBlock className="h-5 w-40 skeleton-on-white" />
+          </div>
+          <ShimmerBlock className="h-11 w-full rounded-xl skeleton-on-white" />
+          <ShimmerBlock className="h-11 w-full rounded-xl skeleton-on-white" />
+        </div>
+      ))}
     </div>
   </div>
 );
@@ -119,7 +131,7 @@ export const AccountSkeleton = () => (
     {/* Stats */}
     <div className="grid grid-cols-3 gap-3 w-full mb-6">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="flex flex-col items-center gap-2 rounded-2xl bg-white/50 border border-white/60 p-3">
+        <div key={i} className="flex flex-col items-center gap-2 rounded-3xl bg-white p-3">
           <ShimmerBlock className="w-4 h-4 rounded" />
           <ShimmerBlock className="h-6 w-8 rounded" />
           <ShimmerBlock className="h-2 w-12 rounded" />
@@ -131,7 +143,7 @@ export const AccountSkeleton = () => (
     {/* List items */}
     <div className="w-full space-y-3">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="flex items-stretch gap-3 rounded-2xl bg-white/80 p-4">
+        <div key={i} className="flex items-stretch gap-3 rounded-3xl bg-white p-4">
           <div className="flex-1 space-y-2">
             <ShimmerBlock className="h-3 w-20" />
             <ShimmerBlock className="h-4 w-3/4" />
@@ -149,7 +161,7 @@ export const AccountSkeleton = () => (
 export const ManageEventsSkeleton = () => (
   <div className="space-y-4">
     {[1, 2, 3].map((i) => (
-      <div key={i} className="rounded-2xl bg-white/80 border border-white/60 p-4 space-y-3">
+      <div key={i} className="rounded-3xl bg-white p-4 space-y-3">
         <div className="flex items-center gap-3">
           <ShimmerBlock className="w-16 h-16 rounded-xl flex-shrink-0" />
           <div className="flex-1 space-y-2">
@@ -172,7 +184,7 @@ export const EditEventSkeleton = () => (
   <div className="mx-auto max-w-md px-4 pt-20 space-y-4">
     <ShimmerBlock className="h-48 rounded-2xl" />
     {[1, 2, 3].map((i) => (
-      <div key={i} className="rounded-2xl bg-white/50 border border-white/60 p-4 space-y-3">
+      <div key={i} className="rounded-3xl bg-white p-4 space-y-3">
         <ShimmerBlock className="h-5 w-32" />
         <ShimmerBlock className="h-9 w-full rounded-xl" />
         <ShimmerBlock className="h-9 w-full rounded-xl" />

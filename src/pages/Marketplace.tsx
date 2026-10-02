@@ -1,11 +1,11 @@
 import { useState } from 'react';
+import EmptyState from '@/components/EmptyState';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, MapPin, Phone, Mail, DoorOpen, ChefHat, Disc3, Flower2, Shapes } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Button } from '@/components/ui/button';
 import ShimmerImage from '@/components/ShimmerImage';
 
 const categoryConfig = {
@@ -56,22 +56,22 @@ const Marketplace = () => {
     <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-parchment animate-fade-in animate-zoom-smooth">
 
       {/* Header */}
-      <div className="relative z-10 flex items-center justify-between px-4 pb-4 animate-fade-in" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
+      <div className="relative z-10 flex items-center justify-between px-4 pb-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         <Link
           to="/"
-          className="flex size-10 items-center justify-center rounded-full bg-white transition-all duration-200 active:scale-95"
+          className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform"
         >
-          <ArrowLeft className="text-ink" size={18} strokeWidth={1.75} />
+          <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
         </Link>
-        <h1 className="text-[22px] leading-tight font-medium tracking-tight  text-stone-800">{t('market.title')}</h1>
-        <Button
+        <button
           onClick={handleCreateListing}
-          size="icon"
-          className="size-10 rounded-full bg-lime hover:bg-lime-deep transition-all duration-200 active:scale-95"
+          aria-label={t('market.newListing')}
+          className="inline-flex size-10 items-center justify-center rounded-full bg-lime text-ink hover:bg-lime-deep active:scale-95 transition-transform"
         >
-          <Plus className="text-ink" size={20} strokeWidth={1.75} />
-        </Button>
+          <Plus size={20} strokeWidth={1.75} />
+        </button>
       </div>
+      <h1 className="relative z-10 px-4 pb-5 text-[40px] leading-[0.95] tracking-tighter text-ink">{t('market.title')}</h1>
 
       {/* Filtres de catégorie — sans animation d'entrée : Safari iOS pouvait
           laisser la rangée bloquée à opacity 0 (animation retardée + défilement). */}
@@ -157,7 +157,7 @@ const Marketplace = () => {
                       {/* Price on image */}
                       {listing.price !== null && (
                         <div className="absolute top-3 right-3">
-                          <span className="inline-flex items-center px-3 py-1.5 rounded-xl bg-white text-stone-900 text-xs font-bold whitespace-nowrap shadow-sm">
+                          <span className="inline-flex items-center h-7 px-3 rounded-full bg-white text-ink text-xs font-medium whitespace-nowrap tabular">
                             {listing.price.toLocaleString()} FCFA
                           </span>
                         </div>
@@ -213,19 +213,17 @@ const Marketplace = () => {
             })}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="mb-4 flex size-20 items-center justify-center rounded-3xl bg-white">
-              <Shapes className="text-ink" size={32} strokeWidth={1.5} />
-            </div>
-            <h3 className="mb-2 text-lg font-semibold text-stone-800 ">{t('market.noListings')}</h3>
-            <p className="mb-4 text-sm text-stone-500">
-              {t('market.beFirst')}
-            </p>
-            <Button onClick={handleCreateListing} className="rounded-full px-6">
-              <Plus size={16} className="mr-2" />
-              {t('market.createListing')}
-            </Button>
-          </div>
+          <EmptyState
+            icon={Shapes}
+            title={t('market.noListings')}
+            hint={t('market.beFirst')}
+            action={
+              <button onClick={handleCreateListing} className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-lime text-ink text-sm font-medium hover:bg-lime-deep transition-colors active:scale-95">
+                <Plus size={16} strokeWidth={1.75} />
+                {t('market.createListing')}
+              </button>
+            }
+          />
         )}
       </div>
 

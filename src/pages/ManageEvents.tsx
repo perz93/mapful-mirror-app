@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import EmptyState from '@/components/EmptyState';
+import { CalendarDays } from 'lucide-react';
 import { ArrowLeft, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -57,36 +59,36 @@ const ManageEvents = () => {
         <div className="flex items-center justify-between px-5" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)', paddingBottom: '12px' }}>
           <Link
             to="/my-account"
-            className="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm hover:scale-105 active:scale-95 transition-all"
+            className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform"
           >
-            <ArrowLeft className="w-5 h-5 text-stone-700" />
+            <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
           </Link>
-
-          <h1 className="text-stone-800 text-lg font-semibold ">{t('manage.title')}</h1>
 
           <Link
             to="/create-event"
-            className="w-11 h-11 rounded-full bg-primary backdrop-blur-md flex items-center justify-center hover:opacity-90 transition-all shadow-sm"
+            aria-label={t('event.create')}
+            className="inline-flex size-10 items-center justify-center rounded-full bg-lime text-ink hover:bg-lime-deep active:scale-95 transition-transform"
           >
-            <Plus className="w-5 h-5 text-primary-foreground" />
+            <Plus size={20} strokeWidth={1.75} />
           </Link>
         </div>
+        <h1 className="px-5 pt-4 pb-2 text-[40px] leading-[0.95] tracking-tighter text-ink">{t('manage.title')}</h1>
 
         {/* Events List */}
         <div className="flex-1 px-6 pb-8 pt-4">
           {loading ? (
             <ManageEventsSkeleton />
           ) : events.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground mb-4">{t('manage.noEvents')}</p>
-              <Link
-                to="/create-event"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-all"
-              >
-                <Plus className="w-5 h-5" />
-                {t('event.create')}
-              </Link>
-            </div>
+            <EmptyState
+              icon={CalendarDays}
+              title={t('manage.noEvents')}
+              action={
+                <Link to="/create-event" className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-lime text-ink text-sm font-medium hover:bg-lime-deep transition-colors active:scale-95">
+                  <Plus size={16} strokeWidth={1.75} />
+                  {t('event.create')}
+                </Link>
+              }
+            />
           ) : (
             <div className="grid grid-cols-1 gap-4">
               {events.map((event) => (

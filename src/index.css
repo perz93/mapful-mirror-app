@@ -284,7 +284,8 @@ body {
   height: 50px;
   border-radius: 50%;
   overflow: hidden;
-  background: white;
+  /* Ton de chargement crème, recouvert par la photo une fois chargée */
+  background: #ebe9dd;
   border: none;
   box-shadow:
     0 0 0 3px white,
@@ -316,7 +317,20 @@ body {
     0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 
+.marker-image-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(100deg, rgb(251 250 243 / 0) 20%, rgb(251 250 243 / 0.6) 50%, rgb(251 250 243 / 0) 80%);
+  background-size: 300% 100%;
+  animation: map-shimmer 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  z-index: 0;
+}
+
 .marker-event-image {
+  position: relative;
+  z-index: 1;
   width: 100% !important;
   height: 100% !important;
   min-width: 100% !important;
@@ -509,6 +523,7 @@ body {
 }
 
 .popup-card-image {
+  background-color: #ebe9dd;
   height: 280px;
   background-size: cover;
   background-position: center;

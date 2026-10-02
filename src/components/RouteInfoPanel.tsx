@@ -216,7 +216,7 @@ const RouteInfoPanel = ({
         >
           <button
             onClick={() => setRouteDestination(null)}
-            className="absolute -top-3 -right-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white dark:bg-stone-900/80 hover:bg-white dark:hover:bg-stone-900 text-stone-800 dark:text-stone-100 hover:scale-105 active:scale-95 transition-all duration-300"
+            className="absolute -top-3 -right-3 z-10 flex size-10 items-center justify-center rounded-full bg-white text-ink hover:bg-stone-100 active:scale-95 transition-colors"
             style={{ animation: 'close-btn-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.18s both' }}
             aria-label={t('map.closeRoute')}
           >

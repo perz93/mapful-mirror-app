@@ -53,7 +53,7 @@ const NotificationPrompt = () => {
           <button
             onClick={handleSubscribe}
             disabled={loading}
-            className="flex-shrink-0 h-6 px-3 rounded-full bg-lime text-ink text-[10px] font-semibold hover:opacity-90 transition-all active:scale-95 disabled:opacity-50"
+            className="flex-shrink-0 h-8 px-4 rounded-full bg-lime text-ink text-xs font-medium hover:bg-lime-deep transition-colors active:scale-95 disabled:opacity-50"
           >
             OK
           </button>

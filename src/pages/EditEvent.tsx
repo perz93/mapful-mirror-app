@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { EditEventSkeleton } from '@/components/PageSkeleton';
 
-const inputClass = "h-9 rounded-xl bg-white border border-stone-300 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-ink w-full px-3";
+const inputClass = "h-12 px-4 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] focus:outline-none focus:ring-0 focus:border-ink w-full";
 const labelClass = "text-sm text-stone-600 font-normal";
 const cardClass = "rounded-3xl bg-white p-5 space-y-3";
 
@@ -188,14 +188,14 @@ const EditEvent = () => {
         <div className="px-4 pb-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
           <Link
             to="/manage-events"
-            className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white shadow-sm hover:scale-105 active:scale-95 transition-all mb-6"
+            className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform mb-6"
           >
-            <ArrowLeft className="w-5 h-5 text-stone-700" />
+            <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
           </Link>
-          <h1 className="text-3xl  text-stone-800 mb-2 text-center">
+          <h1 className="text-[40px] leading-[0.95] tracking-tighter text-ink">
             {t('event.edit')}
           </h1>
-          <p className="text-stone-500 font-light text-center text-sm">{t('form.updateInfo')}</p>
+          <p className="mt-2 text-stone-500">{t('form.updateInfo')}</p>
         </div>
 
         {/* Form */}
@@ -232,7 +232,7 @@ const EditEvent = () => {
 
               <div className="space-y-2">
                 <label className={labelClass}>{t('form.description')}</label>
-                <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} rows={4} className="rounded-xl bg-white border border-stone-300 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-ink w-full px-3 py-2 resize-none" />
+                <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} rows={4} className="rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 py-3 focus:outline-none focus:ring-0 focus:border-ink w-full px-3 py-2 resize-none" />
               </div>
 
               <div className="space-y-2">
@@ -350,7 +350,7 @@ const EditEvent = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full h-12 rounded-full bg-lime text-ink font-semibold text-base hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full h-12 rounded-full bg-lime text-ink text-[15px] font-medium hover:bg-lime-deep transition-colors active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {submitting ? (
                   <>

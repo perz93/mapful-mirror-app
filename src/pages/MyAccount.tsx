@@ -158,8 +158,8 @@ const MyAccount = () => {
       <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
-          <Link to="/" aria-label="Retour" className="w-10 h-10 rounded-full bg-white flex items-center justify-center active:scale-95 transition-transform">
-            <ArrowLeft className="w-[18px] h-[18px] text-ink" strokeWidth={1.75} />
+          <Link to="/" aria-label="Retour" className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform">
+            <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
           </Link>
           <h1 className="eyebrow text-stone-500">
             {t('account.title')}
@@ -177,7 +177,7 @@ const MyAccount = () => {
             <div className="w-24 h-24 rounded-full overflow-hidden">
               <div className="w-full h-full">
                 {profile?.avatar_url ? (
-                  <img src={profile.avatar_url} alt={displayName} className="w-full h-full object-cover" />
+                  <ShimmerImage src={profile.avatar_url} alt={displayName} loading="eager" className="w-full h-full" />
                 ) : (
                   <div className="w-full h-full bg-lime flex items-center justify-center">
                     <span className="font-display text-ink text-[32px] tracking-tight">{initials}</span>
@@ -252,7 +252,7 @@ const MyAccount = () => {
                     <p className="text-stone-500 text-sm mb-3">{t('account.noEvents')}</p>
                     <Link
                       to="/create-event"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lime text-ink text-xs font-semibold hover:opacity-90 transition-all active:scale-95"
+                      className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-lime text-ink text-sm font-medium hover:bg-lime-deep transition-colors active:scale-95 disabled:opacity-50"
                     >
                       {t('account.createFirst')}
                     </Link>
@@ -287,7 +287,7 @@ const MyAccount = () => {
                     <p className="text-stone-500 text-sm mb-3">{t('account.noListings')}</p>
                     <Link
                       to="/create-listing"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lime text-ink text-xs font-semibold hover:opacity-90 transition-all active:scale-95"
+                      className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-lime text-ink text-sm font-medium hover:bg-lime-deep transition-colors active:scale-95 disabled:opacity-50"
                     >
                       {t('account.publishListing')}
                     </Link>

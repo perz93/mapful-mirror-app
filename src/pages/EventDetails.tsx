@@ -140,14 +140,14 @@ const EventDetails = () => {
           <div className="absolute left-4 right-4 flex items-center justify-between top-3">
             <button 
               onClick={(e) => { e.stopPropagation(); navigate(-1); }}
-              className="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-parchment transition-all"
+              className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform"
             >
-              <ArrowLeft className="w-[18px] h-[18px] text-ink" strokeWidth={1.75} />
+              <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
             </button>
             <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
               <button
                 onClick={toggleReminder}
-                className={`flex h-10 w-10 items-center justify-center rounded-full backdrop-blur-sm transition-all ${
+                className={`flex size-10 items-center justify-center rounded-full transition-colors ${
                   reminderSet
                     ? 'bg-lime text-ink'
                     : 'bg-white text-ink hover:bg-parchment'
@@ -175,7 +175,7 @@ const EventDetails = () => {
               <button
                 onClick={toggleFavorite}
                 disabled={favLoading}
-                className={`flex h-10 w-10 items-center justify-center rounded-full backdrop-blur-sm transition-all active:scale-90 disabled:opacity-50 ${
+                className={`flex size-10 items-center justify-center rounded-full transition-colors active:scale-90 disabled:opacity-50 ${
                   isFavorite
                     ? 'bg-ink text-lime'
                     : 'bg-white text-ink hover:bg-parchment'

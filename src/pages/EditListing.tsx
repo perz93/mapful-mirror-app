@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { FormPageSkeleton } from '@/components/PageSkeleton';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Upload, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -178,23 +179,21 @@ const EditListing = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-ink border-t-transparent" />
-      </div>
+      <FormPageSkeleton />
     );
   }
 
   return (
     <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-background animate-fade-in animate-zoom-smooth">
       {/* Header */}
-      <div className="relative z-10 flex items-center gap-4 px-4 pt-12 pb-4">
+      <div className="relative z-10 px-4 pb-5" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         <Link
           to="/my-account"
-          className="flex size-10 items-center justify-center rounded-full bg-white"
+          className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform mb-6"
         >
-          <ArrowLeft className="text-ink" size={18} strokeWidth={1.75} />
+          <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
         </Link>
-        <h1 className="text-[22px] leading-tight font-medium tracking-tight">Modifier l'annonce</h1>
+        <h1 className="text-[40px] leading-[0.95] tracking-tighter text-ink">Modifier l'annonce</h1>
       </div>
 
       {/* Form */}
@@ -214,9 +213,9 @@ const EditListing = () => {
                   <button
                     type="button"
                     onClick={removeImage}
-                    className="absolute right-2 top-2 rounded-full bg-black/70 p-2"
+                    className="absolute right-3 top-3 flex size-8 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform"
                   >
-                    <X className="text-white" size={16} />
+                    <X size={16} strokeWidth={1.75} />
                   </button>
                 </div>
               ) : (
