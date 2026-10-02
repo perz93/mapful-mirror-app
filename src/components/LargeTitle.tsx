@@ -60,7 +60,7 @@ const LargeTitle = ({ children, className = '', compactTitle, backTo, right }: L
             <ArrowLeft size={18} strokeWidth={1.75} />
           </button>
         )}
-        <p className="pointer-events-none absolute inset-x-16 truncate text-center text-[16px] font-medium text-ink">
+        <p className="pointer-events-none absolute inset-x-16 truncate text-center font-display text-[18px] leading-none tracking-[-0.025em] text-ink">
           {label}
         </p>
         <div className="flex min-w-10 justify-end">{right}</div>
