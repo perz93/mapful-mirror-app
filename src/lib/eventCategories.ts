@@ -1,9 +1,10 @@
 import atelierIcon from '@/assets/icons/atelier.png';
 import brunchIcon from '@/assets/icons/brunch.png';
 import concertIcon from '@/assets/icons/concert.png';
-import conferenceIcon from '@/assets/icons/conference.png';
-import expositionIcon from '@/assets/icons/exposition.png';
+import businessIcon from '@/assets/icons/business.png';
+import artIcon from '@/assets/icons/art.png';
 import festivalIcon from '@/assets/icons/festival.png';
+import soireeIcon from '@/assets/icons/soiree.png';
 import meetupIcon from '@/assets/icons/meetup.png';
 import religieuxIcon from '@/assets/icons/religieux.png';
 import spectacleIcon from '@/assets/icons/spectacle.png';
@@ -22,13 +23,13 @@ export interface EventCategory {
 }
 
 export const EVENT_CATEGORIES: EventCategory[] = [
-  { value: 'nightlife', tKey: 'cat.nightlife', path: '/soirees', icon: festivalIcon },
+  { value: 'nightlife', tKey: 'cat.nightlife', path: '/soirees', icon: soireeIcon },
   { value: 'music', tKey: 'cat.music', path: '/concerts', icon: concertIcon },
   { value: 'festivals', tKey: 'cat.festivals', path: '/festivals', icon: festivalIcon },
   { value: 'shows', tKey: 'cat.shows', path: '/shows', icon: spectacleIcon },
   { value: 'brunch', tKey: 'cat.brunch', path: '/brunch', icon: brunchIcon },
-  { value: 'exhibitions', tKey: 'cat.exhibitions', path: '/exhibitions', icon: expositionIcon },
-  { value: 'conferences', tKey: 'cat.conferences', path: '/conferences', icon: conferenceIcon },
+  { value: 'exhibitions', tKey: 'cat.exhibitions', path: '/exhibitions', icon: artIcon },
+  { value: 'conferences', tKey: 'cat.conferences', path: '/conferences', icon: businessIcon },
   { value: 'workshops', tKey: 'cat.workshops', path: '/workshops', icon: atelierIcon },
   { value: 'sports', tKey: 'cat.sports', path: '/sports', icon: sportIcon },
   { value: 'family', tKey: 'cat.family', path: '/famille', icon: meetupIcon },
