@@ -86,7 +86,7 @@ const Marketplace = () => {
         <div className="flex gap-2 overflow-x-auto px-4 scroll-px-4 pb-1 scrollbar-hide snap-x">
           <button
             onClick={() => setSelectedCategory('all')}
-            className={`snap-start flex-shrink-0 inline-flex items-center h-10 rounded-full px-4 text-sm font-medium border transition-colors duration-200 active:scale-95 ${
+            className={`snap-start flex-shrink-0 inline-flex items-center h-12 rounded-full px-4 text-[13px] font-medium border transition-colors duration-200 active:scale-95 ${
               selectedCategory === 'all'
                 ? 'bg-ink text-parchment border-ink'
                 : 'bg-white text-ink border-stone-200 hover:border-ink'
@@ -102,16 +102,19 @@ const Marketplace = () => {
               <button
                 key={key}
                 onClick={() => setSelectedCategory(key)}
-                className={`snap-start flex-shrink-0 inline-flex items-center gap-2 h-10 rounded-full pl-1.5 pr-4 text-sm font-medium border transition-colors duration-200 active:scale-95 ${
+                className={`snap-start flex-shrink-0 inline-flex items-center gap-2 h-12 rounded-full pl-1.5 pr-4 text-[13px] font-medium border transition-colors duration-200 active:scale-95 ${
                   active
                     ? 'bg-ink text-parchment border-ink'
                     : 'bg-white text-ink border-stone-200 hover:border-ink'
                 }`}
               >
-                <span className={`flex size-7 items-center justify-center rounded-full ${active ? 'bg-lime text-ink' : 'bg-parchment text-ink'}`}>
-                  <Icon size={14} strokeWidth={1.75} />
+                <span className={`flex size-9 flex-shrink-0 items-center justify-center rounded-full ${active ? 'bg-lime text-ink' : 'bg-parchment text-ink'}`}>
+                  <Icon size={20} strokeWidth={1.75} />
                 </span>
-                {lang === 'en' ? config.en : config.fr}
+                {/* Nom sur deux lignes, comme les pages événements */}
+                <span className="max-w-[92px] whitespace-normal text-left leading-[1.15]">
+                  {lang === 'en' ? config.en : config.fr}
+                </span>
               </button>
             );
           })}
