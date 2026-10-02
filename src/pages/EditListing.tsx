@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { FormPageSkeleton } from '@/components/PageSkeleton';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Upload, X } from 'lucide-react';
+import { ArrowLeft, X, Image as ImageIcon, Type, AlignLeft, Ticket, MapPin, Phone, Mail } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import SectionTitle from '@/components/SectionTitle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Tables } from '@/integrations/supabase/types';
@@ -28,6 +28,11 @@ const priceTypes = [
   { value: 'daily', label: 'Par jour' },
   { value: 'negotiable', label: 'Négociable' },
 ];
+
+const labelClass = "text-sm text-stone-600 font-normal";
+const cardClass = "rounded-3xl bg-white p-5 space-y-3";
+const inputClass = "h-12 px-4 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] focus:outline-none focus:ring-0 focus:border-ink";
+
 
 const EditListing = () => {
   const { id } = useParams<{ id: string }>();
@@ -184,7 +189,7 @@ const EditListing = () => {
   }
 
   return (
-    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-background animate-fade-in animate-zoom-smooth">
+    <div className="relative mx-auto flex min-h-screen max-w-md flex-col bg-parchment animate-fade-in">
       {/* Header */}
       <div className="relative z-10 px-4 pb-5" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         <Link
@@ -194,116 +199,65 @@ const EditListing = () => {
           <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
         </Link>
         <h1 className="text-[40px] leading-[0.95] tracking-tighter text-ink">Modifier l'annonce</h1>
+        <p className="mt-2 text-stone-500">Mettez à jour les informations de votre service</p>
       </div>
 
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-4 pb-8">
-        <div className="space-y-6">
-          {/* Image Upload */}
-          <div>
-            <Label>Photo</Label>
-            <div className="mt-2">
-              {imagePreview ? (
-                <div className="relative">
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    className="h-48 w-full rounded-2xl object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={removeImage}
-                    className="absolute right-3 top-3 flex size-8 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform"
-                  >
-                    <X size={16} strokeWidth={1.75} />
-                  </button>
-                </div>
-              ) : (
-                <label className="flex h-48 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-muted-foreground/30 bg-white/50 dark:bg-stone-800/50 transition-colors hover:border-ink">
-                  <Upload className="mb-2 text-muted-foreground" size={32} />
-                  <span className="text-sm text-muted-foreground">Ajouter une photo</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="hidden"
-                  />
-                </label>
-              )}
-            </div>
+      {/* Form — même structure que « Créer un événement » */}
+      <form onSubmit={handleSubmit} className="relative z-10 flex-1 px-4 pb-10">
+        <div className="space-y-4">
+          {/* Photo */}
+          <div className={cardClass}>
+            {imagePreview ? (
+              <div className="relative">
+                <img src={imagePreview} alt="Preview" className="h-52 w-full rounded-2xl object-cover" />
+                <button
+                  type="button"
+                  onClick={removeImage}
+                  aria-label="Retirer la photo"
+                  className="absolute right-3 top-3 flex size-8 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform"
+                >
+                  <X size={16} strokeWidth={1.75} />
+                </button>
+              </div>
+            ) : (
+              <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-stone-300 p-8 text-center transition-colors hover:border-ink">
+                <span className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-lime">
+                  <ImageIcon size={24} strokeWidth={1.75} className="text-ink" />
+                </span>
+                <span className="font-medium text-ink">Ajouter une photo</span>
+                <span className="mt-1 text-sm text-stone-500">Touchez pour choisir une image</span>
+                <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+              </label>
+            )}
           </div>
 
-          {/* Title */}
-          <div>
-            <Label htmlFor="title">Titre *</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder="Ex: Salle de réception 200 personnes"
-              className="mt-2"
-              required
-            />
-          </div>
-
-          {/* Category */}
-          <div>
-            <Label>Catégorie *</Label>
-            <Select
-              value={formData.category}
-              onValueChange={(value) => setFormData({ ...formData, category: value })}
-            >
-              <SelectTrigger className="mt-2">
-                <SelectValue placeholder="Sélectionner une catégorie" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((cat) => (
-                  <SelectItem key={cat.value} value={cat.value}>
-                    {cat.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Description */}
-          <div>
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Décrivez votre service en détail..."
-              className="mt-2 min-h-[100px]"
-            />
-          </div>
-
-          {/* Price */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="price">Prix (FCFA)</Label>
+          {/* Informations */}
+          <div className={cardClass}>
+            <SectionTitle icon={Type}>Informations</SectionTitle>
+            <div className="space-y-2">
+              <Label htmlFor="title" className={labelClass}>Titre *</Label>
               <Input
-                id="price"
-                type="number"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                placeholder="0"
-                className="mt-2"
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder="Ex: Salle de réception 200 personnes"
+                className={inputClass}
+                required
               />
             </div>
-            <div>
-              <Label>Type de prix</Label>
+            <div className="space-y-2">
+              <Label className={labelClass}>Catégorie *</Label>
               <Select
-                value={formData.price_type}
-                onValueChange={(value) => setFormData({ ...formData, price_type: value })}
+                value={formData.category}
+                onValueChange={(value) => setFormData({ ...formData, category: value })}
               >
-                <SelectTrigger className="mt-2">
-                  <SelectValue />
+                <SelectTrigger className={inputClass}>
+                  <SelectValue placeholder="Sélectionner une catégorie" />
                 </SelectTrigger>
-                <SelectContent>
-                  {priceTypes.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>
-                      {type.label}
+                <SelectContent className="bg-white border-stone-200">
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.value} value={cat.value}>
+                      {cat.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -311,52 +265,106 @@ const EditListing = () => {
             </div>
           </div>
 
-          {/* Location */}
-          <div>
-            <Label htmlFor="location">Localisation</Label>
+          {/* Description */}
+          <div className={cardClass}>
+            <SectionTitle icon={AlignLeft}>Description</SectionTitle>
+            <Textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              placeholder="Décrivez votre service en détail..."
+              className="min-h-[120px]"
+            />
+          </div>
+
+          {/* Tarif */}
+          <div className={cardClass}>
+            <SectionTitle icon={Ticket}>Tarif</SectionTitle>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="price" className={labelClass}>Prix (FCFA)</Label>
+                <Input
+                  id="price"
+                  type="number"
+                  inputMode="numeric"
+                  value={formData.price}
+                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  placeholder="0"
+                  className={inputClass}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className={labelClass}>Type de prix</Label>
+                <Select
+                  value={formData.price_type}
+                  onValueChange={(value) => setFormData({ ...formData, price_type: value })}
+                >
+                  <SelectTrigger className={inputClass}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border-stone-200">
+                    {priceTypes.map((type) => (
+                      <SelectItem key={type.value} value={type.value}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          {/* Localisation */}
+          <div className={cardClass}>
+            <SectionTitle icon={MapPin}>Localisation</SectionTitle>
             <Input
               id="location"
               value={formData.location}
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
               placeholder="Ex: Cocody, Abidjan"
-              className="mt-2"
+              className={inputClass}
             />
           </div>
 
           {/* Contact */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="phone">Téléphone</Label>
+          <div className={cardClass}>
+            <SectionTitle icon={Phone}>Contact</SectionTitle>
+            <div className="space-y-2">
+              <Label htmlFor="phone" className={`${labelClass} flex items-center gap-2`}>
+                <Phone className="h-4 w-4 text-ink" strokeWidth={1.75} /> Téléphone
+              </Label>
               <Input
                 id="phone"
                 type="tel"
                 value={formData.contact_phone}
                 onChange={(e) => setFormData({ ...formData, contact_phone: e.target.value })}
-                placeholder="+225..."
-                className="mt-2"
+                placeholder="+225 XX XX XX XX XX"
+                className={inputClass}
               />
             </div>
-            <div>
-              <Label htmlFor="email">Email</Label>
+            <div className="space-y-2">
+              <Label htmlFor="email" className={`${labelClass} flex items-center gap-2`}>
+                <Mail className="h-4 w-4 text-ink" strokeWidth={1.75} /> Email
+              </Label>
               <Input
                 id="email"
                 type="email"
                 value={formData.contact_email}
                 onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })}
                 placeholder="contact@..."
-                className="mt-2"
+                className={inputClass}
               />
             </div>
           </div>
 
           {/* Submit */}
-          <Button
+          <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full h-12"
+            className="w-full h-12 rounded-full bg-lime text-ink text-[15px] font-medium hover:bg-lime-deep transition-colors active:scale-[0.98] disabled:opacity-50"
           >
             {isSubmitting ? 'Mise à jour...' : 'Mettre à jour'}
-          </Button>
+          </button>
         </div>
       </form>
 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import EmptyState from '@/components/EmptyState';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, MapPin, Phone, Mail, DoorOpen, ChefHat, Disc3, Flower2, Shapes } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Plus, MapPin, Phone, Mail, DoorOpen, ChefHat, Disc3, Flower2, Shapes } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -114,21 +114,17 @@ const Marketplace = () => {
       {/* Listings */}
       <div className="flex-1 overflow-y-auto px-4 pb-24">
         {isLoading ? (
-          <div className="grid gap-4 animate-fade-in">
+          <div className="grid gap-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="overflow-hidden rounded-3xl bg-white dark:bg-stone-900 shadow-sm">
-                <div className="h-44 skeleton relative overflow-hidden">
-                </div>
-                <div className="p-4 space-y-3">
-                  <div className="h-4 skeleton rounded-md w-3/4 relative overflow-hidden">
-                  </div>
-                  <div className="h-3 skeleton rounded-md w-full relative overflow-hidden">
-                  </div>
-                  <div className="flex gap-2">
-                    <div className="h-6 skeleton rounded-full w-24 relative overflow-hidden">
-                    </div>
-                    <div className="h-6 skeleton rounded-full w-16 relative overflow-hidden">
-                    </div>
+              <div key={i} className="rounded-3xl bg-white dark:bg-stone-900 p-2">
+                <div className="h-52 rounded-[20px] skeleton" />
+                <div className="px-3 pt-4 pb-3 space-y-3">
+                  <div className="h-3 w-24 rounded-full skeleton skeleton-on-white" />
+                  <div className="h-6 w-3/4 rounded-md skeleton skeleton-on-white" />
+                  <div className="h-3 w-full rounded-md skeleton skeleton-on-white" />
+                  <div className="flex items-center justify-between border-t border-stone-200 pt-3">
+                    <div className="h-6 w-28 rounded-md skeleton skeleton-on-white" />
+                    <div className="size-9 rounded-full skeleton skeleton-on-white" />
                   </div>
                 </div>
               </div>
@@ -144,70 +140,65 @@ const Marketplace = () => {
                   key={listing.id}
                   to={`/listing/${listing.id}`}
                   style={{ animationDelay: `${Math.min(index * 60, 360)}ms`, animationFillMode: 'backwards' }}
-                  className="group relative overflow-hidden rounded-3xl bg-white dark:bg-stone-900  animate-fade-in transition-all duration-500 hover:scale-[1.02] active:scale-[0.98]"
+                  className="group block animate-fade-in"
                 >
-                  {listing.image_url ? (
-                    <div className="h-44 overflow-hidden relative">
-                      <ShimmerImage
-                        src={listing.image_url}
-                        alt={listing.title}
-                        className="h-full w-full [&_img]:transition-transform [&_img]:duration-500 [&_img]:group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                      {/* Price on image */}
-                      {listing.price !== null && (
-                        <div className="absolute top-3 right-3">
-                          <span className="inline-flex items-center h-7 px-3 rounded-full bg-white text-ink text-xs font-medium whitespace-nowrap tabular">
-                            {listing.price.toLocaleString()} FCFA
+                  {/* Même construction que les cartes d'événement des catégories */}
+                  <article className="overflow-hidden rounded-3xl bg-white dark:bg-stone-900 p-2 transition-transform duration-300 active:scale-[0.99]">
+                    <div className="relative h-52 overflow-hidden rounded-[20px]">
+                      {listing.image_url ? (
+                        <ShimmerImage
+                          src={listing.image_url}
+                          alt={listing.title}
+                          className="h-full w-full [&_img]:transition-transform [&_img]:duration-500 [&_img]:group-hover:scale-[1.03]"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-parchment">
+                          <span className="flex size-16 items-center justify-center rounded-3xl bg-white">
+                            <Icon size={28} strokeWidth={1.5} className="text-ink" />
                           </span>
                         </div>
                       )}
-                      {/* Category + Title on image */}
-                      <div className="absolute bottom-3 left-3 right-3">
-                        <div className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-medium text-ink ${config?.color || 'bg-parchment'} mb-1.5`}>
-                          <Icon size={12} strokeWidth={1.75} />
-                          {config?.label || 'Autre'}
-                        </div>
-                        <h3 className="text-white text-base font-bold leading-tight line-clamp-1 drop-shadow-sm">{listing.title}</h3>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="p-4 pb-0">
-                      <div className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-medium text-ink ${config?.color || 'bg-parchment'} mb-2`}>
-                        <Icon size={12} strokeWidth={1.75} />
+                      <span className="absolute left-3 top-3 inline-flex h-7 items-center gap-1.5 rounded-full bg-lime px-3 text-xs font-medium text-ink">
+                        <Icon size={13} strokeWidth={1.75} />
                         {config?.label || 'Autre'}
-                      </div>
-                      <h3 className="font-bold text-stone-900 dark:text-white text-base line-clamp-1">{listing.title}</h3>
-                      {listing.price !== null && (
-                        <p className="text-ink font-bold text-sm mt-1">{listing.price.toLocaleString()} FCFA</p>
-                      )}
+                      </span>
                     </div>
-                  )}
-                  <div className="p-4 pt-3 space-y-2.5">
-                    {listing.description && (
-                      <p className="text-sm text-stone-500 dark:text-stone-400 line-clamp-2 leading-relaxed">{listing.description}</p>
-                    )}
-                    <div className="flex items-center flex-wrap gap-2">
+
+                    <div className="px-3 pt-4 pb-3">
                       {listing.location && (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700/60">
-                          <MapPin size={11} className="text-ink" />
-                          <span className="text-xs font-semibold text-stone-600 dark:text-stone-300 truncate max-w-[160px] ">{listing.location}</span>
-                        </span>
+                        <p className="eyebrow flex items-center gap-1 text-stone-500 truncate">
+                          <MapPin size={11} strokeWidth={2} className="flex-shrink-0" />
+                          <span className="truncate">{listing.location}</span>
+                        </p>
                       )}
-                      {listing.price_type && listing.price_type !== 'fixed' && !listing.image_url && listing.price !== null && (
-                        <span className="inline-flex items-center px-3 py-1 rounded-full bg-lime/30 border border-ink/10 text-[10px] font-semibold text-ink">
-                          {listing.price.toLocaleString()} FCFA
-                        </span>
+                      <h3 className="mt-1 text-[22px] leading-[1.1] tracking-tight text-ink dark:text-white line-clamp-2">{listing.title}</h3>
+                      {listing.description && (
+                        <p className="mt-2 text-sm leading-relaxed text-stone-500 dark:text-stone-400 line-clamp-2">{listing.description}</p>
                       )}
-                      {listing.price_type && listing.price_type !== 'fixed' && (
-                        <span className="inline-flex items-center px-3 py-1 rounded-full bg-lime/30 border border-ink/10 text-[10px] font-semibold text-ink">
-                          {listing.price_type === 'hourly' && t('market.perHour')}
-                          {listing.price_type === 'daily' && t('market.perDay')}
-                          {listing.price_type === 'negotiable' && t('market.negotiable')}
+
+                      <div className="mt-4 flex items-center justify-between gap-3 border-t border-stone-200 dark:border-stone-800 pt-3">
+                        <div className="flex min-w-0 items-baseline gap-2">
+                          {listing.price !== null ? (
+                            <p className="font-display text-xl tracking-tight text-ink dark:text-white tabular whitespace-nowrap">
+                              {listing.price.toLocaleString('fr-FR')} <span className="text-sm text-stone-500 font-normal">FCFA</span>
+                            </p>
+                          ) : (
+                            <p className="text-sm text-stone-500">{t('market.negotiable')}</p>
+                          )}
+                          {listing.price_type && listing.price_type !== 'fixed' && listing.price !== null && (
+                            <span className="inline-flex h-6 items-center rounded-full bg-parchment px-2.5 text-[11px] font-medium text-stone-600 whitespace-nowrap">
+                              {listing.price_type === 'hourly' && t('market.perHour')}
+                              {listing.price_type === 'daily' && t('market.perDay')}
+                              {listing.price_type === 'negotiable' && t('market.negotiable')}
+                            </span>
+                          )}
+                        </div>
+                        <span className="flex size-9 flex-shrink-0 items-center justify-center rounded-full bg-ink text-lime transition-transform group-hover:translate-x-0.5">
+                          <ArrowUpRight size={16} strokeWidth={2} />
                         </span>
-                      )}
+                      </div>
                     </div>
-                  </div>
+                  </article>
                 </Link>
               );
             })}

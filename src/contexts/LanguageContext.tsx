@@ -172,6 +172,7 @@ const translations: Record<string, Record<Lang, string>> = {
   'account.myFavorites': { fr: 'Mes favoris', en: 'My favorites' },
   'account.noFavorites': { fr: 'Aucun favori', en: 'No favorites' },
   'account.favoritesHint': { fr: 'Les events que tu aimes apparaîtront ici', en: 'Events you like will appear here' },
+  'market.pricing': { fr: 'Tarif', en: 'Pricing' },
   'account.changePhoto': { fr: 'Changer la photo de profil', en: 'Change profile photo' },
   'account.goingTitle': { fr: "J'y vais", en: "I'm going" },
   'account.noActivity': { fr: 'Aucun event prévu', en: 'No events planned' },
