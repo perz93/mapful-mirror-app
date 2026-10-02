@@ -172,9 +172,6 @@ const Marketplace = () => {
                         </p>
                       )}
                       <h3 className="mt-1 text-[22px] leading-[1.1] tracking-tight text-ink dark:text-white line-clamp-2">{listing.title}</h3>
-                      {listing.description && (
-                        <p className="mt-2 text-sm leading-relaxed text-stone-500 dark:text-stone-400 line-clamp-2">{listing.description}</p>
-                      )}
 
                       <div className="mt-4 flex items-center justify-between gap-3 border-t border-stone-200 dark:border-stone-800 pt-3">
                         <div className="flex min-w-0 items-baseline gap-2">

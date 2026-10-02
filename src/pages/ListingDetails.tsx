@@ -152,7 +152,8 @@ const ListingDetails = () => {
           )}
 
           {/* Top buttons */}
-          <div className="absolute left-4 right-4 flex items-center justify-between" style={{ top: 'calc(env(safe-area-inset-top, 0px) + 20px)' }}>
+          {/* Décalés à l'intérieur de l'image (16 px des bords), comme sur les événements */}
+          <div className="absolute left-8 right-8 flex items-center justify-between" style={{ top: 'calc(env(safe-area-inset-top, 0px) + 24px)' }}>
             <button
               onClick={() => navigate(-1)}
               className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform"

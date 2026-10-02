@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Share, SquarePlus, EllipsisVertical, Download, BellRing, Maximize2, Zap, Copy, Check, AlertCircle } from 'lucide-react';
+import { Share, SquarePlus, EllipsisVertical, Download, BellRing, Maximize2, House, Copy, Check, AlertCircle } from 'lucide-react';
 
 const INSTALLED_KEY = 'pwa_installed';
 const LATER_KEY = 'pwa_install_later'; // « Plus tard » : masqué pour la session
@@ -179,7 +179,7 @@ const InstallGuide = () => {
             {[
               { icon: BellRing, label: 'Notifications' },
               { icon: Maximize2, label: 'Plein écran' },
-              { icon: Zap, label: 'Accès direct' },
+              { icon: House, label: "Écran d'accueil" },
             ].map(({ icon: Icon, label }) => (
               <div key={label} className="flex flex-col items-center gap-1.5 rounded-2xl bg-parchment px-2 py-3">
                 <Icon size={18} strokeWidth={1.75} className="text-ink" />

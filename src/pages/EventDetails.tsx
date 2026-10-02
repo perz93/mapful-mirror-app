@@ -140,7 +140,7 @@ const EventDetails = () => {
           />
           <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-ink/40 to-transparent" />
           
-          <div className="absolute left-4 right-4 flex items-center justify-between top-3">
+          <div className="absolute left-4 right-4 flex items-center justify-between top-4">
             <button 
               onClick={(e) => { e.stopPropagation(); navigate(-1); }}
               className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform"
