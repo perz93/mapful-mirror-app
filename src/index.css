@@ -1064,7 +1064,6 @@ h1.eyebrow, h2.eyebrow, h3.eyebrow {
 /* ===== Chargement : bloc parchemin + reflet crème discret =====
    Une seule classe pour tout le site (squelettes, images, carte). */
 .skeleton {
-  position: relative;
   overflow: hidden;
   isolation: isolate;
   background-color: #ebe9dd;
@@ -1083,6 +1082,9 @@ h1.eyebrow, h2.eyebrow, h3.eyebrow {
   animation: skeleton-shimmer 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   pointer-events: none;
 }
+/* Positionné pour le reflet, SAUF si le bloc est déjà en absolute/fixed
+   (calque posé sur une image) : sinon il perdait sa taille et devenait invisible. */
+.skeleton:where(:not(.absolute):not(.fixed)) { position: relative; }
 .skeleton-on-white { background-color: #f1efe6; }
 @keyframes skeleton-shimmer {
   100% { transform: translateX(100%); }
