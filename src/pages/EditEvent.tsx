@@ -1,3 +1,4 @@
+import { EVENT_CATEGORIES, normalizeEventCategory } from '@/lib/eventCategories';
 import { useState, useEffect, useRef } from 'react';
 import SectionTitle from '@/components/SectionTitle';
 import { ArrowLeft, Upload, Loader2, Image as ImageIcon, Phone, MessageCircle, Instagram, Facebook, Type, CalendarDays, Ticket } from 'lucide-react';
@@ -70,7 +71,7 @@ const EditEvent = () => {
         description: data.description || '',
         venue: data.venue,
         address: data.address || '',
-        category: data.category,
+        category: normalizeEventCategory(data.category),
         date: data.date,
         time: data.time,
         price: data.price?.toString() || '',
@@ -249,16 +250,7 @@ const EditEvent = () => {
                 <label className={labelClass}>{t('form.category')}</label>
                 <select required value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className={inputClass}>
                   <option value="">{t('form.select')}</option>
-                  <option value="music">{t('cat.music')}</option>
-                  <option value="sports">{t('cat.sports')}</option>
-                  <option value="brunch">{t('cat.brunch')}</option>
-                  <option value="meetups">{t('cat.meetups')}</option>
-                  <option value="conferences">{t('cat.conferences')}</option>
-                  <option value="workshops">{t('cat.workshops')}</option>
-                  <option value="festivals">{t('cat.festivals')}</option>
-                  <option value="shows">{t('cat.shows')}</option>
-                  <option value="exhibitions">{t('cat.exhibitions')}</option>
-                  <option value="religious">{t('cat.religious')}</option>
+                  {EVENT_CATEGORIES.map((c) => <option key={c.value} value={c.value}>{t(c.tKey)}</option>)}
                 </select>
               </div>
             </div>

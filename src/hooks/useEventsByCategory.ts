@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Event } from './useEvents';
+import { eventCategoryKeys } from '@/lib/eventCategories';
 
 export const useEventsByCategory = (category: string) => {
   return useQuery({
@@ -10,7 +11,7 @@ export const useEventsByCategory = (category: string) => {
         .from('events')
         .select('*')
         .eq('is_published', true)
-        .eq('category', category)
+        .in('category', eventCategoryKeys(category))
         .order('date', { ascending: true });
 
       if (error) {

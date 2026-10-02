@@ -1,3 +1,4 @@
+import { normalizeEventCategory } from '@/lib/eventCategories';
 import { useEffect, useRef, useState } from 'react';
 import { escapeHtml, safeUrl } from '@/lib/escapeHtml';
 import { addBaseMap } from '@/lib/mapTiles';
@@ -651,7 +652,7 @@ const MapView = () => {
         fuzzyMatch(eventData.type, query);
 
       const matchesCategory = selectedCategories.length === 0 ||
-        selectedCategories.includes(eventData.category);
+        selectedCategories.includes(normalizeEventCategory(eventData.category));
 
       let matchesDistance = true;
       if (distanceFilter && geo.position) {

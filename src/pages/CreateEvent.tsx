@@ -19,29 +19,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 // Import category icons
-import atelierIcon from '@/assets/icons/atelier.png';
-import brunchIcon from '@/assets/icons/brunch.png';
-import concertIcon from '@/assets/icons/concert.png';
-import conferenceIcon from '@/assets/icons/conference.png';
-import expositionIcon from '@/assets/icons/exposition.png';
-import festivalIcon from '@/assets/icons/festival.png';
-import meetupIcon from '@/assets/icons/meetup.png';
-import religieuxIcon from '@/assets/icons/religieux.png';
-import spectacleIcon from '@/assets/icons/spectacle.png';
-import sportIcon from '@/assets/icons/sport.png';
-
-const categoryIcons: Record<string, string> = {
-  workshops: atelierIcon,
-  brunch: brunchIcon,
-  music: concertIcon,
-  conferences: conferenceIcon,
-  exhibitions: expositionIcon,
-  festivals: festivalIcon,
-  meetups: meetupIcon,
-  religious: religieuxIcon,
-  shows: spectacleIcon,
-  sports: sportIcon,
-};
+import { EVENT_CATEGORIES } from '@/lib/eventCategories';
 
 const inputClass = "h-12 px-4 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] focus:outline-none focus:ring-0 focus:border-ink [&]:ring-0 [&]:outline-none";
 const labelClass = "text-sm text-stone-600 font-normal";
@@ -464,66 +442,14 @@ const CreateEvent = () => {
                     <SelectValue placeholder={t('form.selectCategory')} />
                   </SelectTrigger>
                   <SelectContent className="bg-white border-stone-200">
-                    <SelectItem value="workshops">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.workshops} alt="" className="w-5 h-5" />
-                        {t('cat.workshops')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="brunch">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.brunch} alt="" className="w-5 h-5" />
-                        {t('cat.brunch')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="music">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.music} alt="" className="w-5 h-5" />
-                        {t('cat.concerts')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="conferences">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.conferences} alt="" className="w-5 h-5" />
-                        {t('cat.conferences')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="exhibitions">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.exhibitions} alt="" className="w-5 h-5" />
-                        {t('cat.exhibitions')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="festivals">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.festivals} alt="" className="w-5 h-5" />
-                        {t('cat.festivals')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="meetups">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.meetups} alt="" className="w-5 h-5" />
-                        {t('cat.meetups')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="religious">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.religious} alt="" className="w-5 h-5" />
-                        {t('cat.religious')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="shows">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.shows} alt="" className="w-5 h-5" />
-                        {t('cat.shows')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="sports">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.sports} alt="" className="w-5 h-5" />
-                        {t('cat.sports')}
-                      </span>
-                    </SelectItem>
+                    {EVENT_CATEGORIES.map((c) => (
+                      <SelectItem key={c.value} value={c.value}>
+                        <span className="flex items-center gap-2">
+                          <img src={c.icon} alt="" className="w-5 h-5" />
+                          {t(c.tKey)}
+                        </span>
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

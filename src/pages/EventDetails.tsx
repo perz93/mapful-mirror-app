@@ -16,6 +16,7 @@ import { EventDetailsSkeleton } from '@/components/PageSkeleton';
 import ShimmerImage from '@/components/ShimmerImage';
 import { useFavorite } from '@/hooks/useFavorite';
 import { useAuth } from '@/contexts/AuthContext';
+import { getEventCategory } from '@/lib/eventCategories';
 import { useNotifications } from '@/contexts/NotificationContext';
 
 
@@ -190,7 +191,7 @@ const EventDetails = () => {
           </div>
 
           <span className="absolute bottom-4 left-4 inline-flex items-center h-7 px-3 rounded-full bg-lime text-ink eyebrow">
-            {event.category}
+            {getEventCategory(event.category) ? t(getEventCategory(event.category)!.tKey) : event.category}
           </span>
         </div>
 

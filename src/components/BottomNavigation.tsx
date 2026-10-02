@@ -10,30 +10,8 @@ import {
 import { useSearch } from '@/contexts/SearchContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-// Import custom icons
-import atelierIcon from '@/assets/icons/atelier.png';
-import brunchIcon from '@/assets/icons/brunch.png';
-import concertIcon from '@/assets/icons/concert.png';
-import conferenceIcon from '@/assets/icons/conference.png';
-import expositionIcon from '@/assets/icons/exposition.png';
-import festivalIcon from '@/assets/icons/festival.png';
-import meetupIcon from '@/assets/icons/meetup.png';
-import religieuxIcon from '@/assets/icons/religieux.png';
-import spectacleIcon from '@/assets/icons/spectacle.png';
-import sportIcon from '@/assets/icons/sport.png';
+import { EVENT_CATEGORIES } from '@/lib/eventCategories';
 
-const CATEGORIES_META = [
-  { id: 'workshops', tKey: 'cat.workshops', color: 'bg-ink' },
-  { id: 'brunch', tKey: 'cat.brunch', color: 'bg-ink' },
-  { id: 'music', tKey: 'cat.music', color: 'bg-ink' },
-  { id: 'conferences', tKey: 'cat.conferences', color: 'bg-ink' },
-  { id: 'exhibitions', tKey: 'cat.exhibitions', color: 'bg-ink' },
-  { id: 'festivals', tKey: 'cat.festivals', color: 'bg-ink' },
-  { id: 'meetups', tKey: 'cat.meetups', color: 'bg-ink' },
-  { id: 'religious', tKey: 'cat.religious', color: 'bg-ink' },
-  { id: 'shows', tKey: 'cat.shows', color: 'bg-ink' },
-  { id: 'sports', tKey: 'cat.sports', color: 'bg-ink' },
-];
 
 interface BottomNavigationProps {
   className?: string;
@@ -88,18 +66,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
     };
   }, []);
 
-  const navItems = [
-    { icon: atelierIcon, label: t('cat.workshops'), path: '/workshops' },
-    { icon: brunchIcon, label: t('cat.brunch'), path: '/brunch' },
-    { icon: concertIcon, label: t('cat.music'), path: '/concerts' },
-    { icon: conferenceIcon, label: t('cat.conferences'), path: '/conferences' },
-    { icon: expositionIcon, label: t('cat.exhibitions'), path: '/exhibitions' },
-    { icon: festivalIcon, label: t('cat.festivals'), path: '/festivals' },
-    { icon: meetupIcon, label: t('cat.meetups'), path: '/meetups' },
-    { icon: religieuxIcon, label: t('cat.religious'), path: '/religious' },
-    { icon: spectacleIcon, label: t('cat.shows'), path: '/shows' },
-    { icon: sportIcon, label: t('cat.sports'), path: '/sports' },
-  ];
+  const navItems = EVENT_CATEGORIES.map((c) => ({ icon: c.icon, label: t(`catShort.${c.value}`), path: c.path }));
 
   const handleSearch = () => {
     setSearchOpen(false);
@@ -175,17 +142,17 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                 >
                   {t('nav.allDistance')}
                 </button>
-                {CATEGORIES_META.map((category) => (
+                {EVENT_CATEGORIES.map((category) => (
                   <button
-                    key={category.id}
-                    onClick={() => toggleCategory(category.id)}
+                    key={category.value}
+                    onClick={() => toggleCategory(category.value)}
                     className={`h-8 px-3.5 rounded-full border text-[13px] font-medium transition-all active:scale-95 ${
-                      selectedCategories.includes(category.id)
+                      selectedCategories.includes(category.value)
                         ? 'bg-ink text-parchment border-ink'
                         : 'bg-white text-stone-700 border-stone-200 hover:border-ink'
                     }`}
                   >
-                    {t(category.tKey)}
+                    {t(`catShort.${category.value}`)}
                   </button>
                 ))}
               </div>

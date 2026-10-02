@@ -9,10 +9,12 @@ import HypeBadge from './HypeBadge';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { CategoryPageSkeleton } from './PageSkeleton';
 import ShimmerImage from './ShimmerImage';
+import { getEventCategory } from '@/lib/eventCategories';
 interface CategoryPageProps {
   category: string;
-  title: string;
-  iconSrc: string;
+  /** Facultatifs : déduits de la liste des catégories */
+  title?: string;
+  iconSrc?: string;
 }
 const CategoryPage = ({
   category,
@@ -20,6 +22,9 @@ const CategoryPage = ({
   iconSrc
 }: CategoryPageProps) => {
   const { t } = useLanguage();
+  const meta = getEventCategory(category);
+  title = meta ? t(meta.tKey) : title ?? category;
+  iconSrc = meta?.icon ?? iconSrc ?? '';
   const {
     data: events,
     isLoading,
