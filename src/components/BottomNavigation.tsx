@@ -66,7 +66,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
     };
   }, []);
 
-  const navItems = EVENT_CATEGORIES.map((c) => ({ icon: c.icon, label: t(`catShort.${c.value}`), path: c.path }));
+  const navItems = EVENT_CATEGORIES.map((c) => ({ icon: c.icon, label: t(c.tKey), path: c.path }));
 
   const handleSearch = () => {
     setSearchOpen(false);
@@ -152,7 +152,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                         : 'bg-white text-stone-700 border-stone-200 hover:border-ink'
                     }`}
                   >
-                    {t(`catShort.${category.value}`)}
+                    {t(category.tKey)}
                   </button>
                 ))}
               </div>
@@ -231,7 +231,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                     <Link
                       key={index}
                       to={item.path}
-                      className={`flex-shrink-0 flex h-14 min-w-[84px] flex-col items-center justify-center gap-1 rounded-full transition-all duration-300 ease-in-out active:scale-95 ${
+                      className={`flex-shrink-0 flex h-14 w-[92px] flex-col items-center justify-center gap-[3px] rounded-[22px] transition-all duration-300 ease-in-out active:scale-95 ${
                         isActive
                           ? 'bg-parchment text-ink dark:bg-stone-800'
                           : 'text-stone-500 dark:text-stone-400'
@@ -241,11 +241,13 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                       <img
                         src={item.icon}
                         alt={item.label}
-                        className={`w-6 h-6 transition-all duration-300 ease-in-out ${
+                        className={`size-[22px] flex-shrink-0 transition-all duration-300 ease-in-out ${
                           isActive ? 'opacity-100' : 'opacity-55'
                         }`}
                       />
-                      <p className="text-[11px] font-medium leading-none tracking-[0.01em] transition-all duration-300 ease-in-out">
+                      {/* Zone texte toujours haute de 2 lignes : les icônes restent alignées,
+                          un nom court est centré dans la zone */}
+                      <p className="flex h-6 max-w-[84px] items-center text-center text-[10.5px] font-medium leading-[1.15] tracking-[0.01em] whitespace-normal transition-all duration-300 ease-in-out">
                         {item.label}
                       </p>
                     </Link>
