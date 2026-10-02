@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { escapeHtml, safeUrl } from '@/lib/escapeHtml';
 import { addBaseMap } from '@/lib/mapTiles';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -291,8 +292,8 @@ const MapView = () => {
         className: 'custom-marker',
         html: `
           <div class="marker-image-container">
-            <div class="marker-image-wrapper marker-${eventType}">
-              <img src="${imageUrl || defaultImage}" alt="Event" class="marker-event-image" loading="lazy" />
+            <div class="marker-image-wrapper marker-${escapeHtml(eventType)}">
+              <img src="${safeUrl(imageUrl, defaultImage)}" alt="" class="marker-event-image" loading="lazy" />
             </div>
           </div>
         `,
@@ -340,9 +341,9 @@ const MapView = () => {
 
       const popupContent = `
         <div class="event-popup-card">
-          <div class="popup-card-image" style="background-image: url('${event.image_url || defaultImage}')">
+          <div class="popup-card-image" style="background-image: url('${safeUrl(event.image_url, defaultImage)}')">
             <div class="popup-card-gradient">
-              <h3 class="popup-card-title">${event.title}</h3>
+              <h3 class="popup-card-title">${escapeHtml(event.title)}</h3>
               <div class="popup-card-details">
                 <div class="popup-date-box">
                   <div class="popup-date-month">${dateFormatted.month}</div>
@@ -351,8 +352,8 @@ const MapView = () => {
                 </div>
                 <div class="popup-card-info">
                   <div class="popup-venue-row">
-                    <span class="popup-badge-glass">${event.venue}</span>
-                    <span class="popup-badge-glass">${timeFormatted}</span>
+                    <span class="popup-badge-glass">${escapeHtml(event.venue)}</span>
+                    <span class="popup-badge-glass">${escapeHtml(timeFormatted)}</span>
                   </div>
                 </div>
               </div>
