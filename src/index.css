@@ -935,6 +935,17 @@ All colors MUST be HSL.
     .page-enter { animation-duration: 0.01ms; }
   }
 
+  /* Rangée de filtres collée sous la barre compacte (LargeTitle) */
+  .sticky-chips {
+    position: sticky;
+    top: calc(env(safe-area-inset-top, 0px) + 57px);
+    z-index: 30;
+    padding: 8px 0 10px;
+    background: hsl(60 33% 94% / 0.92);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
   /* Slide up for detail pages */
   @keyframes slideUp {
     from {

@@ -1,3 +1,4 @@
+import LargeTitle from '@/components/LargeTitle';
 import { useState } from 'react';
 import EmptyState from '@/components/EmptyState';
 import { Link, useNavigate } from 'react-router-dom';
@@ -45,10 +46,10 @@ const Marketplace = () => {
   };
 
   return (
-    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-parchment page-enter">
+    <div className="relative mx-auto flex min-h-screen max-w-md flex-col bg-parchment page-enter">
 
       {/* Header */}
-      <div className="relative z-10 flex items-center justify-between px-4 pb-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
+      <div className="relative z-10 flex items-center justify-between px-4 pb-6" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         <Link
           to="/"
           className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform"
@@ -63,11 +64,25 @@ const Marketplace = () => {
           <Plus size={20} strokeWidth={1.75} />
         </button>
       </div>
-      <h1 className="relative z-10 px-4 pb-5 text-[40px] leading-[0.95] tracking-tighter text-ink">{t('market.title')}</h1>
+      <LargeTitle
+        className="relative z-10 px-4 pb-5 text-[40px] leading-[0.95] tracking-tighter text-ink"
+        backTo="/"
+        right={
+          <button
+            onClick={handleCreateListing}
+            aria-label={t('market.newListing')}
+            className="inline-flex size-10 items-center justify-center rounded-full bg-lime text-ink active:scale-95 transition-transform"
+          >
+            <Plus size={20} strokeWidth={1.75} />
+          </button>
+        }
+      >
+        {t('market.title')}
+      </LargeTitle>
 
       {/* Filtres de catégorie — sans animation d'entrée : Safari iOS pouvait
           laisser la rangée bloquée à opacity 0 (animation retardée + défilement). */}
-      <div className="pb-3">
+      <div className="sticky-chips">
         <div className="flex gap-2 overflow-x-auto px-4 scroll-px-4 pb-1 scrollbar-hide snap-x">
           <button
             onClick={() => setSelectedCategory('all')}
@@ -104,7 +119,7 @@ const Marketplace = () => {
       </div>
 
       {/* Listings */}
-      <div className="flex-1 overflow-y-auto px-4 pb-24">
+      <div className="flex-1 px-4 pt-1 pb-24">
         {isLoading ? (
           <div className="grid gap-4">
             {[1, 2, 3].map((i) => (

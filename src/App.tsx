@@ -18,6 +18,7 @@ import Index from "./pages/Index";
 import Concerts from "./pages/Concerts";
 import Sports from "./pages/Sports";
 import Nightlife from "./pages/Nightlife";
+import AllEvents from "./pages/AllEvents";
 import Family from "./pages/Family";
 import Conferences from "./pages/Conferences";
 import Workshops from "./pages/Workshops";
@@ -57,6 +58,7 @@ const AppContent = () => {
         <Route path="/arts" element={<Navigate to="/exhibitions" replace />} />
         <Route path="/meetups" element={<Navigate to="/conferences" replace />} />
         <Route path="/soirees" element={<Nightlife />} />
+        <Route path="/evenements" element={<AllEvents />} />
         <Route path="/famille" element={<Family />} />
         <Route path="/conferences" element={<Conferences />} />
         <Route path="/workshops" element={<Workshops />} />
