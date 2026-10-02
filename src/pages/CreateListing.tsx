@@ -1,24 +1,19 @@
+import LargeTitle from '@/components/LargeTitle';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Upload, X } from 'lucide-react';
-import mapBackground from '@/assets/map-background.jpg';
+import { ArrowLeft, X, Image as ImageIcon, Type, AlignLeft, Ticket, MapPin, Phone, Mail } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import SectionTitle from '@/components/SectionTitle';
+import { MARKETPLACE_CATEGORIES } from '@/lib/marketplaceCategories';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-const categories = [
-  { value: 'location_espaces', label: 'Location espaces' },
-  { value: 'traiteurs', label: 'Traiteurs' },
-  { value: 'animation_dj', label: 'Animation/DJ' },
-  { value: 'decoration', label: 'Décoration' },
-  { value: 'autre', label: 'Autre' },
-];
+const categories = MARKETPLACE_CATEGORIES.map((c) => ({ value: c.value, label: c.fr, icon: c.icon }));
 
 const priceTypes = [
   { value: 'fixed', label: 'Prix fixe' },
@@ -26,6 +21,11 @@ const priceTypes = [
   { value: 'daily', label: 'Par jour' },
   { value: 'negotiable', label: 'Négociable' },
 ];
+
+const labelClass = "text-sm text-stone-600 font-normal";
+const cardClass = "rounded-3xl bg-white p-5 space-y-3";
+const inputClass = "h-12 px-4 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] focus:outline-none focus:ring-0 focus:border-ink";
+
 
 const CreateListing = () => {
   const navigate = useNavigate();
@@ -127,133 +127,79 @@ const CreateListing = () => {
   };
 
   return (
-    <div className="relative mx-auto flex min-h-screen max-w-md flex-col overflow-hidden animate-fade-in animate-zoom-smooth">
-      {/* Background map */}
-      <div className="fixed inset-0 pointer-events-none">
-        <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
-        <div className="absolute inset-0 bg-white/30 backdrop-blur-xl" />
-      </div>
+    <div className="relative mx-auto flex min-h-screen max-w-md flex-col bg-parchment page-enter">
 
       {/* Header */}
-      <div className="relative z-10 px-4 sm:px-6 pb-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
+      <div className="relative z-10 px-4 pb-6" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         <Link
           to="/marketplace"
-          className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white/70 backdrop-blur-md shadow-sm border border-white/60 hover:scale-105 active:scale-95 transition-all mb-4"
+          className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform mb-6"
         >
-          <ArrowLeft className="w-5 h-5 text-stone-700" />
+          <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
         </Link>
-        <h1 className="text-3xl  text-stone-800 text-center">{t('market.newListing')}</h1>
-        <p className="text-stone-500 font-light text-center mt-1">{t('market.offerServices')}</p>
+        <LargeTitle className="text-[40px] leading-[0.95] tracking-tighter text-ink" backTo="/marketplace">{t('market.newListing')}</LargeTitle>
+        <p className="mt-2 text-stone-500">{t('market.offerServices')}</p>
       </div>
 
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="relative z-10 flex-1 overflow-y-auto px-4 pb-8">
-        <div className="space-y-6">
-          {/* Image Upload */}
-          <div>
-            <Label>{t('market.photo')}</Label>
-            <div className="mt-2">
-              {imagePreview ? (
-                <div className="relative">
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    className="h-48 w-full rounded-2xl object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={removeImage}
-                    className="absolute right-2 top-2 rounded-full bg-black/70 p-2"
-                  >
-                    <X className="text-white" size={16} />
-                  </button>
-                </div>
-              ) : (
-                <label className="flex h-48 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-muted-foreground/30 bg-white/50 dark:bg-stone-800/50 transition-colors hover:border-primary">
-                  <Upload className="mb-2 text-muted-foreground" size={32} />
-                  <span className="text-sm text-muted-foreground">{t('market.addPhoto')}</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="hidden"
-                  />
-                </label>
-              )}
-            </div>
+      {/* Form — même structure que « Créer un événement » */}
+      <form onSubmit={handleSubmit} className="relative z-10 flex-1 px-4 pb-10">
+        <div className="space-y-4">
+          {/* Photo */}
+          <div className={cardClass}>
+            {imagePreview ? (
+              <div className="relative">
+                <img src={imagePreview} alt="Preview" className="h-52 w-full rounded-2xl object-cover" />
+                <button
+                  type="button"
+                  onClick={removeImage}
+                  aria-label="Retirer la photo"
+                  className="absolute right-3 top-3 flex size-8 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform"
+                >
+                  <X size={16} strokeWidth={1.75} />
+                </button>
+              </div>
+            ) : (
+              <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-stone-300 p-8 text-center transition-colors hover:border-ink">
+                <span className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-lime">
+                  <ImageIcon size={24} strokeWidth={1.75} className="text-ink" />
+                </span>
+                <span className="font-medium text-ink">{t('market.addPhoto')}</span>
+                <span className="mt-1 text-sm text-stone-500">{t('form.clickToUpload')}</span>
+                <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+              </label>
+            )}
           </div>
 
-          {/* Title */}
-          <div>
-            <Label htmlFor="title">{t('form.titleShort')}</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder="Ex: Salle de réception 200 personnes"
-              className="mt-2"
-              required
-            />
-          </div>
-
-          {/* Category */}
-          <div>
-            <Label>{t('form.category')}</Label>
-            <Select
-              value={formData.category}
-              onValueChange={(value) => setFormData({ ...formData, category: value })}
-            >
-              <SelectTrigger className="mt-2">
-                <SelectValue placeholder={t('market.selectCategory')} />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((cat) => (
-                  <SelectItem key={cat.value} value={cat.value}>
-                    {cat.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Description */}
-          <div>
-            <Label htmlFor="description">{t('form.description')}</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder={t('market.descPlaceholder')}
-              className="mt-2 min-h-[100px]"
-            />
-          </div>
-
-          {/* Price */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="price">{t('form.priceFCFA')}</Label>
+          {/* Informations */}
+          <div className={cardClass}>
+            <SectionTitle icon={Type}>{t('form.basicInfo')}</SectionTitle>
+            <div className="space-y-2">
+              <Label htmlFor="title" className={labelClass}>{t('form.titleShort')}</Label>
               <Input
-                id="price"
-                type="number"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                placeholder="0"
-                className="mt-2"
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder="Ex: Salle de réception 200 personnes"
+                className={inputClass}
+                required
               />
             </div>
-            <div>
-              <Label>Type de prix</Label>
+            <div className="space-y-2">
+              <Label className={labelClass}>{t('form.category')}</Label>
               <Select
-                value={formData.price_type}
-                onValueChange={(value) => setFormData({ ...formData, price_type: value })}
+                value={formData.category}
+                onValueChange={(value) => setFormData({ ...formData, category: value })}
               >
-                <SelectTrigger className="mt-2">
-                  <SelectValue />
+                <SelectTrigger className={inputClass}>
+                  <SelectValue placeholder={t('market.selectCategory')} />
                 </SelectTrigger>
-                <SelectContent>
-                  {priceTypes.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>
-                      {type.label}
+                <SelectContent className="bg-white border-stone-200">
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.value} value={cat.value}>
+                      <span className="flex items-center gap-2.5">
+                        <cat.icon size={16} strokeWidth={1.75} className="text-stone-500" />
+                        {cat.label}
+                      </span>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -261,52 +207,106 @@ const CreateListing = () => {
             </div>
           </div>
 
-          {/* Location */}
-          <div>
-            <Label htmlFor="location">{t('market.location')}</Label>
+          {/* Description */}
+          <div className={cardClass}>
+            <SectionTitle icon={AlignLeft}>{t('form.description')}</SectionTitle>
+            <Textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              placeholder={t('market.descPlaceholder')}
+              className="min-h-[120px]"
+            />
+          </div>
+
+          {/* Tarif */}
+          <div className={cardClass}>
+            <SectionTitle icon={Ticket}>{t('market.pricing')}</SectionTitle>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="price" className={labelClass}>{t('form.priceFCFA')}</Label>
+                <Input
+                  id="price"
+                  type="number"
+                  inputMode="numeric"
+                  value={formData.price}
+                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  placeholder="0"
+                  className={inputClass}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className={labelClass}>Type de prix</Label>
+                <Select
+                  value={formData.price_type}
+                  onValueChange={(value) => setFormData({ ...formData, price_type: value })}
+                >
+                  <SelectTrigger className={inputClass}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border-stone-200">
+                    {priceTypes.map((type) => (
+                      <SelectItem key={type.value} value={type.value}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          {/* Localisation */}
+          <div className={cardClass}>
+            <SectionTitle icon={MapPin}>{t('market.location')}</SectionTitle>
             <Input
               id="location"
               value={formData.location}
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
               placeholder={t('market.locationPlaceholder')}
-              className="mt-2"
+              className={inputClass}
             />
           </div>
 
           {/* Contact */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="phone">{t('form.phoneShort')}</Label>
+          <div className={cardClass}>
+            <SectionTitle icon={Phone}>Contact</SectionTitle>
+            <div className="space-y-2">
+              <Label htmlFor="phone" className={`${labelClass} flex items-center gap-2`}>
+                <Phone className="h-4 w-4 text-ink" strokeWidth={1.75} /> {t('form.phoneShort')}
+              </Label>
               <Input
                 id="phone"
                 type="tel"
                 value={formData.contact_phone}
                 onChange={(e) => setFormData({ ...formData, contact_phone: e.target.value })}
-                placeholder="+225..."
-                className="mt-2"
+                placeholder="+225 XX XX XX XX XX"
+                className={inputClass}
               />
             </div>
-            <div>
-              <Label htmlFor="email">{t('auth.email')}</Label>
+            <div className="space-y-2">
+              <Label htmlFor="email" className={`${labelClass} flex items-center gap-2`}>
+                <Mail className="h-4 w-4 text-ink" strokeWidth={1.75} /> {t('auth.email')}
+              </Label>
               <Input
                 id="email"
                 type="email"
                 value={formData.contact_email}
                 onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })}
                 placeholder="contact@..."
-                className="mt-2"
+                className={inputClass}
               />
             </div>
           </div>
 
           {/* Submit */}
-          <Button
+          <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-amber-500 hover:bg-amber-600"
+            className="w-full h-12 rounded-full bg-lime text-ink text-[15px] font-medium hover:bg-lime-deep transition-colors active:scale-[0.98] disabled:opacity-50"
           >
             {isSubmitting ? t('market.publishing') : t('market.publishListing')}
-          </Button>
+          </button>
         </div>
       </form>
 

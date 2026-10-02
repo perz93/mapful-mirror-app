@@ -8,7 +8,7 @@ import { getSiteUrl } from '@/lib/siteUrl';
 interface AuthContextType {
   user: User | null;
   session: Session | null;
-  signUp: (email: string, password: string, fullName?: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, fullName?: string) => Promise<{ error: any; needsConfirmation?: boolean }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   loading: boolean;
@@ -41,6 +41,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        // Lien « mot de passe oublié » : ouvrir le formulaire de nouveau mot de passe
+        if (event === 'PASSWORD_RECOVERY') {
+          navigate('/auth?mode=reset');
+        }
       }
     );
 
@@ -54,52 +58,37 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Les erreurs ne sont pas affichées ici : la page de connexion les traduit
+  // et les affiche dans le formulaire.
   const signUp = async (email: string, password: string, fullName?: string) => {
     try {
-      const redirectUrl = `${getSiteUrl()}/`;
-      
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            full_name: fullName || ''
-          }
-        }
+          emailRedirectTo: `${getSiteUrl()}/`,
+          data: { full_name: fullName || '' },
+        },
       });
-
-      if (error) {
-        toast.error(error.message);
-        return { error };
-      }
-
+      if (error) return { error };
+      // Confirmation d'email activée : pas de session tant que le lien n'est pas cliqué
+      if (!data.session) return { error: null, needsConfirmation: true };
       toast.success('Compte créé avec succès !');
       navigate('/');
       return { error: null };
-    } catch (error: any) {
-      toast.error('Erreur lors de la création du compte');
+    } catch (error: unknown) {
       return { error };
     }
   };
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (error) {
-        toast.error(error.message);
-        return { error };
-      }
-
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) return { error };
       toast.success('Connexion réussie !');
       navigate('/');
       return { error: null };
-    } catch (error: any) {
-      toast.error('Erreur lors de la connexion');
+    } catch (error: unknown) {
       return { error };
     }
   };

@@ -1,4 +1,7 @@
+import { normalizeEventCategory } from '@/lib/eventCategories';
 import { useEffect, useRef, useState } from 'react';
+import { escapeHtml, safeUrl } from '@/lib/escapeHtml';
+import { addBaseMap } from '@/lib/mapTiles';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster';
@@ -19,14 +22,6 @@ import { fuzzyMatch } from '@/lib/fuzzyMatch';
 import { getDistanceKm } from '@/hooks/useNearbyEvents';
 import { supabase } from '@/integrations/supabase/client';
 
-// Tile layer URLs
-const TILE_LIGHT = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
-const TILE_DARK = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
-
-function getPrefersDark(): boolean {
-  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
-}
-
 const MapView = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -42,7 +37,6 @@ const MapView = () => {
   const didAutoRecenterRef = useRef(false);
   const routeLayerRef = useRef<L.Polyline | null>(null);
   const destinationMarkerRef = useRef<L.Marker | null>(null);
-  const tileLayerRef = useRef<L.TileLayer | null>(null);
   const heatLayerRef = useRef<any>(null);
   const didFlyToUserRef = useRef(false);
 
@@ -79,26 +73,14 @@ const MapView = () => {
       zoom: initialZoom,
       zoomControl: false,
       attributionControl: false,
+      maxZoom: 19,
       preferCanvas: true,
       fadeAnimation: true,
       zoomAnimation: true,
       markerZoomAnimation: true,
     });
 
-    const isDark = getPrefersDark();
-    const tileLayer = L.tileLayer(isDark ? TILE_DARK : TILE_LIGHT, {
-      attribution: '© OpenStreetMap contributors © CARTO',
-      maxZoom: 20,
-    }).addTo(map);
-    tileLayerRef.current = tileLayer;
-
-    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleDarkModeChange = (e: MediaQueryListEvent) => {
-      if (tileLayerRef.current) {
-        tileLayerRef.current.setUrl(e.matches ? TILE_DARK : TILE_LIGHT);
-      }
-    };
-    darkModeQuery.addEventListener('change', handleDarkModeChange);
+    const removeBaseMap = addBaseMap(map);
 
     map.on('moveend', () => {
       const center = map.getCenter();
@@ -165,7 +147,7 @@ const MapView = () => {
 
     return () => {
       sizeTimers.forEach(t => clearTimeout(t));
-      darkModeQuery.removeEventListener('change', handleDarkModeChange);
+      removeBaseMap();
       markersRef.current = [];
       if (heatLayerRef.current && mapInstanceRef.current) {
         mapInstanceRef.current.removeLayer(heatLayerRef.current);
@@ -311,8 +293,8 @@ const MapView = () => {
         className: 'custom-marker',
         html: `
           <div class="marker-image-container">
-            <div class="marker-image-wrapper marker-${eventType}">
-              <img src="${imageUrl || defaultImage}" alt="Event" class="marker-event-image" loading="lazy" />
+            <div class="marker-image-wrapper marker-${escapeHtml(eventType)}">
+              <img src="${safeUrl(imageUrl, defaultImage)}" alt="" class="marker-event-image" loading="lazy" />
             </div>
           </div>
         `,
@@ -360,9 +342,9 @@ const MapView = () => {
 
       const popupContent = `
         <div class="event-popup-card">
-          <div class="popup-card-image" style="background-image: url('${event.image_url || defaultImage}')">
+          <div class="popup-card-image" style="background-image: url('${safeUrl(event.image_url, defaultImage)}')">
             <div class="popup-card-gradient">
-              <h3 class="popup-card-title">${event.title}</h3>
+              <h3 class="popup-card-title">${escapeHtml(event.title)}</h3>
               <div class="popup-card-details">
                 <div class="popup-date-box">
                   <div class="popup-date-month">${dateFormatted.month}</div>
@@ -371,8 +353,8 @@ const MapView = () => {
                 </div>
                 <div class="popup-card-info">
                   <div class="popup-venue-row">
-                    <span class="popup-badge-glass">${event.venue}</span>
-                    <span class="popup-badge-glass">${timeFormatted}</span>
+                    <span class="popup-badge-glass">${escapeHtml(event.venue)}</span>
+                    <span class="popup-badge-glass">${escapeHtml(timeFormatted)}</span>
                   </div>
                 </div>
               </div>
@@ -670,7 +652,7 @@ const MapView = () => {
         fuzzyMatch(eventData.type, query);
 
       const matchesCategory = selectedCategories.length === 0 ||
-        selectedCategories.includes(eventData.category);
+        selectedCategories.includes(normalizeEventCategory(eventData.category));
 
       let matchesDistance = true;
       if (distanceFilter && geo.position) {

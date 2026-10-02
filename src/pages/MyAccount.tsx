@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Pencil, Users, Calendar, Heart, Flame, ShoppingBag, Trash2, Edit, Zap } from 'lucide-react';
+import { ArrowLeft, Camera, Users, Calendar, Heart, ShoppingBag, Trash2, Edit } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -8,21 +8,38 @@ import { useEvents, Event } from '@/hooks/useEvents';
 import EventListCard from '@/components/EventListCard';
 import { toast } from 'sonner';
 import { Tables } from '@/integrations/supabase/types';
-import { useAttendees } from '@/hooks/useAttendees';
-import mapBackground from '@/assets/map-background.jpg';
 import ShimmerImage from '@/components/ShimmerImage';
 import { AccountSkeleton } from '@/components/PageSkeleton';
 
 type MarketplaceListing = Tables<'marketplace_listings'>;
 
-const GoingBadge = ({ eventId }: { eventId: string }) => {
-  const { count } = useAttendees(eventId);
-  return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#ee9d2b]/10 text-[#ee9d2b]">
-      <Flame size={9} />{count}
-    </span>
-  );
-};
+/** Squelette crème des listes de Mon compte (même forme que les cartes) */
+const ListSkeleton = ({ tall = false }: { tall?: boolean }) => (
+  <div className="space-y-3">
+    {[1, 2].map((i) => (
+      <div key={i} className="rounded-3xl bg-white p-3">
+        {tall ? (
+          <>
+            <div className="h-28 w-full rounded-2xl skeleton" />
+            <div className="mt-3 space-y-2 px-1">
+              <div className="h-4 w-2/3 rounded-md skeleton skeleton-on-white" />
+              <div className="h-3 w-1/3 rounded-md skeleton skeleton-on-white" />
+            </div>
+          </>
+        ) : (
+          <div className="flex items-center gap-4">
+            <div className="flex-1 space-y-2 pl-1">
+              <div className="h-3 w-24 rounded-full skeleton skeleton-on-white" />
+              <div className="h-4 w-3/4 rounded-md skeleton skeleton-on-white" />
+              <div className="h-3 w-1/2 rounded-md skeleton skeleton-on-white" />
+            </div>
+            <div className="size-20 flex-shrink-0 rounded-2xl skeleton" />
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+);
 
 const MyAccount = () => {
   const { user } = useAuth();
@@ -35,12 +52,13 @@ const MyAccount = () => {
     favorites: 0,
     friends: 0
   });
-  const { data: allEvents } = useEvents();
+  const { data: allEvents, isLoading: eventsLoading } = useEvents();
+  const [listingsLoaded, setListingsLoaded] = useState(false);
+  const [favoritesLoaded, setFavoritesLoaded] = useState(false);
   const [userEvents, setUserEvents] = useState<Event[]>([]);
   const [favoriteEvents, setFavoriteEvents] = useState<Event[]>([]);
   const [userListings, setUserListings] = useState<MarketplaceListing[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [goingEvents, setGoingEvents] = useState<Event[]>([]);
 
   useEffect(() => {
     if (user) {
@@ -86,29 +104,14 @@ const MyAccount = () => {
     if (favs && favs.length > 0 && allEvents) {
       const favIds = favs.map(f => f.event_id);
       setFavoriteEvents(allEvents.filter(e => favIds.includes(e.id)));
+    } else {
+      setFavoriteEvents([]);
     }
+    if (allEvents) setFavoritesLoaded(true);
   };
 
   useEffect(() => {
     if (allEvents && user) loadFavorites();
-  }, [allEvents, user]);
-
-  // Load events where user clicked "J'y vais" from Supabase
-  useEffect(() => {
-    if (!allEvents || !user) return;
-    const loadGoingEvents = async () => {
-      const { data } = await supabase
-        .from('event_attendees' as any)
-        .select('event_id')
-        .eq('user_id', user.id);
-      if (data && data.length > 0) {
-        const goingIds = (data as any[]).map((d) => d.event_id);
-        setGoingEvents(allEvents.filter(e => goingIds.includes(e.id)));
-      } else {
-        setGoingEvents([]);
-      }
-    };
-    loadGoingEvents();
   }, [allEvents, user]);
 
   const loadUserListings = async () => {
@@ -119,6 +122,7 @@ const MyAccount = () => {
       .eq('user_id', user.id)
       .order('created_at', { ascending: false });
     setUserListings(data || []);
+    setListingsLoaded(true);
   };
 
   const handleDeleteListing = async (listingId: string) => {
@@ -174,33 +178,27 @@ const MyAccount = () => {
   const initials = displayName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
 
   const tabs = [
-    { id: 'events', label: t('account.events'), icon: Calendar },
-    { id: 'listings', label: t('account.listings'), icon: ShoppingBag },
-    { id: 'favorites', label: t('account.favorites'), icon: Heart },
-    { id: 'activity', label: t('account.activity'), icon: Zap },
+    { id: 'events', label: t('account.events'), count: stats.eventsCreated },
+    { id: 'listings', label: t('account.listings'), count: userListings.length },
+    { id: 'favorites', label: t('account.favorites'), count: stats.favorites },
   ];
 
   const isProfileLoading = !profile && !!user;
 
   return (
-    <div className="min-h-screen relative overflow-hidden animate-fade-in animate-zoom-smooth bg-stone-200">
-      {/* Map Background — light natural */}
-      <div className="fixed inset-0 pointer-events-none">
-        <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
-      </div>
-      <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
+    <div className="min-h-screen relative overflow-hidden page-enter bg-parchment">
 
       {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
-          <Link to="/" className="w-11 h-11 rounded-full bg-white/70 backdrop-blur-md flex items-center justify-center shadow-sm border border-white/60 hover:scale-105 active:scale-95 transition-all">
-            <ArrowLeft className="w-5 h-5 text-stone-700" />
+          <Link to="/" aria-label="Retour" className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform">
+            <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
           </Link>
-          <h1 className="text-lg font-bold  text-stone-800">
+          <h1 className="eyebrow text-stone-500">
             {t('account.title')}
           </h1>
-          <div className="w-11 h-11" />
+          <div className="w-10 h-10" />
         </div>
 
         {/* Profile Section */}
@@ -210,13 +208,13 @@ const MyAccount = () => {
         <div className="flex flex-col items-center px-6 pt-4">
           {/* Avatar */}
           <div className="relative mb-4">
-            <div className="w-28 h-28 rounded-full bg-gradient-to-br from-[#ee9d2b]/30 to-[#ee9d2b]/10 backdrop-blur-sm flex items-center justify-center border-2 border-white/40 shadow-xl">
-              <div className="w-24 h-24 rounded-full overflow-hidden">
+            <div className="w-24 h-24 rounded-full overflow-hidden">
+              <div className="w-full h-full">
                 {profile?.avatar_url ? (
-                  <img src={profile.avatar_url} alt={displayName} className="w-full h-full object-cover" />
+                  <ShimmerImage src={profile.avatar_url} alt={displayName} loading="eager" className="w-full h-full" />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-[#ee9d2b] to-[#e08820] flex items-center justify-center">
-                    <span className="text-white text-2xl font-bold">{initials}</span>
+                  <div className="w-full h-full bg-lime flex items-center justify-center">
+                    <span className="font-display text-ink text-[32px] tracking-tight">{initials}</span>
                   </div>
                 )}
               </div>
@@ -225,58 +223,44 @@ const MyAccount = () => {
             <button
               onClick={handleAvatarClick}
               disabled={uploading}
-              className="absolute bottom-0 right-0 w-9 h-9 rounded-full bg-black flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all border-2 border-white/80 disabled:opacity-50"
+              aria-label={t('account.changePhoto')}
+              className="absolute -bottom-0.5 -right-0.5 w-9 h-9 rounded-full bg-ink flex items-center justify-center ring-4 ring-parchment active:scale-95 transition-transform disabled:opacity-50"
             >
               {uploading ? (
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-lime border-t-transparent rounded-full animate-spin" />
               ) : (
-                <Pencil className="w-3.5 h-3.5 text-[#ee9d2b]" />
+                <Camera className="w-4 h-4 text-lime" strokeWidth={1.75} />
               )}
             </button>
           </div>
 
           {/* Name */}
-          <h2 className="text-2xl font-bold text-stone-800 mb-1 ">
+          <h2 className="text-[32px] leading-none tracking-tighter text-ink mb-1.5 capitalize">
             {displayName}
           </h2>
-          <p className="text-stone-500 text-xs mb-5">{user?.email}</p>
+          <p className="text-stone-500 text-sm mb-7">{user?.email}</p>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-3 gap-3 w-full mb-6">
-            <div className="flex flex-col items-center gap-1 rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-3">
-              <Calendar size={16} className="text-[#ee9d2b]" />
-              <p className="text-xl font-bold text-stone-800">{stats.eventsCreated}</p>
-              <p className="text-[10px] text-stone-500 uppercase tracking-wider">Events</p>
-            </div>
-            <div className="flex flex-col items-center gap-1 rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-3">
-              <Heart size={16} className="text-[#ee9d2b]" />
-              <p className="text-xl font-bold text-stone-800">{stats.favorites}</p>
-              <p className="text-[10px] text-stone-500 uppercase tracking-wider">{t('account.favorites')}</p>
-            </div>
-            <div className="flex flex-col items-center gap-1 rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-3">
-              <Zap size={16} className="text-[#ee9d2b]" />
-              <p className="text-xl font-bold text-stone-800">{goingEvents.length}</p>
-              <p className="text-[10px] text-stone-500 uppercase tracking-wider">{t('account.goingTitle')}</p>
-            </div>
-          </div>
-
-          {/* Tabs */}
-          <div className="flex w-full rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-1 mb-6">
+          {/* Onglets avec compteurs (remplacent les cartes de stats à icônes) */}
+          <div role="tablist" className="flex w-full border-b border-stone-200 mb-6">
             {tabs.map((tab) => {
-              const Icon = tab.icon;
               const isActive = activeTab === tab.id;
               return (
                 <button
                   key={tab.id}
+                  role="tab"
+                  aria-selected={isActive}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl text-[11px] font-medium transition-all ${
-                    isActive
-                      ? 'bg-[#ee9d2b] text-white shadow-lg'
-                      : 'text-stone-500 hover:text-stone-700'
+                  className={`relative flex-1 flex items-center justify-center gap-1.5 pb-3 pt-1 text-sm font-medium transition-colors ${
+                    isActive ? 'text-ink' : 'text-stone-500 hover:text-ink'
                   }`}
                 >
-                  <Icon size={16} />
                   <span>{tab.label}</span>
+                  <span className={`tabular inline-flex min-w-[22px] h-[22px] items-center justify-center rounded-full px-1.5 text-[11px] font-semibold ${
+                    isActive ? 'bg-lime text-ink' : 'bg-stone-200/80 text-stone-600'
+                  }`}>
+                    {tab.count}
+                  </span>
+                  <span className={`absolute inset-x-3 -bottom-px h-[2px] rounded-full transition-colors ${isActive ? 'bg-ink' : 'bg-transparent'}`} />
                 </button>
               );
             })}
@@ -287,20 +271,22 @@ const MyAccount = () => {
             {activeTab === 'events' && (
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-base font-bold text-stone-800 ">
+                  <h3 className="text-[20px] text-ink">
                     {t('account.myEvents')}
                   </h3>
-                  <Link to="/manage-events" className="text-[#ee9d2b] text-xs font-semibold hover:underline">
+                  <Link to="/manage-events" className="text-ink text-xs font-semibold hover:underline">
                     {t('account.manageAll')}
                   </Link>
                 </div>
-                {userEvents.length === 0 ? (
-                  <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-8 text-center">
-                    <Calendar size={32} className="text-stone-300 mx-auto mb-3" />
+                {eventsLoading ? <ListSkeleton /> : userEvents.length === 0 ? (
+                  <div className="rounded-3xl bg-white p-6">
+                    <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-parchment">
+                      <Calendar size={18} strokeWidth={1.75} className="text-ink" />
+                    </span>
                     <p className="text-stone-500 text-sm mb-3">{t('account.noEvents')}</p>
                     <Link
                       to="/create-event"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ee9d2b] text-white text-xs font-semibold hover:opacity-90 transition-all active:scale-95"
+                      className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-lime text-ink text-sm font-medium hover:bg-lime-deep transition-colors active:scale-95 disabled:opacity-50"
                     >
                       {t('account.createFirst')}
                     </Link>
@@ -310,9 +296,6 @@ const MyAccount = () => {
                     {userEvents.map(event => (
                       <div key={event.id} className="relative">
                         <EventListCard event={event} />
-                        <div className="absolute top-3 right-3">
-                          <GoingBadge eventId={event.id} />
-                        </div>
                       </div>
                     ))}
                   </div>
@@ -323,20 +306,22 @@ const MyAccount = () => {
             {activeTab === 'listings' && (
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-base font-bold text-stone-800 ">
+                  <h3 className="text-[20px] text-ink">
                     {t('account.myListings')}
                   </h3>
-                  <Link to="/create-listing" className="text-[#ee9d2b] text-xs font-semibold hover:underline">
+                  <Link to="/create-listing" className="text-ink text-xs font-semibold hover:underline">
                     {t('account.createListing')}
                   </Link>
                 </div>
-                {userListings.length === 0 ? (
-                  <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-8 text-center">
-                    <ShoppingBag size={32} className="text-stone-300 mx-auto mb-3" />
+                {!listingsLoaded ? <ListSkeleton tall /> : userListings.length === 0 ? (
+                  <div className="rounded-3xl bg-white p-6">
+                    <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-parchment">
+                      <ShoppingBag size={18} strokeWidth={1.75} className="text-ink" />
+                    </span>
                     <p className="text-stone-500 text-sm mb-3">{t('account.noListings')}</p>
                     <Link
                       to="/create-listing"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ee9d2b] text-white text-xs font-semibold hover:opacity-90 transition-all active:scale-95"
+                      className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-lime text-ink text-sm font-medium hover:bg-lime-deep transition-colors active:scale-95 disabled:opacity-50"
                     >
                       {t('account.publishListing')}
                     </Link>
@@ -346,7 +331,7 @@ const MyAccount = () => {
                     {userListings.map(listing => (
                       <div
                         key={listing.id}
-                        className="rounded-2xl backdrop-blur-2xl bg-white/90 dark:bg-stone-900/80 border border-white/60 dark:border-stone-700/30 overflow-hidden shadow-lg"
+                        className="rounded-2xl bg-white dark:bg-stone-900/80 overflow-hidden shadow-lg"
                       >
                         {listing.image_url && (
                           <ShimmerImage src={listing.image_url} alt={listing.title} className="w-full h-28" />
@@ -357,15 +342,15 @@ const MyAccount = () => {
                               <h4 className="font-bold text-stone-900 dark:text-white text-sm truncate">{listing.title}</h4>
                               <p className="text-xs text-stone-500 capitalize ">{listing.category}</p>
                               {listing.price && (
-                                <p className="text-[#ee9d2b] font-bold text-sm mt-1">{listing.price.toLocaleString()} FCFA</p>
+                                <p className="text-ink font-bold text-sm mt-1">{listing.price.toLocaleString()} FCFA</p>
                               )}
                             </div>
                             <div className="flex gap-1.5 ml-2">
                               <button
                                 onClick={() => navigate(`/edit-listing/${listing.id}`)}
-                                className="p-2 rounded-full bg-[#ee9d2b]/10 hover:bg-[#ee9d2b]/20 transition-colors"
+                                className="p-2 rounded-full bg-lime/30 hover:bg-lime/60 transition-colors"
                               >
-                                <Edit className="w-3.5 h-3.5 text-[#ee9d2b]" />
+                                <Edit className="w-3.5 h-3.5 text-ink" />
                               </button>
                               <button
                                 onClick={() => handleDeleteListing(listing.id)}
@@ -385,23 +370,22 @@ const MyAccount = () => {
 
             {activeTab === 'favorites' && (
               <div>
-                <h3 className="text-base font-bold text-stone-800  mb-4">
+                <h3 className="text-[20px] text-ink mb-4">
                   {t('account.myFavorites')}
                 </h3>
-                {favoriteEvents.length === 0 ? (
-                  <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-8 text-center">
-                    <Heart size={32} className="text-stone-300 mx-auto mb-3" />
-                    <p className="text-stone-500 text-sm mb-1">{t('account.noFavorites')}</p>
-                    <p className="text-stone-400 text-xs">{t('account.favoritesHint')}</p>
+                {!favoritesLoaded ? <ListSkeleton /> : favoriteEvents.length === 0 ? (
+                  <div className="rounded-3xl bg-white p-6">
+                    <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-parchment">
+                      <Heart size={18} strokeWidth={1.75} className="text-ink" />
+                    </span>
+                    <p className="text-ink font-medium mb-1">{t('account.noFavorites')}</p>
+                    <p className="text-stone-500 text-sm">{t('account.favoritesHint')}</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {favoriteEvents.map(event => (
                       <div key={event.id} className="relative">
                         <EventListCard event={event} />
-                        <div className="absolute top-3 right-3">
-                          <GoingBadge eventId={event.id} />
-                        </div>
                       </div>
                     ))}
                   </div>
@@ -409,37 +393,6 @@ const MyAccount = () => {
               </div>
             )}
 
-            {activeTab === 'activity' && (
-              <div>
-                <h3 className="text-base font-bold text-stone-800  mb-4">
-                  {t('account.goingTitle')}
-                </h3>
-                {goingEvents.length === 0 ? (
-                  <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-8 text-center">
-                    <Zap size={32} className="text-stone-300 mx-auto mb-3" />
-                    <p className="text-stone-500 text-sm mb-1">{t('account.noActivity')}</p>
-                    <p className="text-stone-400 text-xs">{t('account.activityHint')}</p>
-                    <Link
-                      to="/"
-                      className="inline-flex items-center gap-2 px-4 py-2 mt-4 rounded-full bg-[#ee9d2b] text-white text-xs font-semibold hover:opacity-90 transition-all active:scale-95"
-                    >
-                      {t('account.explore')}
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {goingEvents.map(event => (
-                      <div key={event.id} className="relative">
-                        <EventListCard event={event} />
-                        <div className="absolute top-3 right-3">
-                          <GoingBadge eventId={event.id} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         </div>
         )}

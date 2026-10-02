@@ -1,15 +1,16 @@
 import { createRoot } from "react-dom/client";
 import { registerSW } from "virtual:pwa-register";
 import App from "./App.tsx";
+import ErrorBoundary from "./components/ErrorBoundary";
+import { pwaUpdate } from "./lib/pwaUpdate";
 import "./index.css";
 
-let updateServiceWorker: ((reloadPage?: boolean) => Promise<void>) | undefined;
-
-updateServiceWorker = registerSW({
+const updateServiceWorker: (reloadPage?: boolean) => Promise<void> = registerSW({
   immediate: true,
   onNeedRefresh() {
-    // Force update immediately — no prompt, just reload
-    void updateServiceWorker?.(true);
+    // Nouvelle version prête : on la propose (bandeau) au lieu de recharger
+    // de force, ce qui faisait perdre les formulaires en cours.
+    pwaUpdate.setAvailable(() => updateServiceWorker?.(true) ?? Promise.resolve());
   },
   onOfflineReady() {
     console.log('[PWA] Offline ready');
@@ -17,10 +18,13 @@ updateServiceWorker = registerSW({
   onRegisteredSW(_swUrl, registration) {
     if (!registration) return;
 
-    // Check for updates every 30 seconds (was 60)
+    // Vérifie les mises à jour toutes les 15 min et au retour sur l'app
     window.setInterval(() => {
       void registration.update();
-    }, 30_000);
+    }, 15 * 60_000);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') void registration.update();
+    });
   },
 });
 
@@ -51,16 +55,9 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Force reload on visibilitychange if update was waiting
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') {
-    navigator.serviceWorker?.getRegistration().then((reg) => {
-      if (reg?.waiting) {
-        reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-        window.location.reload();
-      }
-    });
-  }
-});
 
-createRoot(document.getElementById("root")!).render(<App />);
+createRoot(document.getElementById("root")!).render(
+  <ErrorBoundary>
+    <App />
+  </ErrorBoundary>
+);

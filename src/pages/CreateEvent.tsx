@@ -1,50 +1,30 @@
+import LargeTitle from '@/components/LargeTitle';
 import { useState, useEffect, useRef } from 'react';
+import { FormPageSkeleton } from '@/components/PageSkeleton';
+import SectionTitle from '@/components/SectionTitle';
+import { addBaseMap } from '@/lib/mapTiles';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign, ArrowLeft, Loader2, Phone, Instagram, Facebook, Twitter, MessageCircle, Plus, X, Sparkles } from 'lucide-react';
+import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign, ArrowLeft, Loader2, Phone, Instagram, Facebook, Twitter, MessageCircle, Plus, X, Type, CalendarDays, Ticket, AlignLeft, ListOrdered } from 'lucide-react';
 import TikTokIcon from '@/components/icons/TikTokIcon';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLanguage } from '@/contexts/LanguageContext';
-import mapBackground from '@/assets/map-background.jpg';
 import { supabase } from '@/integrations/supabase/client';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 // Import category icons
-import atelierIcon from '@/assets/icons/atelier.png';
-import brunchIcon from '@/assets/icons/brunch.png';
-import concertIcon from '@/assets/icons/concert.png';
-import conferenceIcon from '@/assets/icons/conference.png';
-import expositionIcon from '@/assets/icons/exposition.png';
-import festivalIcon from '@/assets/icons/festival.png';
-import meetupIcon from '@/assets/icons/meetup.png';
-import religieuxIcon from '@/assets/icons/religieux.png';
-import spectacleIcon from '@/assets/icons/spectacle.png';
-import sportIcon from '@/assets/icons/sport.png';
+import { EVENT_CATEGORIES } from '@/lib/eventCategories';
 
-const categoryIcons: Record<string, string> = {
-  workshops: atelierIcon,
-  brunch: brunchIcon,
-  music: concertIcon,
-  conferences: conferenceIcon,
-  exhibitions: expositionIcon,
-  festivals: festivalIcon,
-  meetups: meetupIcon,
-  religious: religieuxIcon,
-  shows: spectacleIcon,
-  sports: sportIcon,
-};
-
-const inputClass = "h-9 rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50 [&]:ring-0 [&]:outline-none";
+const inputClass = "h-12 px-4 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] focus:outline-none focus:ring-0 focus:border-ink [&]:ring-0 [&]:outline-none";
 const labelClass = "text-sm text-stone-600 font-normal";
-const cardClass = "rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.08)] p-4 space-y-3";
-const sectionTitleClass = "text-lg  text-stone-800 mb-4 flex items-center gap-2";
+const cardClass = "rounded-3xl bg-white p-5 space-y-3";
 
 const CreateEvent = () => {
   const { toast } = useToast();
@@ -152,17 +132,14 @@ const CreateEvent = () => {
       if (!mapContainerRef.current || mapRef.current) return;
 
       try {
-        mapRef.current = L.map(mapContainerRef.current).setView([5.3600, -4.0083], 12);
+        mapRef.current = L.map(mapContainerRef.current, { attributionControl: false, maxZoom: 19 }).setView([5.3600, -4.0083], 12);
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-          maxZoom: 20,
-        }).addTo(mapRef.current);
+        addBaseMap(mapRef.current);
 
         // Add initial marker
         const customIcon = L.divIcon({
           className: 'custom-marker',
-          html: `<div style="width: 40px; height: 40px; background: #ef4444; border: 3px solid white; border-radius: 50%; cursor: move; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>`,
+          html: `<div style="width: 40px; height: 40px; background: #14140f; border: 4px solid #a6e22e; border-radius: 50%; cursor: move; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>`,
           iconSize: [40, 40],
           iconAnchor: [20, 20],
         });
@@ -372,9 +349,7 @@ const CreateEvent = () => {
   // Show loading state while checking authentication
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-10 h-10 border-3 border-[#ee9d2b] border-t-transparent rounded-full animate-spin" />
-      </div>
+      <FormPageSkeleton />
     );
   }
 
@@ -384,33 +359,23 @@ const CreateEvent = () => {
   }
 
   return (
-    <div className="relative min-h-screen pb-32 animate-fade-in animate-zoom-smooth overflow-hidden overscroll-none bg-stone-200">
-      {/* Static Map Background — lighter, more natural */}
-      <div className="fixed inset-0 pointer-events-none">
-        <img
-          src={mapBackground}
-          alt=""
-          className="w-full h-full object-cover opacity-60"
-        />
-      </div>
+    <div className="relative min-h-screen pb-32 page-enter overflow-hidden overscroll-none bg-parchment">
 
-      {/* Light blur overlay — less dark, more natural */}
-      <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
 
       {/* Content */}
       <div className="relative mx-auto max-w-md">
         {/* Header */}
-        <div className="px-4 sm:px-6 pt-12 sm:pt-16 pb-8 sm:pb-10">
+        <div className="px-4 sm:px-6 pb-6" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
           <Link
             to="/"
-            className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white/70 backdrop-blur-md shadow-sm border border-white/60 hover:scale-105 active:scale-95 transition-all mb-8"
+            className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform mb-6"
           >
-            <ArrowLeft className="w-5 h-5 text-stone-700" />
+            <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
           </Link>
-          <h1 className="text-4xl  text-stone-800 mb-3 text-center">
+          <LargeTitle className="text-[40px] leading-[0.95] tracking-tighter text-ink" backTo="/">
             {t('event.create')}
-          </h1>
-          <p className="text-stone-500 font-light text-center">{t('form.shareEvent')}</p>
+          </LargeTitle>
+          <p className="mt-2 text-stone-500">{t('form.shareEvent')}</p>
         </div>
 
         {/* Form Cards */}
@@ -442,7 +407,9 @@ const CreateEvent = () => {
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-center">
-                    <ImageIcon className="h-10 w-10 text-[#ee9d2b] mb-4" strokeWidth={1.5} />
+                    <span className="flex size-14 items-center justify-center rounded-2xl bg-lime mb-4">
+                      <ImageIcon size={24} strokeWidth={1.75} className="text-ink" />
+                    </span>
                     <h3 className="font-light text-stone-700 mb-1">{t('form.addImage')}</h3>
                     <p className="text-sm text-stone-400 font-light">{t('form.clickToUpload')}</p>
                   </div>
@@ -452,9 +419,7 @@ const CreateEvent = () => {
 
             {/* Basic Information Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                {t('form.basicInfo')}
-              </h2>
+              <SectionTitle icon={Type}>{t('form.basicInfo')}</SectionTitle>
 
               <div className="space-y-3">
                 <Label htmlFor="title" className={labelClass}>{t('form.title')}</Label>
@@ -477,67 +442,15 @@ const CreateEvent = () => {
                   <SelectTrigger className={inputClass}>
                     <SelectValue placeholder={t('form.selectCategory')} />
                   </SelectTrigger>
-                  <SelectContent className="backdrop-blur-2xl bg-white/95 border-stone-200/60">
-                    <SelectItem value="workshops">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.workshops} alt="" className="w-5 h-5" />
-                        {t('cat.workshops')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="brunch">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.brunch} alt="" className="w-5 h-5" />
-                        {t('cat.brunch')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="music">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.music} alt="" className="w-5 h-5" />
-                        {t('cat.concerts')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="conferences">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.conferences} alt="" className="w-5 h-5" />
-                        {t('cat.conferences')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="exhibitions">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.exhibitions} alt="" className="w-5 h-5" />
-                        {t('cat.exhibitions')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="festivals">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.festivals} alt="" className="w-5 h-5" />
-                        {t('cat.festivals')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="meetups">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.meetups} alt="" className="w-5 h-5" />
-                        {t('cat.meetups')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="religious">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.religious} alt="" className="w-5 h-5" />
-                        {t('cat.religious')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="shows">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.shows} alt="" className="w-5 h-5" />
-                        {t('cat.shows')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="sports">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.sports} alt="" className="w-5 h-5" />
-                        {t('cat.sports')}
-                      </span>
-                    </SelectItem>
+                  <SelectContent className="bg-white border-stone-200">
+                    {EVENT_CATEGORIES.map((c) => (
+                      <SelectItem key={c.value} value={c.value}>
+                        <span className="flex items-center gap-2">
+                          <img src={c.icon} alt="" className="w-5 h-5" />
+                          {t(c.tKey)}
+                        </span>
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -545,10 +458,7 @@ const CreateEvent = () => {
 
             {/* Location Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                <MapPin className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
-                {t('form.location')}
-              </h2>
+              <SectionTitle icon={MapPin}>{t('form.location')}</SectionTitle>
 
               <div className="space-y-3">
                 <Label htmlFor="address" className={labelClass}>{t('form.address')}</Label>
@@ -584,10 +494,7 @@ const CreateEvent = () => {
 
             {/* Date and Time Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                <Calendar className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
-                {t('form.dateTime')}
-              </h2>
+              <SectionTitle icon={CalendarDays}>{t('form.dateTime')}</SectionTitle>
 
               <div className="space-y-3 overflow-hidden">
                 <Label htmlFor="date" className={labelClass}>{t('form.date')}</Label>
@@ -629,9 +536,7 @@ const CreateEvent = () => {
 
             {/* Price and Capacity Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                {t('form.priceCapacity')}
-              </h2>
+              <SectionTitle icon={Ticket}>{t('form.priceCapacity')}</SectionTitle>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-3">
@@ -660,9 +565,7 @@ const CreateEvent = () => {
 
             {/* Description Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                {t('form.description')}
-              </h2>
+              <SectionTitle icon={AlignLeft}>{t('form.description')}</SectionTitle>
 
               <div className="space-y-3">
                 <Textarea
@@ -671,17 +574,14 @@ const CreateEvent = () => {
                   value={formData.description}
                   onChange={e => setFormData({ ...formData, description: e.target.value })}
                   rows={5}
-                  className="rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50 resize-none"
+                  className="rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 py-3 focus:outline-none focus:ring-0 focus:border-ink resize-none"
                 />
               </div>
             </div>
 
             {/* Key Points Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                <Sparkles className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
-                {t('form.keyPoints')}
-              </h2>
+              <SectionTitle icon={ListOrdered}>{t('form.keyPoints')}</SectionTitle>
 
               <div className="space-y-3">
                 {keyPoints.map((point, index) => (
@@ -708,7 +608,7 @@ const CreateEvent = () => {
                   <button
                     type="button"
                     onClick={addKeyPoint}
-                    className="flex items-center gap-2 text-[#ee9d2b] hover:text-[#ee9d2b]/80 transition-colors text-sm font-medium"
+                    className="flex items-center gap-2 text-ink hover:text-graphite transition-colors text-sm font-medium"
                   >
                     <Plus className="w-4 h-4" />
                     {t('form.addKeyPoint')}
@@ -720,15 +620,12 @@ const CreateEvent = () => {
 
             {/* Contact Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                <Phone className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
-                {t('form.contact')}
-              </h2>
+              <SectionTitle icon={Phone}>{t('form.contact')}</SectionTitle>
 
               <div className="space-y-4">
                 <div className="space-y-3">
                   <Label htmlFor="contactPhone" className={`${labelClass} flex items-center gap-2`}>
-                    <Phone className="w-4 h-4 text-[#ee9d2b]" />
+                    <Phone className="w-4 h-4 text-ink" />
                     {t('form.phone')}
                   </Label>
                   <Input
@@ -742,7 +639,7 @@ const CreateEvent = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="contactWhatsapp" className={`${labelClass} flex items-center gap-2`}>
-                    <MessageCircle className="w-4 h-4 text-[#ee9d2b]" />
+                    <MessageCircle className="w-4 h-4 text-ink" />
                     {t('form.whatsapp')}
                   </Label>
                   <Input
@@ -756,7 +653,7 @@ const CreateEvent = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="contactInstagram" className={`${labelClass} flex items-center gap-2`}>
-                    <Instagram className="w-4 h-4 text-[#ee9d2b]" />
+                    <Instagram className="w-4 h-4 text-ink" />
                     {t('form.instagram')}
                   </Label>
                   <Input
@@ -770,7 +667,7 @@ const CreateEvent = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="contactFacebook" className={`${labelClass} flex items-center gap-2`}>
-                    <Facebook className="w-4 h-4 text-[#ee9d2b]" />
+                    <Facebook className="w-4 h-4 text-ink" />
                     {t('form.facebook')}
                   </Label>
                   <Input
@@ -784,7 +681,7 @@ const CreateEvent = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="contactTiktok" className={`${labelClass} flex items-center gap-2`}>
-                    <TikTokIcon className="w-4 h-4 text-[#ee9d2b]" />
+                    <TikTokIcon className="w-4 h-4 text-ink" />
                     {t('form.tiktok')}
                   </Label>
                   <Input
@@ -798,7 +695,7 @@ const CreateEvent = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="contactTwitter" className={`${labelClass} flex items-center gap-2`}>
-                    <Twitter className="w-4 h-4 text-[#ee9d2b]" />
+                    <Twitter className="w-4 h-4 text-ink" />
                     {t('form.twitter')}
                   </Label>
                   <Input
@@ -817,7 +714,7 @@ const CreateEvent = () => {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="w-full h-12 rounded-full bg-[#ee9d2b] text-white font-semibold text-base hover:opacity-90 transition-all active:scale-[0.98]"
+                className="w-full h-12 rounded-full bg-lime text-ink text-[15px] font-medium hover:bg-lime-deep transition-colors active:scale-[0.98]"
               >
                 {submitting ? (
                   <>

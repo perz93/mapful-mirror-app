@@ -1,12 +1,10 @@
 /**
- * Facebook-style shimmer skeleton loaders for different page types.
- * Uses CSS shimmer animation for smooth loading effect.
+ * Squelettes de chargement par type de page.
+ * Classe `.skeleton` (index.css) : bloc parchemin + reflet crème discret.
  */
 
 const ShimmerBlock = ({ className = '' }: { className?: string }) => (
-  <div className={`relative overflow-hidden rounded-lg bg-stone-200/70 dark:bg-stone-800/50 ${className}`}>
-    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent" />
-  </div>
+  <div className={`rounded-lg skeleton ${className}`} />
 );
 
 /** Skeleton for EventDetails page */
@@ -66,11 +64,13 @@ export const EventDetailsSkeleton = () => (
 
 /** Skeleton for CategoryPage (list of events) */
 export const CategoryPageSkeleton = () => (
-  <div className="p-4 space-y-5">
+  <div className="p-4 pt-5 space-y-4">
     {[1, 2, 3].map((i) => (
-      <div key={i} className="overflow-hidden rounded-3xl bg-white dark:bg-stone-900 border border-white/80 dark:border-stone-700/40 shadow-sm">
-        <ShimmerBlock className="h-48 rounded-none" />
-        <div className="p-4 space-y-3">
+      <div key={i} className="overflow-hidden rounded-3xl bg-white dark:bg-stone-900 p-2">
+        <ShimmerBlock className="h-52 rounded-[20px]" />
+        <div className="px-3 pt-4 pb-3 space-y-3">
+          <ShimmerBlock className="h-3 w-24 rounded-full" />
+          <ShimmerBlock className="h-6 w-3/4 rounded-md" />
           <div className="flex items-center gap-2">
             <ShimmerBlock className="h-7 w-28 rounded-full" />
             <ShimmerBlock className="h-7 w-20 rounded-full" />
@@ -84,9 +84,21 @@ export const CategoryPageSkeleton = () => (
 
 /** Skeleton for CreateEvent / form pages */
 export const FormPageSkeleton = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <div className="flex flex-col items-center gap-3">
-      <div className="w-10 h-10 border-3 border-[#ee9d2b] border-t-transparent rounded-full animate-spin" />
+  <div className="min-h-screen bg-parchment">
+    <div className="mx-auto max-w-md px-4 space-y-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
+      <ShimmerBlock className="h-10 w-10 rounded-full" />
+      <ShimmerBlock className="h-9 w-3/4 rounded-xl" />
+      <ShimmerBlock className="h-4 w-1/2" />
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="rounded-3xl bg-white p-5 space-y-3">
+          <div className="flex items-center gap-3">
+            <ShimmerBlock className="size-10 rounded-2xl skeleton-on-white" />
+            <ShimmerBlock className="h-5 w-40 skeleton-on-white" />
+          </div>
+          <ShimmerBlock className="h-11 w-full rounded-xl skeleton-on-white" />
+          <ShimmerBlock className="h-11 w-full rounded-xl skeleton-on-white" />
+        </div>
+      ))}
     </div>
   </div>
 );
@@ -95,7 +107,7 @@ export const FormPageSkeleton = () => (
 export const SettingsSkeleton = () => (
   <div className="mx-auto max-w-md px-4 pt-20 space-y-6">
     {[1, 2, 3, 4].map((i) => (
-      <div key={i} className="rounded-2xl bg-white/50 border border-white/60 p-5 space-y-4">
+      <div key={i} className="rounded-3xl bg-white p-5 space-y-4">
         <div className="flex items-center gap-2">
           <ShimmerBlock className="w-5 h-5 rounded" />
           <ShimmerBlock className="h-5 w-32" />
@@ -119,7 +131,7 @@ export const AccountSkeleton = () => (
     {/* Stats */}
     <div className="grid grid-cols-3 gap-3 w-full mb-6">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="flex flex-col items-center gap-2 rounded-2xl bg-white/50 border border-white/60 p-3">
+        <div key={i} className="flex flex-col items-center gap-2 rounded-3xl bg-white p-3">
           <ShimmerBlock className="w-4 h-4 rounded" />
           <ShimmerBlock className="h-6 w-8 rounded" />
           <ShimmerBlock className="h-2 w-12 rounded" />
@@ -131,7 +143,7 @@ export const AccountSkeleton = () => (
     {/* List items */}
     <div className="w-full space-y-3">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="flex items-stretch gap-3 rounded-2xl bg-white/80 p-4">
+        <div key={i} className="flex items-stretch gap-3 rounded-3xl bg-white p-4">
           <div className="flex-1 space-y-2">
             <ShimmerBlock className="h-3 w-20" />
             <ShimmerBlock className="h-4 w-3/4" />
@@ -149,7 +161,7 @@ export const AccountSkeleton = () => (
 export const ManageEventsSkeleton = () => (
   <div className="space-y-4">
     {[1, 2, 3].map((i) => (
-      <div key={i} className="rounded-2xl bg-white/80 border border-white/60 p-4 space-y-3">
+      <div key={i} className="rounded-3xl bg-white p-4 space-y-3">
         <div className="flex items-center gap-3">
           <ShimmerBlock className="w-16 h-16 rounded-xl flex-shrink-0" />
           <div className="flex-1 space-y-2">
@@ -172,7 +184,7 @@ export const EditEventSkeleton = () => (
   <div className="mx-auto max-w-md px-4 pt-20 space-y-4">
     <ShimmerBlock className="h-48 rounded-2xl" />
     {[1, 2, 3].map((i) => (
-      <div key={i} className="rounded-2xl bg-white/50 border border-white/60 p-4 space-y-3">
+      <div key={i} className="rounded-3xl bg-white p-4 space-y-3">
         <ShimmerBlock className="h-5 w-32" />
         <ShimmerBlock className="h-9 w-full rounded-xl" />
         <ShimmerBlock className="h-9 w-full rounded-xl" />

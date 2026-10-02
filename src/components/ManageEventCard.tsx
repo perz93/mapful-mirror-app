@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+import ShimmerImage from './ShimmerImage';
 import { fr } from 'date-fns/locale';
 import { Link } from 'react-router-dom';
 import { Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
@@ -77,7 +78,7 @@ const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) 
 
   return (
     <div className="w-full pointer-events-auto touch-auto">
-      <div className="flex items-stretch justify-between gap-3 rounded-2xl backdrop-blur-xl bg-white/80 dark:bg-stone-900/80 p-4 shadow-2xl border border-white/50 dark:border-stone-700/50">
+      <div className="flex items-stretch justify-between gap-3 rounded-3xl bg-white dark:bg-stone-900/80 p-4 shadow-2xl">
         <div className="flex flex-col justify-between gap-2 flex-[2_2_0px]">
           <div className="flex flex-col gap-0.5">
             <div className="flex items-center gap-2">
@@ -101,24 +102,24 @@ const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) 
           <div className="flex items-center gap-2">
             <Link 
               to={`/edit-event/${event.id}`}
-              className="flex items-center justify-center gap-1 rounded-full h-7 px-3 bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 transition-all"
+              className="inline-flex items-center justify-center gap-1.5 rounded-full h-8 px-3.5 bg-lime text-ink text-xs font-medium hover:bg-lime-deep transition-colors"
             >
-              <Pencil className="w-3 h-3" />
+              <Pencil className="w-3.5 h-3.5" strokeWidth={1.75} />
               <span>{t('event.editBtn')}</span>
             </Link>
             
             <button
               onClick={handleTogglePublish}
-              className="flex items-center justify-center gap-1 rounded-full h-7 px-3 bg-secondary text-secondary-foreground text-xs font-medium hover:opacity-90 transition-all"
+              className="inline-flex items-center justify-center gap-1.5 rounded-full h-8 px-3.5 bg-parchment text-ink text-xs font-medium hover:bg-stone-200 transition-colors"
             >
               {event.is_published ? (
                 <>
-                  <EyeOff className="w-3 h-3" />
+                  <EyeOff className="w-3.5 h-3.5" strokeWidth={1.75} />
                   <span>{t('event.unpublishBtn')}</span>
                 </>
               ) : (
                 <>
-                  <Eye className="w-3 h-3" />
+                  <Eye className="w-3.5 h-3.5" strokeWidth={1.75} />
                   <span>{t('event.publishBtn')}</span>
                 </>
               )}
@@ -126,8 +127,8 @@ const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) 
             
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <button className="flex items-center justify-center rounded-full h-7 w-7 bg-destructive text-destructive-foreground hover:opacity-90 transition-all">
-                  <Trash2 className="w-3 h-3" />
+                <button className="inline-flex items-center justify-center rounded-full size-8 bg-parchment text-ink hover:bg-destructive hover:text-white transition-colors">
+                  <Trash2 className="w-3.5 h-3.5" strokeWidth={1.75} />
                 </button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -146,11 +147,10 @@ const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) 
           </div>
         </div>
         
-        <div 
-          style={{
-            backgroundImage: event.image_url ? `url('${event.image_url}')` : "url('https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&h=400&fit=crop')"
-          }} 
-          className="w-20 h-20 flex-shrink-0 bg-center bg-no-repeat bg-cover rounded" 
+        <ShimmerImage
+          src={event.image_url || 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&h=400&fit=crop'}
+          alt=""
+          className="w-20 h-20 flex-shrink-0 rounded-2xl"
         />
       </div>
     </div>

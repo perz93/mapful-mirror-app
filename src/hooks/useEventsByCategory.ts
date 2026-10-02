@@ -1,17 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Event } from './useEvents';
+import { eventCategoryKeys } from '@/lib/eventCategories';
 
 export const useEventsByCategory = (category: string) => {
   return useQuery({
     queryKey: ['events', 'category', category],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('events')
         .select('*')
-        .eq('is_published', true)
-        .eq('category', category)
-        .order('date', { ascending: true });
+        .eq('is_published', true);
+      // « all » : tous les événements, sinon la catégorie (anciennes clés incluses)
+      if (category !== 'all') query = query.in('category', eventCategoryKeys(category));
+      const { data, error } = await query.order('date', { ascending: true });
 
       if (error) {
         console.error('Error fetching events by category:', error);

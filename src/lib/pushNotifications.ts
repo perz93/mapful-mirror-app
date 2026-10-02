@@ -1,4 +1,8 @@
-import { supabase } from '@/integrations/supabase/client';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { supabase as typedSupabase } from '@/integrations/supabase/client';
+
+// Tables / fonctions push absentes des types générés
+const supabase = typedSupabase as unknown as SupabaseClient;
 
 const VAPID_PUBLIC_KEY = 'BJ4tt17HAf2lfvIdXqHoBH0kjDqQh-g10W2p4PMb2IxEsxrjhf-zvIItAWioxH-Bewqa_b87Mw50JPd2LHuQLf4';
 
@@ -22,39 +26,64 @@ export async function getPermissionState(): Promise<NotificationPermission> {
   return Notification.permission;
 }
 
+// Enregistre (ou rattache au compte connecté) l'abonnement de cet appareil.
+async function saveSubscription(subscription: PushSubscription) {
+  const subJson = subscription.toJSON();
+  const endpoint = subJson.endpoint!;
+  const p256dh = subJson.keys!.p256dh!;
+  const auth = subJson.keys!.auth!;
+
+  const { error } = await supabase.rpc('save_push_subscription', {
+    p_endpoint: endpoint,
+    p_p256dh: p256dh,
+    p_auth: auth,
+  });
+  if (!error) return;
+
+  // Repli si la migration de sécurité n'est pas encore appliquée
+  const { data: { session } } = await supabase.auth.getSession();
+  await supabase.from('push_subscriptions').upsert(
+    { user_id: session?.user?.id || null, endpoint, p256dh, auth },
+    { onConflict: 'endpoint' }
+  );
+}
+
 export async function subscribeToPush(): Promise<PushSubscription | null> {
   try {
-    // Use the existing PWA service worker (push handlers are merged into it)
-    const registration = await navigator.serviceWorker.ready;
-
-    // Request permission
+    // La permission doit être demandée tout de suite après le tap :
+    // sur iOS, attendre le service worker avant fait perdre le « geste
+    // utilisateur » et la demande est ignorée.
     const permission = await Notification.requestPermission();
     if (permission !== 'granted') return null;
 
-    // Subscribe
-    const subscription = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) as BufferSource,
-    });
+    // Use the existing PWA service worker (push handlers are merged into it)
+    const registration = await navigator.serviceWorker.ready;
 
-    // Save to Supabase
-    const subJson = subscription.toJSON();
-    const { data: { user } } = await supabase.auth.getUser();
+    const subscription =
+      (await registration.pushManager.getSubscription()) ??
+      (await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) as BufferSource,
+      }));
 
-    await (supabase as any).from('push_subscriptions').upsert(
-      {
-        user_id: user?.id || null,
-        endpoint: subJson.endpoint!,
-        p256dh: subJson.keys!.p256dh!,
-        auth: subJson.keys!.auth!,
-      },
-      { onConflict: 'endpoint' }
-    );
-
+    await saveSubscription(subscription);
     return subscription;
   } catch (err) {
     console.error('Push subscription failed:', err);
     return null;
+  }
+}
+
+// À la connexion / déconnexion : rattache l'abonnement existant au bon compte
+// pour que les rappels personnels arrivent sur cet appareil.
+export async function syncPushSubscription(): Promise<void> {
+  try {
+    if (!('serviceWorker' in navigator) || Notification.permission !== 'granted') return;
+    const registration = await navigator.serviceWorker.getRegistration('/');
+    const subscription = await registration?.pushManager.getSubscription();
+    if (subscription) await saveSubscription(subscription);
+  } catch {
+    // silencieux : nouvel essai à la prochaine ouverture
   }
 }
 
@@ -67,7 +96,12 @@ export async function unsubscribeFromPush(): Promise<boolean> {
     if (!subscription) return false;
 
     // Remove from Supabase
-    await (supabase as any).from('push_subscriptions').delete().eq('endpoint', subscription.endpoint);
+    const { error } = await supabase.rpc('remove_push_subscription', {
+      p_endpoint: subscription.endpoint,
+    });
+    if (error) {
+      await supabase.from('push_subscriptions').delete().eq('endpoint', subscription.endpoint);
+    }
 
     // Unsubscribe
     await subscription.unsubscribe();

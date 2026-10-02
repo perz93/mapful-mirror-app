@@ -12,7 +12,12 @@ declare const self: ServiceWorkerGlobalScope;
 cleanupOutdatedCaches();
 precacheAndRoute(self.__WB_MANIFEST);
 clientsClaim();
-self.skipWaiting();
+
+// La nouvelle version attend que l'utilisateur clique « Mettre à jour »
+// (bandeau UpdateBanner) au lieu de recharger l'app en pleine navigation.
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
+});
 
 // SPA navigation fallback — serve index.html for all navigation requests
 const handler = createHandlerBoundToURL('/index.html');
@@ -27,7 +32,7 @@ registerRoute(navigationRoute);
 
 // Map tiles — cache first (30 days)
 registerRoute(
-  ({ url }) => url.hostname.includes('tile.openstreetmap.org') || url.hostname.includes('basemaps.cartocdn.com'),
+  ({ url }) => url.hostname.includes('tile.openstreetmap.org') || url.hostname.includes('basemaps.cartocdn.com') || url.hostname.includes('tiles.openfreemap.org'),
   new CacheFirst({
     cacheName: 'map-tiles',
     plugins: [

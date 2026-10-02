@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Share, Plus, MoreVertical, Download, ChevronRight, Smartphone } from 'lucide-react';
+import { Share, SquarePlus, EllipsisVertical, Download, BellRing, Maximize2, House, Copy, Check, AlertCircle } from 'lucide-react';
 
 const INSTALLED_KEY = 'pwa_installed';
+const LATER_KEY = 'pwa_install_later'; // « Plus tard » : masqué pour la session
 
 type OS = 'ios' | 'android' | 'unknown';
 
@@ -15,258 +16,296 @@ function detectOS(): OS {
 function isStandalone(): boolean {
   return (
     window.matchMedia('(display-mode: standalone)').matches ||
-    (navigator as any).standalone === true
+    (navigator as Navigator & { standalone?: boolean }).standalone === true
   );
 }
 
-// ==========================================
-// iOS Step Illustrations (animated)
-// ==========================================
-
-const IOSShareIcon = () => (
-  <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl backdrop-blur-xl bg-blue-500/15 border border-blue-500/20">
-    <Share size={24} className="text-blue-500" />
-    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center animate-bounce">
-      <span className="text-white text-[10px] font-bold">1</span>
-    </div>
-  </div>
-);
-
-const IOSAddIcon = () => (
-  <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl backdrop-blur-xl bg-green-500/15 border border-green-500/20">
-    <Plus size={24} className="text-green-500" />
-    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center animate-bounce" style={{ animationDelay: '150ms' }}>
-      <span className="text-white text-[10px] font-bold">2</span>
-    </div>
-  </div>
-);
-
-const IOSConfirmIcon = () => (
-  <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl backdrop-blur-xl bg-[#ee9d2b]/15 border border-[#ee9d2b]/20">
-    <Smartphone size={24} className="text-[#ee9d2b]" />
-    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#ee9d2b] flex items-center justify-center animate-bounce" style={{ animationDelay: '300ms' }}>
-      <span className="text-white text-[10px] font-bold">3</span>
-    </div>
-  </div>
-);
-
-// ==========================================
-// Android Step Illustrations
-// ==========================================
-
-const AndroidMenuIcon = () => (
-  <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl backdrop-blur-xl bg-green-500/15 border border-green-500/20">
-    <MoreVertical size={24} className="text-green-500" />
-    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center animate-bounce">
-      <span className="text-white text-[10px] font-bold">1</span>
-    </div>
-  </div>
-);
-
-const AndroidInstallIcon = () => (
-  <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl backdrop-blur-xl bg-[#ee9d2b]/15 border border-[#ee9d2b]/20">
-    <Download size={24} className="text-[#ee9d2b]" />
-    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#ee9d2b] flex items-center justify-center animate-bounce" style={{ animationDelay: '150ms' }}>
-      <span className="text-white text-[10px] font-bold">2</span>
-    </div>
-  </div>
-);
-
-// ==========================================
-// Step Component (glass style)
-// ==========================================
-
-interface StepProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  delay: number;
-  isActive: boolean;
+/** Navigateurs intégrés (Instagram, Facebook, TikTok…) : impossible d'installer depuis là. */
+function isInAppBrowser(): boolean {
+  return /Instagram|FBAN|FBAV|FB_IAB|Line\/|TikTok|Snapchat|musical_ly|Twitter/i.test(navigator.userAgent || '');
 }
 
-const Step = ({ icon, title, description, delay, isActive }: StepProps) => (
-  <div
-    className={`flex items-center gap-3.5 p-3.5 rounded-2xl transition-all duration-500 ${
-      isActive
-        ? 'backdrop-blur-2xl bg-white/70 dark:bg-stone-800/60 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.1)] border border-white/80 dark:border-stone-600/30 scale-100 opacity-100'
-        : 'backdrop-blur-xl bg-white/35 dark:bg-stone-800/25 border border-white/50 dark:border-stone-700/20 scale-95 opacity-50'
-    }`}
-    style={{ transitionDelay: `${delay}ms` }}
-  >
-    {icon}
-    <div className="flex-1">
-      <p className="text-sm font-bold text-stone-900 dark:text-white">{title}</p>
-      <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">{description}</p>
-    </div>
-    {isActive && (
-      <ChevronRight size={16} className="text-[#ee9d2b] animate-pulse" />
-    )}
-  </div>
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
+
+// ------------------------------------------------------------------
+// Mini-maquettes des éléments à toucher (reconnaissables d'un coup d'œil)
+// ------------------------------------------------------------------
+
+const KeyIcon = ({ children }: { children: React.ReactNode }) => (
+  <span className="inline-flex size-9 items-center justify-center rounded-xl border border-stone-200 bg-white text-ink">
+    {children}
+  </span>
 );
 
-// ==========================================
-// Main Component
-// ==========================================
+/** Ligne de menu façon iOS / Android. */
+const MenuRow = ({ label, icon, accent = false }: { label: string; icon: React.ReactNode; accent?: boolean }) => (
+  <span className="flex h-10 items-center justify-between gap-3 rounded-xl border border-stone-200 bg-white px-3 text-[13px] font-medium text-ink">
+    <span className={accent ? 'text-[#0a84ff]' : ''}>{label}</span>
+    <span className="text-stone-500">{icon}</span>
+  </span>
+);
+
+interface StepProps {
+  n: number;
+  title: string;
+  hint: string;
+  visual: React.ReactNode;
+  last?: boolean;
+}
+
+const Step = ({ n, title, hint, visual, last }: StepProps) => (
+  <li className="relative flex gap-4 pb-5 last:pb-0">
+    {/* Fil de la timeline */}
+    {!last && <span aria-hidden className="absolute left-[15px] top-9 bottom-1 w-px bg-stone-200" />}
+    <span className="relative z-10 flex size-8 flex-shrink-0 items-center justify-center rounded-full bg-ink text-[13px] font-semibold text-parchment tabular">
+      {n}
+    </span>
+    <div className="min-w-0 flex-1 pt-1">
+      <p className="text-[15px] font-medium text-ink">{title}</p>
+      <p className="mt-0.5 text-[13px] leading-snug text-stone-500">{hint}</p>
+      <div className="mt-2.5">{visual}</div>
+    </div>
+  </li>
+);
+
+// ------------------------------------------------------------------
 
 const InstallGuide = () => {
   const [visible, setVisible] = useState(false);
-  const [animating, setAnimating] = useState(false);
-  const [activeStep, setActiveStep] = useState(0);
-  const [os, setOs] = useState<OS>('unknown');
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [shown, setShown] = useState(false);
+  const [tab, setTab] = useState<'ios' | 'android'>('ios');
+  const [deviceOS, setDeviceOS] = useState<OS>('unknown');
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [copied, setCopied] = useState(false);
 
-  // Capture Android install prompt
+  // Invite d'installation native (Android / Chrome)
   useEffect(() => {
     const handler = (e: Event) => {
       e.preventDefault();
-      setDeferredPrompt(e);
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+    };
+    const installed = () => {
+      try { localStorage.setItem(INSTALLED_KEY, 'true'); } catch { /* stockage indisponible */ }
+      close();
     };
     window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+    window.addEventListener('appinstalled', installed);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handler);
+      window.removeEventListener('appinstalled', installed);
+    };
   }, []);
 
   useEffect(() => {
-    // Don't show if already installed as PWA
     if (isStandalone()) return;
+    try {
+      if (localStorage.getItem(INSTALLED_KEY) || sessionStorage.getItem(LATER_KEY)) return;
+    } catch { /* stockage indisponible : on affiche */ }
 
-    // Don't show if user already installed before
-    if (localStorage.getItem(INSTALLED_KEY)) return;
-
-    const detectedOS = detectOS();
-    if (detectedOS === 'unknown') return;
-    setOs(detectedOS);
-
-    // Show immediately
+    const os = detectOS();
+    if (os === 'unknown') return;
+    setDeviceOS(os);
+    setTab(os);
     setVisible(true);
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setAnimating(true);
-      });
-    });
+    requestAnimationFrame(() => requestAnimationFrame(() => setShown(true)));
   }, []);
 
-  // Animate steps
-  useEffect(() => {
-    if (!animating) return;
+  const close = () => {
+    setShown(false);
+    window.setTimeout(() => setVisible(false), 350);
+  };
 
-    const maxSteps = os === 'ios' ? 3 : 2;
-    const interval = setInterval(() => {
-      setActiveStep((prev) => (prev + 1) % maxSteps);
-    }, 2500);
+  const later = () => {
+    try { sessionStorage.setItem(LATER_KEY, '1'); } catch { /* ignore */ }
+    close();
+  };
 
-    return () => clearInterval(interval);
-  }, [animating, os]);
-
-  const handleInstallAndroid = useCallback(async () => {
+  const installAndroid = useCallback(async () => {
     if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const result = await deferredPrompt.userChoice;
-    if (result.outcome === 'accepted') {
-      localStorage.setItem(INSTALLED_KEY, 'true');
-      setAnimating(false);
-      setTimeout(() => setVisible(false), 300);
+    await deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      try { localStorage.setItem(INSTALLED_KEY, 'true'); } catch { /* ignore */ }
+      close();
     }
     setDeferredPrompt(null);
   }, [deferredPrompt]);
 
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.origin);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch { /* presse-papiers refusé */ }
+  };
+
   if (!visible) return null;
 
+  const inApp = isInAppBrowser();
+  const onThisDevice = tab === deviceOS;
+
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
-      {/* Backdrop — no click to close */}
-      <div
-        className={`absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity duration-500 ${
-          animating ? 'opacity-100' : 'opacity-0'
-        }`}
-      />
+    <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-labelledby="install-title">
+      {/* Fond */}
+      <div className={`absolute inset-0 bg-ink/60 backdrop-blur-sm transition-opacity duration-300 ${shown ? 'opacity-100' : 'opacity-0'}`} />
 
-      {/* Glass Card — EventCard style */}
+      {/* Feuille */}
       <div
-        className={`relative w-full max-w-md mx-auto transition-all duration-700 ease-out ${
-          animating ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-8 opacity-0 scale-95'
+        className={`relative flex max-h-[92dvh] w-full max-w-md flex-col overflow-hidden rounded-t-[28px] bg-white shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] sm:rounded-[28px] ${
+          shown ? 'translate-y-0' : 'translate-y-full sm:translate-y-8'
         }`}
+        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       >
-        <div className="rounded-3xl backdrop-blur-2xl bg-white/85 dark:bg-stone-900/80 border border-white/70 dark:border-stone-700/30 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15)] overflow-hidden">
-          {/* Content */}
-          <div className="px-5 py-6">
-            {/* Header */}
-            <div className="text-center mb-6">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl backdrop-blur-xl bg-[#ee9d2b]/15 border border-[#ee9d2b]/20 mb-3 shadow-lg shadow-[#ee9d2b]/10">
-                <Smartphone size={32} className="text-[#ee9d2b]" />
-              </div>
-              <h2 className="text-2xl font-bold text-stone-900 dark:text-white ">
-                Installe l'app !
-              </h2>
-              <p className="text-sm text-stone-600 dark:text-stone-300 mt-1.5">
-                Ajoute Mapful à ton écran d'accueil pour profiter de toutes les fonctionnalités
-              </p>
-            </div>
+        <div className="overflow-y-auto overscroll-contain px-5 pt-3 pb-5">
+          <span aria-hidden className="mx-auto mb-5 block h-1 w-10 rounded-full bg-stone-200 sm:hidden" />
 
-            {/* Steps */}
-            <div className="space-y-2.5">
-              {os === 'ios' ? (
-                <>
-                  <Step
-                    icon={<IOSShareIcon />}
-                    title="Appuie sur Partager"
-                    description="L'icône ⬆ en bas de Safari"
-                    delay={0}
-                    isActive={activeStep === 0}
-                  />
-                  <Step
-                    icon={<IOSAddIcon />}
-                    title="Sur l'écran d'accueil"
-                    description="Scrolle et appuie sur « Sur l'écran d'accueil »"
-                    delay={100}
-                    isActive={activeStep === 1}
-                  />
-                  <Step
-                    icon={<IOSConfirmIcon />}
-                    title="Ajouter"
-                    description="Confirme en appuyant sur « Ajouter » en haut à droite"
-                    delay={200}
-                    isActive={activeStep === 2}
-                  />
-                </>
-              ) : (
-                <>
-                  {deferredPrompt ? (
-                    <button
-                      onClick={handleInstallAndroid}
-                      className="w-full flex items-center gap-4 p-4 rounded-2xl bg-[#ee9d2b] text-white shadow-lg shadow-[#ee9d2b]/30 hover:opacity-90 active:scale-[0.98] transition-all"
-                    >
-                      <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-xl">
-                        <Download size={28} />
-                      </div>
-                      <div className="flex-1 text-left">
-                        <p className="text-base font-bold">Installer l'application</p>
-                        <p className="text-xs opacity-80 mt-0.5">Un tap et c'est fait !</p>
-                      </div>
-                      <ChevronRight size={20} />
-                    </button>
-                  ) : (
-                    <>
-                      <Step
-                        icon={<AndroidMenuIcon />}
-                        title="Menu du navigateur"
-                        description="Appuie sur ⋮ en haut à droite de Chrome"
-                        delay={0}
-                        isActive={activeStep === 0}
-                      />
-                      <Step
-                        icon={<AndroidInstallIcon />}
-                        title="Installer l'application"
-                        description="Appuie sur « Installer l'application » ou « Ajouter à l'écran d'accueil »"
-                        delay={100}
-                        isActive={activeStep === 1}
-                      />
-                    </>
-                  )}
-                </>
-              )}
+          {/* En-tête */}
+          <div className="flex items-center gap-3.5">
+            <img src="/icon-192.png" alt="" className="size-14 rounded-[16px] border border-stone-200 object-cover" />
+            <div className="min-w-0">
+              <p className="eyebrow text-stone-500">Application · Gratuit</p>
+              <h2 id="install-title" className="text-[30px] leading-[0.95] tracking-tighter text-ink">Installe VIBE</h2>
             </div>
-
           </div>
+          <p className="mt-3 text-[15px] leading-snug text-stone-600">
+            Ajoute VIBE à ton écran d'accueil : elle s'ouvre comme une vraie app, sans passer par un store.
+          </p>
+
+          {/* Avantages */}
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            {[
+              { icon: BellRing, label: 'Notifications' },
+              { icon: Maximize2, label: 'Plein écran' },
+              { icon: House, label: "Écran d'accueil" },
+            ].map(({ icon: Icon, label }) => (
+              <div key={label} className="flex flex-col items-center gap-1.5 rounded-2xl bg-parchment px-2 py-3">
+                <Icon size={18} strokeWidth={1.75} className="text-ink" />
+                <span className="text-[12px] font-medium text-ink">{label}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* iPhone / Android */}
+          <div role="tablist" className="relative mt-5 grid grid-cols-2 rounded-full bg-parchment p-1">
+            <span
+              aria-hidden
+              className={`absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full bg-ink transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                tab === 'android' ? 'translate-x-full' : 'translate-x-0'
+              }`}
+            />
+            {(['ios', 'android'] as const).map((k) => (
+              <button
+                key={k}
+                role="tab"
+                type="button"
+                aria-selected={tab === k}
+                onClick={() => setTab(k)}
+                className={`relative z-10 h-10 rounded-full text-sm font-medium transition-colors duration-300 ${tab === k ? 'text-parchment' : 'text-stone-600'}`}
+              >
+                {k === 'ios' ? 'iPhone' : 'Android'}
+                {deviceOS === k && <span className={`ml-1.5 text-[11px] ${tab === k ? 'text-lime' : 'text-stone-400'}`}>· ton appareil</span>}
+              </button>
+            ))}
+          </div>
+
+          {/* Navigateur intégré (Instagram, TikTok…) */}
+          {inApp && onThisDevice && (
+            <div className="mt-4 flex gap-3 rounded-2xl bg-parchment p-3.5">
+              <AlertCircle size={18} strokeWidth={1.75} className="mt-0.5 flex-shrink-0 text-ink" />
+              <div className="min-w-0 flex-1">
+                <p className="text-[13px] font-medium text-ink">Ouvre d'abord le site dans {tab === 'ios' ? 'Safari' : 'Chrome'}</p>
+                <p className="mt-0.5 text-[12px] leading-snug text-stone-600">
+                  L'installation n'est pas possible depuis le navigateur d'une app (Instagram, TikTok…). Copie le lien et colle-le dans {tab === 'ios' ? 'Safari' : 'Chrome'}.
+                </p>
+                <button onClick={copyLink} className="mt-2 inline-flex h-8 items-center gap-1.5 rounded-full bg-ink px-3 text-[12px] font-medium text-parchment active:scale-95 transition-transform">
+                  {copied ? <Check size={13} strokeWidth={2} /> : <Copy size={13} strokeWidth={2} />}
+                  {copied ? 'Lien copié' : 'Copier le lien'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Étapes */}
+          <div key={tab} className="mt-5 animate-fade-in">
+            {tab === 'ios' ? (
+              <ol>
+                <Step
+                  n={1}
+                  title="Ouvre le menu Partager"
+                  hint="Dans Safari, touche l'icône Partager dans la barre du bas (ou « ⋯ » puis Partager)."
+                  visual={<KeyIcon><Share size={17} strokeWidth={1.75} /></KeyIcon>}
+                />
+                <Step
+                  n={2}
+                  title="Sur l'écran d'accueil"
+                  hint="Fais défiler la liste et choisis cette option."
+                  visual={<MenuRow label="Sur l'écran d'accueil" icon={<SquarePlus size={17} strokeWidth={1.75} />} />}
+                />
+                <Step
+                  n={3}
+                  title="Confirme avec « Ajouter »"
+                  hint="En haut à droite. L'icône VIBE apparaît sur ton écran d'accueil."
+                  visual={<span className="inline-flex h-9 items-center rounded-xl border border-stone-200 bg-white px-3.5 text-[14px] font-semibold text-[#0a84ff]">Ajouter</span>}
+                  last
+                />
+              </ol>
+            ) : (
+              <>
+                {deferredPrompt && onThisDevice && (
+                  <button
+                    onClick={installAndroid}
+                    className="mb-5 flex h-14 w-full items-center gap-3 rounded-full bg-lime pl-2 pr-5 text-ink hover:bg-lime-deep active:scale-[0.98] transition"
+                  >
+                    <span className="flex size-10 items-center justify-center rounded-full bg-ink text-lime">
+                      <Download size={18} strokeWidth={1.75} />
+                    </span>
+                    <span className="flex-1 text-left text-[15px] font-medium">Installer en un tap</span>
+                  </button>
+                )}
+                {deferredPrompt && onThisDevice && (
+                  <p className="eyebrow mb-3 text-stone-400">Ou manuellement</p>
+                )}
+                <ol>
+                  <Step
+                    n={1}
+                    title="Ouvre le menu de Chrome"
+                    hint="Touche les trois points en haut à droite."
+                    visual={<KeyIcon><EllipsisVertical size={17} strokeWidth={1.75} /></KeyIcon>}
+                  />
+                  <Step
+                    n={2}
+                    title="Installer l'application"
+                    hint="Selon ton téléphone : « Installer l'application » ou « Ajouter à l'écran d'accueil »."
+                    visual={<MenuRow label="Installer l'application" icon={<Download size={17} strokeWidth={1.75} />} />}
+                  />
+                  <Step
+                    n={3}
+                    title="Confirme avec « Installer »"
+                    hint="VIBE rejoint tes applications et ton écran d'accueil."
+                    visual={<span className="inline-flex h-9 items-center rounded-full bg-[#0b57d0] px-4 text-[13px] font-medium text-white">Installer</span>}
+                    last
+                  />
+                </ol>
+              </>
+            )}
+          </div>
+
+          {/* Note notifications iPhone */}
+          {tab === 'ios' && (
+            <p className="mt-5 rounded-2xl bg-parchment px-3.5 py-3 text-[12px] leading-snug text-stone-600">
+              <span className="font-medium text-ink">Bon à savoir :</span> sur iPhone, les notifications ne fonctionnent qu'une fois l'app installée (iOS 16.4 ou plus récent).
+            </p>
+          )}
+
+          <button
+            onClick={later}
+            className="mt-4 h-11 w-full rounded-full text-[14px] font-medium text-stone-500 hover:text-ink transition-colors"
+          >
+            Continuer dans le navigateur
+          </button>
         </div>
       </div>
     </div>
@@ -274,4 +313,5 @@ const InstallGuide = () => {
 };
 
 export default InstallGuide;
+// eslint-disable-next-line react-refresh/only-export-components
 export { isStandalone, detectOS };

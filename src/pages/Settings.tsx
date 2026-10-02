@@ -1,4 +1,6 @@
+import LargeTitle from '@/components/LargeTitle';
 import { useState, useEffect } from 'react';
+import SectionTitle from '@/components/SectionTitle';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Mail, Lock, Bell, Smartphone, Globe, Shield, ChevronRight, ExternalLink } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
@@ -7,8 +9,8 @@ import { useNotifications } from '@/contexts/NotificationContext';
 import { useLanguage, Lang } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import mapBackground from '@/assets/map-background.jpg';
 import { SettingsSkeleton } from '@/components/PageSkeleton';
+import { MAP_CREDITS } from '@/lib/mapTiles';
 
 const Settings = () => {
   const { user, loading } = useAuth();
@@ -129,11 +131,7 @@ const Settings = () => {
 
   if (loading || loadingPreferences) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-stone-200">
-        <div className="fixed inset-0 pointer-events-none">
-          <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
-        </div>
-        <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
+      <div className="min-h-screen relative overflow-hidden bg-parchment">
         <div className="relative z-10">
           <SettingsSkeleton />
         </div>
@@ -144,37 +142,29 @@ const Settings = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen relative overflow-hidden pb-32 animate-fade-in animate-zoom-smooth bg-stone-200">
-      {/* Map Background */}
-      <div className="fixed inset-0 pointer-events-none">
-        <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
-      </div>
-      <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
+    <div className="min-h-screen relative overflow-hidden pb-32 page-enter bg-parchment">
 
       {/* Content */}
-      <div className="relative z-10 mx-auto max-w-md px-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 24px)' }}>
+      <div className="relative z-10 mx-auto max-w-md px-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         {/* Header */}
         <div className="mb-8">
           <Link
             to="/"
-            className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white/70 backdrop-blur-md shadow-sm border border-white/60 hover:scale-105 active:scale-95 transition-all mb-4"
+            className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform mb-6"
           >
-            <ArrowLeft className="w-5 h-5 text-stone-700" />
+            <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
           </Link>
-          <h1 className="text-3xl font-bold  text-stone-800">
+          <LargeTitle className="text-[40px] leading-[0.95] tracking-tighter text-ink" backTo="/">
             {t('settings.title')}
-          </h1>
+          </LargeTitle>
           <p className="mt-2 text-stone-500">{t('settings.subtitle')}</p>
         </div>
 
         <div className="space-y-6">
           {/* Email Section */}
-          <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
-            <div className="flex items-center gap-2 mb-1">
-              <Mail className="h-5 w-5 text-[#ee9d2b]" />
-              <h2 className="text-lg font-semibold  text-stone-800">
-                {t('settings.email')}
-              </h2>
+          <div className="rounded-3xl bg-white p-5">
+            <div className="mb-1 -mt-1">
+              <SectionTitle icon={Mail}>{t('settings.email')}</SectionTitle>
             </div>
             <p className="text-sm text-stone-500 mb-4">
               {t('settings.emailCurrent')}: {user.email}
@@ -190,13 +180,13 @@ const Settings = () => {
                   value={newEmail}
                   onChange={e => setNewEmail(e.target.value)}
                   placeholder="nouvelle@email.com"
-                  className="w-full h-11 rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm px-3 focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50"
+                  className="w-full h-12 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 focus:outline-none focus:ring-0 focus:border-ink"
                 />
               </div>
               <button
                 type="submit"
                 disabled={updating || !newEmail}
-                className="bg-[#ee9d2b] text-white rounded-full px-5 py-2.5 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-lime text-ink text-sm font-medium hover:bg-lime-deep transition-colors active:scale-95 disabled:opacity-50"
               >
                 {updating ? t('settings.emailUpdating') : t('settings.emailUpdate')}
               </button>
@@ -204,12 +194,9 @@ const Settings = () => {
           </div>
 
           {/* Password Section */}
-          <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
-            <div className="flex items-center gap-2 mb-1">
-              <Lock className="h-5 w-5 text-[#ee9d2b]" />
-              <h2 className="text-lg font-semibold  text-stone-800">
-                {t('settings.password')}
-              </h2>
+          <div className="rounded-3xl bg-white p-5">
+            <div className="mb-1 -mt-1">
+              <SectionTitle icon={Lock}>{t('settings.password')}</SectionTitle>
             </div>
             <p className="text-sm text-stone-500 mb-4">
               {t('settings.passwordChange')}
@@ -225,7 +212,7 @@ const Settings = () => {
                   value={newPassword}
                   onChange={e => setNewPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full h-11 rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm px-3 focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50"
+                  className="w-full h-12 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 focus:outline-none focus:ring-0 focus:border-ink"
                 />
               </div>
               <div>
@@ -238,13 +225,13 @@ const Settings = () => {
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full h-11 rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm px-3 focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50"
+                  className="w-full h-12 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 focus:outline-none focus:ring-0 focus:border-ink"
                 />
               </div>
               <button
                 type="submit"
                 disabled={updating || !newPassword || !confirmPassword}
-                className="bg-[#ee9d2b] text-white rounded-full px-5 py-2.5 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-lime text-ink text-sm font-medium hover:bg-lime-deep transition-colors active:scale-95 disabled:opacity-50"
               >
                 {updating ? t('settings.emailUpdating') : t('settings.passwordUpdate')}
               </button>
@@ -255,12 +242,9 @@ const Settings = () => {
           <PushNotificationSection />
 
           {/* Notification Preferences Section */}
-          <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
-            <div className="flex items-center gap-2 mb-1">
-              <Bell className="h-5 w-5 text-[#ee9d2b]" />
-              <h2 className="text-lg font-semibold  text-stone-800">
-                {t('settings.notifPrefs')}
-              </h2>
+          <div className="rounded-3xl bg-white p-5">
+            <div className="mb-1 -mt-1">
+              <SectionTitle icon={Bell}>{t('settings.notifPrefs')}</SectionTitle>
             </div>
             <p className="text-sm text-stone-500 mb-5">
               {t('settings.notifPrefsDesc')}
@@ -307,12 +291,9 @@ const Settings = () => {
           </div>
 
           {/* Language Section */}
-          <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
-            <div className="flex items-center gap-2 mb-1">
-              <Globe className="h-5 w-5 text-[#ee9d2b]" />
-              <h2 className="text-lg font-semibold  text-stone-800">
-                {t('settings.language')}
-              </h2>
+          <div className="rounded-3xl bg-white p-5">
+            <div className="mb-1 -mt-1">
+              <SectionTitle icon={Globe}>{t('settings.language')}</SectionTitle>
             </div>
             <p className="text-sm text-stone-500 mb-4">
               {t('settings.languageDesc')}
@@ -330,8 +311,8 @@ const Settings = () => {
                   }}
                   className={`flex-1 flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-sm font-medium transition-all ${
                     lang === option.id
-                      ? 'bg-[#ee9d2b] text-white shadow-lg shadow-[#ee9d2b]/20 scale-[1.02]'
-                      : 'bg-white/60 text-stone-600 border border-stone-200/50 hover:bg-white/80 hover:scale-[1.02]'
+                      ? 'bg-lime text-ink scale-[1.02]'
+                      : 'bg-white/60 text-stone-600 border border-stone-200 hover:bg-white/80 hover:scale-[1.02]'
                   }`}
                 >
                   <span className="text-lg">{option.flag}</span>
@@ -342,13 +323,10 @@ const Settings = () => {
           </div>
 
           {/* Legal Section */}
-          <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm overflow-hidden">
+          <div className="rounded-3xl bg-white overflow-hidden">
             <div className="p-5 pb-3">
-              <div className="flex items-center gap-2 mb-1">
-                <Shield className="h-5 w-5 text-[#ee9d2b]" />
-                <h2 className="text-lg font-semibold  text-stone-800">
-                  {t('settings.legal')}
-                </h2>
+              <div className="mb-1 -mt-1">
+                <SectionTitle icon={Shield}>{t('settings.legal')}</SectionTitle>
               </div>
               <p className="text-sm text-stone-500">
                 {t('settings.legalDesc')}
@@ -380,9 +358,18 @@ const Settings = () => {
             </div>
           </div>
 
-          {/* App version */}
-          <div className="text-center py-4">
+          {/* App version + crédits cartographiques (licence ODbL) */}
+          <div className="text-center py-4 space-y-1.5">
             <p className="text-xs text-stone-400">VIBE v1.0 — Abidjan, Côte d'Ivoire</p>
+            <p className="text-[11px] text-stone-400">
+              {lang === 'fr' ? 'Carte' : 'Map'} ©{' '}
+              {MAP_CREDITS.map((c, i) => (
+                <span key={c.label}>
+                  {i > 0 && ' · '}
+                  <a href={c.href} target="_blank" rel="noopener noreferrer" className="link-underline hover:text-stone-600">{c.label}</a>
+                </span>
+              ))}
+            </p>
           </div>
         </div>
       </div>
@@ -411,12 +398,9 @@ const PushNotificationSection = () => {
   };
 
   return (
-    <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
-      <div className="flex items-center gap-2 mb-1">
-        <Smartphone className="h-5 w-5 text-[#ee9d2b]" />
-        <h2 className="text-lg font-semibold  text-stone-800">
-          {t('settings.push')}
-        </h2>
+    <div className="rounded-3xl bg-white p-5">
+      <div className="mb-1 -mt-1">
+        <SectionTitle icon={Smartphone}>{t('settings.push')}</SectionTitle>
       </div>
       <p className="text-sm text-stone-500 mb-5">
         {t('settings.pushDesc')}

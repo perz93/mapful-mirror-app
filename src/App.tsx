@@ -1,13 +1,14 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SearchProvider } from "@/contexts/SearchContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import NotificationPrompt from "@/components/NotificationPrompt";
 import InstallGuide from "@/components/InstallGuide";
+import UpdateBanner from "@/components/UpdateBanner";
 import SplashScreenWrapper from "@/components/SplashScreen";
 import { useStatusBarColor } from "@/hooks/useStatusBarColor";
 import { usePWATheme } from "@/hooks/usePWATheme";
@@ -16,9 +17,9 @@ import { useBadgeCount } from "@/hooks/useBadgeCount";
 import Index from "./pages/Index";
 import Concerts from "./pages/Concerts";
 import Sports from "./pages/Sports";
-import Food from "./pages/Food";
-import Arts from "./pages/Arts";
-import Meetups from "./pages/Meetups";
+import Nightlife from "./pages/Nightlife";
+import AllEvents from "./pages/AllEvents";
+import Family from "./pages/Family";
 import Conferences from "./pages/Conferences";
 import Workshops from "./pages/Workshops";
 import Festivals from "./pages/Festivals";
@@ -53,9 +54,12 @@ const AppContent = () => {
         <Route path="/" element={<Index />} />
         <Route path="/concerts" element={<Concerts />} />
         <Route path="/sports" element={<Sports />} />
-        <Route path="/food" element={<Food />} />
-        <Route path="/arts" element={<Arts />} />
-        <Route path="/meetups" element={<Meetups />} />
+        <Route path="/food" element={<Navigate to="/brunch" replace />} />
+        <Route path="/arts" element={<Navigate to="/exhibitions" replace />} />
+        <Route path="/meetups" element={<Navigate to="/conferences" replace />} />
+        <Route path="/soirees" element={<Nightlife />} />
+        <Route path="/evenements" element={<AllEvents />} />
+        <Route path="/famille" element={<Family />} />
         <Route path="/conferences" element={<Conferences />} />
         <Route path="/workshops" element={<Workshops />} />
         <Route path="/festivals" element={<Festivals />} />
@@ -91,6 +95,7 @@ const App = () => (
         <SearchProvider>
           <NotificationProvider>
             <SplashScreenWrapper>
+              <UpdateBanner />
               <NotificationPrompt />
               <InstallGuide />
               <AppContent />

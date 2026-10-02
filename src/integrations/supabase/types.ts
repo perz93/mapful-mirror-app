@@ -251,6 +251,9 @@ export type Database = {
         | "traiteurs"
         | "animation_dj"
         | "decoration"
+        | "materiel"
+        | "photo_video"
+        | "beaute_tenues"
         | "autre"
     }
     CompositeTypes: {
@@ -384,6 +387,9 @@ export const Constants = {
         "traiteurs",
         "animation_dj",
         "decoration",
+        "materiel",
+        "photo_video",
+        "beaute_tenues",
         "autre",
       ],
     },

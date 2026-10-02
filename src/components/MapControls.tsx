@@ -26,26 +26,26 @@ const MapControls = () => {
       {/* Left side controls: Zoom + Position */}
       <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col items-start gap-3">
         <div className="flex flex-col gap-0 shadow-lg rounded-full overflow-hidden">
-          <button onClick={handleZoomIn} className="flex size-10 items-center justify-center bg-white/95 dark:bg-stone-900/95 backdrop-blur-md hover:bg-white dark:hover:bg-stone-800 transition-colors border-b border-stone-200/50 dark:border-stone-700/50" aria-label="Zoom in">
-            <Plus className="text-stone-900 dark:text-white" size={20} />
+          <button onClick={handleZoomIn} className="flex size-10 items-center justify-center bg-white dark:bg-stone-900/95 hover:bg-white dark:hover:bg-stone-800 transition-colors border-b border-stone-200 dark:border-stone-700/50" aria-label="Zoom in">
+            <Plus className="text-ink dark:text-white" size={18} strokeWidth={1.75} />
           </button>
-          <button onClick={handleZoomOut} className="flex size-10 items-center justify-center bg-white/95 dark:bg-stone-900/95 backdrop-blur-md hover:bg-white dark:hover:bg-stone-800 transition-colors" aria-label="Zoom out">
-            <Minus className="text-stone-900 dark:text-white" size={20} />
+          <button onClick={handleZoomOut} className="flex size-10 items-center justify-center bg-white dark:bg-stone-900/95 hover:bg-white dark:hover:bg-stone-800 transition-colors" aria-label="Zoom out">
+            <Minus className="text-ink dark:text-white" size={18} strokeWidth={1.75} />
           </button>
         </div>
-        <button onClick={handleRecenter} className="flex size-10 items-center justify-center rounded-full bg-white/95 dark:bg-stone-900/95 backdrop-blur-md shadow-2xl hover:bg-white dark:hover:bg-stone-800 transition-colors border border-stone-200/50 dark:border-stone-700/50" aria-label="Recentrer sur ma position">
-          <Crosshair className="text-stone-900 dark:text-white" size={20} />
+        <button onClick={handleRecenter} className="flex size-10 items-center justify-center rounded-full bg-white dark:bg-stone-900/95 shadow-lg hover:bg-white dark:hover:bg-stone-800 transition-colors" aria-label="Recentrer sur ma position">
+          <Crosshair className="text-ink dark:text-white" size={18} strokeWidth={1.75} />
         </button>
       </div>
 
       {/* Right side: Marketplace button */}
       <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5 animate-fade-in">
-        <button onClick={handleMarketplaceClick} className="flex size-14 items-center justify-center rounded-full bg-[#ee9d2b] shadow-2xl hover:scale-110 active:scale-95 transition-transform duration-200 animate-scale-in" aria-label="Marketplace">
-          <ShoppingCart className="w-7 h-7 text-white" strokeWidth={2} />
+        <button onClick={handleMarketplaceClick} className="flex size-14 items-center justify-center rounded-full bg-lime shadow-xl active:scale-95 transition-transform duration-200 animate-scale-in" aria-label="Marketplace">
+          <ShoppingCart className="w-6 h-6 text-ink" strokeWidth={1.75} />
         </button>
         <span style={{
         animationDelay: '0.1s'
-      }} className="text-xs font-medium  backdrop-blur-sm px-2.5 py-1 rounded-full text-white animate-fade-in bg-muted-foreground">
+      }} className="eyebrow px-2.5 py-1 rounded-full text-parchment animate-fade-in bg-ink">
           <span>Marketplace</span>
         </span>
       </div>
