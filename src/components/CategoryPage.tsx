@@ -1,3 +1,4 @@
+import LargeTitle from '@/components/LargeTitle';
 import { Calendar, Clock, ArrowLeft } from 'lucide-react';
 import EmptyState from './EmptyState';
 import { CalendarDays } from 'lucide-react';
@@ -31,7 +32,7 @@ const CategoryPage = ({
     error
   } = useEventsByCategory(category);
   const count = events?.length ?? 0;
-  const Header = () => <header className="sticky top-0 z-10 bg-parchment/90 dark:bg-stone-950/90 backdrop-blur-md">
+  const header = <header>
       <div className="px-4 pb-5" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         <div className="flex items-center justify-between">
           <Link to="/" aria-label="Retour" className="flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-stone-900 text-ink dark:text-white active:scale-95 transition-transform">
@@ -44,14 +45,14 @@ const CategoryPage = ({
         <p className="eyebrow text-stone-500 mt-6">
           {isLoading || error ? t('category.eyebrow') : `${count} ${t(count > 1 ? 'category.count' : 'category.countOne')}`}
         </p>
-        <h1 className="mt-1.5 text-[44px] leading-[0.95] font-medium tracking-tighter text-ink dark:text-white">{title}</h1>
+        <LargeTitle className="mt-1.5 text-[44px] leading-[0.95] font-medium tracking-tighter text-ink dark:text-white" backTo="/" right={<span className="flex size-10 items-center justify-center rounded-full bg-lime"><img src={iconSrc} alt="" className="w-5 h-5" /></span>}>{title}</LargeTitle>
       </div>
       <div className="h-px bg-stone-200 dark:bg-stone-800 mx-4" />
     </header>;
   if (isLoading) {
     return <div className="min-h-screen bg-parchment dark:bg-stone-950 page-enter">
         <div className="mx-auto max-w-md">
-          <Header />
+          {header}
           <CategoryPageSkeleton />
         </div>
       </div>;
@@ -59,7 +60,7 @@ const CategoryPage = ({
   if (error) {
     return <div className="min-h-screen bg-parchment dark:bg-stone-950 page-enter">
         <div className="mx-auto max-w-md">
-          <Header />
+          {header}
           <div className="p-4 flex items-center justify-center min-h-[50vh]">
             <p className="text-stone-600 dark:text-stone-400">{t('form.loadError')}</p>
           </div>
@@ -68,7 +69,7 @@ const CategoryPage = ({
   }
   return <div className="min-h-screen bg-parchment dark:bg-stone-950 page-enter">
       <div className="mx-auto max-w-md">
-        <Header />
+        {header}
 
         <div className="p-4 pt-5 space-y-4 pb-10">
           {!events || events.length === 0 ? <EmptyState icon={CalendarDays} title={t('event.noEvents')} /> : events.map((event, i) => <Link key={event.id} to={`/event/${event.id}`} className="block group">

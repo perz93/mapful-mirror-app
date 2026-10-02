@@ -1,3 +1,4 @@
+import LargeTitle from '@/components/LargeTitle';
 import { useState, useEffect } from 'react';
 import EmptyState from '@/components/EmptyState';
 import { CalendarDays } from 'lucide-react';
@@ -72,7 +73,7 @@ const ManageEvents = () => {
             <Plus size={20} strokeWidth={1.75} />
           </Link>
         </div>
-        <h1 className="px-5 pt-4 pb-2 text-[40px] leading-[0.95] tracking-tighter text-ink">{t('manage.title')}</h1>
+        <LargeTitle className="px-5 pt-4 pb-2 text-[40px] leading-[0.95] tracking-tighter text-ink" backTo="/my-account">{t('manage.title')}</LargeTitle>
 
         {/* Events List */}
         <div className="flex-1 px-6 pb-8 pt-4">

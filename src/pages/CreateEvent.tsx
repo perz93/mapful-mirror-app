@@ -1,3 +1,4 @@
+import LargeTitle from '@/components/LargeTitle';
 import { useState, useEffect, useRef } from 'react';
 import { FormPageSkeleton } from '@/components/PageSkeleton';
 import SectionTitle from '@/components/SectionTitle';
@@ -371,9 +372,9 @@ const CreateEvent = () => {
           >
             <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
           </Link>
-          <h1 className="text-[40px] leading-[0.95] tracking-tighter text-ink">
+          <LargeTitle className="text-[40px] leading-[0.95] tracking-tighter text-ink" backTo="/">
             {t('event.create')}
-          </h1>
+          </LargeTitle>
           <p className="mt-2 text-stone-500">{t('form.shareEvent')}</p>
         </div>
 

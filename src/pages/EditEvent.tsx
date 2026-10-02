@@ -1,3 +1,4 @@
+import LargeTitle from '@/components/LargeTitle';
 import { EVENT_CATEGORIES, normalizeEventCategory } from '@/lib/eventCategories';
 import { useState, useEffect, useRef } from 'react';
 import SectionTitle from '@/components/SectionTitle';
@@ -193,9 +194,9 @@ const EditEvent = () => {
           >
             <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
           </Link>
-          <h1 className="text-[40px] leading-[0.95] tracking-tighter text-ink">
+          <LargeTitle className="text-[40px] leading-[0.95] tracking-tighter text-ink" backTo="/manage-events">
             {t('event.edit')}
-          </h1>
+          </LargeTitle>
           <p className="mt-2 text-stone-500">{t('form.updateInfo')}</p>
         </div>
 

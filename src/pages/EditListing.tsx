@@ -1,3 +1,4 @@
+import LargeTitle from '@/components/LargeTitle';
 import { useState, useEffect } from 'react';
 import { FormPageSkeleton } from '@/components/PageSkeleton';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -193,7 +194,7 @@ const EditListing = () => {
         >
           <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
         </Link>
-        <h1 className="text-[40px] leading-[0.95] tracking-tighter text-ink">Modifier l'annonce</h1>
+        <LargeTitle className="text-[40px] leading-[0.95] tracking-tighter text-ink" backTo="/my-account">Modifier l'annonce</LargeTitle>
         <p className="mt-2 text-stone-500">Mettez à jour les informations de votre service</p>
       </div>
 

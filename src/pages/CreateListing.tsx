@@ -1,3 +1,4 @@
+import LargeTitle from '@/components/LargeTitle';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, X, Image as ImageIcon, Type, AlignLeft, Ticket, MapPin, Phone, Mail } from 'lucide-react';
@@ -136,7 +137,7 @@ const CreateListing = () => {
         >
           <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
         </Link>
-        <h1 className="text-[40px] leading-[0.95] tracking-tighter text-ink">{t('market.newListing')}</h1>
+        <LargeTitle className="text-[40px] leading-[0.95] tracking-tighter text-ink" backTo="/marketplace">{t('market.newListing')}</LargeTitle>
         <p className="mt-2 text-stone-500">{t('market.offerServices')}</p>
       </div>
 

@@ -1,3 +1,4 @@
+import LargeTitle from '@/components/LargeTitle';
 import { useNavigate } from 'react-router-dom';
 import EmptyState from '@/components/EmptyState';
 import ShimmerImage from '@/components/ShimmerImage';
@@ -28,7 +29,7 @@ const Notifications = () => {
           <button onClick={() => navigate(-1)} aria-label="Retour" className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform mb-6">
             <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
           </button>
-          <h1 className="text-[40px] leading-[0.95] tracking-tighter text-ink">{t('notif.title')}</h1>
+          <LargeTitle className="text-[40px] leading-[0.95] tracking-tighter text-ink">{t('notif.title')}</LargeTitle>
         </div>
         <div className="mx-4 rounded-3xl bg-white p-6">
           <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-parchment">
@@ -61,7 +62,7 @@ const Notifications = () => {
             </button>
           )}
         </div>
-        <h1 className="text-[40px] leading-[0.95] tracking-tighter text-ink">{t('notif.title')}</h1>
+        <LargeTitle className="text-[40px] leading-[0.95] tracking-tighter text-ink">{t('notif.title')}</LargeTitle>
         {unreadCount > 0 && (
           <p className="mt-2 text-stone-500">{unreadCount} {unreadCount > 1 ? t('notif.unreadPlural') : t('notif.unread')}</p>
         )}
