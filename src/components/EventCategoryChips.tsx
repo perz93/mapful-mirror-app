@@ -32,7 +32,7 @@ const EventCategoryChips = ({ active }: { active: string }) => {
               <span className={`flex size-7 items-center justify-center rounded-full ${on ? 'bg-lime' : 'bg-parchment'}`}>
                 <img src={c.icon} alt="" className="size-4" />
               </span>
-              {t(`catShort.${c.value}`)}
+              {t(c.tKey)}
             </Link>
           );
         })}

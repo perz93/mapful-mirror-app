@@ -66,7 +66,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
     };
   }, []);
 
-  const navItems = EVENT_CATEGORIES.map((c) => ({ icon: c.icon, label: t(c.tKey), path: c.path }));
+  const navItems = EVENT_CATEGORIES.map((c) => ({ icon: c.icon, label: t(c.tKey).replace(/-/g, '\u2011'), path: c.path }));
 
   const handleSearch = () => {
     setSearchOpen(false);
