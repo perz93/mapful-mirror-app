@@ -5,7 +5,9 @@ import {
   unsubscribeFromPush,
   getCurrentSubscription,
   getPermissionState,
+  syncPushSubscription,
 } from '@/lib/pushNotifications';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface NotificationContextType {
   isSupported: boolean;
@@ -48,6 +50,13 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
 
     init();
   }, []);
+
+  // Rattache l'abonnement de l'appareil au compte connecté (ou le détache)
+  const { user, loading: authLoading } = useAuth();
+  const userId = user?.id ?? null;
+  useEffect(() => {
+    if (!authLoading) syncPushSubscription();
+  }, [userId, authLoading]);
 
   const subscribe = async () => {
     setLoading(true);

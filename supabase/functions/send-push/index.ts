@@ -270,6 +270,17 @@ serve(async (req) => {
     });
   }
 
+  // Seuls les appels serveur (cron, trigger, notify-events) avec la clé
+  // service_role peuvent déclencher des envois — sinon n'importe qui
+  // pourrait spammer tous les abonnés.
+  const token = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+  if (!SUPABASE_SERVICE_ROLE_KEY || token !== SUPABASE_SERVICE_ROLE_KEY) {
+    return new Response(JSON.stringify({ error: "unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   try {
     const { title, body, url, image, tag, user_ids, send_to_all, check_duplicates, notification_type, event_id } = await req.json();
 
@@ -283,8 +294,16 @@ serve(async (req) => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     // Get subscriptions
+    // Sans destinataires explicites et sans send_to_all : on n'envoie à
+    // personne (avant, cela partait à TOUS les abonnés).
+    if (!send_to_all && !(Array.isArray(user_ids) && user_ids.length > 0)) {
+      return new Response(JSON.stringify({ sent: 0, reason: "no recipients" }), {
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     let query = supabase.from("push_subscriptions").select("*");
-    if (!send_to_all && user_ids && user_ids.length > 0) {
+    if (!send_to_all) {
       query = query.in("user_id", user_ids);
     }
 

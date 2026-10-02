@@ -16,6 +16,7 @@ import { EventDetailsSkeleton } from '@/components/PageSkeleton';
 import ShimmerImage from '@/components/ShimmerImage';
 import { useFavorite } from '@/hooks/useFavorite';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNotifications } from '@/contexts/NotificationContext';
 
 
 const EventDetails = () => {
@@ -46,6 +47,7 @@ const EventDetails = () => {
   });
 
   const { isFavorite, toggleFavorite, loading: favLoading } = useFavorite(id || '');
+  const { isSupported: pushSupported, isSubscribed: pushSubscribed, subscribe: subscribePush } = useNotifications();
 
   // Check if reminder already set (from Supabase)
   useEffect(() => {
@@ -76,9 +78,10 @@ const EventDetails = () => {
       return;
     }
 
-    if ('Notification' in window && Notification.permission === 'default') {
-      const perm = await Notification.requestPermission();
-      if (perm !== 'granted') {
+    // Un rappel n'arrive que si cet appareil est abonné aux notifications push
+    if (pushSupported && !pushSubscribed) {
+      const ok = await subscribePush();
+      if (!ok) {
         toast.error(t('reminder.enableNotif'));
         return;
       }
@@ -97,7 +100,7 @@ const EventDetails = () => {
 
     setReminderSet(true);
     toast.success(t('reminder.set'));
-  }, [id, event, reminderSet, user]);
+  }, [id, event, reminderSet, user, pushSupported, pushSubscribed, subscribePush, t]);
 
   if (isLoading) {
     return <EventDetailsSkeleton />;

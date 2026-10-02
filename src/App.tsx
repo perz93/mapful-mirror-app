@@ -8,6 +8,7 @@ import { NotificationProvider } from "@/contexts/NotificationContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import NotificationPrompt from "@/components/NotificationPrompt";
 import InstallGuide from "@/components/InstallGuide";
+import UpdateBanner from "@/components/UpdateBanner";
 import SplashScreenWrapper from "@/components/SplashScreen";
 import { useStatusBarColor } from "@/hooks/useStatusBarColor";
 import { usePWATheme } from "@/hooks/usePWATheme";
@@ -91,6 +92,7 @@ const App = () => (
         <SearchProvider>
           <NotificationProvider>
             <SplashScreenWrapper>
+              <UpdateBanner />
               <NotificationPrompt />
               <InstallGuide />
               <AppContent />
