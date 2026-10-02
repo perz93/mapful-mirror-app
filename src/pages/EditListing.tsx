@@ -8,19 +8,14 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import SectionTitle from '@/components/SectionTitle';
+import { MARKETPLACE_CATEGORIES } from '@/lib/marketplaceCategories';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Tables } from '@/integrations/supabase/types';
 
 type MarketplaceListing = Tables<'marketplace_listings'>;
 
-const categories = [
-  { value: 'location_espaces', label: 'Location espaces' },
-  { value: 'traiteurs', label: 'Traiteurs' },
-  { value: 'animation_dj', label: 'Animation/DJ' },
-  { value: 'decoration', label: 'Décoration' },
-  { value: 'autre', label: 'Autre' },
-];
+const categories = MARKETPLACE_CATEGORIES.map((c) => ({ value: c.value, label: c.fr, icon: c.icon }));
 
 const priceTypes = [
   { value: 'fixed', label: 'Prix fixe' },
@@ -257,7 +252,10 @@ const EditListing = () => {
                 <SelectContent className="bg-white border-stone-200">
                   {categories.map((cat) => (
                     <SelectItem key={cat.value} value={cat.value}>
-                      {cat.label}
+                      <span className="flex items-center gap-2.5">
+                        <cat.icon size={16} strokeWidth={1.75} className="text-stone-500" />
+                        {cat.label}
+                      </span>
                     </SelectItem>
                   ))}
                 </SelectContent>

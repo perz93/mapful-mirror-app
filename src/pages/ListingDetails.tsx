@@ -7,14 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import ImageLightbox from '@/components/ImageLightbox';
 import ShimmerImage from '@/components/ShimmerImage';
-
-const categoryLabels: Record<string, Record<string, string>> = {
-  location_espaces: { fr: 'Location espaces', en: 'Venue rental' },
-  traiteurs: { fr: 'Traiteurs', en: 'Catering' },
-  animation_dj: { fr: 'Animation / DJ', en: 'Entertainment / DJ' },
-  decoration: { fr: 'Décoration', en: 'Decoration' },
-  autre: { fr: 'Autre', en: 'Other' },
-};
+import { marketplaceCategoryLabel } from '@/lib/marketplaceCategories';
 
 const priceTypeLabels: Record<string, Record<string, string>> = {
   fixed: { fr: 'Prix fixe', en: 'Fixed price' },
@@ -113,7 +106,7 @@ const ListingDetails = () => {
     );
   }
 
-  const catLabel = categoryLabels[listing.category]?.[lang] || listing.category;
+  const catLabel = marketplaceCategoryLabel(listing.category, lang);
   const priceLabel = listing.price_type ? (priceTypeLabels[listing.price_type]?.[lang] || listing.price_type) : '';
 
   return (

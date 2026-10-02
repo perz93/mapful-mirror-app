@@ -1,28 +1,20 @@
 import { useState } from 'react';
 import EmptyState from '@/components/EmptyState';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowUpRight, Plus, MapPin, Phone, Mail, DoorOpen, ChefHat, Disc3, Flower2, Shapes } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Plus, MapPin, Phone, Mail, Shapes } from 'lucide-react';
+import { MARKETPLACE_CATEGORIES, getMarketplaceCategory } from '@/lib/marketplaceCategories';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ShimmerImage from '@/components/ShimmerImage';
 
-const categoryConfig = {
-  // Icônes choisies pour parler du métier, toutes au même trait (1.75)
-  location_espaces: { label: 'Location espaces', icon: DoorOpen, color: 'bg-lime' },
-  traiteurs: { label: 'Traiteurs', icon: ChefHat, color: 'bg-lime' },
-  animation_dj: { label: 'Animation/DJ', icon: Disc3, color: 'bg-lime' },
-  decoration: { label: 'Décoration', icon: Flower2, color: 'bg-lime' },
-  autre: { label: 'Autre', icon: Shapes, color: 'bg-lime' },
-};
-
-type CategoryKey = keyof typeof categoryConfig;
+type CategoryKey = string;
 
 const Marketplace = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState<CategoryKey | 'all'>('all');
 
   const { data: listings, isLoading } = useQuery({
@@ -35,7 +27,7 @@ const Marketplace = () => {
         .order('created_at', { ascending: false });
 
       if (selectedCategory !== 'all') {
-        query = query.eq('category', selectedCategory);
+        query = query.eq('category', selectedCategory as never);
       }
 
       const { data, error } = await query;
@@ -87,8 +79,8 @@ const Marketplace = () => {
           >
             {t('market.all')}
           </button>
-          {(Object.keys(categoryConfig) as CategoryKey[]).map((key) => {
-            const config = categoryConfig[key];
+          {MARKETPLACE_CATEGORIES.map((config) => {
+            const key = config.value;
             const Icon = config.icon;
             const active = selectedCategory === key;
             return (
@@ -104,7 +96,7 @@ const Marketplace = () => {
                 <span className={`flex size-7 items-center justify-center rounded-full ${active ? 'bg-lime text-ink' : 'bg-parchment text-ink'}`}>
                   <Icon size={14} strokeWidth={1.75} />
                 </span>
-                {config.label}
+                {lang === 'en' ? config.en : config.fr}
               </button>
             );
           })}
@@ -133,8 +125,8 @@ const Marketplace = () => {
         ) : listings && listings.length > 0 ? (
           <div key={selectedCategory} className="grid gap-4">
             {listings.map((listing, index) => {
-              const config = categoryConfig[listing.category as CategoryKey];
-              const Icon = config?.icon || Shapes;
+              const config = getMarketplaceCategory(listing.category);
+              const Icon = config.icon;
               return (
                 <Link
                   key={listing.id}
@@ -160,7 +152,7 @@ const Marketplace = () => {
                       )}
                       <span className="absolute left-3 top-3 inline-flex h-7 items-center gap-1.5 rounded-full bg-lime px-3 text-xs font-medium text-ink">
                         <Icon size={13} strokeWidth={1.75} />
-                        {config?.label || 'Autre'}
+                        {lang === 'en' ? config.en : config.fr}
                       </span>
                     </div>
 
