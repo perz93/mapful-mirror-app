@@ -935,6 +935,12 @@ All colors MUST be HSL.
     .page-enter { animation-duration: 0.01ms; }
   }
 
+  /* Ombre douce des cadres de liste (annonces, événements) : sépare
+     chaque cadre du fond parchemin sans effet « flottant » appuyé */
+  .card-shadow {
+    box-shadow: 0 1px 2px rgb(20 20 15 / 0.05), 0 10px 28px -14px rgb(20 20 15 / 0.22);
+  }
+
   /* Rangée de filtres collée sous la barre compacte (LargeTitle) */
   .sticky-chips {
     position: sticky;
@@ -1080,7 +1086,16 @@ textarea::placeholder {
   background: #14140f !important;
   color: #a6e22e !important;
   border-radius: 9999px;
+  /* Pastille centrée dans l'anneau (icône de 50 px : 50 − 34 = 16 → 8 px de chaque côté).
+     Le CSS par défaut de markercluster la calait pour une icône de 40 px. */
+  width: 34px !important;
+  height: 34px !important;
+  margin: 8px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+.marker-cluster span { line-height: 1 !important; }
 .marker-cluster span {
   font-family: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif;
   font-weight: 600;

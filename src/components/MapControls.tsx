@@ -39,13 +39,13 @@ const MapControls = () => {
       </div>
 
       {/* Right side: Marketplace button */}
-      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5 animate-fade-in">
-        <button onClick={handleMarketplaceClick} className="flex size-14 items-center justify-center rounded-full bg-lime shadow-xl active:scale-95 transition-transform duration-200 animate-scale-in" aria-label="Marketplace">
-          <ShoppingCart className="w-6 h-6 text-ink" strokeWidth={1.75} />
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1 animate-fade-in">
+        <button onClick={handleMarketplaceClick} className="flex size-12 items-center justify-center rounded-full bg-lime shadow-xl active:scale-95 transition-transform duration-200 animate-scale-in" aria-label="Marketplace">
+          <ShoppingCart className="w-5 h-5 text-ink" strokeWidth={1.75} />
         </button>
         <span style={{
         animationDelay: '0.1s'
-      }} className="eyebrow px-2.5 py-1 rounded-full text-parchment animate-fade-in bg-ink">
+      }} className="eyebrow px-2 py-0.5 rounded-full text-[9px] tracking-[0.08em] text-parchment animate-fade-in bg-ink">
           <span>Marketplace</span>
         </span>
       </div>

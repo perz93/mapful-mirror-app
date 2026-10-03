@@ -126,7 +126,7 @@ const Marketplace = () => {
         {isLoading ? (
           <div className="grid gap-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="rounded-3xl bg-white dark:bg-stone-900 p-2">
+              <div key={i} className="card-shadow rounded-3xl bg-white dark:bg-stone-900 p-2">
                 <div className="h-52 rounded-[20px] skeleton" />
                 <div className="px-3 pt-4 pb-3 space-y-3">
                   <div className="h-3 w-24 rounded-full skeleton skeleton-on-white" />
@@ -153,7 +153,7 @@ const Marketplace = () => {
                   className="group block animate-fade-in"
                 >
                   {/* Même construction que les cartes d'événement des catégories */}
-                  <article className="overflow-hidden rounded-3xl bg-white dark:bg-stone-900 p-2 transition-transform duration-300 active:scale-[0.99]">
+                  <article className="card-shadow overflow-hidden rounded-3xl bg-white dark:bg-stone-900 p-2 transition-transform duration-300 active:scale-[0.99]">
                     <div className="relative h-52 overflow-hidden rounded-[20px]">
                       {listing.image_url ? (
                         <ShimmerImage
