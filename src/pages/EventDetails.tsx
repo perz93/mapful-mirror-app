@@ -17,6 +17,7 @@ import { useFavorite } from '@/hooks/useFavorite';
 import { useAuth } from '@/contexts/AuthContext';
 import { getEventCategory } from '@/lib/eventCategories';
 import { useNotifications } from '@/contexts/NotificationContext';
+import { eventStatus, splitLead } from '@/lib/eventStatus';
 
 
 const EventDetails = () => {
@@ -251,13 +252,17 @@ const EventDetails = () => {
             </section>
           )}
 
-          {/* À propos */}
-          {event.description && (
-            <section>
-              <h2 className="eyebrow text-stone-500 mb-2">{t('event.about')}</h2>
-              <p className="text-base leading-[1.6] text-ink/80 dark:text-stone-300 whitespace-pre-line">{event.description}</p>
-            </section>
-          )}
+          {/* À propos : la 1re phrase en accroche, la suite en texte courant */}
+          {event.description && (() => {
+            const { lead, rest } = splitLead(event.description);
+            return (
+              <section>
+                <h2 className="eyebrow text-stone-500 mb-3">{t('event.about')}</h2>
+                {lead && <p className="font-display text-[26px] leading-[1.08] tracking-[-0.03em] text-ink dark:text-white">{lead}</p>}
+                {rest && <p className={`${lead ? 'mt-3' : ''} text-base leading-[1.6] text-ink/75 dark:text-stone-300 whitespace-pre-line`}>{rest}</p>}
+              </section>
+            );
+          })()}
         </div>
       </div>
 
@@ -304,24 +309,5 @@ const EventDetails = () => {
     </div>
   );
 };
-
-/** Statut affiché sur l'affiche : en cours (6 h après le début), terminé, ou compte à rebours court. */
-function eventStatus(date: string, time: string): { key: string; n?: number; live?: boolean } | null {
-  const start = new Date(`${date}T${time}`);
-  const now = new Date();
-  const diffMs = start.getTime() - now.getTime();
-  if (diffMs <= 0) {
-    return -diffMs < 6 * 3600 * 1000 ? { key: 'status.live', live: true } : { key: 'status.ended' };
-  }
-  const startDay = new Date(start); startDay.setHours(0, 0, 0, 0);
-  const today = new Date(now); today.setHours(0, 0, 0, 0);
-  const days = Math.round((startDay.getTime() - today.getTime()) / 86400000);
-  if (days === 0) {
-    const hours = Math.floor(diffMs / 3600000);
-    return hours >= 1 ? { key: 'status.inHours', n: hours } : { key: 'status.soon' };
-  }
-  if (days === 1) return { key: 'status.tomorrow' };
-  return { key: 'status.inDays', n: days };
-}
 
 export default EventDetails;

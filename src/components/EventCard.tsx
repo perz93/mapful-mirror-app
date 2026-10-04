@@ -5,7 +5,7 @@ import { useFeaturedEvents } from '@/hooks/useFeaturedEvents';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import EventCardSkeleton from './EventCardSkeleton';
-import HypeBadge from './HypeBadge';
+import { eventStatus } from '@/lib/eventStatus';
 import { useLanguage } from '@/contexts/LanguageContext';
 const OUT_MS = 320;
 const IN_MS = 520;
@@ -69,10 +69,11 @@ const EventCard = () => {
     return null;
   }
   const currentEvent = events[currentIndex];
+  const status = eventStatus(currentEvent.date, currentEvent.time);
   return <div className="fixed bottom-36 left-0 right-0 max-w-md mx-auto px-4 pointer-events-none z-10 touch-none">
       <div className="pointer-events-auto touch-auto">
         <div
-          className="neo-white-bottom rounded-3xl bg-white dark:bg-stone-900 p-3 pl-4 transform-gpu will-change-[opacity,transform] motion-reduce:transition-none"
+          className="neo-white-bottom relative h-[164px] overflow-hidden rounded-3xl bg-ink transform-gpu will-change-[opacity,transform] motion-reduce:transition-none"
           style={{
             // Animation d'origine (fondu + léger rétrécissement + glissement),
             // limitée à opacity/transform pour rester sur le GPU.
@@ -83,38 +84,42 @@ const EventCard = () => {
               : `opacity ${IN_MS}ms cubic-bezier(0.16, 1, 0.3, 1), transform ${IN_MS}ms cubic-bezier(0.16, 1, 0.3, 1)`,
           }}
         >
-          <div className="flex items-stretch justify-between gap-4">
-          <div className="flex flex-col justify-between gap-2 flex-[2_2_0px] min-w-0 py-1">
-            <div className="flex flex-col gap-1.5 min-w-0">
-              <span className="eyebrow text-stone-500 dark:text-stone-400 truncate">
-                {currentEvent.venue}
-              </span>
-              <p className="text-ink dark:text-white font-display text-[18px] leading-[1.1] tracking-tight line-clamp-2 min-h-[2.3em]">
-                {currentEvent.title}
-              </p>
-              {/* Date & heure */}
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="inline-flex items-center h-6 px-2.5 rounded-full bg-lime text-[11px] font-medium text-ink capitalize">
-                  {format(new Date(currentEvent.date), 'EEE dd MMM', { locale: fr })}
-                </span>
-                <span className="inline-flex items-center h-6 px-2.5 rounded-full bg-parchment dark:bg-stone-800 text-[11px] font-medium text-stone-600 dark:text-stone-300 tabular">
-                  {currentEvent.time?.slice(0, 5)}
-                </span>
-                <HypeBadge eventId={currentEvent.id} eventDate={currentEvent.date} eventTime={currentEvent.time} capacity={currentEvent.capacity} size="sm" />
-              </div>
-            </div>
-            <Link to={`/event/${currentEvent.id}`} className="group inline-flex w-fit cursor-pointer items-center gap-1.5 text-[13px] font-medium text-ink dark:text-white link-underline hover:text-stone-600 transition-colors">
-              <span>{t('seeDetails')}</span>
-              <span aria-hidden className="transition-transform group-hover:translate-x-0.5">→</span>
-            </Link>
-          </div>
+          {/* Mini affiche : photo en fond, texte posé dessus */}
           <ShimmerImage
             key={currentEvent.id}
-            src={currentEvent.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=400&fit=crop'}
+            src={currentEvent.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=640&q=75&fm=webp'}
             alt=""
             loading="eager"
-            className="w-[104px] h-[104px] flex-shrink-0 rounded-2xl"
+            className="absolute inset-0 h-full w-full"
           />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(20,20,15,0.9)_0%,rgba(20,20,15,0.55)_55%,rgba(20,20,15,0.15)_100%)]" />
+
+          <div className="absolute inset-x-4 top-3.5 flex items-center justify-between gap-2">
+            {status ? (
+              <span className={`inline-flex h-6 items-center gap-1.5 rounded-full px-2.5 text-[10px] font-semibold uppercase tracking-[0.08em] ${status.live ? 'bg-lime text-ink' : 'bg-white/90 text-ink'}`}>
+                {status.live && <span className="size-1.5 rounded-full bg-ink" />}
+                {t(status.key).replace('{n}', String(status.n ?? ''))}
+              </span>
+            ) : <span />}
+            <span className="inline-flex h-6 items-center rounded-full bg-white px-2.5 text-[11px] font-medium text-ink tabular">
+              {currentEvent.is_paid && currentEvent.price ? `${Number(currentEvent.price).toLocaleString('fr-FR')} FCFA` : t('event.free')}
+            </span>
+          </div>
+
+          <div className="absolute inset-x-4 bottom-3.5 flex items-end justify-between gap-3">
+            <div className="min-w-0 text-parchment">
+              <p className="font-display text-[24px] leading-[1.02] tracking-tight line-clamp-2">{currentEvent.title}</p>
+              <p className="mt-1 truncate text-[12.5px] text-parchment/85">
+                <span className="capitalize">{format(new Date(`${currentEvent.date}T00:00:00`), 'EEE d MMM', { locale: fr })}</span>
+                {' · '}{currentEvent.time?.slice(0, 5)}{' · '}{currentEvent.venue}
+              </p>
+            </div>
+            <Link
+              to={`/event/${currentEvent.id}`}
+              className="inline-flex h-10 flex-shrink-0 items-center gap-1.5 rounded-full bg-ink px-4 text-[13px] font-medium text-parchment ring-1 ring-white/15 active:scale-95 transition-transform"
+            >
+              {t('seeDetails')} <span aria-hidden>→</span>
+            </Link>
           </div>
         </div>
 

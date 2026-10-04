@@ -1,5 +1,5 @@
 import LargeTitle from '@/components/LargeTitle';
-import { Calendar, Clock, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import EmptyState from './EmptyState';
 import { CalendarDays } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
@@ -77,42 +77,45 @@ const CategoryPage = ({
 
         <div className="p-4 pt-5 space-y-4 pb-10">
           {!events || events.length === 0 ? <EmptyState icon={CalendarDays} title={t('event.noEvents')} /> : events.map((event, i) => <Link key={event.id} to={`/event/${event.id}`} className="block group">
+                {/* Billet : talon daté à gauche, photo en bandeau, prix une seule fois */}
                 <article
-                  className="card-shadow overflow-hidden rounded-3xl bg-white dark:bg-stone-900 p-2 transition-transform duration-300 active:scale-[0.99] animate-fade-in"
+                  className="card-shadow flex overflow-hidden rounded-3xl bg-white dark:bg-stone-900 transition-transform duration-300 active:scale-[0.99] animate-fade-in"
                   style={{ animationDelay: `${i * 0.06}s` }}
                 >
-                  {/* Image */}
-                  <div className="h-52 relative overflow-hidden rounded-[20px]">
-                    <ShimmerImage
-                      src={event.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&q=75&fm=webp'}
-                      alt={event.title}
-                      className="w-full h-full transition-transform duration-500 group-hover:scale-[1.03]"
-                    />
-                    <div className="absolute top-3 left-3">
-                      <HypeBadge eventId={event.id} eventDate={event.date} eventTime={event.time} capacity={event.capacity} size="sm" />
-                    </div>
-                    {event.price && <span className="absolute bottom-3 right-3 inline-flex items-center h-7 px-3 rounded-full bg-white text-ink text-xs font-medium whitespace-nowrap tabular">
-                        {event.price} FCFA
-                      </span>}
+                  <div className="flex w-[78px] flex-shrink-0 flex-col items-center justify-center gap-0.5 bg-ink text-parchment">
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-lime">
+                      {format(new Date(`${event.date}T00:00:00`), 'EEE', { locale: fr }).replace('.', '')}
+                    </span>
+                    <span className="font-display text-[32px] leading-none tracking-tight tabular">
+                      {format(new Date(`${event.date}T00:00:00`), 'dd')}
+                    </span>
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.1em]">
+                      {format(new Date(`${event.date}T00:00:00`), 'MMM', { locale: fr }).replace('.', '')}
+                    </span>
+                    <span className="mt-1.5 text-xs text-parchment/70 tabular">{event.time?.slice(0, 5)}</span>
                   </div>
 
-                  {/* Texte */}
-                  <div className="px-3 pt-4 pb-3 space-y-3">
-                    <div>
-                      <p className="eyebrow text-stone-500 truncate">{event.venue}</p>
-                      <h3 className="mt-1 text-[22px] leading-[1.1] font-medium tracking-tight text-ink dark:text-white">{event.title}</h3>
+                  <div className="min-w-0 flex-1 p-2">
+                    <div className="relative h-36 overflow-hidden rounded-[18px]">
+                      <ShimmerImage
+                        src={event.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&q=75&fm=webp'}
+                        alt={event.title}
+                        className="h-full w-full transition-transform duration-500 group-hover:scale-[1.03]"
+                      />
+                      <div className="absolute left-2.5 top-2.5">
+                        <HypeBadge eventId={event.id} eventDate={event.date} eventTime={event.time} capacity={event.capacity} size="sm" />
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="inline-flex items-center gap-1.5 h-7 px-3 rounded-full bg-lime">
-                        <Calendar size={12} strokeWidth={2} className="text-ink" />
-                        <span className="text-xs font-medium text-ink capitalize">
-                          {format(new Date(event.date), 'EEE dd MMM', { locale: fr })}
+                    <div className="px-1.5 pb-1.5 pt-3">
+                      <h3 className="font-display text-[20px] leading-[1.08] tracking-tight text-ink dark:text-white line-clamp-2">{event.title}</h3>
+                      <div className="mt-1.5 flex items-center justify-between gap-3">
+                        <span className="truncate text-[13px] text-stone-500">{event.venue}</span>
+                        <span className="flex-shrink-0 font-display text-[15px] tracking-tight text-ink dark:text-white tabular">
+                          {event.is_paid && event.price
+                            ? <>{Number(event.price).toLocaleString('fr-FR')} <span className="text-[11px] text-lime-deep">FCFA</span></>
+                            : t('event.free')}
                         </span>
-                      </span>
-                      <span className="inline-flex items-center gap-1.5 h-7 px-3 rounded-full bg-parchment dark:bg-stone-800">
-                        <Clock size={12} strokeWidth={2} className="text-stone-500 dark:text-stone-400" />
-                        <span className="text-xs font-medium text-stone-600 dark:text-stone-300 tabular">{event.time?.slice(0, 5)}</span>
-                      </span>
+                      </div>
                     </div>
                   </div>
                 </article>
