@@ -1,7 +1,7 @@
 import LargeTitle from '@/components/LargeTitle';
 import { ArrowLeft } from 'lucide-react';
 import EmptyState from './EmptyState';
-import { CalendarDays } from 'lucide-react';
+import { CalendarDays, MapPin, Clock } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useEventsByCategory } from '@/hooks/useEventsByCategory';
 import { format } from 'date-fns';
@@ -110,11 +110,21 @@ const CategoryPage = ({
                           </p>
                           <p className="font-display mt-0.5 text-[28px] tracking-tight text-ink tabular">{format(d, 'dd')}</p>
                         </div>
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <h3 className="font-display text-[20px] leading-[1.05] tracking-tight text-ink line-clamp-2">{event.title}</h3>
-                          <p className="mt-1 truncate text-[13px] text-stone-500">
-                            {event.venue} · <span className="tabular">{event.time?.slice(0, 5)}</span>
-                          </p>
+                          {/* Q2 : quartier et heure en pastilles crème, plus lisibles */}
+                          <div className="mt-2 flex min-w-0 flex-wrap gap-1.5">
+                            <span className="inline-flex h-[26px] min-w-0 max-w-full items-center gap-1 rounded-full bg-parchment px-2.5 text-[12px] font-semibold text-ink">
+                              <MapPin size={13} strokeWidth={2.2} className="flex-shrink-0" />
+                              <span className="truncate">{event.venue}</span>
+                            </span>
+                            {event.time && (
+                              <span className="inline-flex h-[26px] flex-shrink-0 items-center gap-1 rounded-full bg-parchment px-2.5 text-[12px] font-semibold text-ink tabular">
+                                <Clock size={13} strokeWidth={2.2} />
+                                {event.time.slice(0, 5)}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </article>
