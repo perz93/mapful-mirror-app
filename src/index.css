@@ -181,6 +181,18 @@ body {
     background: #a6e22e;
     color: #14140f;
   }
+  /* Appui long sur une photo : ni sélection verte ni menu système */
+  img, [style*="background-image"] {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+  img::selection {
+    background: transparent;
+  }
+  a, button, article {
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
 /* Cadres flottants sur la carte (EventCard + BottomNavigation) */

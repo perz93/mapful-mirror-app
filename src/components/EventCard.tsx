@@ -92,7 +92,7 @@ const EventCard = () => {
             loading="eager"
             className="absolute inset-0 h-full w-full"
           />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(20,20,15,0.9)_0%,rgba(20,20,15,0.55)_55%,rgba(20,20,15,0.15)_100%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(20,20,15,0.72)_0%,rgba(20,20,15,0.32)_55%,rgba(20,20,15,0)_100%)]" />
 
           <div className="absolute inset-x-4 top-3.5 flex items-center justify-between gap-2">
             {status ? (
