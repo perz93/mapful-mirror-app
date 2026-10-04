@@ -105,7 +105,7 @@ const CategoryPage = ({
                       </div>
                       <div className="flex items-center gap-3.5 px-2 pb-1.5 pt-3">
                         <div className="flex-shrink-0 border-r border-stone-200 pr-3.5 text-center leading-none">
-                          <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-lime-deep">
+                          <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-ink">
                             {format(d, 'MMM', { locale: fr }).replace('.', '')}
                           </p>
                           <p className="font-display mt-0.5 text-[28px] tracking-tight text-ink tabular">{format(d, 'dd')}</p>
