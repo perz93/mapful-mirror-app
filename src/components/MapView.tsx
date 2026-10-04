@@ -17,7 +17,6 @@ import { format, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { toast } from 'sonner';
 import RouteInfoPanel from './RouteInfoPanel';
-import itineraryIcon from '@/assets/itinerary-icon.png';
 import { fuzzyMatch } from '@/lib/fuzzyMatch';
 import { getDistanceKm } from '@/hooks/useNearbyEvents';
 import { supabase } from '@/integrations/supabase/client';
@@ -298,8 +297,9 @@ const MapView = () => {
             </div>
           </div>
         `,
-        iconSize: [50, 50],
-        iconAnchor: [25, 50],
+        iconSize: [60, 66],
+        iconAnchor: [30, 66],
+        popupAnchor: [0, -68],
       });
     };
 
@@ -340,27 +340,28 @@ const MapView = () => {
       const timeFormatted = formatEventTime(event.time);
       const defaultImage = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=320&q=70&fm=webp';
 
+      const priceLabel = event.is_paid && event.price
+        ? `${Number(event.price).toLocaleString('fr-FR')} FCFA`
+        : t('event.free');
+
       const popupContent = `
         <div class="event-popup-card">
           <div class="popup-card-image" style="background-image: url('${safeUrl(event.image_url, defaultImage)}')">
+            <span class="popup-price">${escapeHtml(priceLabel)}</span>
             <div class="popup-card-gradient">
-              <h3 class="popup-card-title">${escapeHtml(event.title)}</h3>
-              <div class="popup-card-details">
+              <div class="popup-card-row">
                 <div class="popup-date-box">
                   <div class="popup-date-month">${dateFormatted.month}</div>
                   <div class="popup-date-day">${dateFormatted.day}</div>
-                  <div class="popup-date-weekday">${dateFormatted.weekday}</div>
                 </div>
                 <div class="popup-card-info">
-                  <div class="popup-venue-row">
-                    <span class="popup-badge-glass">${escapeHtml(event.venue)}</span>
-                    <span class="popup-badge-glass">${escapeHtml(timeFormatted)}</span>
-                  </div>
+                  <h3 class="popup-card-title">${escapeHtml(event.title)}</h3>
+                  <div class="popup-card-meta">${escapeHtml(event.venue)} · ${escapeHtml(timeFormatted)}</div>
                 </div>
               </div>
-              <div class="popup-actions" style="display:flex;gap:6px;margin-top:6px;">
-                <button class="popup-route-btn popup-btn-glass"><img src="${itineraryIcon}" alt="" style="width:20px;height:20px;object-fit:contain;" />Itinéraire</button>
-                <button class="popup-details-btn" style="flex:1;">Voir détails</button>
+              <div class="popup-actions">
+                <button class="popup-route-btn">Itinéraire</button>
+                <button class="popup-details-btn">Voir détails →</button>
               </div>
             </div>
           </div>
@@ -370,8 +371,8 @@ const MapView = () => {
       const popup = L.popup({
         className: 'custom-popup-card',
         closeButton: true,
-        maxWidth: 220,
-        minWidth: 220,
+        maxWidth: 240,
+        minWidth: 240,
       }).setContent(popupContent);
 
       marker.bindPopup(popup);
@@ -397,7 +398,12 @@ const MapView = () => {
         }
       });
 
+      marker.on('popupclose', () => {
+        marker.getElement()?.classList.remove('is-selected');
+      });
+
       marker.on('popupopen', async () => {
+        marker.getElement()?.classList.add('is-selected');
         const popupInstance = marker.getPopup();
         const popupElement = popupInstance?.getElement();
         if (!popupElement) return;
