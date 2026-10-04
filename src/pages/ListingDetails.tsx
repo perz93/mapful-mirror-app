@@ -115,7 +115,7 @@ const ListingDetails = () => {
     : null;
   const { lead, rest } = listing.description ? splitLead(listing.description) : { lead: null, rest: '' };
   const hasContacts = !!(listing.contact_phone || listing.contact_whatsapp || listing.contact_instagram || listing.contact_facebook || listing.contact_tiktok || listing.contact_twitter || listing.contact_email);
-  const roundBtn = 'inline-flex size-10 items-center justify-center rounded-full active:scale-95 transition-transform';
+  const roundBtn = 'inline-flex size-10 items-center justify-center rounded-full shadow-[0_4px_14px_rgba(20,20,15,0.18)] active:scale-95 transition-transform';
 
   return (
     <div className="min-h-screen bg-parchment page-enter">
@@ -135,7 +135,7 @@ const ListingDetails = () => {
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,20,15,0.4)_0%,transparent_28%,transparent_45%,rgba(20,20,15,0.88)_100%)]" />
 
           <div
-            className="absolute left-4 right-4 flex items-center justify-between"
+            className="fixed inset-x-0 z-30 mx-auto flex max-w-md items-center justify-between px-4"
             style={{ top: 'calc(env(safe-area-inset-top, 0px) + 12px)' }}
             onClick={(e) => e.stopPropagation()}
           >

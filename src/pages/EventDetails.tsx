@@ -144,7 +144,7 @@ const EventDetails = () => {
     }
   };
 
-  const roundBtn = 'flex size-10 items-center justify-center rounded-full transition-colors active:scale-95';
+  const roundBtn = 'flex size-10 items-center justify-center rounded-full shadow-[0_4px_14px_rgba(20,20,15,0.18)] transition-colors active:scale-95';
 
   return (
     <div className="min-h-screen bg-parchment dark:bg-background-dark page-enter">
@@ -164,7 +164,7 @@ const EventDetails = () => {
 
           {/* Actions */}
           <div
-            className="absolute left-4 right-4 flex items-center justify-between"
+            className="fixed inset-x-0 z-30 mx-auto flex max-w-md items-center justify-between px-4"
             style={{ top: 'calc(env(safe-area-inset-top, 0px) + 12px)' }}
             onClick={(e) => e.stopPropagation()}
           >
