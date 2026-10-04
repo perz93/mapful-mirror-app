@@ -46,7 +46,8 @@ const MyAccount = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState('events');
+  // ?tab=favorites (lien « Favoris » du menu) ouvre directement l'onglet
+  const [activeTab, setActiveTab] = useState(() => new URLSearchParams(window.location.search).get('tab') || 'events');
   const [stats, setStats] = useState({
     eventsCreated: 0,
     favorites: 0,

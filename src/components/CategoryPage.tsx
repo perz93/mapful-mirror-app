@@ -77,14 +77,14 @@ const CategoryPage = ({
 
         <div className="p-4 pt-5 space-y-4 pb-10">
           {!events || events.length === 0 ? <EmptyState icon={CalendarDays} title={t('event.noEvents')} /> : events.map((event, i) => <Link key={event.id} to={`/event/${event.id}`} className="block group">
-                {/* Carte claire : photo, statut + prix dessus, date « OCT 30 » à côté du titre */}
+                {/* Carte sombre : photo, statut + prix dessus, date « OCT 30 » à côté du titre */}
                 {(() => {
                   const d = new Date(`${event.date}T00:00:00`);
                   const status = eventStatus(event.date, event.time);
                   const showStatus = status && (status.live || ['status.soon', 'status.inHours', 'status.tomorrow'].includes(status.key));
                   return (
                     <article
-                      className="card-shadow overflow-hidden rounded-[26px] bg-white dark:bg-stone-900 p-2 transition-transform duration-300 active:scale-[0.99] animate-fade-in"
+                      className="card-shadow overflow-hidden rounded-[26px] bg-ink p-2 text-parchment transition-transform duration-300 active:scale-[0.99] animate-fade-in"
                       style={{ animationDelay: `${i * 0.06}s` }}
                     >
                       <div className="relative h-44 overflow-hidden rounded-[20px]">
@@ -94,7 +94,7 @@ const CategoryPage = ({
                           className="h-full w-full transition-transform duration-500 group-hover:scale-[1.03]"
                         />
                         {showStatus && (
-                          <span className={`absolute left-2.5 top-2.5 inline-flex h-7 items-center gap-1.5 rounded-full px-3 text-xs font-medium ${status!.live ? 'bg-lime text-ink' : 'bg-white text-ink'}`}>
+                          <span className={`absolute left-2.5 top-2.5 inline-flex h-7 items-center gap-1.5 rounded-full px-3 text-xs font-medium ${status!.live ? 'bg-parchment text-ink' : 'bg-white text-ink'}`}>
                             {status!.live && <span className="size-1.5 rounded-full bg-ink" />}
                             {t(status!.key).replace('{n}', String(status!.n ?? ''))}
                           </span>
@@ -104,15 +104,15 @@ const CategoryPage = ({
                         </span>
                       </div>
                       <div className="flex items-center gap-3.5 px-2 pb-1.5 pt-3">
-                        <div className="flex-shrink-0 border-r border-stone-200 dark:border-stone-700 pr-3.5 text-center leading-none">
-                          <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-lime-deep">
+                        <div className="flex-shrink-0 border-r border-parchment/15 pr-3.5 text-center leading-none">
+                          <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-lime">
                             {format(d, 'MMM', { locale: fr }).replace('.', '')}
                           </p>
-                          <p className="font-display mt-0.5 text-[28px] tracking-tight text-ink dark:text-white tabular">{format(d, 'dd')}</p>
+                          <p className="font-display mt-0.5 text-[28px] tracking-tight text-parchment tabular">{format(d, 'dd')}</p>
                         </div>
                         <div className="min-w-0">
-                          <h3 className="font-display text-[20px] leading-[1.05] tracking-tight text-ink dark:text-white line-clamp-2">{event.title}</h3>
-                          <p className="mt-1 truncate text-[13px] text-stone-500">
+                          <h3 className="font-display text-[20px] leading-[1.05] tracking-tight text-parchment line-clamp-2">{event.title}</h3>
+                          <p className="mt-1 truncate text-[13px] text-parchment/65">
                             {event.venue} · <span className="tabular">{event.time?.slice(0, 5)}</span>
                           </p>
                         </div>
