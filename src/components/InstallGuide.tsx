@@ -30,35 +30,136 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 // ------------------------------------------------------------------
-// Mini-téléphone : l'écran tel qu'il apparaît, l'élément à toucher en vert
+// Illustration « T2 » : vrai iPhone (format haut) avec une capture de VIBE,
+// et une loupe qui grossit l'endroit exact à toucher.
 // ------------------------------------------------------------------
 
-/** Halo vert pulsé autour de l'élément à toucher */
-const Target = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <span className={`relative inline-flex ${className}`}>
-    <span aria-hidden className="absolute -inset-1 animate-ping rounded-full bg-lime/50" />
-    <span className="relative inline-flex">{children}</span>
-  </span>
+const IOS_BLUE = '#0a84ff';
+const ANDROID_BLUE = '#0b57d0';
+
+/** Téléphone miniature : cadre réaliste, Dynamic Island, vraie page VIBE */
+const MiniPhone = ({ children }: { children?: React.ReactNode }) => (
+  <div className="relative h-[216px] w-[104px] flex-shrink-0 rounded-[22px] bg-ink p-[4px] shadow-[0_18px_36px_-16px_rgba(20,20,15,0.55)]">
+    <span aria-hidden className="absolute -left-[2px] top-[48px] h-5 w-[2px] rounded-l bg-ink" />
+    <span aria-hidden className="absolute -right-[2px] top-[60px] h-8 w-[2px] rounded-r bg-ink" />
+    <div className="relative h-full w-full overflow-hidden rounded-[18px] bg-[#ece8d6] bg-cover bg-top" style={{ backgroundImage: 'url(/guide-screen.jpg)' }}>
+      <span aria-hidden className="absolute left-1/2 top-[5px] z-10 h-[9px] w-[30px] -translate-x-1/2 rounded-full bg-black" />
+      {children}
+    </div>
+  </div>
 );
 
-const PhoneFrame = ({ children }: { children: React.ReactNode }) => (
-  <div
-    className="relative mx-auto aspect-[2/3] overflow-hidden rounded-[28px] border-[5px] border-ink bg-parchment"
-    style={{ height: 'clamp(180px, 30dvh, 240px)' }}
-  >
-    {/* Contenu factice de la page */}
-    <div className="absolute inset-x-3 top-7 h-[72px] rounded-2xl bg-[linear-gradient(135deg,#dbe8c6,#f1eee2)]" />
-    <div className="absolute inset-x-3 top-[110px] h-2 rounded-full bg-stone-200" />
-    <div className="absolute left-3 top-[124px] h-2 w-16 rounded-full bg-stone-200" />
+/** Repère vert posé directement sur l'élément à toucher dans le téléphone */
+const MARK = 'rounded-[5px] ring-2 ring-lime ring-offset-1 ring-offset-white/0 shadow-[0_0_0_5px_rgba(166,226,46,0.25)]';
+
+/** Loupe : la zone utile en grand */
+const Loupe = ({ children }: { children: React.ReactNode }) => (
+  <div className="relative flex size-[148px] flex-shrink-0 items-center justify-center overflow-hidden rounded-full border-[3px] border-lime bg-[#f5f5f0] shadow-[0_16px_32px_-14px_rgba(20,20,15,0.45)]">
     {children}
   </div>
 );
 
-const SheetRow = ({ label, icon, active = false }: { label: string; icon: React.ReactNode; active?: boolean }) => (
-  <div className={`flex items-center justify-between px-2.5 py-2 text-[10.5px] ${active ? 'bg-lime/30 font-semibold text-ink' : 'text-stone-400'}`}>
-    <span>{label}</span>
-    <span className={active ? 'text-ink' : 'text-stone-300'}>{icon}</span>
+const Pair = ({ phone, loupe }: { phone: React.ReactNode; loupe: React.ReactNode }) => (
+  <div className="flex items-center justify-center gap-4">
+    {phone}
+    <Loupe>{loupe}</Loupe>
   </div>
+);
+
+const ShareIcon = ({ size = 14 }: { size?: number }) => <Share size={size} strokeWidth={2} />;
+
+/** Barre Safari (bas) */
+const SafariBar = ({ big = false, mark = false }: { big?: boolean; mark?: boolean }) =>
+  big ? (
+    <div className="flex w-full items-center justify-around px-3" style={{ color: IOS_BLUE }}>
+      <span className="text-[22px] leading-none">‹</span>
+      <span className="flex size-[52px] items-center justify-center rounded-[14px] bg-lime text-ink">
+        <ShareIcon size={26} />
+      </span>
+      <Copy size={20} strokeWidth={1.8} />
+    </div>
+  ) : (
+    <div className="absolute inset-x-0 bottom-0 flex h-[30px] items-start justify-around bg-[#f5f5f0]/95 pt-[6px] text-[9px]" style={{ color: IOS_BLUE }}>
+      <span>‹</span>
+      <span className="opacity-40">›</span>
+      <span className={`-mt-[2px] p-[2px] ${mark ? MARK : ''}`}><ShareIcon size={11} /></span>
+      <span>▢</span>
+      <span>⧉</span>
+    </div>
+  );
+
+const IosRow = ({ label, icon, active = false, big = false }: { label: string; icon: React.ReactNode; active?: boolean; big?: boolean }) => (
+  <div
+    className={`flex items-center justify-between ${big ? 'gap-1.5 px-2 py-2 text-[10.5px]' : 'px-1.5 py-[3px] text-[6px]'} ${
+      active ? 'bg-[#eaf7cf] font-semibold text-black' : 'text-[#8e8e93]'
+    }`}
+  >
+    <span className="whitespace-nowrap">{label}</span>
+    <span className={active ? 'text-black' : ''}>{icon}</span>
+  </div>
+);
+
+const ShareSheet = () => (
+  <div className="absolute inset-x-0 bottom-0 rounded-t-[10px] bg-[#f2f2f7] pb-2 pt-1.5">
+    <div className="mb-1.5 flex gap-1 px-1.5">
+      {['#34c759', IOS_BLUE, '#ff9f0a', '#bf5af2'].map((c) => (
+        <span key={c} className="size-[14px] rounded-[4px]" style={{ background: c }} />
+      ))}
+    </div>
+    <div className="mx-1 overflow-hidden rounded-[6px] bg-white">
+      <IosRow label="Copier" icon="⧉" />
+      <IosRow label="Ajouter aux favoris" icon="☆" />
+    </div>
+    <div className={`mx-1 mt-1 overflow-hidden bg-white ${MARK}`}>
+      <IosRow label="Sur l'écran d'accueil" icon={<SquarePlus size={7} strokeWidth={2} />} active />
+    </div>
+  </div>
+);
+
+const IosAddScreen = () => (
+  <div className="absolute inset-0 bg-[#f2f2f7] pt-5">
+    <div className="flex items-center justify-between whitespace-nowrap px-2 text-[7px]">
+      <span style={{ color: IOS_BLUE }}>Annuler</span>
+      <span className={`px-[3px] font-bold ${MARK}`} style={{ color: IOS_BLUE }}>Ajouter</span>
+    </div>
+    <div className="mx-2 mt-3 flex items-center gap-1.5 rounded-md bg-white p-1.5">
+      <img src="/icon-192.png" alt="" className="size-6 rounded-[6px]" />
+      <span className="text-[7px] font-medium">VIBE</span>
+    </div>
+  </div>
+);
+
+/** Barre Chrome (haut) */
+const ChromeBar = ({ mark = false }: { mark?: boolean }) => (
+  <div className="absolute inset-x-0 top-[16px] flex h-[20px] items-center gap-1 bg-white px-1.5">
+    <span className="h-[12px] flex-1 rounded-full bg-[#f1f3f4]" />
+    <span className={mark ? `rounded-full ${MARK}` : ''}><EllipsisVertical size={10} strokeWidth={2.2} className="text-[#3c4043]" /></span>
+  </div>
+);
+
+const ChromeMenu = () => (
+  <div className="absolute right-1 top-[18px] w-[80px] overflow-hidden rounded-md bg-white py-0.5 text-[6px] text-[#3c4043] shadow-[0_6px_16px_rgba(20,20,15,0.25)]">
+    <div className="px-1.5 py-[3px]">Nouvel onglet</div>
+    <div className="px-1.5 py-[3px]">Favoris</div>
+    <div className={`bg-[#e8f0fe] px-1.5 py-[3px] font-semibold text-black ${MARK}`}>Installer l'application</div>
+    <div className="px-1.5 py-[3px]">Paramètres</div>
+  </div>
+);
+
+const ChromeDialog = () => (
+  <>
+    <div className="absolute inset-0 bg-ink/45" />
+    <div className="absolute inset-x-1.5 top-[80px] rounded-[10px] bg-white p-2">
+      <div className="flex items-center gap-1.5">
+        <img src="/icon-192.png" alt="" className="size-5 rounded-[5px]" />
+        <span className="whitespace-nowrap text-[6.5px] font-semibold text-[#1f1f1f]">Installer l'appli ?</span>
+      </div>
+      <div className="mt-2.5 flex justify-end gap-2 text-[6.5px] font-medium">
+        <span className="py-0.5" style={{ color: ANDROID_BLUE }}>Annuler</span>
+        <span className={`rounded-full px-2 py-0.5 text-white ${MARK} !rounded-full`} style={{ background: ANDROID_BLUE }}>Installer</span>
+      </div>
+    </div>
+  </>
 );
 
 const IOS_STEPS = [
@@ -66,48 +167,40 @@ const IOS_STEPS = [
     title: 'Touche Partager',
     hint: "L'icône carrée avec une flèche, dans la barre de Safari (ou « ⋯ » puis Partager).",
     visual: (
-      <PhoneFrame>
-        <div className="absolute inset-x-0 bottom-0 flex h-12 items-center justify-around bg-white text-stone-400">
-          <span className="text-lg">‹</span>
-          <Target>
-            <span className="flex size-9 items-center justify-center rounded-full bg-lime text-ink"><Share size={16} strokeWidth={2} /></span>
-          </Target>
-          <span className="text-sm">⟳</span>
-        </div>
-      </PhoneFrame>
+      <Pair
+        phone={<MiniPhone><SafariBar mark /></MiniPhone>}
+        loupe={<SafariBar big />}
+      />
     ),
   },
   {
     title: "Choisis « Sur l'écran d'accueil »",
-    hint: 'Fais défiler la liste du menu Partager jusqu\'à cette option.',
+    hint: "Fais défiler la liste du menu Partager jusqu'à cette option.",
     visual: (
-      <PhoneFrame>
-        <div className="absolute inset-x-0 bottom-0 rounded-t-2xl bg-white pt-2 shadow-[0_-8px_20px_rgba(20,20,15,0.12)]">
-          <span className="mx-auto mb-1.5 block h-1 w-8 rounded-full bg-stone-200" />
-          <SheetRow label="Copier" icon={<Copy size={13} />} />
-          <SheetRow label="Ajouter aux favoris" icon={<span>☆</span>} />
-          <SheetRow label="Sur l'écran d'accueil" icon={<SquarePlus size={14} strokeWidth={2} />} active />
-          <SheetRow label="Imprimer" icon={<span>⎙</span>} />
-        </div>
-      </PhoneFrame>
+      <Pair
+        phone={<MiniPhone><ShareSheet /></MiniPhone>}
+        loupe={
+          <div className="w-[118px] overflow-hidden rounded-xl bg-white">
+            <IosRow big label="Favoris" icon="☆" />
+            <IosRow big active label="Écran d'accueil" icon={<SquarePlus size={13} strokeWidth={2} />} />
+          </div>
+        }
+      />
     ),
   },
   {
     title: 'Touche « Ajouter »',
     hint: "En haut à droite. L'icône VIBE apparaît sur ton écran d'accueil.",
     visual: (
-      <PhoneFrame>
-        <div className="absolute inset-0 bg-white">
-          <div className="flex items-center justify-between whitespace-nowrap px-2.5 pt-4 text-[10px]">
-            <span className="text-[#0a84ff]">Annuler</span>
-            <Target className="mr-1"><span className="rounded-md bg-lime px-1.5 py-0.5 font-bold text-ink">Ajouter</span></Target>
+      <Pair
+        phone={<MiniPhone><IosAddScreen /></MiniPhone>}
+        loupe={
+          <div className="flex items-center gap-3 text-[14px]">
+            <span style={{ color: IOS_BLUE }} className="opacity-60">Annuler</span>
+            <span className="rounded-lg bg-lime px-2.5 py-1 font-bold" style={{ color: IOS_BLUE }}>Ajouter</span>
           </div>
-          <div className="mx-2.5 mt-4 flex items-center gap-2 rounded-xl bg-parchment p-2">
-            <img src="/icon-192.png" alt="" className="size-9 rounded-[9px]" />
-            <span className="text-[12px] font-medium text-ink">VIBE</span>
-          </div>
-        </div>
-      </PhoneFrame>
+        }
+      />
     ),
   },
 ];
@@ -117,47 +210,49 @@ const ANDROID_STEPS = [
     title: 'Ouvre le menu de Chrome',
     hint: 'Touche les trois points en haut à droite.',
     visual: (
-      <PhoneFrame>
-        <div className="absolute inset-x-0 top-0 flex h-9 items-center gap-2 bg-white px-2.5">
-          <span className="h-5 flex-1 rounded-full bg-parchment" />
-          <Target>
-            <span className="flex size-7 items-center justify-center rounded-full bg-lime text-ink"><EllipsisVertical size={15} strokeWidth={2} /></span>
-          </Target>
-        </div>
-      </PhoneFrame>
+      <Pair
+        phone={<MiniPhone><ChromeBar mark /></MiniPhone>}
+        loupe={
+          <div className="flex w-full items-center gap-2 bg-white px-3 py-3">
+            <span className="h-8 flex-1 rounded-full bg-[#f1f3f4]" />
+            <span className="flex size-10 items-center justify-center rounded-full bg-lime text-ink">
+              <EllipsisVertical size={22} strokeWidth={2.2} />
+            </span>
+          </div>
+        }
+      />
     ),
   },
   {
     title: "Choisis « Installer l'application »",
     hint: "Selon ton téléphone, l'option s'appelle aussi « Ajouter à l'écran d'accueil ».",
     visual: (
-      <PhoneFrame>
-        <div className="absolute right-1.5 top-1.5 w-[128px] overflow-hidden rounded-xl bg-white py-1 shadow-[0_8px_24px_rgba(20,20,15,0.18)]">
-          <SheetRow label="Nouvel onglet" icon={<span>＋</span>} />
-          <SheetRow label="Favoris" icon={<span>☆</span>} />
-          <SheetRow label="Installer l'application" icon={<Download size={13} strokeWidth={2} />} active />
-          <SheetRow label="Paramètres" icon={<span>⚙</span>} />
-        </div>
-      </PhoneFrame>
+      <Pair
+        phone={<MiniPhone><ChromeBar /><ChromeMenu /></MiniPhone>}
+        loupe={
+          <div className="w-[128px] overflow-hidden rounded-xl bg-white text-[11px] text-[#3c4043]">
+            <div className="px-2.5 py-2">Favoris</div>
+            <div className="flex items-center justify-between gap-1 bg-[#e8f0fe] px-2.5 py-2 font-semibold leading-tight text-black">
+              Installer l'appli <Download size={13} strokeWidth={2} />
+            </div>
+          </div>
+        }
+      />
     ),
   },
   {
     title: 'Confirme avec « Installer »',
-    hint: 'VIBE rejoint tes applications et ton écran d\'accueil.',
+    hint: "VIBE rejoint tes applications et ton écran d'accueil.",
     visual: (
-      <PhoneFrame>
-        <div className="absolute inset-0 bg-ink/40" />
-        <div className="absolute inset-x-2 top-[64px] rounded-2xl bg-white p-2.5">
-          <div className="flex items-center gap-2">
-            <img src="/icon-192.png" alt="" className="size-8 rounded-lg" />
-            <span className="text-[12px] font-semibold text-ink">Installer l'application ?</span>
+      <Pair
+        phone={<MiniPhone><ChromeDialog /></MiniPhone>}
+        loupe={
+          <div className="flex items-center gap-2 text-[13px] font-medium">
+            <span className="opacity-60" style={{ color: ANDROID_BLUE }}>Annuler</span>
+            <span className="rounded-full px-3 py-1.5 text-white ring-4 ring-lime" style={{ background: ANDROID_BLUE }}>Installer</span>
           </div>
-          <div className="mt-4 flex justify-end gap-3 text-[11px] font-medium">
-            <span className="py-1 text-[#0b57d0]">Annuler</span>
-            <Target><span className="rounded-full bg-[#0b57d0] px-3 py-1 text-white">Installer</span></Target>
-          </div>
-        </div>
-      </PhoneFrame>
+        }
+      />
     ),
   },
 ];
