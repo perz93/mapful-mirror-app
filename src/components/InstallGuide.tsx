@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Share, SquarePlus, EllipsisVertical, Download, Copy, Check, AlertCircle, X } from 'lucide-react';
+import { Share, SquarePlus, EllipsisVertical, Download, Copy, Check, AlertCircle } from 'lucide-react';
 
 const INSTALLED_KEY = 'pwa_installed';
-const LATER_KEY = 'pwa_install_later'; // « Plus tard » : masqué pour la session
 
 type OS = 'ios' | 'android' | 'unknown';
 
@@ -37,23 +36,26 @@ interface BeforeInstallPromptEvent extends Event {
 /** Halo vert pulsé autour de l'élément à toucher */
 const Target = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
   <span className={`relative inline-flex ${className}`}>
-    <span aria-hidden className="absolute -inset-1.5 animate-ping rounded-full bg-lime/50" />
+    <span aria-hidden className="absolute -inset-1 animate-ping rounded-full bg-lime/50" />
     <span className="relative inline-flex">{children}</span>
   </span>
 );
 
 const PhoneFrame = ({ children }: { children: React.ReactNode }) => (
-  <div className="relative mx-auto h-[300px] w-[200px] overflow-hidden rounded-[34px] border-[6px] border-ink bg-parchment">
+  <div
+    className="relative mx-auto aspect-[2/3] overflow-hidden rounded-[28px] border-[5px] border-ink bg-parchment"
+    style={{ height: 'clamp(180px, 30dvh, 240px)' }}
+  >
     {/* Contenu factice de la page */}
-    <div className="absolute inset-x-3 top-9 h-24 rounded-2xl bg-[linear-gradient(135deg,#dbe8c6,#f1eee2)]" />
-    <div className="absolute inset-x-3 top-[136px] h-2.5 rounded-full bg-stone-200" />
-    <div className="absolute left-3 top-[152px] h-2.5 w-24 rounded-full bg-stone-200" />
+    <div className="absolute inset-x-3 top-7 h-[72px] rounded-2xl bg-[linear-gradient(135deg,#dbe8c6,#f1eee2)]" />
+    <div className="absolute inset-x-3 top-[110px] h-2 rounded-full bg-stone-200" />
+    <div className="absolute left-3 top-[124px] h-2 w-16 rounded-full bg-stone-200" />
     {children}
   </div>
 );
 
 const SheetRow = ({ label, icon, active = false }: { label: string; icon: React.ReactNode; active?: boolean }) => (
-  <div className={`flex items-center justify-between px-3 py-2.5 text-[11.5px] ${active ? 'bg-lime/30 font-semibold text-ink' : 'text-stone-400'}`}>
+  <div className={`flex items-center justify-between px-2.5 py-2 text-[10.5px] ${active ? 'bg-lime/30 font-semibold text-ink' : 'text-stone-400'}`}>
     <span>{label}</span>
     <span className={active ? 'text-ink' : 'text-stone-300'}>{icon}</span>
   </div>
@@ -96,13 +98,12 @@ const IOS_STEPS = [
     visual: (
       <PhoneFrame>
         <div className="absolute inset-0 bg-white">
-          <div className="flex items-center justify-between px-3 pt-4 text-[11px]">
+          <div className="flex items-center justify-between whitespace-nowrap px-2.5 pt-4 text-[10px]">
             <span className="text-[#0a84ff]">Annuler</span>
-            <span className="font-semibold text-ink">Écran d'accueil</span>
-            <Target><span className="rounded-md bg-lime px-1.5 py-0.5 font-bold text-ink">Ajouter</span></Target>
+            <Target className="mr-1"><span className="rounded-md bg-lime px-1.5 py-0.5 font-bold text-ink">Ajouter</span></Target>
           </div>
-          <div className="mx-3 mt-5 flex items-center gap-2.5 rounded-xl bg-parchment p-2.5">
-            <img src="/icon-192.png" alt="" className="size-10 rounded-[10px]" />
+          <div className="mx-2.5 mt-4 flex items-center gap-2 rounded-xl bg-parchment p-2">
+            <img src="/icon-192.png" alt="" className="size-9 rounded-[9px]" />
             <span className="text-[12px] font-medium text-ink">VIBE</span>
           </div>
         </div>
@@ -131,7 +132,7 @@ const ANDROID_STEPS = [
     hint: "Selon ton téléphone, l'option s'appelle aussi « Ajouter à l'écran d'accueil ».",
     visual: (
       <PhoneFrame>
-        <div className="absolute right-2 top-2 w-[150px] overflow-hidden rounded-xl bg-white py-1 shadow-[0_8px_24px_rgba(20,20,15,0.18)]">
+        <div className="absolute right-1.5 top-1.5 w-[128px] overflow-hidden rounded-xl bg-white py-1 shadow-[0_8px_24px_rgba(20,20,15,0.18)]">
           <SheetRow label="Nouvel onglet" icon={<span>＋</span>} />
           <SheetRow label="Favoris" icon={<span>☆</span>} />
           <SheetRow label="Installer l'application" icon={<Download size={13} strokeWidth={2} />} active />
@@ -146,7 +147,7 @@ const ANDROID_STEPS = [
     visual: (
       <PhoneFrame>
         <div className="absolute inset-0 bg-ink/40" />
-        <div className="absolute inset-x-3 top-[92px] rounded-2xl bg-white p-3">
+        <div className="absolute inset-x-2 top-[64px] rounded-2xl bg-white p-2.5">
           <div className="flex items-center gap-2">
             <img src="/icon-192.png" alt="" className="size-8 rounded-lg" />
             <span className="text-[12px] font-semibold text-ink">Installer l'application ?</span>
@@ -169,7 +170,9 @@ const InstallGuide = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [copied, setCopied] = useState(false);
   const [step, setStep] = useState(0);
-  const touchX = useRef(0);
+  const [drag, setDrag] = useState(0);
+  const touch = useRef<{ x: number; y: number; horizontal: boolean | null } | null>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
 
   // Invite d'installation native (Android / Chrome)
   useEffect(() => {
@@ -192,7 +195,7 @@ const InstallGuide = () => {
   useEffect(() => {
     if (isStandalone()) return;
     try {
-      if (localStorage.getItem(INSTALLED_KEY) || sessionStorage.getItem(LATER_KEY)) return;
+      if (localStorage.getItem(INSTALLED_KEY)) return;
     } catch { /* stockage indisponible : on affiche */ }
 
     const os = detectOS();
@@ -208,10 +211,6 @@ const InstallGuide = () => {
     window.setTimeout(() => setVisible(false), 350);
   };
 
-  const later = () => {
-    try { sessionStorage.setItem(LATER_KEY, '1'); } catch { /* ignore */ }
-    close();
-  };
 
   const installAndroid = useCallback(async () => {
     if (!deferredPrompt) return;
@@ -237,10 +236,36 @@ const InstallGuide = () => {
   const inApp = isInAppBrowser();
   const onThisDevice = tab === deviceOS;
   const steps = tab === 'ios' ? IOS_STEPS : ANDROID_STEPS;
-  const current = steps[step];
   const isLast = step === steps.length - 1;
 
   const switchTab = (k: 'ios' | 'android') => { setTab(k); setStep(0); };
+  const go = (n: number) => setStep(Math.max(0, Math.min(steps.length - 1, n)));
+
+  // Glissement qui suit le doigt, puis se cale sur l'étape (comme les apps natives)
+  const onTouchStart = (e: React.TouchEvent) => {
+    touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY, horizontal: null };
+  };
+  const onTouchMove = (e: React.TouchEvent) => {
+    const t = touch.current;
+    if (!t) return;
+    const dx = e.touches[0].clientX - t.x;
+    const dy = e.touches[0].clientY - t.y;
+    if (t.horizontal === null && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) t.horizontal = Math.abs(dx) > Math.abs(dy);
+    if (!t.horizontal) return;
+    // Résistance aux extrémités
+    const atEdge = (step === 0 && dx > 0) || (isLast && dx < 0);
+    setDrag(atEdge ? dx / 3 : dx);
+  };
+  const onTouchEnd = () => {
+    const t = touch.current;
+    touch.current = null;
+    if (t?.horizontal) {
+      const width = trackRef.current?.offsetWidth ?? 320;
+      if (drag < -width * 0.18) go(step + 1);
+      else if (drag > width * 0.18) go(step - 1);
+    }
+    setDrag(0);
+  };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-labelledby="install-title">
@@ -253,24 +278,15 @@ const InstallGuide = () => {
           shown ? 'translate-y-0' : 'translate-y-full sm:translate-y-8'
         }`}
         style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
-        onTouchStart={(e) => { touchX.current = e.touches[0].clientX; }}
-        onTouchEnd={(e) => {
-          const dx = e.changedTouches[0].clientX - touchX.current;
-          if (dx < -50 && !isLast) setStep(step + 1);
-          if (dx > 50 && step > 0) setStep(step - 1);
-        }}
       >
-        <div className="overflow-y-auto overscroll-contain px-5 pt-4 pb-4">
-          {/* En-tête : app + fermer */}
+        <div className="overflow-y-auto overscroll-contain px-5 pt-5 pb-3">
+          {/* En-tête */}
           <div className="flex items-center gap-3">
             <img src="/icon-192.png" alt="" className="size-11 rounded-[13px] border border-stone-200 object-cover" />
             <div className="min-w-0 flex-1">
               <h2 id="install-title" className="text-[22px] leading-none tracking-tighter text-ink">Installe VIBE</h2>
               <p className="mt-1 text-[12.5px] text-stone-500">Gratuit · sans store · 3 gestes</p>
             </div>
-            <button onClick={later} aria-label="Fermer" className="flex size-9 items-center justify-center rounded-full bg-parchment text-ink active:scale-95 transition-transform">
-              <X size={17} strokeWidth={1.75} />
-            </button>
           </div>
 
           {/* iPhone / Android */}
@@ -327,48 +343,76 @@ const InstallGuide = () => {
           )}
 
           {/* Progression */}
-          <div className="mt-5 flex items-center justify-between">
-            <p className="eyebrow text-stone-500">Étape {step + 1} sur {steps.length}</p>
-          </div>
+          <p className="eyebrow mt-5 text-stone-500">Étape {step + 1} sur {steps.length}</p>
           <div className="mt-2 flex gap-1.5">
             {steps.map((_, i) => (
               <button
                 key={i}
                 type="button"
                 aria-label={`Étape ${i + 1}`}
-                onClick={() => setStep(i)}
-                className={`h-1 flex-1 rounded-full transition-colors duration-300 ${i <= step ? 'bg-ink' : 'bg-stone-200'}`}
-              />
+                onClick={() => go(i)}
+                className="relative h-1 flex-1 overflow-hidden rounded-full bg-stone-200"
+              >
+                <span
+                  className="absolute inset-y-0 left-0 w-full origin-left rounded-full bg-ink transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
+                  style={{ transform: `scaleX(${i <= step ? 1 : 0})` }}
+                />
+              </button>
             ))}
           </div>
-
-          {/* Étape courante */}
-          <div key={`${tab}-${step}`} className="mt-5 animate-fade-in">
-            {current.visual}
-            <h3 className="mt-5 text-center font-display text-[24px] leading-[1.05] tracking-[-0.03em] text-ink">{current.title}</h3>
-            <p className="mx-auto mt-1.5 max-w-[300px] text-center text-[14px] leading-snug text-stone-500">{current.hint}</p>
-          </div>
-
-          {tab === 'ios' && isLast && (
-            <p className="mt-4 rounded-2xl bg-parchment px-3.5 py-3 text-[12px] leading-snug text-stone-600">
-              <span className="font-medium text-ink">Bon à savoir :</span> sur iPhone, les notifications ne fonctionnent qu'une fois l'app installée (iOS 16.4 ou plus récent).
-            </p>
-          )}
         </div>
 
-        {/* Navigation */}
-        <div className="flex gap-2 px-5 pb-4 pt-1">
-          <button
-            onClick={() => (step === 0 ? later() : setStep(step - 1))}
-            className="h-12 flex-1 rounded-full bg-parchment text-[15px] font-medium text-ink active:scale-[0.98] transition"
+        {/* Étapes : piste horizontale qui glisse */}
+        <div
+          ref={trackRef}
+          className="relative overflow-hidden touch-pan-y"
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+          onTouchCancel={onTouchEnd}
+        >
+          <div
+            key={tab}
+            className="flex will-change-transform"
+            style={{
+              transform: `translate3d(calc(${-step * 100}% + ${drag}px), 0, 0)`,
+              transition: drag ? 'none' : 'transform 520ms cubic-bezier(0.32, 0.72, 0, 1)',
+            }}
           >
-            {step === 0 ? 'Plus tard' : '← Retour'}
+            {steps.map((s, i) => (
+              <div
+                key={i}
+                aria-hidden={i !== step}
+                className="w-full flex-shrink-0 px-5 pb-2 pt-2 transition-opacity duration-500"
+                style={{ opacity: i === step ? 1 : 0.35 }}
+              >
+                {s.visual}
+                <h3 className="mt-4 text-center font-display text-[22px] leading-[1.05] tracking-[-0.03em] text-ink">{s.title}</h3>
+                <p className="mx-auto mt-1.5 max-w-[300px] text-center text-[13.5px] leading-snug text-stone-500">{s.hint}</p>
+                {tab === 'ios' && i === steps.length - 1 && (
+                  <p className="mx-auto mt-3 max-w-[320px] rounded-2xl bg-parchment px-3.5 py-2.5 text-center text-[11.5px] leading-snug text-stone-600">
+                    Sur iPhone, les notifications ne fonctionnent qu'une fois l'app installée (iOS 16.4+).
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Navigation (pas de fermeture : l'installation est requise) */}
+        <div className="flex gap-2 px-5 pb-4 pt-3">
+          <button
+            onClick={() => go(step - 1)}
+            disabled={step === 0}
+            className="h-12 flex-1 rounded-full bg-parchment text-[15px] font-medium text-ink active:scale-[0.98] transition disabled:opacity-40"
+          >
+            ← Retour
           </button>
           <button
-            onClick={() => (isLast ? later() : setStep(step + 1))}
+            onClick={() => (isLast ? go(0) : go(step + 1))}
             className="h-12 flex-[1.4] rounded-full bg-ink text-[15px] font-medium text-parchment active:scale-[0.98] transition"
           >
-            {isLast ? "C'est fait" : 'Suivant →'}
+            {isLast ? 'Revoir les étapes' : 'Suivant →'}
           </button>
         </div>
       </div>
