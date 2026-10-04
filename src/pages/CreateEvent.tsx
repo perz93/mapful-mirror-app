@@ -9,8 +9,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign, ArrowLeft, Loader2, Phone, Instagram, Facebook, Twitter, MessageCircle, Plus, X, Type, CalendarDays, Ticket, AlignLeft, ListOrdered } from 'lucide-react';
+import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign, ArrowLeft, Loader2, Phone, Instagram, Facebook, Twitter, MessageCircle, Plus, X, Mail, Type, CalendarDays, Ticket, AlignLeft, ListOrdered } from 'lucide-react';
 import TikTokIcon from '@/components/icons/TikTokIcon';
+import { retryWithoutNewColumns } from '@/lib/retryWithoutNewColumns';
+import { emailProviderLabel } from '@/lib/emailProvider';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
@@ -66,6 +68,7 @@ const CreateEvent = () => {
     contactFacebook: savedContacts.contactFacebook || '',
     contactTiktok: savedContacts.contactTiktok || '',
     contactTwitter: savedContacts.contactTwitter || '',
+    contactEmail: savedContacts.contactEmail || '',
   });
 
   const [keyPoints, setKeyPoints] = useState<string[]>(['']);
@@ -259,9 +262,7 @@ const CreateEvent = () => {
       // Filter out empty key points
       const validKeyPoints = keyPoints.filter(kp => kp.trim() !== '');
 
-      const { error: insertError } = await supabase
-        .from('events')
-        .insert({
+      const { error: insertError } = await retryWithoutNewColumns({
           title: formData.title,
           category: formData.category,
           venue: formData.address,
@@ -283,8 +284,9 @@ const CreateEvent = () => {
           contact_facebook: formData.contactFacebook || null,
           contact_tiktok: formData.contactTiktok || null,
           contact_twitter: formData.contactTwitter || null,
+          contact_email: formData.contactEmail || null,
           key_points: validKeyPoints.length > 0 ? validKeyPoints : null
-        });
+        }, ['contact_email'], (p) => supabase.from('events').insert(p));
 
       if (insertError) {
         throw insertError;
@@ -304,6 +306,7 @@ const CreateEvent = () => {
           contactFacebook: formData.contactFacebook,
           contactTiktok: formData.contactTiktok,
           contactTwitter: formData.contactTwitter,
+          contactEmail: formData.contactEmail,
         }));
       } catch { /* */ }
 
@@ -323,6 +326,7 @@ const CreateEvent = () => {
         contactFacebook: formData.contactFacebook,
         contactTiktok: formData.contactTiktok,
         contactTwitter: formData.contactTwitter,
+        contactEmail: formData.contactEmail,
       });
       setKeyPoints(['']);
       setImageFile(null);
@@ -703,6 +707,23 @@ const CreateEvent = () => {
                     placeholder={t('form.accountPlaceholder')}
                     value={formData.contactTwitter}
                     onChange={e => setFormData({ ...formData, contactTwitter: e.target.value })}
+                    className={inputClass}
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <Label htmlFor="contactEmail" className={`${labelClass} flex items-center gap-2`}>
+                    <Mail className="w-4 h-4 text-ink" />
+                    {formData.contactEmail.includes('@') ? emailProviderLabel(formData.contactEmail) : 'Email'}
+                  </Label>
+                  <Input
+                    id="contactEmail"
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    placeholder="exemple@gmail.com"
+                    value={formData.contactEmail}
+                    onChange={e => setFormData({ ...formData, contactEmail: e.target.value })}
                     className={inputClass}
                   />
                 </div>

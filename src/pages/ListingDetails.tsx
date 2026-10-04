@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Phone, Mail, Tag, Share2 } from 'lucide-react';
+import { ArrowLeft, Tag, Share2 } from 'lucide-react';
+import ContactFab from '@/components/ContactFab';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import ImageLightbox from '@/components/ImageLightbox';
@@ -113,6 +114,7 @@ const ListingDetails = () => {
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${listing.location}, Abidjan`)}`
     : null;
   const { lead, rest } = listing.description ? splitLead(listing.description) : { lead: null, rest: '' };
+  const hasContacts = !!(listing.contact_phone || listing.contact_whatsapp || listing.contact_instagram || listing.contact_facebook || listing.contact_tiktok || listing.contact_twitter || listing.contact_email);
   const roundBtn = 'inline-flex size-10 items-center justify-center rounded-full active:scale-95 transition-transform';
 
   return (
@@ -194,30 +196,23 @@ const ListingDetails = () => {
             <p className="font-display truncate text-[20px] leading-none tracking-tight text-parchment tabular">{priceValue}</p>
             <p className="mt-1 truncate text-[11px] text-stone-400">{priceSub}</p>
           </div>
-          <div className="flex flex-shrink-0 items-center gap-1.5">
-            {listing.contact_email && listing.contact_phone && (
-              <a
-                href={`mailto:${listing.contact_email}?subject=${encodeURIComponent(listing.title)}`}
-                aria-label={lang === 'fr' ? 'Envoyer un email' : 'Send email'}
-                className="inline-flex size-12 items-center justify-center rounded-full bg-white/10 text-parchment active:scale-95 transition-transform"
-              >
-                <Mail size={18} strokeWidth={1.75} />
-              </a>
-            )}
-            {listing.contact_phone ? (
-              <a href={`tel:${listing.contact_phone}`} className="inline-flex h-12 items-center gap-2 rounded-full bg-lime px-5 text-[15px] font-medium text-ink active:scale-[0.97] transition-transform">
-                <Phone size={17} strokeWidth={1.75} />
-                {lang === 'fr' ? 'Appeler' : 'Call'}
-              </a>
-            ) : listing.contact_email ? (
-              <a href={`mailto:${listing.contact_email}?subject=${encodeURIComponent(listing.title)}`} className="inline-flex h-12 items-center gap-2 rounded-full bg-lime px-5 text-[15px] font-medium text-ink active:scale-[0.97] transition-transform">
-                <Mail size={17} strokeWidth={1.75} />
-                Email
-              </a>
-            ) : (
-              <span className="px-4 text-xs text-stone-400">{lang === 'fr' ? 'Aucun contact' : 'No contact'}</span>
-            )}
-          </div>
+          {hasContacts ? (
+            <ContactFab
+              variant="pill"
+              label={t('event.contact')}
+              closeLabel={t('close')}
+              contactPhone={listing.contact_phone}
+              contactWhatsapp={listing.contact_whatsapp}
+              contactInstagram={listing.contact_instagram}
+              contactFacebook={listing.contact_facebook}
+              contactTiktok={listing.contact_tiktok}
+              contactTwitter={listing.contact_twitter}
+              contactEmail={listing.contact_email}
+              emailSubject={listing.title}
+            />
+          ) : (
+            <span className="px-4 text-xs text-stone-400">{lang === 'fr' ? 'Aucun contact' : 'No contact'}</span>
+          )}
         </div>
       </div>
 

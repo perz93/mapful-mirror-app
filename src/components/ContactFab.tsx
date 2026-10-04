@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Phone, Instagram, Facebook, MessageCircle, X, MessageSquare } from 'lucide-react';
+import { Phone, Instagram, Facebook, MessageCircle, X, MessageSquare, Mail } from 'lucide-react';
+import { emailProviderLabel, mailtoHref } from '@/lib/emailProvider';
 import { cn } from '@/lib/utils';
 import { getDisplayUrl } from '@/components/profile/social/SocialPlatformConfig';
 import TikTokIcon from '@/components/icons/TikTokIcon';
@@ -11,6 +12,9 @@ interface ContactFabProps {
   contactFacebook?: string | null;
   contactTiktok?: string | null;
   contactTwitter?: string | null;
+  contactEmail?: string | null;
+  /** Objet du mail pré-rempli */
+  emailSubject?: string;
   /** « pill » : bouton « Contacter » intégré dans une barre (page détails) au lieu du bouton flottant */
   variant?: 'fab' | 'pill';
   label?: string;
@@ -31,6 +35,8 @@ const ContactFab = ({
   contactFacebook,
   contactTiktok,
   contactTwitter,
+  contactEmail,
+  emailSubject,
   variant = 'fab',
   label = 'Contacter',
   closeLabel = 'Fermer',
@@ -108,6 +114,15 @@ const ContactFab = ({
       href: getDisplayUrl('twitter', contactTwitter),
       bgColor: 'bg-ink',
       label: 'X'
+    });
+  }
+
+  if (contactEmail) {
+    contacts.push({
+      icon: <Mail className="w-5 h-5 text-white" />,
+      href: mailtoHref(contactEmail, emailSubject),
+      bgColor: 'bg-ink',
+      label: emailProviderLabel(contactEmail)
     });
   }
 

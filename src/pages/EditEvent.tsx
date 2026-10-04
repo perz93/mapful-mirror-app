@@ -2,8 +2,10 @@ import LargeTitle from '@/components/LargeTitle';
 import { EVENT_CATEGORIES, normalizeEventCategory } from '@/lib/eventCategories';
 import { useState, useEffect, useRef } from 'react';
 import SectionTitle from '@/components/SectionTitle';
-import { ArrowLeft, Upload, Loader2, Image as ImageIcon, Phone, MessageCircle, Instagram, Facebook, Type, CalendarDays, Ticket } from 'lucide-react';
+import { ArrowLeft, Upload, Loader2, Image as ImageIcon, Phone, MessageCircle, Instagram, Facebook, Mail, Type, CalendarDays, Ticket } from 'lucide-react';
 import TikTokIcon from '@/components/icons/TikTokIcon';
+import { retryWithoutNewColumns } from '@/lib/retryWithoutNewColumns';
+import { emailProviderLabel } from '@/lib/emailProvider';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -45,6 +47,7 @@ const EditEvent = () => {
     contact_facebook: '',
     contact_tiktok: '',
     contact_twitter: '',
+    contact_email: '',
   });
 
   useEffect(() => {
@@ -82,8 +85,9 @@ const EditEvent = () => {
         contact_whatsapp: data.contact_whatsapp || '',
         contact_instagram: data.contact_instagram || '',
         contact_facebook: data.contact_facebook || '',
-        contact_tiktok: (data as any).contact_tiktok || '',
+        contact_tiktok: data.contact_tiktok || '',
         contact_twitter: data.contact_twitter || '',
+        contact_email: data.contact_email || '',
       });
 
       if (data.image_url) setImagePreview(data.image_url);
@@ -134,9 +138,7 @@ const EditEvent = () => {
         imageUrl = publicUrl;
       }
 
-      const { error } = await supabase
-        .from('events')
-        .update({
+      const { error } = await retryWithoutNewColumns({
           title: formData.title,
           description: formData.description || null,
           venue: formData.venue,
@@ -156,8 +158,8 @@ const EditEvent = () => {
           contact_facebook: formData.contact_facebook || null,
           contact_tiktok: formData.contact_tiktok || null,
           contact_twitter: formData.contact_twitter || null,
-        })
-        .eq('id', id);
+          contact_email: formData.contact_email || null,
+        }, ['contact_email'], (p) => supabase.from('events').update(p).eq('id', id!));
 
       if (error) throw error;
       await queryClient.invalidateQueries({ queryKey: ['events'] });
@@ -335,6 +337,13 @@ const EditEvent = () => {
                   <span className="text-ink font-bold text-sm">𝕏</span> X (Twitter)
                 </label>
                 <input type="text" placeholder="@votre_compte" value={formData.contact_twitter} onChange={e => setFormData({...formData, contact_twitter: e.target.value})} className={inputClass} />
+              </div>
+
+              <div className="space-y-2">
+                <label className={`${labelClass} flex items-center gap-2`}>
+                  <Mail className="w-4 h-4 text-ink" /> {formData.contact_email.includes('@') ? emailProviderLabel(formData.contact_email) : 'Email'}
+                </label>
+                <input type="email" inputMode="email" autoComplete="email" placeholder="exemple@gmail.com" value={formData.contact_email} onChange={e => setFormData({...formData, contact_email: e.target.value})} className={inputClass} />
               </div>
             </div>
 

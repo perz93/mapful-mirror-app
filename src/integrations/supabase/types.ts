@@ -52,6 +52,8 @@ export type Database = {
           contact_instagram: string | null
           contact_phone: string | null
           contact_twitter: string | null
+          contact_email: string | null
+          contact_tiktok: string | null
           contact_whatsapp: string | null
           created_at: string
           date: string
@@ -78,6 +80,8 @@ export type Database = {
           contact_instagram?: string | null
           contact_phone?: string | null
           contact_twitter?: string | null
+          contact_email?: string | null
+          contact_tiktok?: string | null
           contact_whatsapp?: string | null
           created_at?: string
           date: string
@@ -104,6 +108,8 @@ export type Database = {
           contact_instagram?: string | null
           contact_phone?: string | null
           contact_twitter?: string | null
+          contact_email?: string | null
+          contact_tiktok?: string | null
           contact_whatsapp?: string | null
           created_at?: string
           date?: string
@@ -129,6 +135,11 @@ export type Database = {
           category: Database["public"]["Enums"]["marketplace_category"]
           contact_email: string | null
           contact_phone: string | null
+          contact_whatsapp: string | null
+          contact_instagram: string | null
+          contact_facebook: string | null
+          contact_tiktok: string | null
+          contact_twitter: string | null
           created_at: string
           description: string | null
           id: string
@@ -145,6 +156,11 @@ export type Database = {
           category: Database["public"]["Enums"]["marketplace_category"]
           contact_email?: string | null
           contact_phone?: string | null
+          contact_whatsapp?: string | null
+          contact_instagram?: string | null
+          contact_facebook?: string | null
+          contact_tiktok?: string | null
+          contact_twitter?: string | null
           created_at?: string
           description?: string | null
           id?: string
@@ -161,6 +177,11 @@ export type Database = {
           category?: Database["public"]["Enums"]["marketplace_category"]
           contact_email?: string | null
           contact_phone?: string | null
+          contact_whatsapp?: string | null
+          contact_instagram?: string | null
+          contact_facebook?: string | null
+          contact_tiktok?: string | null
+          contact_twitter?: string | null
           created_at?: string
           description?: string | null
           id?: string

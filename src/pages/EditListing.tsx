@@ -2,7 +2,10 @@ import LargeTitle from '@/components/LargeTitle';
 import { useState, useEffect } from 'react';
 import { FormPageSkeleton } from '@/components/PageSkeleton';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, X, Image as ImageIcon, Type, AlignLeft, Ticket, MapPin, Phone, Mail } from 'lucide-react';
+import { ArrowLeft, X, Image as ImageIcon, Type, AlignLeft, Ticket, MapPin, Phone, Mail, MessageCircle, Instagram, Facebook } from 'lucide-react';
+import TikTokIcon from '@/components/icons/TikTokIcon';
+import { retryWithoutNewColumns } from '@/lib/retryWithoutNewColumns';
+import { emailProviderLabel } from '@/lib/emailProvider';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
@@ -30,6 +33,17 @@ const cardClass = "rounded-3xl bg-white p-5 space-y-3";
 const inputClass = "h-12 px-4 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] focus:outline-none focus:ring-0 focus:border-ink";
 
 
+
+const XIcon = ({ className }: { className?: string }) => <span className={`font-bold leading-none ${className ?? ''}`}>𝕏</span>;
+const SOCIAL_FIELDS = [
+  { key: 'contact_whatsapp', label: 'WhatsApp', Icon: MessageCircle, placeholder: '+225 XX XX XX XX XX', type: 'tel' },
+  { key: 'contact_instagram', label: 'Instagram', Icon: Instagram, placeholder: '@votre_compte', type: 'text' },
+  { key: 'contact_facebook', label: 'Facebook', Icon: Facebook, placeholder: 'Nom de page', type: 'text' },
+  { key: 'contact_tiktok', label: 'TikTok', Icon: TikTokIcon, placeholder: '@votre_compte', type: 'text' },
+  { key: 'contact_twitter', label: 'X (Twitter)', Icon: XIcon, placeholder: '@votre_compte', type: 'text' },
+] as const;
+const NEW_CONTACT_COLUMNS = SOCIAL_FIELDS.map((f) => f.key as string);
+
 const EditListing = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -48,6 +62,11 @@ const EditListing = () => {
     price_type: 'negotiable',
     contact_phone: '',
     contact_email: '',
+    contact_whatsapp: '',
+    contact_instagram: '',
+    contact_facebook: '',
+    contact_tiktok: '',
+    contact_twitter: '',
     location: '',
   });
 
@@ -89,6 +108,11 @@ const EditListing = () => {
       price_type: data.price_type || 'negotiable',
       contact_phone: data.contact_phone || '',
       contact_email: data.contact_email || '',
+      contact_whatsapp: data.contact_whatsapp || '',
+      contact_instagram: data.contact_instagram || '',
+      contact_facebook: data.contact_facebook || '',
+      contact_tiktok: data.contact_tiktok || '',
+      contact_twitter: data.contact_twitter || '',
       location: data.location || '',
     });
 
@@ -151,9 +175,7 @@ const EditListing = () => {
       }
 
       // Update listing
-      const { error } = await supabase
-        .from('marketplace_listings')
-        .update({
+      const { error } = await retryWithoutNewColumns({
           title: formData.title,
           description: formData.description || null,
           category: formData.category as any,
@@ -163,8 +185,12 @@ const EditListing = () => {
           contact_email: formData.contact_email || null,
           location: formData.location || null,
           image_url: imageUrl,
-        })
-        .eq('id', id);
+          contact_whatsapp: formData.contact_whatsapp.trim() || null,
+          contact_instagram: formData.contact_instagram.trim() || null,
+          contact_facebook: formData.contact_facebook.trim() || null,
+          contact_tiktok: formData.contact_tiktok.trim() || null,
+          contact_twitter: formData.contact_twitter.trim() || null,
+        }, NEW_CONTACT_COLUMNS, (p) => supabase.from('marketplace_listings').update(p).eq('id', id!));
 
       if (error) throw error;
 
@@ -343,17 +369,32 @@ const EditListing = () => {
             </div>
             <div className="space-y-2">
               <Label htmlFor="email" className={`${labelClass} flex items-center gap-2`}>
-                <Mail className="h-4 w-4 text-ink" strokeWidth={1.75} /> Email
+                <Mail className="h-4 w-4 text-ink" strokeWidth={1.75} /> {formData.contact_email.includes('@') ? emailProviderLabel(formData.contact_email) : 'Email'}
               </Label>
               <Input
                 id="email"
                 type="email"
                 value={formData.contact_email}
                 onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })}
-                placeholder="contact@..."
+                placeholder="exemple@gmail.com"
                 className={inputClass}
               />
             </div>
+            {SOCIAL_FIELDS.map(({ key, label, Icon, placeholder, type }) => (
+              <div key={key} className="space-y-2">
+                <Label htmlFor={key} className={`${labelClass} flex items-center gap-2`}>
+                  <Icon className="h-4 w-4 text-ink" /> {label}
+                </Label>
+                <Input
+                  id={key}
+                  type={type}
+                  value={formData[key]}
+                  onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                  placeholder={placeholder}
+                  className={inputClass}
+                />
+              </div>
+            ))}
           </div>
 
           {/* Submit */}

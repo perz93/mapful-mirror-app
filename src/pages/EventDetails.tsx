@@ -129,8 +129,8 @@ const EventDetails = () => {
   const category = getEventCategory(event.category);
   const status = eventStatus(event.date, event.time);
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${event.latitude},${event.longitude}`;
-  const contactTiktok = (event as { contact_tiktok?: string | null }).contact_tiktok;
-  const hasContacts = !!(event.contact_phone || event.contact_whatsapp || event.contact_instagram || event.contact_facebook || contactTiktok || event.contact_twitter);
+  const contactTiktok = event.contact_tiktok;
+  const hasContacts = !!(event.contact_phone || event.contact_whatsapp || event.contact_instagram || event.contact_facebook || contactTiktok || event.contact_twitter || event.contact_email);
   const priceLabel = event.is_paid && event.price
     ? <>{Number(event.price).toLocaleString('fr-FR')} <span className="text-lime text-base tracking-tight">FCFA</span></>
     : t('event.free');
@@ -289,6 +289,8 @@ const EventDetails = () => {
               contactFacebook={event.contact_facebook}
               contactTiktok={contactTiktok}
               contactTwitter={event.contact_twitter}
+              contactEmail={event.contact_email}
+              emailSubject={event.title}
             />
           ) : (
             <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center rounded-full bg-lime px-5 text-[15px] font-medium text-ink active:scale-[0.97] transition-transform">
