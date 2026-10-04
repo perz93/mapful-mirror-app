@@ -6,7 +6,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useEventsByCategory } from '@/hooks/useEventsByCategory';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import HypeBadge from './HypeBadge';
+import { eventStatus } from '@/lib/eventStatus';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { CategoryPageSkeleton } from './PageSkeleton';
 import ShimmerImage from './ShimmerImage';
@@ -77,48 +77,49 @@ const CategoryPage = ({
 
         <div className="p-4 pt-5 space-y-4 pb-10">
           {!events || events.length === 0 ? <EmptyState icon={CalendarDays} title={t('event.noEvents')} /> : events.map((event, i) => <Link key={event.id} to={`/event/${event.id}`} className="block group">
-                {/* Billet : talon daté à gauche, photo en bandeau, prix une seule fois */}
-                <article
-                  className="card-shadow flex overflow-hidden rounded-3xl bg-white dark:bg-stone-900 transition-transform duration-300 active:scale-[0.99] animate-fade-in"
-                  style={{ animationDelay: `${i * 0.06}s` }}
-                >
-                  <div className="flex w-[78px] flex-shrink-0 flex-col items-center justify-center gap-0.5 bg-ink text-parchment">
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-lime">
-                      {format(new Date(`${event.date}T00:00:00`), 'EEE', { locale: fr }).replace('.', '')}
-                    </span>
-                    <span className="font-display text-[32px] leading-none tracking-tight tabular">
-                      {format(new Date(`${event.date}T00:00:00`), 'dd')}
-                    </span>
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.1em]">
-                      {format(new Date(`${event.date}T00:00:00`), 'MMM', { locale: fr }).replace('.', '')}
-                    </span>
-                    <span className="mt-1.5 text-xs text-parchment/70 tabular">{event.time?.slice(0, 5)}</span>
-                  </div>
-
-                  <div className="min-w-0 flex-1 p-2">
-                    <div className="relative h-36 overflow-hidden rounded-[18px]">
-                      <ShimmerImage
-                        src={event.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&q=75&fm=webp'}
-                        alt={event.title}
-                        className="h-full w-full transition-transform duration-500 group-hover:scale-[1.03]"
-                      />
-                      <div className="absolute left-2.5 top-2.5">
-                        <HypeBadge eventId={event.id} eventDate={event.date} eventTime={event.time} capacity={event.capacity} size="sm" />
-                      </div>
-                    </div>
-                    <div className="px-1.5 pb-1.5 pt-3">
-                      <h3 className="font-display text-[20px] leading-[1.08] tracking-tight text-ink dark:text-white line-clamp-2">{event.title}</h3>
-                      <div className="mt-1.5 flex items-center justify-between gap-3">
-                        <span className="truncate text-[13px] text-stone-500">{event.venue}</span>
-                        <span className="flex-shrink-0 font-display text-[15px] tracking-tight text-ink dark:text-white tabular">
-                          {event.is_paid && event.price
-                            ? <>{Number(event.price).toLocaleString('fr-FR')} <span className="text-[11px] text-lime-deep">FCFA</span></>
-                            : t('event.free')}
+                {/* Carte claire : photo, statut + prix dessus, date « OCT 30 » à côté du titre */}
+                {(() => {
+                  const d = new Date(`${event.date}T00:00:00`);
+                  const status = eventStatus(event.date, event.time);
+                  const showStatus = status && (status.live || ['status.soon', 'status.inHours', 'status.tomorrow'].includes(status.key));
+                  return (
+                    <article
+                      className="card-shadow overflow-hidden rounded-[26px] bg-white dark:bg-stone-900 p-2 transition-transform duration-300 active:scale-[0.99] animate-fade-in"
+                      style={{ animationDelay: `${i * 0.06}s` }}
+                    >
+                      <div className="relative h-44 overflow-hidden rounded-[20px]">
+                        <ShimmerImage
+                          src={event.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&q=75&fm=webp'}
+                          alt={event.title}
+                          className="h-full w-full transition-transform duration-500 group-hover:scale-[1.03]"
+                        />
+                        {showStatus && (
+                          <span className={`absolute left-2.5 top-2.5 inline-flex h-7 items-center gap-1.5 rounded-full px-3 text-xs font-medium ${status!.live ? 'bg-lime text-ink' : 'bg-white text-ink'}`}>
+                            {status!.live && <span className="size-1.5 rounded-full bg-ink" />}
+                            {t(status!.key).replace('{n}', String(status!.n ?? ''))}
+                          </span>
+                        )}
+                        <span className="absolute right-2.5 top-2.5 inline-flex h-7 items-center rounded-full bg-lime px-3 text-xs font-medium text-ink tabular">
+                          {event.is_paid && event.price ? `${Number(event.price).toLocaleString('fr-FR')} FCFA` : t('event.free')}
                         </span>
                       </div>
-                    </div>
-                  </div>
-                </article>
+                      <div className="flex items-center gap-3.5 px-2 pb-1.5 pt-3">
+                        <div className="flex-shrink-0 border-r border-stone-200 dark:border-stone-700 pr-3.5 text-center leading-none">
+                          <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-lime-deep">
+                            {format(d, 'MMM', { locale: fr }).replace('.', '')}
+                          </p>
+                          <p className="font-display mt-0.5 text-[28px] tracking-tight text-ink dark:text-white tabular">{format(d, 'dd')}</p>
+                        </div>
+                        <div className="min-w-0">
+                          <h3 className="font-display text-[20px] leading-[1.05] tracking-tight text-ink dark:text-white line-clamp-2">{event.title}</h3>
+                          <p className="mt-1 truncate text-[13px] text-stone-500">
+                            {event.venue} · <span className="tabular">{event.time?.slice(0, 5)}</span>
+                          </p>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })()}
               </Link>)}
         </div>
       </div>
