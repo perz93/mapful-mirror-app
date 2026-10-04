@@ -128,8 +128,9 @@ const IosRow = ({ label, icon, active = false, big = false }: { label: string; i
 const ShareSheet = () => (
   <div className="absolute inset-x-0 bottom-0 rounded-t-[10px] bg-[#f2f2f7] pb-2 pt-1.5">
     <div className="mb-1.5 flex gap-1 px-1.5">
-      {['#34c759', IOS_BLUE, '#ff9f0a', '#bf5af2'].map((c) => (
-        <span key={c} className="size-[14px] rounded-[4px]" style={{ background: c }} />
+      {/* Icônes d'apps en crème (effet chargement), plus épuré */}
+      {[0, 1, 2, 3].map((i) => (
+        <span key={i} className="size-[14px] rounded-[4px] bg-[#e6e3d3]" />
       ))}
     </div>
     <div className="mx-1 overflow-hidden rounded-[6px] bg-white">
