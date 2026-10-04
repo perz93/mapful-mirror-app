@@ -14,7 +14,7 @@ import { Label } from '@/components/ui/label';
 import SectionTitle from '@/components/SectionTitle';
 import { MARKETPLACE_CATEGORIES } from '@/lib/marketplaceCategories';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { toast } from '@/components/PillToast';
 import { Tables } from '@/integrations/supabase/types';
 
 type MarketplaceListing = Tables<'marketplace_listings'>;

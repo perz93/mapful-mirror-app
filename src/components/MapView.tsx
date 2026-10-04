@@ -15,7 +15,7 @@ import { useEvents } from '@/hooks/useEvents';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { format, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { toast } from 'sonner';
+import { toast } from '@/components/PillToast';
 import RouteInfoPanel from './RouteInfoPanel';
 import { fuzzyMatch } from '@/lib/fuzzyMatch';
 import { getDistanceKm } from '@/hooks/useNearbyEvents';
@@ -240,11 +240,11 @@ const MapView = () => {
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
             const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true;
             if (isIOS && isStandalone) {
-              toast.error(t('map.iosVibe'), { duration: 6000 });
+              toast.info(t('map.iosVibe'), { duration: 6000 });
             } else if (isIOS) {
-              toast.error(t('map.iosSafari'), { duration: 6000 });
+              toast.info(t('map.iosSafari'), { duration: 6000 });
             } else {
-              toast.error(t('map.enableLocation'), { duration: 5000 });
+              toast.info(t('map.enableLocation'), { duration: 5000 });
             }
           } else {
             toast.error(t('map.gpsNotFound'));
@@ -579,7 +579,7 @@ const MapView = () => {
     destinationMarkerRef.current = L.marker([routeDestination.lat, routeDestination.lng], { icon: destIcon }).addTo(map);
 
     if (!geo.position) {
-      toast.error(t('map.enableForRoute'));
+      toast.info(t('map.enableForRoute'));
       setRouteInfo({ distanceKm: null, durationMin: null, loading: false, error: true });
       return;
     }

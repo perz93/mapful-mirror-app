@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
 import { Event } from '@/hooks/useEvents';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { toast } from '@/components/PillToast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import {
   AlertDialog,

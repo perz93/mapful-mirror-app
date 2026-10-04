@@ -8,7 +8,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { enUS } from 'date-fns/locale';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { toast } from 'sonner';
+import { toast } from '@/components/PillToast';
 import ContactFab from '@/components/ContactFab';
 import ImageLightbox from '@/components/ImageLightbox';
 import { EventDetailsSkeleton } from '@/components/PageSkeleton';
@@ -83,7 +83,7 @@ const EventDetails = () => {
     if (pushSupported && !pushSubscribed) {
       const ok = await subscribePush();
       if (!ok) {
-        toast.error(t('reminder.enableNotif'));
+        toast.info(t('reminder.enableNotif'));
         return;
       }
     }

@@ -6,7 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useEvents, Event } from '@/hooks/useEvents';
 import EventListCard from '@/components/EventListCard';
-import { toast } from 'sonner';
+import { toast } from '@/components/PillToast';
 import { Tables } from '@/integrations/supabase/types';
 import ShimmerImage from '@/components/ShimmerImage';
 import { AccountSkeleton } from '@/components/PageSkeleton';

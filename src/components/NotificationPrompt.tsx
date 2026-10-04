@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Bell, X } from 'lucide-react';
+import { Bell } from 'lucide-react';
+import { Pill } from '@/components/PillToast';
 import { useNotifications } from '@/contexts/NotificationContext';
 
 const DISMISS_KEY = 'notif_prompt_dismissed';
@@ -41,27 +42,16 @@ const NotificationPrompt = () => {
 
   return (
     <div
-      className={`fixed left-3 z-50 transition-all duration-300 ${animating ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}
-      style={{ top: 'calc(env(safe-area-inset-top, 0px) + 18px)', maxWidth: '260px' }}
+      className={`fixed inset-x-0 z-50 flex justify-center px-3 transition-all duration-300 ${animating ? 'translate-y-0 opacity-100' : '-translate-y-3 opacity-0'}`}
+      style={{ top: 'calc(env(safe-area-inset-top, 0px) + 10px)' }}
     >
-      <div className="rounded-full bg-white shadow-lg pl-4 pr-1.5 py-1.5">
-        <div className="flex items-center gap-2">
-          <Bell size={14} className="text-ink flex-shrink-0" />
-          <p className="text-[11px] text-stone-700 font-medium leading-tight flex-1">
-            Ne rate aucun event !
-          </p>
-          <button
-            onClick={handleSubscribe}
-            disabled={loading}
-            className="flex-shrink-0 h-8 px-4 rounded-full bg-lime text-ink text-xs font-medium hover:bg-lime-deep transition-colors active:scale-95 disabled:opacity-50"
-          >
-            OK
-          </button>
-          <button onClick={handleClose} className="flex-shrink-0 h-5 w-5 rounded-full bg-stone-100 flex items-center justify-center hover:bg-stone-200 transition-all active:scale-95">
-            <X size={10} className="text-stone-400" />
-          </button>
-        </div>
-      </div>
+      <Pill
+        kind="info"
+        icon={<Bell size={15} strokeWidth={2.2} />}
+        message="Ne rate aucun event !"
+        action={{ label: 'Activer', onClick: handleSubscribe, loading }}
+        onClose={handleClose}
+      />
     </div>
   );
 };

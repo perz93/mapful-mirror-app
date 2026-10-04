@@ -13,7 +13,7 @@ import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign, ArrowLe
 import TikTokIcon from '@/components/icons/TikTokIcon';
 import { retryWithoutNewColumns } from '@/lib/retryWithoutNewColumns';
 import { emailProviderLabel } from '@/lib/emailProvider';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/components/PillToast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -29,7 +29,6 @@ const labelClass = "text-sm text-stone-600 font-normal";
 const cardClass = "rounded-3xl bg-white p-5 space-y-3";
 
 const CreateEvent = () => {
-  const { toast } = useToast();
   const { user, loading } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -38,14 +37,10 @@ const CreateEvent = () => {
   // Redirect if not authenticated
   useEffect(() => {
     if (!loading && !user) {
-      toast({
-        title: t('auth.loginRequired'),
-        description: t('auth.mustBeLoggedIn'),
-        variant: "destructive"
-      });
+      toast.info(t('auth.loginRequired'), { description: t('auth.mustBeLoggedIn') });
       navigate('/auth');
     }
-  }, [user, loading, navigate, toast]);
+  }, [user, loading, navigate]);
   // Load saved contacts from localStorage
   const savedContacts = (() => {
     try {
@@ -106,21 +101,13 @@ const CreateEvent = () => {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      toast({
-        title: "Erreur",
-        description: t('form.invalidImage'),
-        variant: "destructive"
-      });
+      toast.error(t('form.invalidImage'));
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      toast({
-        title: "Erreur",
-        description: t('form.imageTooLarge'),
-        variant: "destructive"
-      });
+      toast.error(t('form.imageTooLarge'));
       return;
     }
 
@@ -224,11 +211,7 @@ const CreateEvent = () => {
     e.preventDefault();
 
     if (!user) {
-      toast({
-        title: "Erreur",
-        description: t('auth.mustBeLoggedIn'),
-        variant: "destructive"
-      });
+      toast.error(t('auth.mustBeLoggedIn'));
       return;
     }
 
@@ -292,10 +275,7 @@ const CreateEvent = () => {
         throw insertError;
       }
 
-      toast({
-        title: t('event.created'),
-        description: t('event.createdDesc')
-      });
+      toast.success(t('event.created'), { description: t('event.createdDesc') });
 
       // Save contacts for next time
       try {
@@ -340,11 +320,7 @@ const CreateEvent = () => {
 
     } catch (error) {
       console.error('Error creating event:', error);
-      toast({
-        title: "Erreur",
-        description: t('event.createError'),
-        variant: "destructive"
-      });
+      toast.error(t('event.createError'));
     } finally {
       setSubmitting(false);
     }

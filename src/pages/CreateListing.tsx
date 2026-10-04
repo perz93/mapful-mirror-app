@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import SectionTitle from '@/components/SectionTitle';
 import { MARKETPLACE_CATEGORIES } from '@/lib/marketplaceCategories';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { toast } from '@/components/PillToast';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const categories = MARKETPLACE_CATEGORIES.map((c) => ({ value: c.value, label: c.fr, icon: c.icon }));

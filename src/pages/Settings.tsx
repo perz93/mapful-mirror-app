@@ -8,7 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { useLanguage, Lang } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { toast } from '@/components/PillToast';
 import { SettingsSkeleton } from '@/components/PageSkeleton';
 import { MAP_CREDITS } from '@/lib/mapTiles';
 
@@ -35,7 +35,7 @@ const Settings = () => {
   // Redirect if not authenticated
   useEffect(() => {
     if (!loading && !user) {
-      toast.error(lang === 'fr' ? 'Vous devez être connecté pour accéder aux paramètres' : 'You must be logged in to access settings');
+      toast.info(lang === 'fr' ? 'Connecte-toi pour accéder aux paramètres' : 'You must be logged in to access settings');
       navigate('/auth');
     }
   }, [user, loading, navigate, lang]);

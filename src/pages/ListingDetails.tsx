@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Tag, Share2 } from 'lucide-react';
 import ContactFab from '@/components/ContactFab';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { toast } from 'sonner';
+import { toast } from '@/components/PillToast';
 import ImageLightbox from '@/components/ImageLightbox';
 import ShimmerImage from '@/components/ShimmerImage';
 import { marketplaceCategoryLabel } from '@/lib/marketplaceCategories';
