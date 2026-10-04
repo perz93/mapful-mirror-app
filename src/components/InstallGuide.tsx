@@ -37,13 +37,39 @@ interface BeforeInstallPromptEvent extends Event {
 const IOS_BLUE = '#0a84ff';
 const ANDROID_BLUE = '#0b57d0';
 
-/** Téléphone miniature : cadre réaliste, Dynamic Island, vraie page VIBE */
-const MiniPhone = ({ children }: { children?: React.ReactNode }) => (
-  <div className="relative h-[216px] w-[104px] flex-shrink-0 rounded-[22px] bg-ink p-[4px] shadow-[0_18px_36px_-16px_rgba(20,20,15,0.55)]">
-    <span aria-hidden className="absolute -left-[2px] top-[48px] h-5 w-[2px] rounded-l bg-ink" />
-    <span aria-hidden className="absolute -right-[2px] top-[60px] h-8 w-[2px] rounded-r bg-ink" />
-    <div className="relative h-full w-full overflow-hidden rounded-[18px] bg-[#ece8d6] bg-cover bg-top" style={{ backgroundImage: 'url(/guide-screen.jpg)' }}>
-      <span aria-hidden className="absolute left-1/2 top-[5px] z-10 h-[9px] w-[30px] -translate-x-1/2 rounded-full bg-black" />
+/** Téléphone miniature avec une vraie page VIBE : iPhone (Dynamic Island) ou Android (caméra « poinçon ») */
+const MiniPhone = ({ children, android = false }: { children?: React.ReactNode; android?: boolean }) => (
+  <div
+    className={`relative h-[216px] w-[104px] flex-shrink-0 bg-ink shadow-[0_18px_36px_-16px_rgba(20,20,15,0.55)] ${
+      android ? 'rounded-[16px] p-[3px]' : 'rounded-[22px] p-[4px]'
+    }`}
+  >
+    {android ? (
+      <span aria-hidden className="absolute -right-[2px] top-[44px] h-12 w-[2px] rounded-r bg-ink" />
+    ) : (
+      <>
+        <span aria-hidden className="absolute -left-[2px] top-[48px] h-5 w-[2px] rounded-l bg-ink" />
+        <span aria-hidden className="absolute -right-[2px] top-[60px] h-8 w-[2px] rounded-r bg-ink" />
+      </>
+    )}
+    <div
+      className={`relative h-full w-full overflow-hidden bg-[#ece8d6] bg-cover bg-top ${android ? 'rounded-[13px]' : 'rounded-[18px]'}`}
+      style={{ backgroundImage: 'url(/guide-screen.jpg)' }}
+    >
+      {android ? (
+        <>
+          {/* Barre d'état Android + caméra poinçon */}
+          <div className="absolute inset-x-0 top-0 z-10 flex h-[16px] items-center justify-between bg-white px-2 text-[6px] font-medium text-[#1f1f1f]">
+            <span>10:42</span>
+            <span className="tracking-tight">▾ ▴ ▮</span>
+          </div>
+          <span aria-hidden className="absolute left-1/2 top-[4px] z-20 size-[7px] -translate-x-1/2 rounded-full bg-black" />
+          {/* Barre de navigation gestuelle */}
+          <span aria-hidden className="absolute bottom-[3px] left-1/2 z-20 h-[2px] w-[30px] -translate-x-1/2 rounded-full bg-ink/70" />
+        </>
+      ) : (
+        <span aria-hidden className="absolute left-1/2 top-[5px] z-10 h-[9px] w-[30px] -translate-x-1/2 rounded-full bg-black" />
+      )}
       {children}
     </div>
   </div>
@@ -211,7 +237,7 @@ const ANDROID_STEPS = [
     hint: 'Touche les trois points en haut à droite.',
     visual: (
       <Pair
-        phone={<MiniPhone><ChromeBar mark /></MiniPhone>}
+        phone={<MiniPhone android><ChromeBar mark /></MiniPhone>}
         loupe={
           <div className="flex w-full items-center gap-2 bg-white px-3 py-3">
             <span className="h-8 flex-1 rounded-full bg-[#f1f3f4]" />
@@ -228,7 +254,7 @@ const ANDROID_STEPS = [
     hint: "Selon ton téléphone, l'option s'appelle aussi « Ajouter à l'écran d'accueil ».",
     visual: (
       <Pair
-        phone={<MiniPhone><ChromeBar /><ChromeMenu /></MiniPhone>}
+        phone={<MiniPhone android><ChromeBar /><ChromeMenu /></MiniPhone>}
         loupe={
           <div className="w-[128px] overflow-hidden rounded-xl bg-white text-[11px] text-[#3c4043]">
             <div className="px-2.5 py-2">Favoris</div>
@@ -245,7 +271,7 @@ const ANDROID_STEPS = [
     hint: "VIBE rejoint tes applications et ton écran d'accueil.",
     visual: (
       <Pair
-        phone={<MiniPhone><ChromeDialog /></MiniPhone>}
+        phone={<MiniPhone android><ChromeDialog /></MiniPhone>}
         loupe={
           <div className="flex items-center gap-2 text-[13px] font-medium">
             <span className="opacity-60" style={{ color: ANDROID_BLUE }}>Annuler</span>
