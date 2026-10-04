@@ -20,6 +20,15 @@ const platformDomains: Record<Exclude<Platform, 'whatsapp'>, RegExp> = {
   twitter: /^https?:\/\/(?:www\.)?(?:twitter|x)\.com\//i,
 };
 
+/** Numéro WhatsApp au format international (Côte d'Ivoire par défaut : +225). */
+export function whatsappNumber(raw: string): string {
+  let d = raw.replace(/\D/g, '');
+  if (d.startsWith('00')) d = d.slice(2);
+  // 10 chiffres (format ivoirien depuis 2021) ou 8 (ancien format) → indicatif 225
+  if (d.length === 10 || d.length === 8) d = `225${d}`;
+  return d;
+}
+
 /**
  * Build a clean, working URL for a given social platform.
  *
@@ -34,7 +43,7 @@ export function getDisplayUrl(platform: Platform, value: string): string {
 
   // WhatsApp: only keep digits
   if (platform === 'whatsapp') {
-    return `https://wa.me/${v.replace(/[^0-9+]/g, '').replace(/^\+/, '')}`;
+    return `https://wa.me/${whatsappNumber(v)}`;
   }
 
   const base = platformBases[platform];

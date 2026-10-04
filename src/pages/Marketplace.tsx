@@ -126,11 +126,14 @@ const Marketplace = () => {
         {isLoading ? (
           <div className="grid gap-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="relative h-[300px] overflow-hidden rounded-[26px] skeleton">
-                <div className="absolute inset-x-4 bottom-4 space-y-2">
-                  <div className="h-3 w-24 rounded-full bg-white/50" />
-                  <div className="h-6 w-3/4 rounded-md bg-white/60" />
-                  <div className="h-7 w-28 rounded-full bg-white/60" />
+              <div key={i} className="card-shadow rounded-[26px] bg-white p-2">
+                <div className="h-48 rounded-[20px] skeleton" />
+                <div className="mt-2 flex gap-2">
+                  <div className="flex-1 space-y-2 px-2 py-1.5">
+                    <div className="h-5 w-3/4 rounded-md skeleton skeleton-on-white" />
+                    <div className="h-3 w-1/2 rounded-md skeleton skeleton-on-white" />
+                  </div>
+                  <div className="h-14 w-24 rounded-2xl skeleton skeleton-on-white" />
                 </div>
               </div>
             ))}
@@ -147,45 +150,54 @@ const Marketplace = () => {
                   style={{ animationDelay: `${Math.min(index * 60, 360)}ms`, animationFillMode: 'backwards' }}
                   className="group block animate-fade-in"
                 >
-                  {/* K4 : affiche plein cadre, infos posées sur la photo */}
-                  <article className="card-shadow relative h-[300px] overflow-hidden rounded-[26px] bg-[#ebe9dd] [isolation:isolate] transition-transform duration-300 active:scale-[0.99]">
-                    {listing.image_url ? (
-                      <ShimmerImage
-                        src={listing.image_url}
-                        alt={listing.title}
-                        className="absolute inset-0 h-full w-full [&_img]:transition-transform [&_img]:duration-500 [&_img]:group-hover:scale-[1.03]"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex items-start justify-center bg-parchment pt-16">
-                        <span className="flex size-16 items-center justify-center rounded-3xl bg-white">
-                          <Icon size={28} strokeWidth={1.5} className="text-ink" />
-                        </span>
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,20,15,0)_38%,rgba(20,20,15,0.85)_100%)]" />
-                    <span className="absolute left-3 top-3 inline-flex h-7 items-center gap-1.5 rounded-full bg-white/90 px-3 text-xs font-medium text-ink backdrop-blur-sm">
-                      <Icon size={13} strokeWidth={1.75} />
-                      {lang === 'en' ? config.en : config.fr}
-                    </span>
-
-                    <div className="absolute inset-x-4 bottom-4 text-parchment">
-                      {listing.location && (
-                        <p className="eyebrow flex items-center gap-1 truncate text-parchment/75">
-                          <MapPin size={11} strokeWidth={2} className="flex-shrink-0" />
-                          <span className="truncate">{listing.location}</span>
-                        </p>
-                      )}
-                      <h3 className="mt-1.5 font-display text-[24px] leading-[1.02] tracking-[-0.035em] text-white line-clamp-2">{listing.title}</h3>
-                      <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                        <span className="inline-flex h-7 items-center rounded-full bg-lime px-3 text-[13px] font-semibold text-ink tabular whitespace-nowrap">
-                          {listing.price !== null ? `${listing.price.toLocaleString('fr-FR')} FCFA` : t('market.negotiable')}
-                        </span>
-                        {listing.price_type && listing.price_type !== 'fixed' && listing.price !== null && (
-                          <span className="inline-flex h-7 items-center rounded-full bg-white/20 px-3 text-[12px] font-medium text-white backdrop-blur-sm whitespace-nowrap">
-                            {listing.price_type === 'hourly' && t('market.perHour')}
-                            {listing.price_type === 'daily' && t('market.perDay')}
-                            {listing.price_type === 'negotiable' && t('market.negotiable')}
+                  {/* K7 : carte blanche, prix en ticket vert détachable */}
+                  <article className="card-shadow overflow-hidden rounded-[26px] bg-white p-2 transition-transform duration-300 active:scale-[0.99]">
+                    <div className="relative h-48 overflow-hidden rounded-[20px] bg-[#ebe9dd]">
+                      {listing.image_url ? (
+                        <ShimmerImage
+                          src={listing.image_url}
+                          alt={listing.title}
+                          className="h-full w-full [&_img]:transition-transform [&_img]:duration-500 [&_img]:group-hover:scale-[1.03]"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-parchment">
+                          <span className="flex size-16 items-center justify-center rounded-3xl bg-white">
+                            <Icon size={28} strokeWidth={1.5} className="text-ink" />
                           </span>
+                        </div>
+                      )}
+                      <span className="absolute left-2.5 top-2.5 inline-flex h-7 items-center gap-1.5 rounded-full bg-white/90 px-3 text-xs font-medium text-ink backdrop-blur-sm">
+                        <Icon size={13} strokeWidth={1.75} />
+                        {lang === 'en' ? config.en : config.fr}
+                      </span>
+                    </div>
+
+                    <div className="mt-2 flex items-stretch gap-2">
+                      <div className="min-w-0 flex-1 px-2 py-1.5">
+                        <h3 className="font-display text-[19px] leading-[1.05] tracking-[-0.03em] text-ink line-clamp-2">{listing.title}</h3>
+                        {listing.location && (
+                          <p className="mt-1 flex items-center gap-1 truncate text-[12.5px] text-stone-500">
+                            <MapPin size={12} strokeWidth={2} className="flex-shrink-0" />
+                            <span className="truncate">{listing.location}</span>
+                          </p>
+                        )}
+                      </div>
+                      {/* Ticket : bord pointillé + encoches comme un coupon détachable */}
+                      <div className="relative flex flex-shrink-0 flex-col justify-center rounded-2xl border-l-2 border-dashed border-ink/25 bg-lime px-3.5 py-2 text-ink">
+                        <span className="absolute -left-[7px] -top-[6px] size-3 rounded-full bg-white" />
+                        <span className="absolute -bottom-[6px] -left-[7px] size-3 rounded-full bg-white" />
+                        {listing.price !== null ? (
+                          <>
+                            <span className="font-display text-[17px] leading-none tracking-tight tabular">{listing.price.toLocaleString('fr-FR')}</span>
+                            <span className="mt-1 text-[10px] font-semibold uppercase tracking-[0.08em]">
+                              FCFA
+                              {listing.price_type === 'negotiable' && ' · Négo.'}
+                              {listing.price_type === 'hourly' && ' / h'}
+                              {listing.price_type === 'daily' && ' / jour'}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="font-display text-[15px] leading-tight tracking-tight">{t('market.negotiable')}</span>
                         )}
                       </div>
                     </div>

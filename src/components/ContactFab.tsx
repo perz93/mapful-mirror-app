@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Phone, Instagram, Facebook, MessageCircle, X, MessageSquare, Mail } from 'lucide-react';
 import { emailProviderLabel, mailtoHref } from '@/lib/emailProvider';
 import { cn } from '@/lib/utils';
-import { getDisplayUrl } from '@/components/profile/social/SocialPlatformConfig';
+import { webLink, openInApp, type SocialPlatform } from '@/lib/contactLinks';
 import TikTokIcon from '@/components/icons/TikTokIcon';
 
 interface ContactFabProps {
@@ -24,6 +24,8 @@ interface ContactFabProps {
 interface ContactItem {
   icon: React.ReactNode;
   href: string;
+  /** Réseau social : ouvert dans son application quand c'est possible */
+  app?: { platform: SocialPlatform; value: string };
   bgColor: string;
   label: string;
 }
@@ -75,7 +77,8 @@ const ContactFab = ({
   if (contactWhatsapp) {
     contacts.push({
       icon: <MessageCircle className="w-5 h-5 text-white" />,
-      href: getDisplayUrl('whatsapp', contactWhatsapp),
+      href: webLink('whatsapp', contactWhatsapp),
+      app: { platform: 'whatsapp', value: contactWhatsapp },
       bgColor: 'bg-ink',
       label: 'WhatsApp'
     });
@@ -84,7 +87,8 @@ const ContactFab = ({
   if (contactInstagram) {
     contacts.push({
       icon: <Instagram className="w-5 h-5 text-white" />,
-      href: getDisplayUrl('instagram', contactInstagram),
+      href: webLink('instagram', contactInstagram),
+      app: { platform: 'instagram', value: contactInstagram },
       bgColor: 'bg-ink',
       label: 'Instagram'
     });
@@ -93,7 +97,8 @@ const ContactFab = ({
   if (contactFacebook) {
     contacts.push({
       icon: <Facebook className="w-5 h-5 text-white" />,
-      href: getDisplayUrl('facebook', contactFacebook),
+      href: webLink('facebook', contactFacebook),
+      app: { platform: 'facebook', value: contactFacebook },
       bgColor: 'bg-ink',
       label: 'Facebook'
     });
@@ -102,7 +107,8 @@ const ContactFab = ({
   if (contactTiktok) {
     contacts.push({
       icon: <TikTokIcon className="w-5 h-5 text-white" />,
-      href: getDisplayUrl('tiktok', contactTiktok),
+      href: webLink('tiktok', contactTiktok),
+      app: { platform: 'tiktok', value: contactTiktok },
       bgColor: 'bg-ink',
       label: 'TikTok'
     });
@@ -111,7 +117,8 @@ const ContactFab = ({
   if (contactTwitter) {
     contacts.push({
       icon: <span className="text-white font-bold text-base">𝕏</span>,
-      href: getDisplayUrl('twitter', contactTwitter),
+      href: webLink('twitter', contactTwitter),
+      app: { platform: 'twitter', value: contactTwitter },
       bgColor: 'bg-ink',
       label: 'X'
     });
@@ -151,10 +158,12 @@ const ContactFab = ({
           <a
             key={index}
             href={contact.href}
-            target="_blank"
+            // tel: et mailto: s'ouvrent sur place (un nouvel onglet laisserait une page blanche)
+            target={contact.href.startsWith('http') ? '_blank' : undefined}
             rel="noopener noreferrer"
             onClick={(e) => {
               e.stopPropagation();
+              if (contact.app && openInApp(contact.app.platform, contact.app.value)) e.preventDefault();
               setIsOpen(false);
             }}
             className={cn(
