@@ -84,7 +84,7 @@ const CategoryPage = ({
                   const showStatus = status && (status.live || ['status.soon', 'status.inHours', 'status.tomorrow'].includes(status.key));
                   return (
                     <article
-                      className="card-shadow overflow-hidden rounded-[26px] bg-ink p-2 text-parchment transition-transform duration-300 active:scale-[0.99] animate-fade-in"
+                      className="card-shadow overflow-hidden rounded-[26px] bg-white p-2 text-ink transition-transform duration-300 active:scale-[0.99] animate-fade-in"
                       style={{ animationDelay: `${i * 0.06}s` }}
                     >
                       <div className="relative h-44 overflow-hidden rounded-[20px]">
@@ -104,15 +104,15 @@ const CategoryPage = ({
                         </span>
                       </div>
                       <div className="flex items-center gap-3.5 px-2 pb-1.5 pt-3">
-                        <div className="flex-shrink-0 border-r border-parchment/15 pr-3.5 text-center leading-none">
-                          <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-lime">
+                        <div className="flex-shrink-0 border-r border-stone-200 pr-3.5 text-center leading-none">
+                          <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-lime-deep">
                             {format(d, 'MMM', { locale: fr }).replace('.', '')}
                           </p>
-                          <p className="font-display mt-0.5 text-[28px] tracking-tight text-parchment tabular">{format(d, 'dd')}</p>
+                          <p className="font-display mt-0.5 text-[28px] tracking-tight text-ink tabular">{format(d, 'dd')}</p>
                         </div>
                         <div className="min-w-0">
-                          <h3 className="font-display text-[20px] leading-[1.05] tracking-tight text-parchment line-clamp-2">{event.title}</h3>
-                          <p className="mt-1 truncate text-[13px] text-parchment/65">
+                          <h3 className="font-display text-[20px] leading-[1.05] tracking-tight text-ink line-clamp-2">{event.title}</h3>
+                          <p className="mt-1 truncate text-[13px] text-stone-500">
                             {event.venue} · <span className="tabular">{event.time?.slice(0, 5)}</span>
                           </p>
                         </div>
