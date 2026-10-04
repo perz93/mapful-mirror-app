@@ -25,7 +25,7 @@ export default defineConfig(({ mode }) => ({
         short_name: 'VIBE',
         description: 'Tous les événements près de vous',
         theme_color: '#14140f',
-        background_color: '#f5f5eb',
+        background_color: '#14140f',
         display: 'standalone',
         icons: [
           {

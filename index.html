@@ -11,8 +11,9 @@
     <meta name="description" content="Concerts, festivals, expos, brunch... Trouve ce qui se passe autour de toi ce soir à Abidjan." />
     <meta name="author" content="Lovable" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="apple-touch-icon" href="/icon-192.png" />
-    <link rel="preload" href="/splash-bg.jpg" as="image" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preload" href="/splash-logo.png" as="image" />
 
     
     <meta property="og:title" content="VIBE — Découvre les events à Abidjan" />
@@ -29,7 +30,7 @@
 
   <body>
     <!-- Instant splash: shows before React loads -->
-    <div id="instant-splash" style="position:fixed;inset:0;z-index:9999;background:#000 url('/splash-bg.jpg') center/cover no-repeat;transition:transform 0.7s cubic-bezier(0.4,0,0.2,1);"></div>
+    <div id="instant-splash" style="position:fixed;inset:0;z-index:9999;background:#14140f url('/splash-logo.png') center/300px auto no-repeat;transition:transform 0.7s cubic-bezier(0.4,0,0.2,1);"></div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
