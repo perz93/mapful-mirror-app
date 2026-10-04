@@ -45,7 +45,7 @@ const MapControls = () => {
         </button>
         <span style={{
         animationDelay: '0.1s'
-      }} className="eyebrow px-2 py-0.5 rounded-full text-[9px] tracking-[0.08em] text-parchment animate-fade-in bg-ink">
+      }} className="rounded-full bg-ink px-1.5 py-[2px] text-[8.5px] font-semibold uppercase leading-none tracking-[0.04em] text-parchment animate-fade-in">
           <span>Marketplace</span>
         </span>
       </div>

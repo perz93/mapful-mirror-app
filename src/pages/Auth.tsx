@@ -311,7 +311,6 @@ const Auth = () => {
           ) : (
             <>
               <div className="mb-6 pr-12">
-                <p className="eyebrow mb-3 text-stone-500">VIBE · Abidjan</p>
                 <h1 className="text-[40px] leading-[0.95] tracking-tighter text-ink">{titles[mode].title}</h1>
                 <p className="mt-3 text-[15px] text-stone-500">{titles[mode].desc}</p>
               </div>
