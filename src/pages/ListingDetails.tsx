@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, MapPin, Phone, Mail, Tag, Share2 } from 'lucide-react';
+import { ArrowLeft, Phone, Mail, Tag, Share2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import ImageLightbox from '@/components/ImageLightbox';
 import ShimmerImage from '@/components/ShimmerImage';
 import { marketplaceCategoryLabel } from '@/lib/marketplaceCategories';
+import { splitLead } from '@/lib/eventStatus';
 
 const priceTypeLabels: Record<string, Record<string, string>> = {
   fixed: { fr: 'Prix fixe', en: 'Fixed price' },
@@ -54,10 +55,7 @@ const ListingDetails = () => {
     return (
       <div className="min-h-screen relative overflow-hidden bg-parchment page-enter">
         <div className="relative z-10 mx-auto max-w-md">
-          <div className="mx-4 mt-2">
-            <div className="h-72 rounded-3xl skeleton">
-            </div>
-          </div>
+          <div className="h-[52vh] min-h-[340px] max-h-[480px] rounded-b-[32px] skeleton" />
           <div className="px-4 pt-5 space-y-4">
             <div className="rounded-3xl bg-white p-5 space-y-3">
               <div className="h-6 skeleton rounded-lg w-3/4">
@@ -109,146 +107,116 @@ const ListingDetails = () => {
   const catLabel = marketplaceCategoryLabel(listing.category, lang);
   const priceLabel = listing.price_type ? (priceTypeLabels[listing.price_type]?.[lang] || listing.price_type) : '';
 
+  const priceValue = listing.price !== null ? `${listing.price.toLocaleString('fr-FR')} FCFA` : priceLabel || (lang === 'fr' ? 'Sur devis' : 'On quote');
+  const priceSub = listing.price !== null && listing.price_type && listing.price_type !== 'fixed' ? priceLabel : (lang === 'fr' ? 'Prix fixe' : 'Fixed price');
+  const mapsUrl = listing.location
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${listing.location}, Abidjan`)}`
+    : null;
+  const { lead, rest } = listing.description ? splitLead(listing.description) : { lead: null, rest: '' };
+  const roundBtn = 'inline-flex size-10 items-center justify-center rounded-full active:scale-95 transition-transform';
+
   return (
-    <div className="min-h-screen relative overflow-hidden bg-parchment page-enter">
-
-      {/* Content */}
-      <div className="relative z-10 mx-auto max-w-md min-h-screen flex flex-col">
-        {/* Hero image */}
-        <div className="relative" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+    <div className="min-h-screen bg-parchment page-enter">
+      <div className="relative mx-auto max-w-md pb-32">
+        {/* Affiche : photo plein écran, titre posé dessus (comme les événements) */}
+        <div
+          onClick={() => listing.image_url && setLightboxOpen(true)}
+          className={`relative h-[52vh] min-h-[340px] max-h-[480px] overflow-hidden rounded-b-[32px] bg-white ${listing.image_url ? 'cursor-zoom-in' : ''}`}
+        >
           {listing.image_url ? (
-            <div
-              onClick={() => setLightboxOpen(true)}
-              className="relative h-72 mx-4 mt-2 rounded-3xl overflow-hidden cursor-zoom-in transition-transform active:scale-[0.99]"
-            >
-              <ShimmerImage
-                src={listing.image_url}
-                alt={listing.title}
-                className="w-full h-full"
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
-
-              {/* Category badge */}
-              <div className="absolute bottom-4 left-4">
-                <span className="inline-flex items-center h-7 px-3 rounded-full bg-lime text-ink text-xs font-medium">
-                  {catLabel}
-                </span>
-              </div>
-            </div>
+            <ShimmerImage src={listing.image_url} alt={listing.title} className="absolute inset-0 w-full h-full" loading="eager" />
           ) : (
-            <div className="h-48 mx-4 mt-2 rounded-3xl bg-white flex flex-col items-center justify-center gap-2">
-              <Tag size={40} className="text-stone-300" />
-              <span className="px-3 py-1 rounded-full bg-lime/30 text-ink text-xs font-semibold">
-                {catLabel}
-              </span>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Tag size={44} className="text-stone-300" />
             </div>
           )}
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,20,15,0.4)_0%,transparent_28%,transparent_45%,rgba(20,20,15,0.88)_100%)]" />
 
-          {/* Top buttons */}
-          {/* Décalés à l'intérieur de l'image (16 px des bords), comme sur les événements */}
-          <div className="absolute left-8 right-8 flex items-center justify-between" style={{ top: 'calc(env(safe-area-inset-top, 0px) + 24px)' }}>
-            <button
-              onClick={() => navigate(-1)}
-              className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform"
-            >
-              <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
+          <div
+            className="absolute left-4 right-4 flex items-center justify-between"
+            style={{ top: 'calc(env(safe-area-inset-top, 0px) + 12px)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button onClick={() => navigate(-1)} aria-label="Retour" className={`${roundBtn} bg-white text-ink`}>
+              <ArrowLeft size={18} strokeWidth={1.75} />
             </button>
-            <button
-              onClick={handleShare}
-              className="flex size-10 items-center justify-center rounded-full bg-white text-ink hover:bg-parchment active:scale-95 transition-colors"
-            >
+            <button onClick={handleShare} aria-label={t('event.share')} className={`${roundBtn} bg-white text-ink`}>
               <Share2 size={18} strokeWidth={1.75} />
             </button>
           </div>
+
+          <div className="absolute inset-x-5 bottom-6 text-parchment">
+            <span className="inline-flex h-7 items-center rounded-full bg-lime px-3 text-xs font-medium text-ink">{catLabel}</span>
+            <h1 className="mt-3 text-[38px] leading-[0.98] tracking-tighter text-parchment">{listing.title}</h1>
+          </div>
         </div>
 
-        {/* Info */}
-        <div className="px-4 pt-5 pb-8 space-y-4 flex-1">
-          {/* Title + Price card */}
-          <div className="rounded-3xl bg-white p-5">
-            <h1 className="text-[28px] leading-none font-medium tracking-tighter text-stone-800 ">
-              {listing.title}
-            </h1>
-
-            {listing.price !== null && (
-              <div className="flex items-baseline gap-2 mt-3">
-                <p className="font-display text-[28px] !leading-none tracking-tighter text-ink">
-                  {listing.price.toLocaleString()} FCFA
-                </p>
-                {listing.price_type && listing.price_type !== 'fixed' && (
-                  <span className="text-sm text-stone-500">
-                    ({priceLabel})
-                  </span>
-                )}
+        <div className="space-y-6 px-4 pt-5">
+          {/* Prix · Lieu */}
+          <div className="grid grid-cols-2 gap-2">
+            <div className="card-shadow rounded-[20px] bg-white p-3.5">
+              <p className="eyebrow text-stone-500">{lang === 'fr' ? 'Prix' : 'Price'}</p>
+              <p className="font-display mt-1.5 text-[22px] leading-none tracking-tight text-ink tabular">{priceValue}</p>
+              <p className="mt-1 truncate text-xs text-stone-500">{priceSub}</p>
+            </div>
+            {mapsUrl ? (
+              <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="card-shadow rounded-[20px] bg-white p-3.5 active:scale-[0.99] transition-transform">
+                <p className="eyebrow text-stone-500">{lang === 'fr' ? 'Lieu' : 'Location'}</p>
+                <p className="font-display mt-1.5 text-[19px] leading-[1.05] tracking-tight text-ink line-clamp-2">{listing.location}</p>
+                <p className="mt-1 text-xs font-semibold text-lime-deep">{lang === 'fr' ? 'Voir sur la carte →' : 'View on map →'}</p>
+              </a>
+            ) : (
+              <div className="card-shadow rounded-[20px] bg-white p-3.5">
+                <p className="eyebrow text-stone-500">{lang === 'fr' ? 'Catégorie' : 'Category'}</p>
+                <p className="font-display mt-1.5 text-[19px] leading-[1.05] tracking-tight text-ink">{catLabel}</p>
               </div>
-            )}
-            {listing.price === null && listing.price_type === 'negotiable' && (
-              <p className="text-lg text-ink font-semibold mt-3">{priceLabel}</p>
             )}
           </div>
 
-          {/* Location */}
-          {listing.location && (
-            <div className="rounded-3xl bg-white p-4 flex items-start gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-lime/30 flex-shrink-0">
-                <MapPin size={20} className="text-ink" />
-              </div>
-              <div>
-                <p className="text-xs text-stone-500 uppercase tracking-wider font-semibold mb-0.5">
-                  {lang === 'fr' ? 'Localisation' : 'Location'}
-                </p>
-                <p className="text-stone-800 font-medium ">
-                  {listing.location}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Description */}
+          {/* À propos : la 1re phrase en accroche */}
           {listing.description && (
-            <div className="rounded-3xl bg-white p-5">
-              <h2 className="text-lg font-medium tracking-tight text-stone-800  mb-3">
-                {t('form.description')}
-              </h2>
-              <p className="text-stone-600 leading-relaxed whitespace-pre-line text-sm">
-                {listing.description}
-              </p>
-            </div>
+            <section>
+              <h2 className="eyebrow text-stone-500 mb-3">{lang === 'fr' ? 'À propos' : 'About'}</h2>
+              {lead && <p className="font-display text-[26px] leading-[1.08] tracking-[-0.03em] text-ink">{lead}</p>}
+              {rest && <p className={`${lead ? 'mt-3' : ''} text-base leading-[1.6] text-ink/75 whitespace-pre-line`}>{rest}</p>}
+            </section>
           )}
+        </div>
+      </div>
 
-          {/* Contact */}
-          <div className="rounded-3xl bg-white p-5">
-            <h2 className="text-lg font-medium tracking-tight text-stone-800  mb-4">
-              {lang === 'fr' ? 'Contacter le vendeur' : 'Contact seller'}
-            </h2>
-
-            <div className="space-y-3">
-              {listing.contact_phone && (
-                <a
-                  href={`tel:${listing.contact_phone}`}
-                  className="flex items-center justify-center gap-2 w-full h-12 px-5 rounded-full bg-lime text-ink text-[15px] font-medium hover:bg-lime-deep transition-colors active:scale-[0.98]"
-                >
-                  <Phone size={18} />
-                  {lang === 'fr' ? 'Appeler' : 'Call'} — {listing.contact_phone}
-                </a>
-              )}
-
-              {listing.contact_email && (
-                <a
-                  href={`mailto:${listing.contact_email}?subject=${encodeURIComponent(listing.title)}`}
-                  className="flex items-center justify-center gap-2 w-full h-12 px-5 rounded-full bg-white border border-stone-300 text-ink font-medium text-[15px] hover:border-ink transition-colors hover:bg-white/90 transition-all active:scale-[0.98]"
-                >
-                  <Mail size={18} className="text-ink" />
-                  {lang === 'fr' ? 'Envoyer un email' : 'Send email'}
-                </a>
-              )}
-
-              {!listing.contact_phone && !listing.contact_email && (
-                <p className="text-stone-400 text-center text-sm py-2">
-                  {lang === 'fr' ? 'Aucune information de contact' : 'No contact information'}
-                </p>
-              )}
-            </div>
+      {/* Barre d'action fixe : prix + contact */}
+      <div
+        className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-md px-3"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)' }}
+      >
+        <div className="flex h-16 items-center justify-between gap-2 rounded-full bg-ink pl-6 pr-2 shadow-2xl">
+          <div className="min-w-0">
+            <p className="font-display truncate text-[20px] leading-none tracking-tight text-parchment tabular">{priceValue}</p>
+            <p className="mt-1 truncate text-[11px] text-stone-400">{priceSub}</p>
+          </div>
+          <div className="flex flex-shrink-0 items-center gap-1.5">
+            {listing.contact_email && listing.contact_phone && (
+              <a
+                href={`mailto:${listing.contact_email}?subject=${encodeURIComponent(listing.title)}`}
+                aria-label={lang === 'fr' ? 'Envoyer un email' : 'Send email'}
+                className="inline-flex size-12 items-center justify-center rounded-full bg-white/10 text-parchment active:scale-95 transition-transform"
+              >
+                <Mail size={18} strokeWidth={1.75} />
+              </a>
+            )}
+            {listing.contact_phone ? (
+              <a href={`tel:${listing.contact_phone}`} className="inline-flex h-12 items-center gap-2 rounded-full bg-lime px-5 text-[15px] font-medium text-ink active:scale-[0.97] transition-transform">
+                <Phone size={17} strokeWidth={1.75} />
+                {lang === 'fr' ? 'Appeler' : 'Call'}
+              </a>
+            ) : listing.contact_email ? (
+              <a href={`mailto:${listing.contact_email}?subject=${encodeURIComponent(listing.title)}`} className="inline-flex h-12 items-center gap-2 rounded-full bg-lime px-5 text-[15px] font-medium text-ink active:scale-[0.97] transition-transform">
+                <Mail size={17} strokeWidth={1.75} />
+                Email
+              </a>
+            ) : (
+              <span className="px-4 text-xs text-stone-400">{lang === 'fr' ? 'Aucun contact' : 'No contact'}</span>
+            )}
           </div>
         </div>
       </div>

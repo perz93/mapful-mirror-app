@@ -126,16 +126,11 @@ const Marketplace = () => {
         {isLoading ? (
           <div className="grid gap-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="card-shadow rounded-3xl bg-white dark:bg-stone-900 p-2">
-                <div className="h-52 rounded-[20px] skeleton" />
-                <div className="px-3 pt-4 pb-3 space-y-3">
-                  <div className="h-3 w-24 rounded-full skeleton skeleton-on-white" />
-                  <div className="h-6 w-3/4 rounded-md skeleton skeleton-on-white" />
-                  <div className="h-3 w-full rounded-md skeleton skeleton-on-white" />
-                  <div className="flex items-center justify-between border-t border-stone-200 pt-3">
-                    <div className="h-6 w-28 rounded-md skeleton skeleton-on-white" />
-                    <div className="size-9 rounded-full skeleton skeleton-on-white" />
-                  </div>
+              <div key={i} className="relative h-[300px] overflow-hidden rounded-[26px] skeleton">
+                <div className="absolute inset-x-4 bottom-4 space-y-2">
+                  <div className="h-3 w-24 rounded-full bg-white/50" />
+                  <div className="h-6 w-3/4 rounded-md bg-white/60" />
+                  <div className="h-7 w-28 rounded-full bg-white/60" />
                 </div>
               </div>
             ))}
@@ -152,57 +147,46 @@ const Marketplace = () => {
                   style={{ animationDelay: `${Math.min(index * 60, 360)}ms`, animationFillMode: 'backwards' }}
                   className="group block animate-fade-in"
                 >
-                  {/* Même construction que les cartes d'événement des catégories */}
-                  <article className="card-shadow overflow-hidden rounded-3xl bg-white dark:bg-stone-900 p-2 transition-transform duration-300 active:scale-[0.99]">
-                    <div className="relative h-52 overflow-hidden rounded-[20px]">
-                      {listing.image_url ? (
-                        <ShimmerImage
-                          src={listing.image_url}
-                          alt={listing.title}
-                          className="h-full w-full [&_img]:transition-transform [&_img]:duration-500 [&_img]:group-hover:scale-[1.03]"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-parchment">
-                          <span className="flex size-16 items-center justify-center rounded-3xl bg-white">
-                            <Icon size={28} strokeWidth={1.5} className="text-ink" />
-                          </span>
-                        </div>
-                      )}
-                      <span className="absolute left-3 top-3 inline-flex h-7 items-center gap-1.5 rounded-full bg-lime px-3 text-xs font-medium text-ink">
-                        <Icon size={13} strokeWidth={1.75} />
-                        {lang === 'en' ? config.en : config.fr}
-                      </span>
-                    </div>
+                  {/* K4 : affiche plein cadre, infos posées sur la photo */}
+                  <article className="card-shadow relative h-[300px] overflow-hidden rounded-[26px] bg-[#ebe9dd] [isolation:isolate] transition-transform duration-300 active:scale-[0.99]">
+                    {listing.image_url ? (
+                      <ShimmerImage
+                        src={listing.image_url}
+                        alt={listing.title}
+                        className="absolute inset-0 h-full w-full [&_img]:transition-transform [&_img]:duration-500 [&_img]:group-hover:scale-[1.03]"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-start justify-center bg-parchment pt-16">
+                        <span className="flex size-16 items-center justify-center rounded-3xl bg-white">
+                          <Icon size={28} strokeWidth={1.5} className="text-ink" />
+                        </span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,20,15,0)_38%,rgba(20,20,15,0.85)_100%)]" />
+                    <span className="absolute left-3 top-3 inline-flex h-7 items-center gap-1.5 rounded-full bg-white/90 px-3 text-xs font-medium text-ink backdrop-blur-sm">
+                      <Icon size={13} strokeWidth={1.75} />
+                      {lang === 'en' ? config.en : config.fr}
+                    </span>
 
-                    <div className="px-3 pt-4 pb-3">
+                    <div className="absolute inset-x-4 bottom-4 text-parchment">
                       {listing.location && (
-                        <p className="eyebrow flex items-center gap-1 text-stone-500 truncate">
+                        <p className="eyebrow flex items-center gap-1 truncate text-parchment/75">
                           <MapPin size={11} strokeWidth={2} className="flex-shrink-0" />
                           <span className="truncate">{listing.location}</span>
                         </p>
                       )}
-                      <h3 className="mt-1 text-[22px] leading-[1.1] tracking-tight text-ink dark:text-white line-clamp-2">{listing.title}</h3>
-
-                      <div className="mt-4 flex items-center justify-between gap-3 border-t border-stone-200 dark:border-stone-800 pt-3">
-                        <div className="flex min-w-0 items-baseline gap-2">
-                          {listing.price !== null ? (
-                            <p className="font-display text-xl tracking-tight text-ink dark:text-white tabular whitespace-nowrap">
-                              {listing.price.toLocaleString('fr-FR')} <span className="text-sm text-stone-500 font-normal">FCFA</span>
-                            </p>
-                          ) : (
-                            <p className="text-sm text-stone-500">{t('market.negotiable')}</p>
-                          )}
-                          {listing.price_type && listing.price_type !== 'fixed' && listing.price !== null && (
-                            <span className="inline-flex h-6 items-center rounded-full bg-parchment px-2.5 text-[11px] font-medium text-stone-600 whitespace-nowrap">
-                              {listing.price_type === 'hourly' && t('market.perHour')}
-                              {listing.price_type === 'daily' && t('market.perDay')}
-                              {listing.price_type === 'negotiable' && t('market.negotiable')}
-                            </span>
-                          )}
-                        </div>
-                        <span className="flex size-9 flex-shrink-0 items-center justify-center rounded-full bg-ink text-lime transition-transform group-hover:translate-x-0.5">
-                          <ArrowUpRight size={16} strokeWidth={2} />
+                      <h3 className="mt-1.5 font-display text-[24px] leading-[1.02] tracking-[-0.035em] text-white line-clamp-2">{listing.title}</h3>
+                      <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                        <span className="inline-flex h-7 items-center rounded-full bg-lime px-3 text-[13px] font-semibold text-ink tabular whitespace-nowrap">
+                          {listing.price !== null ? `${listing.price.toLocaleString('fr-FR')} FCFA` : t('market.negotiable')}
                         </span>
+                        {listing.price_type && listing.price_type !== 'fixed' && listing.price !== null && (
+                          <span className="inline-flex h-7 items-center rounded-full bg-white/20 px-3 text-[12px] font-medium text-white backdrop-blur-sm whitespace-nowrap">
+                            {listing.price_type === 'hourly' && t('market.perHour')}
+                            {listing.price_type === 'daily' && t('market.perDay')}
+                            {listing.price_type === 'negotiable' && t('market.negotiable')}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </article>
