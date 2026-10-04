@@ -10,11 +10,9 @@ const ShimmerBlock = ({ className = '' }: { className?: string }) => (
 /** Skeleton for EventDetails page */
 export const EventDetailsSkeleton = () => (
   <div className="min-h-screen bg-background-light dark:bg-background-dark animate-fade-in">
-    <div className="mx-auto max-w-md" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
-      {/* Hero image */}
-      <div className="mx-4 mt-2">
-        <ShimmerBlock className="h-80 rounded-3xl" />
-      </div>
+    <div className="mx-auto max-w-md">
+      {/* Affiche plein écran (comme la page détails) */}
+      <ShimmerBlock className="h-[58vh] min-h-[380px] max-h-[540px] rounded-b-[32px] rounded-t-none" />
 
       <div className="p-6 space-y-5">
         {/* Countdown */}

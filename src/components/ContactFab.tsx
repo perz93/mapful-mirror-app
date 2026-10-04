@@ -11,6 +11,10 @@ interface ContactFabProps {
   contactFacebook?: string | null;
   contactTiktok?: string | null;
   contactTwitter?: string | null;
+  /** « pill » : bouton « Contacter » intégré dans une barre (page détails) au lieu du bouton flottant */
+  variant?: 'fab' | 'pill';
+  label?: string;
+  closeLabel?: string;
 }
 
 interface ContactItem {
@@ -26,7 +30,10 @@ const ContactFab = ({
   contactInstagram,
   contactFacebook,
   contactTiktok,
-  contactTwitter
+  contactTwitter,
+  variant = 'fab',
+  label = 'Contacter',
+  closeLabel = 'Fermer',
 }: ContactFabProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
@@ -108,17 +115,17 @@ const ContactFab = ({
 
   // Colonne verticale au-dessus du bouton principal, alignée sur son axe
   // (bouton 56 px, contacts 48 px → décalage de 4 px pour centrer)
-  const getPosition = (index: number) => ({
-    x: -4,
-    y: -(72 + index * 60),
-  });
+  const getPosition = (index: number) =>
+    variant === 'pill'
+      ? { x: -6, y: -(70 + index * 58) } // aligné sur le bord droit du bouton « Contacter »
+      : { x: -4, y: -(72 + index * 60) };
 
   if (!hasContacts) {
     return null;
   }
 
   return (
-    <div className="fixed bottom-24 right-6 z-50">
+    <div className={variant === 'pill' ? 'relative' : 'fixed bottom-24 right-6 z-50'}>
       {/* Contacts empilés verticalement */}
       {shouldRender && contacts.map((contact, index) => {
         const position = getPosition(index);
@@ -162,6 +169,22 @@ const ContactFab = ({
       })}
 
       {/* Main FAB button */}
+      {variant === 'pill' ? (
+        <button
+          onClick={() => {
+            if ('vibrate' in navigator) navigator.vibrate(10);
+            setIsOpen(!isOpen);
+          }}
+          aria-expanded={isOpen}
+          className={cn(
+            'inline-flex h-12 items-center gap-2 rounded-full px-5 text-[15px] font-medium transition-colors duration-300 active:scale-[0.97]',
+            isOpen ? 'bg-parchment text-ink' : 'bg-lime text-ink hover:bg-lime-deep'
+          )}
+        >
+          {isOpen ? <X className="h-4 w-4" strokeWidth={2} /> : <MessageSquare className="h-4 w-4" strokeWidth={1.75} />}
+          {isOpen ? closeLabel : label}
+        </button>
+      ) : (
       <button
         onClick={() => {
           // Haptic feedback on mobile
@@ -186,6 +209,7 @@ const ContactFab = ({
           <MessageSquare className="w-6 h-6 text-ink transition-transform duration-300" strokeWidth={1.75} />
         )}
       </button>
+      )}
 
       {/* Backdrop when open */}
       {shouldRender && (

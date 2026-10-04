@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ArrowLeft, MapPin, Clock, UsersRound, Share2, Heart, Bell, BellRing } from 'lucide-react';
+import { ArrowLeft, MapPin, Share2, Heart, Bell, BellRing } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
@@ -11,7 +11,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import ContactFab from '@/components/ContactFab';
 import ImageLightbox from '@/components/ImageLightbox';
-import CountdownTimer from '@/components/CountdownTimer';
 import { EventDetailsSkeleton } from '@/components/PageSkeleton';
 import ShimmerImage from '@/components/ShimmerImage';
 import { useFavorite } from '@/hooks/useFavorite';
@@ -120,18 +119,39 @@ const EventDetails = () => {
     );
   }
 
-  const formattedDate = format(new Date(event.date), "EEEE d MMMM yyyy", { locale: lang === 'fr' ? fr : enUS });
+  const locale = lang === 'fr' ? fr : enUS;
+  const eventDate = new Date(`${event.date}T00:00:00`);
+  const formattedDate = format(eventDate, "EEEE d MMMM yyyy", { locale });
   const formattedTime = event.time.substring(0, 5);
-  const eventDate = new Date(event.date);
   const showAddress = !!event.address && event.address.trim().toLowerCase() !== event.venue.trim().toLowerCase();
   const keyPoints = event.key_points as string[] | null;
+  const category = getEventCategory(event.category);
+  const status = eventStatus(event.date, event.time);
+  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${event.latitude},${event.longitude}`;
+  const contactTiktok = (event as { contact_tiktok?: string | null }).contact_tiktok;
+  const hasContacts = !!(event.contact_phone || event.contact_whatsapp || event.contact_instagram || event.contact_facebook || contactTiktok || event.contact_twitter);
+  const priceLabel = event.is_paid && event.price
+    ? <>{Number(event.price).toLocaleString('fr-FR')} <span className="text-lime text-base tracking-tight">FCFA</span></>
+    : t('event.free');
+
+  const share = () => {
+    if (navigator.share) {
+      navigator.share({ title: event.title, text: `${event.title} — ${formattedDate} · ${event.venue}`, url: window.location.href }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success(t('event.share'));
+    }
+  };
+
+  const roundBtn = 'flex size-10 items-center justify-center rounded-full transition-colors active:scale-95';
 
   return (
-    <div className="min-h-screen bg-background-light dark:bg-background-dark page-enter">
-      <div className="mx-auto max-w-md" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+    <div className="min-h-screen bg-parchment dark:bg-background-dark page-enter">
+      <div className="relative mx-auto max-w-md pb-32">
+        {/* Affiche : photo plein écran, titre posé dessus */}
         <div
           onClick={() => event.image_url && setLightboxOpen(true)}
-          className="relative h-[22rem] rounded-3xl overflow-hidden mx-3 mt-2 cursor-zoom-in transition-transform active:scale-[0.99]"
+          className="relative h-[58vh] min-h-[380px] max-h-[540px] overflow-hidden rounded-b-[32px] cursor-zoom-in"
         >
           <ShimmerImage
             src={event.image_url || 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=640&q=75&fm=webp'}
@@ -139,168 +159,139 @@ const EventDetails = () => {
             className="absolute inset-0 w-full h-full"
             loading="eager"
           />
-          <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-ink/40 to-transparent" />
-          
-          <div className="absolute left-4 right-4 flex items-center justify-between top-4">
-            <button 
-              onClick={(e) => { e.stopPropagation(); navigate(-1); }}
-              className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform"
-            >
-              <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,20,15,0.45)_0%,transparent_28%,transparent_42%,rgba(20,20,15,0.92)_100%)]" />
+
+          {/* Actions */}
+          <div
+            className="absolute left-4 right-4 flex items-center justify-between"
+            style={{ top: 'calc(env(safe-area-inset-top, 0px) + 12px)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button onClick={() => navigate(-1)} aria-label="Retour" className={`${roundBtn} bg-white text-ink`}>
+              <ArrowLeft size={18} strokeWidth={1.75} />
             </button>
-            <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-              <button
-                onClick={toggleReminder}
-                className={`flex size-10 items-center justify-center rounded-full transition-colors ${
-                  reminderSet
-                    ? 'bg-lime text-ink'
-                    : 'bg-white text-ink hover:bg-parchment'
-                }`}
-              >
+            <div className="flex gap-2">
+              <button onClick={toggleReminder} aria-label={t('reminder.set')} className={`${roundBtn} ${reminderSet ? 'bg-lime text-ink' : 'bg-white text-ink'}`}>
                 {reminderSet ? <BellRing size={18} strokeWidth={1.75} /> : <Bell size={18} strokeWidth={1.75} />}
               </button>
-              <button
-                onClick={() => {
-                  if (navigator.share) {
-                    navigator.share({
-                      title: event.title,
-                      text: `${event.title} — ${formattedDate} à ${event.venue}`,
-                      url: window.location.href,
-                    }).catch(() => {});
-                  } else {
-                    navigator.clipboard.writeText(window.location.href);
-                    toast.success(t('event.share'));
-                  }
-                }}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-ink hover:bg-parchment transition-colors"
-              >
-                <Share2 size={18} strokeWidth={1.75} />
-              </button>
-              <button
-                onClick={toggleFavorite}
-                disabled={favLoading}
-                className={`flex size-10 items-center justify-center rounded-full transition-colors active:scale-90 disabled:opacity-50 ${
-                  isFavorite
-                    ? 'bg-ink text-lime'
-                    : 'bg-white text-ink hover:bg-parchment'
-                }`}
-              >
+              <button onClick={toggleFavorite} disabled={favLoading} aria-label="Favori" className={`${roundBtn} disabled:opacity-50 ${isFavorite ? 'bg-ink text-lime' : 'bg-white text-ink'}`}>
                 <Heart size={18} strokeWidth={1.75} fill={isFavorite ? 'currentColor' : 'none'} />
+              </button>
+              <button onClick={share} aria-label={t('event.share')} className={`${roundBtn} bg-white text-ink`}>
+                <Share2 size={18} strokeWidth={1.75} />
               </button>
             </div>
           </div>
 
-          <span className="absolute bottom-4 left-4 inline-flex items-center h-7 px-3 rounded-full bg-lime text-ink eyebrow">
-            {getEventCategory(event.category) ? t(getEventCategory(event.category)!.tKey) : event.category}
-          </span>
-        </div>
-
-        {/* Titre éditorial sous l'image */}
-        <div className="px-5 pt-6">
-          <h1 className="text-[40px] leading-[0.95] font-medium tracking-tighter text-ink dark:text-white">{event.title}</h1>
-        </div>
-
-        <div className="p-5 space-y-6">
-          {/* Countdown Timer */}
-          <CountdownTimer eventDate={event.date} eventTime={event.time} />
-
-          <dl className="rounded-3xl bg-white dark:bg-stone-900 px-5 divide-y divide-stone-200 dark:divide-stone-800">
-            {/* Lieu : l'adresse n'apparaît que si elle apporte une info en plus */}
-            <div className="flex items-center gap-4 py-4">
-              <div className="flex size-12 flex-shrink-0 items-center justify-center rounded-2xl bg-lime">
-                <MapPin size={20} strokeWidth={1.75} className="text-ink" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <dt className="eyebrow text-stone-500">{t('event.venueLabel')}</dt>
-                <dd className="mt-0.5 font-medium text-ink dark:text-white">{event.venue}</dd>
-                {showAddress && (
-                  <dd className="text-sm text-stone-500 dark:text-stone-400">{event.address}</dd>
+          {/* Statut + titre */}
+          <div className="absolute inset-x-5 bottom-6 text-parchment">
+            {status && (
+              <span className={`inline-flex h-7 items-center gap-2 rounded-full px-3 text-[11px] font-semibold uppercase tracking-[0.08em] ${status.live ? 'bg-lime text-ink' : 'bg-white/90 text-ink'}`}>
+                {status.live && (
+                  <span className="relative flex size-2">
+                    <span className="absolute inline-flex size-full animate-ping rounded-full bg-ink opacity-50" />
+                    <span className="relative inline-flex size-2 rounded-full bg-ink" />
+                  </span>
                 )}
-              </div>
-            </div>
+                {t(status.key).replace('{n}', String(status.n ?? ''))}
+              </span>
+            )}
+            <h1 className="mt-3 text-[44px] leading-[0.95] tracking-tighter text-parchment">{event.title}</h1>
+            <p className="mt-2 text-[14px] text-parchment/85">
+              {category ? t(category.tKey) : event.category} · {event.venue}
+            </p>
+          </div>
+        </div>
 
-            {/* Date : mini-calendrier (mois + jour) au lieu d'une icône générique */}
-            <div className="flex items-center gap-4 py-4">
-              <div className="flex w-12 flex-shrink-0 flex-col overflow-hidden rounded-2xl border border-stone-200 dark:border-stone-700 text-center">
-                <span className="bg-ink py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-lime">
-                  {format(eventDate, 'MMM', { locale: lang === 'fr' ? fr : enUS }).replace('.', '')}
-                </span>
-                <span className="font-display bg-white dark:bg-stone-900 py-1 text-[20px] !leading-none tracking-tight text-ink dark:text-white tabular">
-                  {format(eventDate, 'd')}
-                </span>
+        <div className="space-y-6 px-4 pt-5">
+          {/* Date · Heure · Places */}
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { label: t('event.dateLabel'), value: format(eventDate, 'EEE d', { locale }).replace('.', ''), sub: format(eventDate, 'MMMM yyyy', { locale }) },
+              { label: t('event.timeLabel'), value: formattedTime, sub: t('event.start') },
+              { label: t('event.placesLabel'), value: event.capacity ? String(event.capacity) : '∞', sub: event.capacity ? t('event.capacity') : t('event.unlimitedShort') },
+            ].map((tile) => (
+              <div key={tile.label} className="card-shadow rounded-[20px] bg-white dark:bg-stone-900 p-3.5">
+                <p className="eyebrow text-stone-500">{tile.label}</p>
+                <p className="font-display mt-1.5 text-[22px] leading-none tracking-tight text-ink dark:text-white tabular first-letter:uppercase">{tile.value}</p>
+                <p className="mt-1 truncate text-xs text-stone-500">{tile.sub}</p>
               </div>
-              <div className="flex-1">
-                <dt className="eyebrow text-stone-500">{t('event.dateLabel')}</dt>
-                <dd className="mt-0.5 font-medium text-ink dark:text-white first-letter:uppercase">{formattedDate}</dd>
-                <dd className="inline-flex items-center gap-1.5 text-sm text-stone-500 dark:text-stone-400 tabular">
-                  <Clock size={13} strokeWidth={1.75} /> {formattedTime}
-                </dd>
-              </div>
-            </div>
+            ))}
+          </div>
 
-            {/* Capacité : jauge visuelle de places */}
-            <div className="flex items-center gap-4 py-4">
-              <div className="flex size-12 flex-shrink-0 items-center justify-center rounded-2xl bg-parchment dark:bg-stone-800">
-                <UsersRound size={20} strokeWidth={1.75} className="text-ink dark:text-white" />
-              </div>
-              <div className="flex-1">
-                <dt className="eyebrow text-stone-500">{t('event.capacityLabel')}</dt>
-                <dd className="mt-0.5 font-medium text-ink dark:text-white">
-                  {event.capacity ? <><span className="tabular">{event.capacity}</span> {t('event.capacity')}</> : t('event.unlimitedCapacity')}
-                </dd>
-              </div>
-            </div>
-          </dl>
+          {/* Lieu + itinéraire */}
+          <a
+            href={directionsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="card-shadow -mt-3 flex items-center gap-3.5 rounded-[20px] bg-white dark:bg-stone-900 p-3.5 active:scale-[0.99] transition-transform"
+          >
+            <span className="flex size-11 flex-shrink-0 items-center justify-center rounded-2xl bg-lime">
+              <MapPin size={20} strokeWidth={1.75} className="text-ink" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate font-medium text-ink dark:text-white">{event.venue}</span>
+              {showAddress && <span className="block truncate text-sm text-stone-500">{event.address}</span>}
+            </span>
+            <span className="flex-shrink-0 text-sm font-medium text-ink dark:text-white link-underline">{t('event.directions')}</span>
+          </a>
 
-          {/* Key Points Section - Infographic Style */}
+          {/* Points clés */}
           {keyPoints && keyPoints.length > 0 && (
-            <section className="pt-2">
-              <h2 className="eyebrow text-stone-500 mb-4">{t('event.keyPoints')}</h2>
-              <ol className="rounded-3xl bg-white dark:bg-stone-900 px-5 divide-y divide-stone-200 dark:divide-stone-800">
+            <section>
+              <h2 className="eyebrow text-stone-500 mb-3">{t('event.keyPoints')}</h2>
+              <ol className="card-shadow rounded-3xl bg-white dark:bg-stone-900 px-5 divide-y divide-stone-200 dark:divide-stone-800">
                 {keyPoints.map((point, index) => (
                   <li key={index} className="flex items-baseline gap-4 py-4">
-                    <span className="tabular text-xs font-medium text-stone-400 tabular w-6 flex-shrink-0">
-                      {String(index + 1).padStart(2, '0')}
-                    </span>
-                    <p className="text-ink dark:text-stone-200 text-[15px] leading-relaxed">
-                      {point}
-                    </p>
+                    <span className="tabular w-6 flex-shrink-0 text-xs font-medium text-stone-400">{String(index + 1).padStart(2, '0')}</span>
+                    <p className="text-[15px] leading-relaxed text-ink dark:text-stone-200">{point}</p>
                   </li>
                 ))}
               </ol>
             </section>
           )}
 
+          {/* À propos */}
           {event.description && (
-            <section className="pt-2">
-              <h2 className="eyebrow text-stone-500 mb-3">{t('event.about')}</h2>
-              <p className="text-ink/80 dark:text-stone-300 leading-[1.6] text-base">
-                {event.description}
-              </p>
+            <section>
+              <h2 className="eyebrow text-stone-500 mb-2">{t('event.about')}</h2>
+              <p className="text-base leading-[1.6] text-ink/80 dark:text-stone-300 whitespace-pre-line">{event.description}</p>
             </section>
           )}
-
-          <div className="pt-2 pb-24">
-            <div className="rounded-3xl bg-charcoal text-parchment p-6">
-              <p className="eyebrow text-stone-400">
-                {event.is_paid ? t('event.price') : t('event.entry')}
-              </p>
-              <p className="font-display mt-2 text-[44px] !leading-none tracking-tighter tabular">
-                {event.is_paid && event.price ? <>{event.price} <span className="text-lime text-2xl tracking-tight">FCFA</span></> : t('event.free')}
-              </p>
-            </div>
-          </div>
         </div>
       </div>
 
-      <ContactFab
-        contactPhone={event.contact_phone}
-        contactWhatsapp={event.contact_whatsapp}
-        contactInstagram={event.contact_instagram}
-        contactFacebook={event.contact_facebook}
-        contactTiktok={(event as any).contact_tiktok}
-        contactTwitter={event.contact_twitter}
-      />
+      {/* Barre d'action fixe : prix + contact (ou itinéraire) */}
+      <div
+        className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-md px-3"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)' }}
+      >
+        <div className="flex h-16 items-center justify-between rounded-full bg-ink pl-6 pr-2 shadow-2xl">
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-stone-400">
+              {event.is_paid ? t('event.price') : t('event.entry')}
+            </p>
+            <p className="font-display text-[22px] leading-none tracking-tight text-parchment tabular">{priceLabel}</p>
+          </div>
+          {hasContacts ? (
+            <ContactFab
+              variant="pill"
+              label={t('event.contact')}
+              closeLabel={t('close')}
+              contactPhone={event.contact_phone}
+              contactWhatsapp={event.contact_whatsapp}
+              contactInstagram={event.contact_instagram}
+              contactFacebook={event.contact_facebook}
+              contactTiktok={contactTiktok}
+              contactTwitter={event.contact_twitter}
+            />
+          ) : (
+            <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center rounded-full bg-lime px-5 text-[15px] font-medium text-ink active:scale-[0.97] transition-transform">
+              {t('event.directions')}
+            </a>
+          )}
+        </div>
+      </div>
 
       {event.image_url && (
         <ImageLightbox
@@ -313,5 +304,24 @@ const EventDetails = () => {
     </div>
   );
 };
+
+/** Statut affiché sur l'affiche : en cours (6 h après le début), terminé, ou compte à rebours court. */
+function eventStatus(date: string, time: string): { key: string; n?: number; live?: boolean } | null {
+  const start = new Date(`${date}T${time}`);
+  const now = new Date();
+  const diffMs = start.getTime() - now.getTime();
+  if (diffMs <= 0) {
+    return -diffMs < 6 * 3600 * 1000 ? { key: 'status.live', live: true } : { key: 'status.ended' };
+  }
+  const startDay = new Date(start); startDay.setHours(0, 0, 0, 0);
+  const today = new Date(now); today.setHours(0, 0, 0, 0);
+  const days = Math.round((startDay.getTime() - today.getTime()) / 86400000);
+  if (days === 0) {
+    const hours = Math.floor(diffMs / 3600000);
+    return hours >= 1 ? { key: 'status.inHours', n: hours } : { key: 'status.soon' };
+  }
+  if (days === 1) return { key: 'status.tomorrow' };
+  return { key: 'status.inDays', n: days };
+}
 
 export default EventDetails;
