@@ -35,6 +35,14 @@ DROP POLICY IF EXISTS "Service role can read all reminders" ON public.event_remi
 --    L'abonnement est rattaché au compte connecté (ou détaché à la
 --    déconnexion), ce qui permet les rappels personnels.
 -- ---------------------------------------------------------------------
+-- Le déclencheur update_push_subscriptions_updated_at écrit updated_at, mais la
+-- colonne n'existait pas : toute mise à jour d'un abonnement échouait.
+ALTER TABLE public.push_subscriptions ADD COLUMN IF NOT EXISTS updated_at timestamptz NOT NULL DEFAULT now();
+
+-- Politiques trop permissives (lignes sans propriétaire lisibles / modifiables par tous)
+DROP POLICY IF EXISTS "Anyone can insert push sub" ON public.push_subscriptions;
+DROP POLICY IF EXISTS "Users can view own subs" ON public.push_subscriptions;
+DROP POLICY IF EXISTS "Users can delete own subs" ON public.push_subscriptions;
 DROP POLICY IF EXISTS "Users can update own push subscriptions" ON public.push_subscriptions;
 CREATE POLICY "Users can update own push subscriptions"
   ON public.push_subscriptions FOR UPDATE
@@ -126,64 +134,7 @@ ALTER TABLE public.marketplace_listings
   ADD CONSTRAINT listings_title_length CHECK (char_length(title) BETWEEN 2 AND 120) NOT VALID;
 
 -- ---------------------------------------------------------------------
--- 6. Notification « nouvel événement » : le déclencheur lisait des réglages
---    (app.settings.*) qui n'existent pas sur Supabase hébergé ; une erreur
---    ici pourrait bloquer la publication d'un événement. Désormais il ne
---    fait rien si les réglages manquent (le cron notify-events prend le
---    relais) et n'échoue jamais.
--- ---------------------------------------------------------------------
-CREATE OR REPLACE FUNCTION public.notify_new_event()
-RETURNS TRIGGER AS $$
-DECLARE
-  v_url TEXT := current_setting('app.settings.supabase_url', true);
-  v_key TEXT := current_setting('app.settings.service_role_key', true);
-BEGIN
-  IF NEW.is_published = true AND (TG_OP = 'INSERT' OR OLD.is_published = false)
-     AND coalesce(v_url, '') <> '' AND coalesce(v_key, '') <> '' THEN
-    BEGIN
-      PERFORM net.http_post(
-        url := v_url || '/functions/v1/send-push',
-        headers := jsonb_build_object(
-          'Content-Type', 'application/json',
-          'Authorization', 'Bearer ' || v_key
-        ),
-        body := jsonb_build_object(
-          'title', 'Nouvel event: ' || NEW.title,
-          'body', coalesce(NEW.venue, '') || ' — ' || coalesce(NEW.category::text, ''),
-          'url', '/event/' || NEW.id,
-          'image', NEW.image_url,
-          'tag', 'new-' || NEW.id,
-          'send_to_all', true,
-          'check_duplicates', true,
-          'notification_type', 'new_event',
-          'event_id', NEW.id
-        )
-      );
-    EXCEPTION WHEN OTHERS THEN
-      RAISE WARNING 'notify_new_event: %', SQLERRM;
-    END;
-  END IF;
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
-
--- ---------------------------------------------------------------------
--- 7. Planification des notifications (à lancer UNE fois, à la main, après
---    avoir activé pg_cron + pg_net dans Database → Extensions, et remplacé
---    <SERVICE_ROLE_KEY> par la clé « service_role » du projet) :
---
--- SELECT cron.schedule(
---   'notify-events-cron',
---   '*/15 * * * *',
---   $$
---   SELECT net.http_post(
---     url := 'https://zpyckyvqsektyiwunozu.supabase.co/functions/v1/notify-events',
---     headers := jsonb_build_object(
---       'Content-Type', 'application/json',
---       'Authorization', 'Bearer <SERVICE_ROLE_KEY>'
---     ),
---     body := '{}'::jsonb
---   );
---   $$
--- );
+-- 6. Notification « nouvel événement » : la fonction notify_new_event en place
+--    fonctionne ; on ne la remplace pas ici. (Elle contient la clé service_role
+--    en clair : à déplacer dans le Vault après rotation de la clé.)
 -- ---------------------------------------------------------------------
