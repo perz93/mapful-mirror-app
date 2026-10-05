@@ -1111,6 +1111,11 @@ h1.eyebrow, h2.eyebrow, h3.eyebrow {
 }
 
 /* Boutons ronds d'en-tête : plus grands, effet flottant */
-.btn-float {
-  box-shadow: 0 1px 2px rgb(20 20 15 / 0.06), 0 8px 22px -6px rgb(20 20 15 / 0.28);
+/* Spécificité doublée + !important : passe devant la règle globale
+   « button, a { box-shadow: none !important } » (y compris au focus) */
+.btn-float.btn-float.btn-float {
+  box-shadow: 0 2px 4px rgb(20 20 15 / 0.10), 0 12px 24px -4px rgb(20 20 15 / 0.35) !important;
+}
+.btn-float.btn-float.btn-float.bg-lime {
+  box-shadow: 0 2px 4px rgb(60 90 0 / 0.18), 0 12px 24px -4px rgb(80 120 0 / 0.45) !important;
 }
