@@ -235,8 +235,8 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                       to={item.path}
                       className={`flex-shrink-0 flex h-14 w-[92px] flex-col items-center justify-center gap-[3px] rounded-[22px] transition-all duration-300 ease-in-out active:scale-95 ${
                         isActive
-                          ? 'bg-parchment text-ink dark:bg-stone-800'
-                          : 'text-stone-500 dark:text-stone-400'
+                          ? 'bg-[#eaf7cf] text-ink dark:bg-stone-800'
+                          : 'text-ink dark:text-stone-300'
                       }`}
                       style={{ transitionProperty: 'all' }}
                     >
@@ -249,7 +249,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                       />
                       {/* Zone texte toujours haute de 2 lignes : les icônes restent alignées,
                           un nom court est centré dans la zone */}
-                      <p className="flex h-6 max-w-[84px] items-center text-center text-[10.5px] font-medium leading-[1.15] tracking-[0.01em] whitespace-normal transition-all duration-300 ease-in-out">
+                      <p className={`flex h-6 max-w-[84px] items-center text-center text-[10.5px] leading-[1.15] whitespace-normal transition-all duration-300 ease-in-out ${isActive ? 'font-bold' : 'font-semibold'}`}>
                         {item.label}
                       </p>
                     </Link>
