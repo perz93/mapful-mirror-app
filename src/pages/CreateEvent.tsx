@@ -348,9 +348,9 @@ const CreateEvent = () => {
         <div className="px-4 sm:px-6 pb-6" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
           <Link
             to="/"
-            className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform mb-6"
+            className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform mb-6"
           >
-            <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
+            <ArrowLeft size={20} strokeWidth={1.75} className="text-ink" />
           </Link>
           <LargeTitle className="text-[40px] leading-[0.95] tracking-tighter text-ink" backTo="/">
             {t('event.create')}

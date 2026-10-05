@@ -39,17 +39,17 @@ const CategoryPage = ({
   const header = <>
       <div className="px-4 pb-5" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         <div className="flex items-center justify-between">
-          <Link to="/" aria-label="Retour" className="flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-stone-900 text-ink dark:text-white active:scale-95 transition-transform">
-            <ArrowLeft size={18} strokeWidth={1.75} />
+          <Link to="/" aria-label="Retour" className="flex size-12 btn-float items-center justify-center rounded-full bg-white dark:bg-stone-900 text-ink dark:text-white active:scale-95 transition-transform">
+            <ArrowLeft size={20} strokeWidth={1.75} />
           </Link>
-          {iconSrc && <div className="flex h-10 w-10 items-center justify-center rounded-full bg-lime">
+          {iconSrc && <div className="flex size-12 btn-float items-center justify-center rounded-full bg-lime">
             <img src={iconSrc} alt="" className="w-5 h-5" />
           </div>}
         </div>
         <p className="eyebrow text-stone-500 mt-6">
           {isLoading || error ? t('category.eyebrow') : `${count} ${t(count > 1 ? 'category.count' : 'category.countOne')}`}
         </p>
-        <LargeTitle className="mt-1.5 text-[44px] leading-[0.95] font-medium tracking-tighter text-ink dark:text-white" backTo="/" right={iconSrc ? <span className="flex size-10 items-center justify-center rounded-full bg-lime"><img src={iconSrc} alt="" className="w-5 h-5" /></span> : undefined}>{title}</LargeTitle>
+        <LargeTitle className="mt-1.5 text-[44px] leading-[0.95] font-medium tracking-tighter text-ink dark:text-white" backTo="/" right={iconSrc ? <span className="flex size-12 btn-float items-center justify-center rounded-full bg-lime"><img src={iconSrc} alt="" className="w-5 h-5" /></span> : undefined}>{title}</LargeTitle>
       </div>
       <EventCategoryChips active={category} />
     </>;

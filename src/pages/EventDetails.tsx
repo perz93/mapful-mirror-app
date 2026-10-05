@@ -144,7 +144,7 @@ const EventDetails = () => {
     }
   };
 
-  const roundBtn = 'flex size-10 items-center justify-center rounded-full shadow-[0_4px_14px_rgba(20,20,15,0.18)] transition-colors active:scale-95';
+  const roundBtn = 'flex size-12 btn-float items-center justify-center rounded-full transition-colors active:scale-95';
 
   return (
     <div className="min-h-screen bg-parchment dark:bg-background-dark page-enter">
@@ -169,7 +169,7 @@ const EventDetails = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <button onClick={() => navigate(-1)} aria-label="Retour" className={`${roundBtn} bg-white text-ink`}>
-              <ArrowLeft size={18} strokeWidth={1.75} />
+              <ArrowLeft size={20} strokeWidth={1.75} />
             </button>
             <div className="flex gap-2">
               <button onClick={toggleReminder} aria-label={t('reminder.set')} className={`${roundBtn} ${reminderSet ? 'bg-lime text-ink' : 'bg-white text-ink'}`}>

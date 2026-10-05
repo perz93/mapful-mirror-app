@@ -60,15 +60,15 @@ const ManageEvents = () => {
         <div className="flex items-center justify-between px-5" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)', paddingBottom: '12px' }}>
           <Link
             to="/my-account"
-            className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform"
+            className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform"
           >
-            <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
+            <ArrowLeft size={20} strokeWidth={1.75} className="text-ink" />
           </Link>
 
           <Link
             to="/create-event"
             aria-label={t('event.create')}
-            className="inline-flex size-10 items-center justify-center rounded-full bg-lime text-ink hover:bg-lime-deep active:scale-95 transition-transform"
+            className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-lime text-ink hover:bg-lime-deep active:scale-95 transition-transform"
           >
             <Plus size={20} strokeWidth={1.75} />
           </Link>

@@ -52,14 +52,14 @@ const Marketplace = () => {
       <div className="relative z-10 flex items-center justify-between px-4 pb-6" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         <Link
           to="/"
-          className="inline-flex size-10 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform"
+          className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform"
         >
-          <ArrowLeft size={18} strokeWidth={1.75} className="text-ink" />
+          <ArrowLeft size={20} strokeWidth={1.75} className="text-ink" />
         </Link>
         <button
           onClick={handleCreateListing}
           aria-label={t('market.newListing')}
-          className="inline-flex size-10 items-center justify-center rounded-full bg-lime text-ink hover:bg-lime-deep active:scale-95 transition-transform"
+          className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-lime text-ink hover:bg-lime-deep active:scale-95 transition-transform"
         >
           <Plus size={20} strokeWidth={1.75} />
         </button>
@@ -71,7 +71,7 @@ const Marketplace = () => {
           <button
             onClick={handleCreateListing}
             aria-label={t('market.newListing')}
-            className="inline-flex size-10 items-center justify-center rounded-full bg-lime text-ink active:scale-95 transition-transform"
+            className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-lime text-ink active:scale-95 transition-transform"
           >
             <Plus size={20} strokeWidth={1.75} />
           </button>
@@ -182,10 +182,8 @@ const Marketplace = () => {
                           </p>
                         )}
                       </div>
-                      {/* Ticket : bord pointillé + encoches comme un coupon détachable */}
-                      <div className="relative flex flex-shrink-0 flex-col justify-center rounded-2xl border-l-2 border-dashed border-ink/25 bg-lime px-3.5 py-2 text-ink">
-                        <span className="absolute -left-[7px] -top-[6px] size-3 rounded-full bg-white" />
-                        <span className="absolute -bottom-[6px] -left-[7px] size-3 rounded-full bg-white" />
+                      {/* Prix en ticket vert */}
+                      <div className="relative flex flex-shrink-0 flex-col justify-center rounded-2xl bg-lime px-3.5 py-2 text-ink">
                         {listing.price !== null ? (
                           <>
                             <span className="font-display text-[17px] leading-none tracking-tight tabular">{listing.price.toLocaleString('fr-FR')}</span>

@@ -38,7 +38,7 @@ const LargeTitle = ({ children, className = '', compactTitle, backTo, right }: L
 
   const label = compactTitle ?? (typeof children === 'string' ? children : '');
   const backClass =
-    'inline-flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform';
+    'inline-flex size-12 btn-float flex-shrink-0 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform';
 
   const bar = (
     <div
@@ -53,11 +53,11 @@ const LargeTitle = ({ children, className = '', compactTitle, backTo, right }: L
       <div className="relative flex h-14 items-center justify-between px-4">
         {backTo ? (
           <Link to={backTo} aria-label="Retour" tabIndex={collapsed ? 0 : -1} className={backClass}>
-            <ArrowLeft size={18} strokeWidth={1.75} />
+            <ArrowLeft size={20} strokeWidth={1.75} />
           </Link>
         ) : (
           <button type="button" onClick={() => navigate(-1)} aria-label="Retour" tabIndex={collapsed ? 0 : -1} className={backClass}>
-            <ArrowLeft size={18} strokeWidth={1.75} />
+            <ArrowLeft size={20} strokeWidth={1.75} />
           </button>
         )}
         <p className="pointer-events-none absolute inset-x-16 truncate text-center font-display text-[18px] leading-none tracking-[-0.025em] text-ink">

@@ -115,7 +115,7 @@ const ListingDetails = () => {
     : null;
   const { lead, rest } = listing.description ? splitLead(listing.description) : { lead: null, rest: '' };
   const hasContacts = !!(listing.contact_phone || listing.contact_whatsapp || listing.contact_instagram || listing.contact_facebook || listing.contact_tiktok || listing.contact_twitter || listing.contact_email);
-  const roundBtn = 'inline-flex size-10 items-center justify-center rounded-full shadow-[0_4px_14px_rgba(20,20,15,0.18)] active:scale-95 transition-transform';
+  const roundBtn = 'inline-flex size-12 btn-float items-center justify-center rounded-full active:scale-95 transition-transform';
 
   return (
     <div className="min-h-screen bg-parchment page-enter">
@@ -140,7 +140,7 @@ const ListingDetails = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <button onClick={() => navigate(-1)} aria-label="Retour" className={`${roundBtn} bg-white text-ink`}>
-              <ArrowLeft size={18} strokeWidth={1.75} />
+              <ArrowLeft size={20} strokeWidth={1.75} />
             </button>
             <button onClick={handleShare} aria-label={t('event.share')} className={`${roundBtn} bg-white text-ink`}>
               <Share2 size={18} strokeWidth={1.75} />
