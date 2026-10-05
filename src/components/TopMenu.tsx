@@ -59,7 +59,7 @@ const TopMenu = () => {
           </button>
 
           {/* Recherche active — centre */}
-          {!isOpen && <div className="pointer-events-auto flex min-w-0 flex-1 justify-center px-3"><ActiveFiltersPill /></div>}
+          {!isOpen && <div className="pointer-events-auto flex min-w-0 flex-1 justify-center px-4"><ActiveFiltersPill /></div>}
 
           {/* Menu burger — right */}
           <button

@@ -19,7 +19,7 @@ const ActiveFiltersPill = () => {
     : `${activeFilterCount} ${activeFilterCount > 1 ? t('nav.filters') : t('nav.filter')}`;
 
   return (
-    <div className="mt-2 flex h-12 w-full min-w-[168px] max-w-[240px] items-center gap-3 rounded-full bg-ink pl-1.5 pr-1.5 text-parchment shadow-lg animate-scale-in">
+    <div className="mt-2.5 flex h-11 w-fit min-w-[150px] max-w-[200px] items-center gap-3 rounded-full bg-ink pl-1.5 pr-1.5 text-parchment shadow-lg animate-scale-in">
       <button
         type="button"
         onClick={() => setSearchOpen(true)}
