@@ -93,6 +93,9 @@ const App = () => (
         <SearchProvider>
           <NotificationProvider>
             <SplashScreenWrapper>
+              {/* Voile sombre sous la barre d'état, sur toutes les pages (iOS teinte
+                  son flou avec ce qui touche le haut de l'écran) */}
+              <div aria-hidden className="status-bar-scrim" />
               <UpdateBanner />
               <NotificationPrompt />
               <InstallGuide />
