@@ -6,8 +6,8 @@ import { pwaUpdate } from '@/lib/pwaUpdate';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const UPDATED_KEY = 'vibe-just-updated';
-// Même fondu que le splash (index.html) : la photo s'efface dans le noir
-const PHOTO_FADE = 'linear-gradient(180deg,#000 0%,#000 42%,rgba(0,0,0,0.82) 54%,rgba(0,0,0,0.55) 66%,rgba(0,0,0,0.28) 78%,rgba(0,0,0,0.09) 90%,transparent 100%)';
+// Même découpe en V que le splash (index.html)
+const PHOTO_CLIP = 'polygon(0 0,100% 0,100% 60%,50% 100%,0 60%)';
 
 /** Bandeau « Nouvelle version » : l'utilisateur met à jour quand il veut. */
 const UpdateBanner = () => {
@@ -44,9 +44,17 @@ const UpdateBanner = () => {
     return createPortal(
       <div className="fixed inset-0 z-[10000] overflow-hidden bg-black animate-fade-in" role="status" aria-live="polite">
         <div
-          className="absolute inset-x-0 top-0 h-[56%] bg-cover bg-top"
-          style={{ backgroundImage: "url('/splash-photo-2.jpg')", WebkitMaskImage: PHOTO_FADE, maskImage: PHOTO_FADE }}
+          className="absolute inset-x-0 top-0 h-[62%] bg-cover bg-top"
+          style={{ backgroundImage: "url('/splash-photo-2.jpg')", WebkitClipPath: PHOTO_CLIP, clipPath: PHOTO_CLIP }}
         />
+        <svg
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden
+          className="absolute inset-x-0 top-0 h-[62%] w-full overflow-visible"
+        >
+          <polyline points="0,60 50,100 100,60" fill="none" stroke="#a6e22e" strokeWidth={3} vectorEffect="non-scaling-stroke" />
+        </svg>
         <div
           className="absolute inset-0"
           style={{ background: 'linear-gradient(180deg,rgba(0,0,0,0.35) 0%,rgba(0,0,0,0) 12%)' }}
