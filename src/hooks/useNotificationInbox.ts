@@ -115,6 +115,7 @@ function getDefaultTitle(type: string, eventTitle: string, lang: string): string
       case 'proximity': return `${eventTitle} is near you!`;
       case 'event_reminder': return `Reminder: ${eventTitle}`;
       case 'event_tomorrow': return `Tomorrow: ${eventTitle}`;
+      case 'event_starting': return `Starting soon: ${eventTitle}`;
       default: return eventTitle;
     }
   }
@@ -123,6 +124,7 @@ function getDefaultTitle(type: string, eventTitle: string, lang: string): string
     case 'proximity': return `${eventTitle} est près de toi !`;
     case 'event_reminder': return `Rappel : ${eventTitle}`;
     case 'event_tomorrow': return `Demain : ${eventTitle}`;
+    case 'event_starting': return `Bientôt : ${eventTitle}`;
     default: return eventTitle;
   }
 }

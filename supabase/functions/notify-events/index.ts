@@ -87,7 +87,7 @@ serve(async (req) => {
     const thirtyFiveMinAgo = new Date(now.getTime() - 35 * 60 * 1000).toISOString();
     const { data: newEvents } = await supabase
       .from("events")
-      .select("id, title, category, venue, date, time, image_url")
+      .select("id, title, category, venue, date, time, image_url, user_id")
       .eq("is_published", true)
       .gte("created_at", thirtyFiveMinAgo);
 
@@ -101,6 +101,7 @@ serve(async (req) => {
           image: event.image_url,
           tag: `new-${event.id}`,
           send_to_all: true,
+          exclude_user_id: event.user_id,
           check_duplicates: true,
           notification_type: "new_event",
           event_id: event.id,
@@ -164,7 +165,13 @@ serve(async (req) => {
         const diffMinutes = (eventTime.getTime() - now.getTime()) / (60 * 1000);
 
         if (diffMinutes >= 30 && diffMinutes <= 65) {
-          const userIds = await audienceFor(supabase, event.id);
+          // Ceux qui ont réglé un rappel le reçoivent déjà : pas de doublon
+          const { data: withReminder } = await supabase
+            .from("event_reminders")
+            .select("user_id")
+            .eq("event_id", event.id);
+          const skip = new Set((withReminder ?? []).map((r: { user_id: string }) => r.user_id));
+          const userIds = (await audienceFor(supabase, event.id)).filter((u) => !skip.has(u));
 
           if (userIds.length > 0) {
             const result = await callSendPush({
@@ -187,26 +194,16 @@ serve(async (req) => {
     }
 
     // --- 4. USER-SET REMINDERS (from event_reminders table) ---
-    const thirtyFiveMinFromNow = new Date(now.getTime() + 35 * 60 * 1000).toISOString();
+    // Le cron passe toutes les 30 min : on envoie les rappels arrivés à
+    // échéance (± 15 min), et on rattrape ceux manqués depuis moins de 2 h.
     const { data: dueReminders } = await supabase
       .from("event_reminders")
       .select("id, user_id, event_id, events(title, venue, time, image_url)")
       .eq("sent", false)
-      .lte("remind_at", thirtyFiveMinFromNow)
-      .gte("remind_at", now.toISOString().replace('T', ' ').substring(0, 19));
-
-    // Also get reminders that are past due but not sent (catch missed ones)
-    const { data: pastDueReminders } = await supabase
-      .from("event_reminders")
-      .select("id, user_id, event_id, events(title, venue, time, image_url)")
-      .eq("sent", false)
-      .lt("remind_at", now.toISOString())
-      // pas de rappel pour un événement déjà passé depuis longtemps
+      .lte("remind_at", new Date(now.getTime() + 15 * 60 * 1000).toISOString())
       .gte("remind_at", new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString());
 
-    const allDueReminders = [...(dueReminders || []), ...(pastDueReminders || [])];
-    // Dedupe by id
-    const uniqueReminders = Array.from(new Map(allDueReminders.map(r => [r.id, r])).values());
+    const uniqueReminders = dueReminders || [];
 
     if (uniqueReminders.length > 0) {
       const reminderResults = [];

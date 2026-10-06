@@ -235,7 +235,7 @@ serve(async (req) => {
   }
 
   try {
-    const { title, body, url, image, tag, user_ids, send_to_all, check_duplicates, notification_type, event_id } = await req.json();
+    const { title, body, url, image, tag, user_ids, send_to_all, exclude_user_id, check_duplicates, notification_type, event_id } = await req.json();
 
     if (!title || !body) {
       return new Response(JSON.stringify({ error: "title and body required" }), {
@@ -246,48 +246,82 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Get subscriptions
+    // 1. Destinataires (personnes, pas appareils)
     // Sans destinataires explicites et sans send_to_all : on n'envoie à
     // personne (avant, cela partait à TOUS les abonnés).
-    if (!send_to_all && !(Array.isArray(user_ids) && user_ids.length > 0)) {
-      return new Response(JSON.stringify({ sent: 0, reason: "no recipients" }), {
-        headers: { "Content-Type": "application/json" },
-      });
+    let audience: string[] = [];
+    if (send_to_all) {
+      const { data: profiles, error } = await supabase.from("profiles").select("id");
+      if (error) {
+        return new Response(JSON.stringify({ error: error.message }), {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      audience = (profiles ?? []).map((p: { id: string }) => p.id);
+    } else if (Array.isArray(user_ids)) {
+      audience = user_ids.filter((id: unknown): id is string => typeof id === "string");
     }
+    // L'organisateur n'est pas notifié de son propre événement
+    if (exclude_user_id) audience = audience.filter((id) => id !== exclude_user_id);
+    audience = [...new Set(audience)];
 
-    let query = supabase.from("push_subscriptions").select("*");
-    if (!send_to_all) {
-      query = query.in("user_id", user_ids);
-    }
-
-    const { data: subscriptions, error } = await query;
-
-    if (error) {
-      return new Response(JSON.stringify({ error: error.message }), {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-
-    if (!subscriptions || subscriptions.length === 0) {
-      return new Response(JSON.stringify({ sent: 0, message: "No subscriptions found" }), {
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-
-    // Check duplicates if requested
-    let alreadyNotified: Set<string> = new Set();
-    if (check_duplicates && notification_type && event_id) {
+    // 2. Anti-doublon : on retire ceux qui ont déjà reçu cette notification
+    let skipped = 0;
+    if (check_duplicates && notification_type && event_id && audience.length > 0) {
       const { data: logs } = await supabase
         .from("notification_log")
         .select("user_id")
         .eq("event_id", event_id)
         .eq("notification_type", notification_type);
+      const already = new Set((logs ?? []).map((l: { user_id: string }) => l.user_id));
+      const before = audience.length;
+      audience = audience.filter((id) => !already.has(id));
+      skipped = before - audience.length;
+    }
 
-      if (logs) {
-        for (const log of logs) {
-          alreadyNotified.add(log.user_id);
-        }
+    if (audience.length === 0) {
+      return new Response(JSON.stringify({ sent: 0, skipped, reason: "no recipients" }), {
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // 3. Boîte de réception de l'app : une ligne par personne, AVANT l'envoi.
+    // Elle apparaît même sans notifications activées, et marque la personne
+    // comme notifiée (le cron et le déclencheur ne la renverront pas).
+    if (notification_type) {
+      const rows = audience.map((user_id) => ({
+        user_id,
+        event_id: event_id ?? null,
+        notification_type,
+        title,
+        body,
+        url: url || "/",
+        image_url: image || null,
+      }));
+      for (let i = 0; i < rows.length; i += 500) {
+        const { error } = await supabase
+          .from("notification_log")
+          .upsert(rows.slice(i, i + 500), { onConflict: "user_id,event_id,notification_type", ignoreDuplicates: true });
+        if (error) console.error(`notification_log: ${error.message}`);
+      }
+    }
+
+    // 4. Appareils abonnés de ces personnes
+    const audienceSet = new Set(audience);
+    const subscriptions: { endpoint: string; p256dh: string; auth: string; user_id: string }[] = [];
+    if (send_to_all) {
+      const { data, error } = await supabase.from("push_subscriptions").select("endpoint, p256dh, auth, user_id");
+      if (error) console.error(`push_subscriptions: ${error.message}`);
+      for (const s of data ?? []) if (audienceSet.has(s.user_id)) subscriptions.push(s);
+    } else {
+      for (let i = 0; i < audience.length; i += 100) {
+        const { data, error } = await supabase
+          .from("push_subscriptions")
+          .select("endpoint, p256dh, auth, user_id")
+          .in("user_id", audience.slice(i, i + 100));
+        if (error) console.error(`push_subscriptions: ${error.message}`);
+        subscriptions.push(...(data ?? []));
       }
     }
 
@@ -301,17 +335,9 @@ serve(async (req) => {
 
     let sent = 0;
     let failed = 0;
-    let skipped = 0;
     const failedEndpoints: string[] = [];
-    const notifiedUsers: { user_id: string; event_id: string; notification_type: string }[] = [];
 
     for (const sub of subscriptions) {
-      // Skip if already notified
-      if (check_duplicates && sub.user_id && alreadyNotified.has(sub.user_id)) {
-        skipped++;
-        continue;
-      }
-
       try {
         const response = await sendWebPush(
           { endpoint: sub.endpoint, p256dh: sub.p256dh, auth: sub.auth },
@@ -320,9 +346,6 @@ serve(async (req) => {
 
         if (response.status === 201 || response.status === 200) {
           sent++;
-          if (notification_type && event_id && sub.user_id) {
-            notifiedUsers.push({ user_id: sub.user_id, event_id, notification_type });
-          }
         } else if (response.status === 404 || response.status === 410) {
           failedEndpoints.push(sub.endpoint);
           failed++;
@@ -341,13 +364,8 @@ serve(async (req) => {
       await supabase.from("push_subscriptions").delete().in("endpoint", failedEndpoints);
     }
 
-    // Log notifications to prevent duplicates
-    if (notifiedUsers.length > 0) {
-      await supabase.from("notification_log").upsert(notifiedUsers, { onConflict: "user_id,event_id,notification_type" });
-    }
-
     return new Response(
-      JSON.stringify({ sent, failed, skipped, total: subscriptions.length }),
+      JSON.stringify({ sent, failed, skipped, recipients: audience.length, total: subscriptions.length }),
       {
         headers: {
           "Content-Type": "application/json",

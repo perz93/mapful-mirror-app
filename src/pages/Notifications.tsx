@@ -14,6 +14,7 @@ const typeIcons: Record<string, string> = {
   proximity: '📍',
   event_reminder: '⏰',
   event_tomorrow: '📅',
+  event_starting: '⏰',
 };
 
 const Notifications = () => {
