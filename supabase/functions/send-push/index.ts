@@ -257,6 +257,24 @@ async function sendWebPush(
   return response;
 }
 
+// Appels serveur uniquement : le jeton doit être une clé « service_role ».
+// La passerelle Supabase (verify_jwt) a déjà vérifié la signature du JWT ;
+// on contrôle ici son rôle (plusieurs clés service_role valides peuvent
+// coexister : celle du déclencheur SQL et celle de l'environnement).
+function isServiceRole(req: Request): boolean {
+  const token = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+  if (!token) return false;
+  if (SUPABASE_SERVICE_ROLE_KEY && token === SUPABASE_SERVICE_ROLE_KEY) return true;
+  const parts = token.split(".");
+  if (parts.length !== 3) return false;
+  try {
+    const json = atob(parts[1].replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(parts[1].length / 4) * 4, "="));
+    return JSON.parse(json).role === "service_role";
+  } catch {
+    return false;
+  }
+}
+
 // ---- Main handler ----
 
 serve(async (req) => {
@@ -273,8 +291,7 @@ serve(async (req) => {
   // Seuls les appels serveur (cron, trigger, notify-events) avec la clé
   // service_role peuvent déclencher des envois — sinon n'importe qui
   // pourrait spammer tous les abonnés.
-  const token = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
-  if (!SUPABASE_SERVICE_ROLE_KEY || token !== SUPABASE_SERVICE_ROLE_KEY) {
+  if (!isServiceRole(req)) {
     return new Response(JSON.stringify({ error: "unauthorized" }), {
       status: 401,
       headers: { "Content-Type": "application/json" },
