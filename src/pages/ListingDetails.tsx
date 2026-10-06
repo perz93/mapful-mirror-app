@@ -175,7 +175,7 @@ const ListingDetails = () => {
           {listing.description && (
             <section>
               <h2 className="eyebrow text-stone-500 mb-3">{lang === 'fr' ? 'À propos' : 'About'}</h2>
-              <p className="text-[17px] leading-[1.5] tracking-[-0.01em] text-ink whitespace-pre-line">{listing.description}</p>
+              <p className="text-[17px] font-medium leading-[1.5] tracking-[-0.01em] text-ink whitespace-pre-line">{listing.description}</p>
             </section>
           )}
         </div>
