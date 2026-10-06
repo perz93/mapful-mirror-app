@@ -573,13 +573,19 @@ const MapView = () => {
       return;
     }
 
+    // Point d'arrivée (modèle I5) : pastille lime + nom de l'événement posé dessus
+    const safeLabel = String(routeDestination.label ?? '').replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
     const destIcon = L.divIcon({
       className: 'route-destination-marker',
-      html: `<div style="width:28px;height:28px;border-radius:50%;background:hsl(var(--primary));border:3px solid white;box-shadow:0 4px 12px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;color:white;font-size:14px;">📍</div>`,
-      iconSize: [28, 28],
-      iconAnchor: [14, 14],
+      html: `<div style="position:relative;width:24px;height:24px">
+        <div style="position:absolute;bottom:84px;left:50%;transform:translateX(-50%);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:#14140f;color:#f5f5eb;border-radius:999px;padding:5px 11px;font:600 12.5px 'Instrument Sans',sans-serif;box-shadow:0 6px 16px rgba(20,20,15,.3)">${safeLabel}</div>
+        <div style="width:24px;height:24px;border-radius:50%;background:#a6e22e;border:4px solid #fff;box-shadow:0 4px 12px rgba(20,20,15,.35)"></div>
+      </div>`,
+      iconSize: [24, 24],
+      iconAnchor: [12, 12],
     });
-    destinationMarkerRef.current = L.marker([routeDestination.lat, routeDestination.lng], { icon: destIcon }).addTo(map);
+    // Au-dessus du pin photo de l'événement (même position), nom placé plus haut que lui
+    destinationMarkerRef.current = L.marker([routeDestination.lat, routeDestination.lng], { icon: destIcon, zIndexOffset: 2000, interactive: false }).addTo(map);
 
     if (!geo.position) {
       // Position en cours (ouverture depuis la page d'un événement) : on attend
@@ -609,7 +615,7 @@ const MapView = () => {
 
         const coords: L.LatLngTuple[] = route.geometry.coordinates.map((c: [number, number]) => [c[1], c[0]]);
         const polyline = L.polyline(coords, {
-          color: 'hsl(24 95% 53%)',
+          color: '#14140f',
           weight: 5,
           opacity: 0.85,
           lineCap: 'round',
