@@ -1,6 +1,6 @@
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SearchProvider } from "@/contexts/SearchContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
@@ -41,14 +41,6 @@ import ListingDetails from "./pages/ListingDetails";
 import Notifications from "./pages/Notifications";
 
 const queryClient = new QueryClient();
-
-// Voile sombre sous la barre d'état (iOS teinte son flou avec ce qui touche le
-// haut de l'écran) — uniquement sur les pages détail (affiche en plein écran).
-const StatusBarScrim = () => {
-  const { pathname } = useLocation();
-  if (!/^\/(event|listing)\//.test(pathname)) return null;
-  return <div aria-hidden className="status-bar-scrim" />;
-};
 
 const AppContent = () => {
   useStatusBarColor();
@@ -101,7 +93,6 @@ const App = () => (
         <SearchProvider>
           <NotificationProvider>
             <SplashScreenWrapper>
-              <StatusBarScrim />
               <UpdateBanner />
               <NotificationPrompt />
               <InstallGuide />

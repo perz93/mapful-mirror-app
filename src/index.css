@@ -1131,13 +1131,3 @@ vercel-live-feedback,
   40% { opacity: 1; transform: scale(1); }
 }
 .animate-update-dot { animation: update-dot 1.1s ease-in-out infinite; }
-
-/* Voile sombre sous la barre d'état (heure, batterie) */
-.status-bar-scrim {
-  position: fixed;
-  inset: 0 0 auto 0;
-  height: calc(env(safe-area-inset-top, 0px) + 18px);
-  z-index: 55;
-  pointer-events: none;
-  background: linear-gradient(180deg, rgba(20, 20, 15, 0.6) 0%, rgba(20, 20, 15, 0.35) 60%, rgba(20, 20, 15, 0) 100%);
-}
