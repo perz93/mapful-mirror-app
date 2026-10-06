@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { RefreshCw, Settings } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { Pill, toast } from '@/components/PillToast';
 import { pwaUpdate } from '@/lib/pwaUpdate';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -31,8 +31,8 @@ const UpdateBanner = () => {
   const startUpdate = async () => {
     setUpdating(true);
     try { sessionStorage.setItem(UPDATED_KEY, '1'); } catch { /* ignore */ }
-    // Laisse l'écran s'afficher un instant avant le rechargement
-    await new Promise((r) => window.setTimeout(r, 1400));
+    // L'écran reste affiché au moins 4 s avant le rechargement
+    await new Promise((r) => window.setTimeout(r, 4000));
     window.setTimeout(() => window.location.reload(), 8000); // filet de sécurité
     await pwaUpdate.apply();
   };
@@ -60,13 +60,16 @@ const UpdateBanner = () => {
           className="absolute inset-x-0 flex flex-col items-center"
           style={{ top: 'calc(80% - env(safe-area-inset-bottom, 0px) + 28px)' }}
         >
-          <Settings
-            size={30}
-            strokeWidth={1.75}
-            className="text-lime animate-spin"
-            style={{ animationDuration: '2.4s' }}
-          />
-          <p className="mt-3 text-[15px] font-medium text-[#f5f5eb]">{t('update.installing')}</p>
+          <p className="text-[15px] font-semibold text-[#f5f5eb]">{t('update.installing')}</p>
+          <div className="mt-3.5 flex gap-1.5" aria-hidden>
+            {[0, 1, 2].map((i) => (
+              <span
+                key={i}
+                className="size-2 rounded-full bg-lime animate-update-dot"
+                style={{ animationDelay: `${i * 0.18}s` }}
+              />
+            ))}
+          </div>
         </div>
       </div>,
       document.body,
