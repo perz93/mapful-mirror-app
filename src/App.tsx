@@ -43,10 +43,10 @@ import Notifications from "./pages/Notifications";
 const queryClient = new QueryClient();
 
 // Voile sombre sous la barre d'état (iOS teinte son flou avec ce qui touche le
-// haut de l'écran) — partout sauf sur la carte.
+// haut de l'écran) — uniquement sur les pages détail (affiche en plein écran).
 const StatusBarScrim = () => {
   const { pathname } = useLocation();
-  if (pathname === '/') return null;
+  if (!/^\/(event|listing)\//.test(pathname)) return null;
   return <div aria-hidden className="status-bar-scrim" />;
 };
 

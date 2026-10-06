@@ -10,6 +10,7 @@ import ImageLightbox from '@/components/ImageLightbox';
 import ShimmerImage from '@/components/ShimmerImage';
 import { marketplaceCategoryLabel } from '@/lib/marketplaceCategories';
 import { splitLead } from '@/lib/eventStatus';
+import { useDarkPageBackground } from '@/hooks/useDarkPageBackground';
 
 const priceTypeLabels: Record<string, Record<string, string>> = {
   fixed: { fr: 'Prix fixe', en: 'Fixed price' },
@@ -23,6 +24,7 @@ const ListingDetails = () => {
   const navigate = useNavigate();
   const { t, lang } = useLanguage();
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  useDarkPageBackground();
 
   const { data: listing, isLoading, error } = useQuery({
     queryKey: ['listing', id],
