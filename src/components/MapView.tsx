@@ -7,7 +7,6 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
-import 'leaflet.heat';
 import { useNavigate } from 'react-router-dom';
 import { useSearch } from '@/contexts/SearchContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -123,7 +122,7 @@ const MapView = () => {
         return L.divIcon({
           html: `<div class="cluster-inner cluster-${dominantType}"><span>${count}</span></div>`,
           className: `marker-cluster marker-cluster-${sizeClass}`,
-          iconSize: L.point(42, 42),
+          iconSize: L.point(34, 34),
         });
       },
     });
@@ -300,9 +299,9 @@ const MapView = () => {
             </div>
           </div>
         `,
-        iconSize: [48, 54],
-        iconAnchor: [24, 54],
-        popupAnchor: [0, -56],
+        iconSize: [40, 44],
+        iconAnchor: [20, 44],
+        popupAnchor: [0, -46],
       });
     };
 
@@ -435,102 +434,6 @@ const MapView = () => {
       });
     });
 
-    // Heatmap
-    const HEATMAP_MIN_ZOOM = 11;
-
-    (async () => {
-      try {
-        const eventIds = events.map((e) => e.id);
-        const { data: attendeeCounts } = await supabase
-          .from('event_attendees' as any)
-          .select('event_id')
-          .in('event_id', eventIds);
-
-        const countMap: Record<string, number> = {};
-        if (attendeeCounts) {
-          for (const row of attendeeCounts as any[]) {
-            countMap[row.event_id] = (countMap[row.event_id] || 0) + 1;
-          }
-        }
-
-        const heatPoints = events.map((e) => {
-          const count = countMap[e.id] || 0;
-          const capacity = e.capacity || 50;
-          const pct = Math.min(count / capacity, 1);
-          const intensity = 0.35 + pct * 0.65;
-          return [e.latitude, e.longitude, intensity] as [number, number, number];
-        });
-
-        if (heatPoints.length > 0 && mapInstanceRef.current) {
-          if (heatLayerRef.current) {
-            mapInstanceRef.current.removeLayer(heatLayerRef.current);
-          }
-
-          const heatLayer = (L as any).heatLayer(heatPoints, {
-            radius: 35,
-            blur: 25,
-            maxZoom: 18,
-            max: 1.0,
-            minOpacity: 0.3,
-            gradient: {
-              0.0:  '#dbeafe',
-              0.15: '#93c5fd',
-              0.30: '#3b82f6',
-              0.50: '#2563eb',
-              0.60: '#f97316',
-              0.80: '#ea580c',
-              1.00: '#dc2626',
-            },
-          });
-
-          heatLayerRef.current = heatLayer;
-
-          const updateHeatmapVisibility = () => {
-            if (!mapInstanceRef.current) return;
-            const zoom = mapInstanceRef.current.getZoom();
-            if (zoom >= HEATMAP_MIN_ZOOM) {
-              if (!mapInstanceRef.current.hasLayer(heatLayer)) {
-                mapInstanceRef.current.addLayer(heatLayer);
-              }
-            } else {
-              if (mapInstanceRef.current.hasLayer(heatLayer)) {
-                mapInstanceRef.current.removeLayer(heatLayer);
-              }
-            }
-          };
-
-          updateHeatmapVisibility();
-          mapInstanceRef.current.on('zoomend', updateHeatmapVisibility);
-
-          const hotEvents = events.filter((e) => {
-            const count = countMap[e.id] || 0;
-            const capacity = e.capacity || 50;
-            return (count / capacity) >= 0.50;
-          });
-
-          if (hotEvents.length > 0) {
-            hotEvents.forEach((e) => {
-              const el = document.createElement('div');
-              el.className = 'heatmap-pulse-marker';
-              const icon = L.divIcon({
-                className: 'heatmap-pulse-icon',
-                html: el.outerHTML,
-                iconSize: [60, 60],
-                iconAnchor: [30, 30],
-              });
-              const pulseMarker = L.marker([e.latitude, e.longitude], {
-                icon,
-                interactive: false,
-                zIndexOffset: -1000,
-              });
-              markerClusterGroup.addLayer(pulseMarker);
-            });
-          }
-        }
-      } catch (err) {
-        console.error('Heatmap load failed:', err);
-      }
-    })();
 
     if (!didAutoRecenterRef.current) {
       const coords = events
