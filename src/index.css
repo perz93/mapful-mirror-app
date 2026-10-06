@@ -1117,3 +1117,10 @@ h1.eyebrow, h2.eyebrow, h3.eyebrow {
 .btn-float.btn-float.btn-float.bg-lime {
   box-shadow: 0 2px 4px rgb(60 90 0 / 0.18), 0 12px 24px -4px rgb(80 120 0 / 0.45) !important;
 }
+
+/* Barre d'outils Vercel (versions d'aperçu uniquement) : jamais affichée dans
+   l'app, même si une ancienne page mise en cache l'injecte encore. */
+vercel-live-feedback,
+#vercel-live-feedback {
+  display: none !important;
+}
