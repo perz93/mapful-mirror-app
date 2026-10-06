@@ -53,7 +53,7 @@ const EventDetails = () => {
   const { isFavorite, toggleFavorite, loading: favLoading } = useFavorite(id || '');
   const { isSupported: pushSupported, isSubscribed: pushSubscribed, subscribe: subscribePush } = useNotifications();
 
-  useDarkPageBackground();
+  useDarkPageBackground(!!event);
 
   // Check if reminder already set (from Supabase)
   useEffect(() => {

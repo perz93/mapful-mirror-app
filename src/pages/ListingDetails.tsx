@@ -24,7 +24,6 @@ const ListingDetails = () => {
   const navigate = useNavigate();
   const { t, lang } = useLanguage();
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  useDarkPageBackground();
 
   const { data: listing, isLoading, error } = useQuery({
     queryKey: ['listing', id],
@@ -40,6 +39,7 @@ const ListingDetails = () => {
     },
     enabled: !!id,
   });
+  useDarkPageBackground(!!listing);
 
   const handleShare = () => {
     if (navigator.share) {
