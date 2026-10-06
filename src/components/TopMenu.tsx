@@ -1,6 +1,6 @@
 import ActiveFiltersPill from '@/components/ActiveFiltersPill';
 import { useEffect, useState } from 'react';
-import { X, Plus, Bell, ChevronRight } from 'lucide-react';
+import { X, Plus, BellRing, ChevronRight } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from "@/contexts/AuthContext";
 import { useNotificationInbox } from "@/hooks/useNotificationInbox";
@@ -50,7 +50,7 @@ const TopMenu = () => {
             aria-label="Notifications"
             className="pointer-events-auto relative h-12 w-12 rounded-full bg-white dark:bg-stone-900/90 hover:bg-white transition-all duration-300 active:scale-95 flex items-center justify-center mt-2 shadow-lg"
           >
-            <Bell size={20} strokeWidth={1.75} className="text-ink" />
+            <BellRing size={20} strokeWidth={1.75} className="text-ink" />
             {unreadCount > 0 && (
               <span className="absolute -top-0.5 -right-0.5 min-w-[20px] h-[20px] flex items-center justify-center rounded-full bg-lime text-ink text-[10px] font-medium px-1 ring-2 ring-white tabular">
                 {unreadCount > 9 ? '9+' : unreadCount}
