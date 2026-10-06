@@ -16,6 +16,7 @@ import ShimmerImage from '@/components/ShimmerImage';
 import { useFavorite } from '@/hooks/useFavorite';
 import { useAuth } from '@/contexts/AuthContext';
 import { getEventCategory } from '@/lib/eventCategories';
+import { useSearch } from '@/contexts/SearchContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { eventStatus, splitLead } from '@/lib/eventStatus';
 
@@ -25,6 +26,7 @@ const EventDetails = () => {
   const navigate = useNavigate();
   const { t, lang } = useLanguage();
   const { user } = useAuth();
+  const { setRouteDestination } = useSearch();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [reminderSet, setReminderSet] = useState(false);
 
@@ -128,7 +130,11 @@ const EventDetails = () => {
   const keyPoints = event.key_points as string[] | null;
   const category = getEventCategory(event.category);
   const status = eventStatus(event.date, event.time);
-  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${event.latitude},${event.longitude}`;
+  // Itinéraire tracé dans l'app, sur la carte (même fonction que le bouton des popups)
+  const showRoute = () => {
+    setRouteDestination({ lat: Number(event.latitude), lng: Number(event.longitude), label: event.title });
+    navigate('/');
+  };
   const contactTiktok = event.contact_tiktok;
   const hasContacts = !!(event.contact_phone || event.contact_whatsapp || event.contact_instagram || event.contact_facebook || contactTiktok || event.contact_twitter || event.contact_email);
   const priceLabel = event.is_paid && event.price
@@ -221,11 +227,10 @@ const EventDetails = () => {
           </div>
 
           {/* Lieu + itinéraire */}
-          <a
-            href={directionsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="card-shadow -mt-3 flex items-center gap-3.5 rounded-[20px] bg-white dark:bg-stone-900 p-3.5 active:scale-[0.99] transition-transform"
+          <button
+            type="button"
+            onClick={showRoute}
+            className="card-shadow -mt-3 flex w-full items-center gap-3.5 rounded-[20px] bg-white dark:bg-stone-900 p-3.5 text-left active:scale-[0.99] transition-transform"
           >
             <span className="flex size-11 flex-shrink-0 items-center justify-center rounded-2xl bg-lime">
               <MapPin size={20} strokeWidth={1.75} className="text-ink" />
@@ -235,7 +240,7 @@ const EventDetails = () => {
               {showAddress && <span className="block truncate text-sm text-stone-500">{event.address}</span>}
             </span>
             <span className="flex-shrink-0 text-sm font-medium text-ink dark:text-white link-underline">{t('event.directions')}</span>
-          </a>
+          </button>
 
           {/* Points clés */}
           {keyPoints && keyPoints.length > 0 && (
@@ -293,9 +298,9 @@ const EventDetails = () => {
               emailSubject={event.title}
             />
           ) : (
-            <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center rounded-full bg-lime px-5 text-[15px] font-medium text-ink active:scale-[0.97] transition-transform">
+            <button type="button" onClick={showRoute} className="inline-flex h-12 items-center rounded-full bg-lime px-5 text-[15px] font-medium text-ink active:scale-[0.97] transition-transform">
               {t('event.directions')}
-            </a>
+            </button>
           )}
         </div>
       </div>

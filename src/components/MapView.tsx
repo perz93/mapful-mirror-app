@@ -29,6 +29,9 @@ const MapView = () => {
   const { t } = useLanguage();
   const { data: events, isLoading } = useEvents();
   const geo = useGeolocation();
+  // Itinéraire affiché : les recentrages automatiques ne doivent pas le cacher
+  const routeActiveRef = useRef(false);
+  routeActiveRef.current = !!routeDestination;
 
   const userMarkerRef = useRef<L.Marker | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
@@ -193,7 +196,7 @@ const MapView = () => {
     // Fly to user position on first fix (only if no saved map position)
     if (!didFlyToUserRef.current && !sessionStorage.getItem('mapPosition')) {
       didFlyToUserRef.current = true;
-      map.flyTo([lat, lng], 15, { duration: 1.5 });
+      if (!routeActiveRef.current) map.flyTo([lat, lng], 15, { duration: 1.5 });
     }
   }, [geo.position]);
 
@@ -536,7 +539,7 @@ const MapView = () => {
 
       if (coords.length > 0) {
         const bounds = L.latLngBounds(coords);
-        if (bounds.isValid() && !map.getBounds().intersects(bounds)) {
+        if (bounds.isValid() && !routeActiveRef.current && !map.getBounds().intersects(bounds)) {
           map.fitBounds(bounds, {
             padding: [36, 36],
             maxZoom: 13,
@@ -579,6 +582,11 @@ const MapView = () => {
     destinationMarkerRef.current = L.marker([routeDestination.lat, routeDestination.lng], { icon: destIcon }).addTo(map);
 
     if (!geo.position) {
+      // Position en cours (ouverture depuis la page d'un événement) : on attend
+      if (geo.loading) {
+        setRouteInfo({ distanceKm: null, durationMin: null, loading: true, error: false });
+        return;
+      }
       toast.info(t('map.enableForRoute'));
       setRouteInfo({ distanceKm: null, durationMin: null, loading: false, error: true });
       return;
@@ -610,7 +618,8 @@ const MapView = () => {
         routeLayerRef.current = polyline;
         setRouteCoordinates(coords);
 
-        map.fitBounds(polyline.getBounds(), { padding: [60, 60], maxZoom: 15, animate: true });
+        // Marges : panneau d'itinéraire en haut, carte de l'événement + menu en bas
+        map.fitBounds(polyline.getBounds(), { paddingTopLeft: [70, 190], paddingBottomRight: [70, 360], maxZoom: 15, animate: true });
 
         setRouteInfo({
           distanceKm: route.distance / 1000,
@@ -626,7 +635,7 @@ const MapView = () => {
     })();
 
     return () => { cancelled = true; };
-  }, [routeDestination, geo.position]);
+  }, [routeDestination, geo.position, geo.loading]);
 
   // ========================================
   // Search & distance filter

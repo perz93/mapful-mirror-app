@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { BellRing, BellOff } from 'lucide-react';
 import { Pill } from '@/components/PillToast';
 import { useNotifications } from '@/contexts/NotificationContext';
+import { useSearch } from '@/contexts/SearchContext';
 
 const DISMISS_KEY = 'notif_prompt_dismissed';
 const DENIED_DISMISS_KEY = 'notif_denied_prompt_dismissed';
@@ -19,6 +20,7 @@ const NotificationPrompt = () => {
   const [visible, setVisible] = useState(false);
   const [animating, setAnimating] = useState(false);
   const [showSteps, setShowSteps] = useState(false);
+  const { routeDestination } = useSearch();
   const denied = permission === 'denied';
   const key = denied ? DENIED_DISMISS_KEY : DISMISS_KEY;
 
@@ -47,7 +49,8 @@ const NotificationPrompt = () => {
     setTimeout(() => { setVisible(false); setShowSteps(false); }, 300);
   };
 
-  if (!visible) return null;
+  // Pas par-dessus le panneau d'itinéraire
+  if (!visible || routeDestination) return null;
 
   const steps = isIOS() ? STEPS_IOS : STEPS_ANDROID;
 

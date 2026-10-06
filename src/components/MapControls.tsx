@@ -25,17 +25,17 @@ const MapControls = () => {
   return <>
       {/* Left side controls: Zoom + Position */}
       <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col items-start gap-3">
-        <div className="flex w-12 flex-col overflow-hidden rounded-[18px] bg-white dark:bg-stone-900/95 btn-float">
-          <button onClick={handleZoomIn} className="flex h-[50px] items-center justify-center active:bg-stone-100 transition-colors" aria-label="Zoom in">
-            <Plus className="text-ink dark:text-white" size={20} strokeWidth={1.9} />
+        <div className="flex w-10 flex-col overflow-hidden rounded-[14px] bg-white dark:bg-stone-900/95 btn-float">
+          <button onClick={handleZoomIn} className="flex h-10 items-center justify-center active:bg-stone-100 transition-colors" aria-label="Zoom in">
+            <Plus className="text-ink dark:text-white" size={17} strokeWidth={1.9} />
           </button>
-          <span className="mx-2.5 h-px bg-stone-200 dark:bg-stone-700/50" />
-          <button onClick={handleZoomOut} className="flex h-[50px] items-center justify-center active:bg-stone-100 transition-colors" aria-label="Zoom out">
-            <Minus className="text-ink dark:text-white" size={20} strokeWidth={1.9} />
+          <span className="mx-2 h-px bg-stone-200 dark:bg-stone-700/50" />
+          <button onClick={handleZoomOut} className="flex h-10 items-center justify-center active:bg-stone-100 transition-colors" aria-label="Zoom out">
+            <Minus className="text-ink dark:text-white" size={17} strokeWidth={1.9} />
           </button>
         </div>
-        <button onClick={handleRecenter} className="flex size-12 items-center justify-center rounded-2xl bg-white dark:bg-stone-900/95 btn-float active:scale-95 transition-transform" aria-label="Recentrer sur ma position">
-          <Navigation className="text-ink dark:text-white" size={20} strokeWidth={1.9} />
+        <button onClick={handleRecenter} className="flex size-10 items-center justify-center rounded-[13px] bg-white dark:bg-stone-900/95 btn-float active:scale-95 transition-transform" aria-label="Recentrer sur ma position">
+          <Navigation className="text-ink dark:text-white" size={17} strokeWidth={1.9} />
         </button>
       </div>
 
