@@ -1,4 +1,4 @@
-import { Plus, Minus, Crosshair, ShoppingCart } from 'lucide-react';
+import { Plus, Minus, Navigation, ShoppingCart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const MapControls = () => {
@@ -25,16 +25,17 @@ const MapControls = () => {
   return <>
       {/* Left side controls: Zoom + Position */}
       <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col items-start gap-3">
-        <div className="flex flex-col gap-0 btn-float rounded-full overflow-hidden">
-          <button onClick={handleZoomIn} className="flex size-10 items-center justify-center bg-white dark:bg-stone-900/95 hover:bg-white dark:hover:bg-stone-800 transition-colors border-b border-stone-200 dark:border-stone-700/50" aria-label="Zoom in">
-            <Plus className="text-ink dark:text-white" size={18} strokeWidth={1.75} />
+        <div className="flex w-12 flex-col overflow-hidden rounded-[18px] bg-white dark:bg-stone-900/95 btn-float">
+          <button onClick={handleZoomIn} className="flex h-[50px] items-center justify-center active:bg-stone-100 transition-colors" aria-label="Zoom in">
+            <Plus className="text-ink dark:text-white" size={20} strokeWidth={1.9} />
           </button>
-          <button onClick={handleZoomOut} className="flex size-10 items-center justify-center bg-white dark:bg-stone-900/95 hover:bg-white dark:hover:bg-stone-800 transition-colors" aria-label="Zoom out">
-            <Minus className="text-ink dark:text-white" size={18} strokeWidth={1.75} />
+          <span className="mx-2.5 h-px bg-stone-200 dark:bg-stone-700/50" />
+          <button onClick={handleZoomOut} className="flex h-[50px] items-center justify-center active:bg-stone-100 transition-colors" aria-label="Zoom out">
+            <Minus className="text-ink dark:text-white" size={20} strokeWidth={1.9} />
           </button>
         </div>
-        <button onClick={handleRecenter} className="flex size-10 items-center justify-center rounded-full bg-white dark:bg-stone-900/95 btn-float hover:bg-white dark:hover:bg-stone-800 transition-colors" aria-label="Recentrer sur ma position">
-          <Crosshair className="text-ink dark:text-white" size={18} strokeWidth={1.75} />
+        <button onClick={handleRecenter} className="flex size-12 items-center justify-center rounded-2xl bg-white dark:bg-stone-900/95 btn-float active:scale-95 transition-transform" aria-label="Recentrer sur ma position">
+          <Navigation className="text-ink dark:text-white" size={20} strokeWidth={1.9} />
         </button>
       </div>
 
