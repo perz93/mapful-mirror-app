@@ -15,13 +15,13 @@ const EventCategoryChips = ({ active }: { active: string }) => {
   }, [active]);
 
   const chip = (on: boolean) =>
-    `snap-start flex-shrink-0 inline-flex items-center gap-2 h-12 rounded-full text-[13px] font-medium border transition-colors duration-200 active:scale-95 ${
-      on ? 'bg-ink text-parchment border-ink' : 'bg-white text-ink border-stone-200 hover:border-ink'
+    `snap-start flex-shrink-0 inline-flex items-center gap-2 h-12 rounded-full text-[13px] font-medium btn-float transition-colors duration-200 active:scale-95 ${
+      on ? 'bg-ink text-parchment' : 'bg-white text-ink'
     }`;
 
   return (
     <div className="sticky-chips">
-      <div ref={rowRef} className="flex gap-2 overflow-x-auto px-4 scroll-px-4 pb-1 scrollbar-hide snap-x">
+      <div ref={rowRef} className="flex gap-2 overflow-x-auto px-4 scroll-px-4 pt-2 pb-7 -mt-2 -mb-6 scrollbar-hide snap-x">
         <Link to="/evenements" replace state={{ chip: true }} data-active={active === 'all'} className={`${chip(active === 'all')} px-4`}>
           {t('market.all')}
         </Link>

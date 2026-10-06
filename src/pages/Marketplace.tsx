@@ -83,13 +83,13 @@ const Marketplace = () => {
       {/* Filtres de catégorie — sans animation d'entrée : Safari iOS pouvait
           laisser la rangée bloquée à opacity 0 (animation retardée + défilement). */}
       <div className="sticky-chips">
-        <div className="flex gap-2 overflow-x-auto px-4 scroll-px-4 pb-1 scrollbar-hide snap-x">
+        <div className="flex gap-2 overflow-x-auto px-4 scroll-px-4 pt-2 pb-7 -mt-2 -mb-6 scrollbar-hide snap-x">
           <button
             onClick={() => setSelectedCategory('all')}
-            className={`snap-start flex-shrink-0 inline-flex items-center h-12 rounded-full px-4 text-[13px] font-medium border transition-colors duration-200 active:scale-95 ${
+            className={`snap-start flex-shrink-0 inline-flex items-center h-12 rounded-full px-4 text-[13px] font-medium btn-float transition-colors duration-200 active:scale-95 ${
               selectedCategory === 'all'
-                ? 'bg-ink text-parchment border-ink'
-                : 'bg-white text-ink border-stone-200 hover:border-ink'
+                ? 'bg-ink text-parchment'
+                : 'bg-white text-ink'
             }`}
           >
             {t('market.all')}
@@ -102,10 +102,10 @@ const Marketplace = () => {
               <button
                 key={key}
                 onClick={() => setSelectedCategory(key)}
-                className={`snap-start flex-shrink-0 inline-flex items-center gap-2 h-12 rounded-full pl-1.5 pr-4 text-[13px] font-medium border transition-colors duration-200 active:scale-95 ${
+                className={`snap-start flex-shrink-0 inline-flex items-center gap-2 h-12 rounded-full pl-1.5 pr-4 text-[13px] font-medium btn-float transition-colors duration-200 active:scale-95 ${
                   active
-                    ? 'bg-ink text-parchment border-ink'
-                    : 'bg-white text-ink border-stone-200 hover:border-ink'
+                    ? 'bg-ink text-parchment'
+                    : 'bg-white text-ink'
                 }`}
               >
                 <span className={`flex size-9 flex-shrink-0 items-center justify-center rounded-full ${active ? 'bg-lime text-ink' : 'bg-parchment text-ink'}`}>
