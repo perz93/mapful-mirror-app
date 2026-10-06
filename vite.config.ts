@@ -4,6 +4,15 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from 'vite-plugin-pwa';
 
+// Adresse absolue du site pour l'image d'aperçu (og:image) : celle du
+// déploiement en cours sur Vercel (aperçu ou production), sinon la prod.
+const siteOrigin = (() => {
+  const e = process.env;
+  if (e.VERCEL_ENV === 'production' && e.VERCEL_PROJECT_PRODUCTION_URL) return `https://${e.VERCEL_PROJECT_PRODUCTION_URL}`;
+  if (e.VERCEL_BRANCH_URL) return `https://${e.VERCEL_BRANCH_URL}`;
+  return 'https://vibe-perz93s-projects.vercel.app';
+})();
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
@@ -11,6 +20,10 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [
+    {
+      name: 'site-origin',
+      transformIndexHtml: (html: string) => html.split('%SITE_ORIGIN%').join(siteOrigin),
+    },
     react(),
     mode === 'development' && componentTagger(),
     VitePWA({
