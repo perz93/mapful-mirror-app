@@ -27,7 +27,7 @@ const translations: Record<string, Record<Lang, string>> = {
   'auth.codeTitle': { fr: "Entrez le code", en: "Enter the code" },
   'auth.codeSentTo': { fr: "Nous avons envoyé un code à", en: "We sent a code to" },
   'auth.codeHint': { fr: "Pensez à vérifier vos spams.", en: "Check your spam folder too." },
-  'auth.codePlaceholder': { fr: "Code à 6 chiffres", en: "6-digit code" },
+  'auth.codePlaceholder': { fr: "Code reçu par e-mail", en: "Code from the email" },
   'auth.verifySignup': { fr: "Activer mon compte", en: "Activate my account" },
   'auth.verifyReset': { fr: "Continuer", en: "Continue" },
   'auth.resendCode': { fr: "Renvoyer le code", en: "Resend code" },

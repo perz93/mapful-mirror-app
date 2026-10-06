@@ -107,7 +107,7 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sentTo, setSentTo] = useState<string | null>(null); // adresse à qui le code a été envoyé
-  // Code à 6 chiffres reçu par e-mail : il remplace les liens, qui s'ouvrent
+  // Code (6 à 8 chiffres selon le réglage Supabase) reçu par e-mail : il remplace les liens, qui s'ouvrent
   // dans Safari et non dans l'app installée (limite iOS des web apps).
   const [codeFor, setCodeFor] = useState<"signup" | "recovery" | null>(null);
   const [code, setCode] = useState("");
