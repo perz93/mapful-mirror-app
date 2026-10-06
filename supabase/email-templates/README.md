@@ -8,10 +8,10 @@ par le contenu du fichier `.html` correspondant, et enregistrer.
 |------------------------|---------------------|----------------------------------------|
 | Confirm signup         | `confirmation.html` | Ton code d'activation · VIBE |
 | Reset Password         | `recovery.html`     | Ton code de réinitialisation · VIBE |
-| Change Email Address   | `email-change.html` | Confirme ta nouvelle adresse e-mail    |
+| Change Email Address   | `email-change.html` | Ton code de confirmation · VIBE |
 | Magic Link             | `magic-link.html`   | Ton lien de connexion VIBE             |
 
-Inscription et mot de passe oublié envoient un **code à 6 chiffres** (`{{ .Token }}`)
+Inscription, mot de passe oublié et changement d'e-mail envoient un **code à 6 chiffres** (`{{ .Token }}`)
 saisi dans l'app : un lien ouvrirait Safari au lieu de l'app installée sur iPhone.
 
 Les variables `{{ .Token }}`, `{{ .ConfirmationURL }}`, `{{ .Email }}` et `{{ .NewEmail }}` sont

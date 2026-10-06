@@ -22,6 +22,11 @@ const Settings = () => {
 
   // Email form
   const [newEmail, setNewEmail] = useState('');
+  // Code reçu par e-mail (pas de lien : il ouvrirait Safari hors de l'app).
+  // Si Supabase exige une double confirmation, un 2e code arrive sur l'ancienne adresse.
+  const [codeTo, setCodeTo] = useState<string | null>(null);
+  const [pendingEmail, setPendingEmail] = useState('');
+  const [emailCode, setEmailCode] = useState('');
 
   // Password form
   const [newPassword, setNewPassword] = useState('');
@@ -82,12 +87,39 @@ const Settings = () => {
     if (!newEmail || !user) return;
     setUpdating(true);
     try {
-      const { error } = await supabase.auth.updateUser({ email: newEmail });
+      const address = newEmail.trim();
+      const { error } = await supabase.auth.updateUser({ email: address });
       if (error) throw error;
-      toast.success(lang === 'fr' ? 'Un email de confirmation a été envoyé à votre nouvelle adresse' : 'A confirmation email has been sent to your new address');
+      setPendingEmail(address);
+      setCodeTo(address);
+      setEmailCode('');
       setNewEmail('');
     } catch (error: any) {
       toast.error(error.message || t('common.error'));
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleVerifyEmailCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!codeTo || emailCode.length < 6) return;
+    setUpdating(true);
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({ email: codeTo, token: emailCode, type: 'email_change' });
+      if (error) throw error;
+      if (data.user?.email?.toLowerCase() === pendingEmail.toLowerCase()) {
+        toast.success(t('settings.emailChanged'));
+        setCodeTo(null);
+      } else {
+        // Double confirmation : il manque le code envoyé à l'autre adresse
+        const other = codeTo.toLowerCase() === pendingEmail.toLowerCase() ? user?.email ?? '' : pendingEmail;
+        setCodeTo(other);
+        setEmailCode('');
+        toast.info(t('settings.emailSecondCode'));
+      }
+    } catch {
+      toast.error(t('auth.errCode'));
     } finally {
       setUpdating(false);
     }
@@ -169,6 +201,38 @@ const Settings = () => {
             <p className="text-sm text-stone-500 mb-4">
               {t('settings.emailCurrent')}: {user.email}
             </p>
+            {codeTo ? (
+            <form onSubmit={handleVerifyEmailCode} className="space-y-4">
+              <p className="text-sm text-stone-600">
+                {t('auth.codeSentTo')} <span className="font-medium text-ink">{codeTo}</span>. {t('auth.codeHint')}
+              </p>
+              <input
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                pattern="[0-9]*"
+                maxLength={8}
+                autoFocus
+                aria-label={t('auth.codePlaceholder')}
+                placeholder={t('auth.codePlaceholder')}
+                value={emailCode}
+                onChange={e => setEmailCode(e.target.value.replace(/\D/g, '').slice(0, 8))}
+                className="w-full h-14 rounded-xl bg-white border border-stone-300 text-ink text-center text-2xl font-semibold tracking-[0.4em] placeholder:text-base placeholder:font-normal placeholder:tracking-normal placeholder:text-stone-400 px-4 focus:outline-none focus:ring-0 focus:border-ink"
+              />
+              <div className="flex items-center gap-3">
+                <button
+                  type="submit"
+                  disabled={updating || emailCode.length < 6}
+                  className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-lime text-ink text-sm font-medium hover:bg-lime-deep transition-colors active:scale-95 disabled:opacity-50"
+                >
+                  {t('settings.emailConfirm')}
+                </button>
+                <button type="button" onClick={() => setCodeTo(null)} className="h-10 px-3 text-sm font-medium text-stone-500 hover:text-ink">
+                  {t('settings.emailCancel')}
+                </button>
+              </div>
+            </form>
+            ) : (
             <form onSubmit={handleUpdateEmail} className="space-y-4">
               <div>
                 <label htmlFor="new-email" className="block text-sm font-medium text-stone-600 mb-1.5">
@@ -191,6 +255,7 @@ const Settings = () => {
                 {updating ? t('settings.emailUpdating') : t('settings.emailUpdate')}
               </button>
             </form>
+            )}
           </div>
 
           {/* Password Section */}
