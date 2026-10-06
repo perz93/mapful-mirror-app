@@ -2,7 +2,7 @@ import LargeTitle from '@/components/LargeTitle';
 import { useLocation, useNavigate } from 'react-router-dom';
 import EmptyState from '@/components/EmptyState';
 import ShimmerImage from '@/components/ShimmerImage';
-import { ArrowLeft, BellRing, BellOff, CalendarDays, CheckCheck, Clock, MapPin, Sparkles, type LucideIcon } from 'lucide-react';
+import { ArrowLeft, BellRing, BellOff, CalendarDays, CalendarPlus, CheckCheck, Clock, MapPin, type LucideIcon } from 'lucide-react';
 import { useNotificationInbox, type NotificationItem } from '@/hooks/useNotificationInbox';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -11,7 +11,7 @@ import { fr } from 'date-fns/locale';
 
 // Icône (trait fin) et libellé par type de notification
 const TYPES: Record<string, { icon: LucideIcon; label: string }> = {
-  new_event: { icon: Sparkles, label: 'Nouvel événement' },
+  new_event: { icon: CalendarPlus, label: 'Nouvel événement' },
   proximity: { icon: MapPin, label: 'Près de toi' },
   event_reminder: { icon: BellRing, label: 'Rappel' },
   event_tomorrow: { icon: CalendarDays, label: 'Demain' },
