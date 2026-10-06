@@ -19,7 +19,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { getEventCategory } from '@/lib/eventCategories';
 import { useSearch } from '@/contexts/SearchContext';
 import { useNotifications } from '@/contexts/NotificationContext';
-import { eventStatus, splitLead } from '@/lib/eventStatus';
+import { eventStatus } from '@/lib/eventStatus';
 
 
 const EventDetails = () => {
@@ -260,17 +260,13 @@ const EventDetails = () => {
             </section>
           )}
 
-          {/* À propos : la 1re phrase en accroche, la suite en texte courant */}
-          {event.description && (() => {
-            const { lead, rest } = splitLead(event.description);
-            return (
-              <section>
-                <h2 className="eyebrow text-stone-500 mb-3">{t('event.about')}</h2>
-                {lead && <p className="font-display text-[21px] leading-[1.12] tracking-[-0.02em] text-ink dark:text-white">{lead}</p>}
-                {rest && <p className={`${lead ? 'mt-3' : ''} text-[14.5px] leading-[1.6] text-ink/75 dark:text-stone-300 whitespace-pre-line`}>{rest}</p>}
-              </section>
-            );
-          })()}
+          {/* À propos : un seul style de texte, uniforme */}
+          {event.description && (
+            <section>
+              <h2 className="eyebrow text-stone-500 mb-3">{t('event.about')}</h2>
+              <p className="text-[14px] leading-[1.6] text-ink/80 dark:text-stone-300 whitespace-pre-line">{event.description}</p>
+            </section>
+          )}
         </div>
       </div>
 

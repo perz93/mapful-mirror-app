@@ -9,7 +9,6 @@ import { toast } from '@/components/PillToast';
 import ImageLightbox from '@/components/ImageLightbox';
 import ShimmerImage from '@/components/ShimmerImage';
 import { marketplaceCategoryLabel } from '@/lib/marketplaceCategories';
-import { splitLead } from '@/lib/eventStatus';
 import { useDarkPageBackground } from '@/hooks/useDarkPageBackground';
 
 const priceTypeLabels: Record<string, Record<string, string>> = {
@@ -112,7 +111,6 @@ const ListingDetails = () => {
 
   const priceValue = listing.price !== null ? `${listing.price.toLocaleString('fr-FR')} FCFA` : priceLabel || (lang === 'fr' ? 'Sur devis' : 'On quote');
   const priceSub = listing.price !== null && listing.price_type && listing.price_type !== 'fixed' ? priceLabel : (lang === 'fr' ? 'Prix fixe' : 'Fixed price');
-  const { lead, rest } = listing.description ? splitLead(listing.description) : { lead: null, rest: '' };
   const hasContacts = !!(listing.contact_phone || listing.contact_whatsapp || listing.contact_instagram || listing.contact_facebook || listing.contact_tiktok || listing.contact_twitter || listing.contact_email);
   const roundBtn = 'inline-flex size-12 btn-float items-center justify-center rounded-full active:scale-95 transition-transform';
 
@@ -173,12 +171,11 @@ const ListingDetails = () => {
             )}
           </div>
 
-          {/* À propos : la 1re phrase en accroche */}
+          {/* À propos : un seul style de texte, uniforme */}
           {listing.description && (
             <section>
               <h2 className="eyebrow text-stone-500 mb-3">{lang === 'fr' ? 'À propos' : 'About'}</h2>
-              {lead && <p className="font-display text-[21px] leading-[1.12] tracking-[-0.02em] text-ink">{lead}</p>}
-              {rest && <p className={`${lead ? 'mt-3' : ''} text-[14.5px] leading-[1.6] text-ink/75 whitespace-pre-line`}>{rest}</p>}
+              <p className="text-[14px] leading-[1.6] text-ink/80 whitespace-pre-line">{listing.description}</p>
             </section>
           )}
         </div>
