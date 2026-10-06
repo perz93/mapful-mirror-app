@@ -112,9 +112,6 @@ const ListingDetails = () => {
 
   const priceValue = listing.price !== null ? `${listing.price.toLocaleString('fr-FR')} FCFA` : priceLabel || (lang === 'fr' ? 'Sur devis' : 'On quote');
   const priceSub = listing.price !== null && listing.price_type && listing.price_type !== 'fixed' ? priceLabel : (lang === 'fr' ? 'Prix fixe' : 'Fixed price');
-  const mapsUrl = listing.location
-    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${listing.location}, Abidjan`)}`
-    : null;
   const { lead, rest } = listing.description ? splitLead(listing.description) : { lead: null, rest: '' };
   const hasContacts = !!(listing.contact_phone || listing.contact_whatsapp || listing.contact_instagram || listing.contact_facebook || listing.contact_tiktok || listing.contact_twitter || listing.contact_email);
   const roundBtn = 'inline-flex size-12 btn-float items-center justify-center rounded-full active:scale-95 transition-transform';
@@ -163,12 +160,11 @@ const ListingDetails = () => {
               <p className="font-display mt-1.5 text-[22px] leading-none tracking-tight text-ink tabular">{priceValue}</p>
               <p className="mt-1 truncate text-xs text-stone-500">{priceSub}</p>
             </div>
-            {mapsUrl ? (
-              <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="card-shadow rounded-[20px] bg-white p-3.5 active:scale-[0.99] transition-transform">
+            {listing.location ? (
+              <div className="card-shadow rounded-[20px] bg-white p-3.5">
                 <p className="eyebrow text-stone-500">{lang === 'fr' ? 'Lieu' : 'Location'}</p>
                 <p className="font-display mt-1.5 text-[19px] leading-[1.05] tracking-tight text-ink line-clamp-2">{listing.location}</p>
-                <p className="mt-1 text-xs font-semibold text-lime-deep">{lang === 'fr' ? 'Voir sur la carte →' : 'View on map →'}</p>
-              </a>
+              </div>
             ) : (
               <div className="card-shadow rounded-[20px] bg-white p-3.5">
                 <p className="eyebrow text-stone-500">{lang === 'fr' ? 'Catégorie' : 'Category'}</p>
@@ -181,8 +177,8 @@ const ListingDetails = () => {
           {listing.description && (
             <section>
               <h2 className="eyebrow text-stone-500 mb-3">{lang === 'fr' ? 'À propos' : 'About'}</h2>
-              {lead && <p className="font-display text-[26px] leading-[1.08] tracking-[-0.03em] text-ink">{lead}</p>}
-              {rest && <p className={`${lead ? 'mt-3' : ''} text-base leading-[1.6] text-ink/75 whitespace-pre-line`}>{rest}</p>}
+              {lead && <p className="font-display text-[21px] leading-[1.12] tracking-[-0.02em] text-ink">{lead}</p>}
+              {rest && <p className={`${lead ? 'mt-3' : ''} text-[14.5px] leading-[1.6] text-ink/75 whitespace-pre-line`}>{rest}</p>}
             </section>
           )}
         </div>

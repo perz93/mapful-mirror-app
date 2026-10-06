@@ -176,10 +176,10 @@ const Marketplace = () => {
                       <div className="min-w-0 flex-1 px-2 py-1.5">
                         <h3 className="font-display text-[19px] leading-[1.05] tracking-[-0.03em] text-ink line-clamp-2">{listing.title}</h3>
                         {listing.location && (
-                          <p className="mt-1 flex items-center gap-1 truncate text-[12.5px] text-stone-500">
-                            <MapPin size={12} strokeWidth={2} className="flex-shrink-0" />
+                          <span className="mt-2 inline-flex h-[26px] min-w-0 max-w-full items-center gap-1 rounded-full bg-parchment px-2.5 text-[12px] font-semibold text-ink">
+                            <MapPin size={13} strokeWidth={2.2} className="flex-shrink-0" />
                             <span className="truncate">{listing.location}</span>
-                          </p>
+                          </span>
                         )}
                       </div>
                       {/* Prix en ticket vert */}

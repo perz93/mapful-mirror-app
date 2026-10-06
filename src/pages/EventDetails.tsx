@@ -266,8 +266,8 @@ const EventDetails = () => {
             return (
               <section>
                 <h2 className="eyebrow text-stone-500 mb-3">{t('event.about')}</h2>
-                {lead && <p className="font-display text-[26px] leading-[1.08] tracking-[-0.03em] text-ink dark:text-white">{lead}</p>}
-                {rest && <p className={`${lead ? 'mt-3' : ''} text-base leading-[1.6] text-ink/75 dark:text-stone-300 whitespace-pre-line`}>{rest}</p>}
+                {lead && <p className="font-display text-[21px] leading-[1.12] tracking-[-0.02em] text-ink dark:text-white">{lead}</p>}
+                {rest && <p className={`${lead ? 'mt-3' : ''} text-[14.5px] leading-[1.6] text-ink/75 dark:text-stone-300 whitespace-pre-line`}>{rest}</p>}
               </section>
             );
           })()}
