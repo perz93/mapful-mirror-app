@@ -14,6 +14,6 @@ par le contenu du fichier `.html` correspondant, et enregistrer.
 Les variables `{{ .ConfirmationURL }}`, `{{ .Email }}` et `{{ .NewEmail }}` sont
 remplacées automatiquement par Supabase : ne pas les modifier.
 
-Style « Poster lime » (E4). Mise en page : tableaux + styles en ligne et
+Style « Bandeau noir » (P2). Mise en page : tableaux + styles en ligne et
 polices système (Arial), compatibles Gmail, Outlook et Apple Mail. Aucune image : le logo
 « vibe. » et les catégories sont en texte, rien n'est bloqué par les messageries.
