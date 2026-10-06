@@ -6,8 +6,8 @@ import { pwaUpdate } from '@/lib/pwaUpdate';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const UPDATED_KEY = 'vibe-just-updated';
-// Même découpe en V que le splash (index.html)
-const PHOTO_CLIP = 'polygon(0 0,100% 0,100% 60%,50% 100%,0 60%)';
+// Même V doux que le splash (index.html)
+const PHOTO_MASK = "url('/splash-v-mask.png') center / 100% 100% no-repeat";
 
 /** Bandeau « Nouvelle version » : l'utilisateur met à jour quand il veut. */
 const UpdateBanner = () => {
@@ -45,16 +45,8 @@ const UpdateBanner = () => {
       <div className="fixed inset-0 z-[10000] overflow-hidden bg-black animate-fade-in" role="status" aria-live="polite">
         <div
           className="absolute inset-x-0 top-0 h-[62%] bg-cover bg-top"
-          style={{ backgroundImage: "url('/splash-photo-2.jpg')", WebkitClipPath: PHOTO_CLIP, clipPath: PHOTO_CLIP }}
+          style={{ backgroundImage: "url('/splash-photo-2.jpg')", WebkitMask: PHOTO_MASK, mask: PHOTO_MASK }}
         />
-        <svg
-          viewBox="0 0 100 100"
-          preserveAspectRatio="none"
-          aria-hidden
-          className="absolute inset-x-0 top-0 h-[62%] w-full overflow-visible"
-        >
-          <polyline points="0,60 50,100 100,60" fill="none" stroke="#a6e22e" strokeWidth={3} vectorEffect="non-scaling-stroke" />
-        </svg>
         <div
           className="absolute inset-0"
           style={{ background: 'linear-gradient(180deg,rgba(0,0,0,0.35) 0%,rgba(0,0,0,0) 12%)' }}
