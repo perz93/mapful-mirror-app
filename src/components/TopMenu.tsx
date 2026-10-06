@@ -48,7 +48,7 @@ const TopMenu = () => {
           <button
             onClick={() => navigate(isLoggedIn ? '/notifications' : '/auth')}
             aria-label="Notifications"
-            className="pointer-events-auto relative h-12 w-12 rounded-full bg-white dark:bg-stone-900/90 hover:bg-white transition-all duration-300 active:scale-95 flex items-center justify-center mt-2 shadow-lg"
+            className="pointer-events-auto relative h-12 w-12 rounded-full bg-white dark:bg-stone-900/90 hover:bg-white transition-all duration-300 active:scale-95 flex items-center justify-center mt-2 btn-float"
           >
             <BellRing size={20} strokeWidth={1.75} className="text-ink" />
             {unreadCount > 0 && (
@@ -66,7 +66,7 @@ const TopMenu = () => {
             onClick={() => setIsOpen((v) => !v)}
             aria-expanded={isOpen}
             aria-label={isOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
-            className={`pointer-events-auto relative h-12 w-12 rounded-full transition-all duration-300 active:scale-95 flex items-center justify-center mt-2 shadow-lg ${isOpen ? 'bg-ink' : 'bg-white dark:bg-stone-900/90'}`}
+            className={`pointer-events-auto relative h-12 w-12 rounded-full transition-all duration-300 active:scale-95 flex items-center justify-center mt-2 btn-float ${isOpen ? 'bg-ink' : 'bg-white dark:bg-stone-900/90'}`}
           >
             <div className={`relative transition-transform duration-500 ease-in-out ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
               {isOpen ? <X size={22} strokeWidth={1.75} className="text-parchment" /> : <div className="flex flex-col gap-1 items-center">

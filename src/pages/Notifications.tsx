@@ -1,8 +1,9 @@
+import { useState } from 'react';
 import LargeTitle from '@/components/LargeTitle';
 import { useLocation, useNavigate } from 'react-router-dom';
 import EmptyState from '@/components/EmptyState';
 import ShimmerImage from '@/components/ShimmerImage';
-import { ArrowLeft, BellRing, BellOff, CalendarDays, CalendarPlus, CheckCheck, Clock, MapPin, type LucideIcon } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BellRing, BellOff, CalendarDays, CalendarPlus, CheckCheck, Clock, MapPin, type LucideIcon } from 'lucide-react';
 import { useNotificationInbox, type NotificationItem } from '@/hooks/useNotificationInbox';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -45,11 +46,16 @@ const Notifications = () => {
     else navigate('/', { replace: true });
   };
 
-  const open = (notif: NotificationItem) => {
+  // Un tap ouvre la carte pour lire tout le message ; le lien éventuel
+  // (événement…) est proposé dans la carte ouverte.
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const toggle = (notif: NotificationItem) => {
     if (!notif.is_read) markAsRead(notif.id);
-    // Ne pas empiler la même page (sinon il faut appuyer plusieurs fois sur retour)
-    if (notif.url && notif.url !== location.pathname) navigate(notif.url);
+    setExpanded((cur) => (cur === notif.id ? null : notif.id));
   };
+  // Ne pas empiler la même page (sinon il faut appuyer plusieurs fois sur retour)
+  const linkOf = (notif: NotificationItem) =>
+    notif.url && notif.url !== '/' && notif.url !== location.pathname ? notif.url : null;
   const { t } = useLanguage();
   const { notifications, unreadCount, loading, markAsRead, markAllAsRead } = useNotificationInbox();
 
@@ -127,11 +133,17 @@ const Notifications = () => {
                   <div className="flex flex-col gap-2">
                     {items.map((notif) => {
                       const { icon: Icon, label } = typeOf(notif.notification_type);
+                      const isOpen = expanded === notif.id;
+                      const link = linkOf(notif);
                       return (
-                        <button
+                        <div
                           key={notif.id}
-                          onClick={() => open(notif)}
-                          className="flex w-full items-center gap-3.5 rounded-3xl bg-white p-3 text-left transition-transform active:scale-[0.98]"
+                          role="button"
+                          tabIndex={0}
+                          aria-expanded={isOpen}
+                          onClick={() => toggle(notif)}
+                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(notif); } }}
+                          className={`flex w-full gap-3.5 rounded-3xl bg-white p-3 text-left transition-transform active:scale-[0.99] ${isOpen ? 'items-start' : 'items-center'}`}
                         >
                           <div className="relative size-14 flex-shrink-0 overflow-hidden rounded-2xl bg-parchment">
                             {notif.image_url ? (
@@ -148,18 +160,28 @@ const Notifications = () => {
                               <Icon size={13} strokeWidth={2} className="flex-shrink-0" />
                               <span className="truncate">{label} · {formatTimeAgo(notif.created_at)}</span>
                             </p>
-                            <p className={`mt-0.5 line-clamp-2 text-[15px] leading-snug text-ink ${notif.is_read ? 'font-medium' : 'font-bold'}`}>
+                            <p className={`mt-0.5 text-[15px] leading-snug text-ink ${isOpen ? '' : 'line-clamp-2'} ${notif.is_read ? 'font-medium' : 'font-bold'}`}>
                               {cleanTitle(notif.title)}
                             </p>
                             {notif.body && (
-                              <p className="mt-0.5 line-clamp-1 text-[13px] leading-snug text-stone-500">{notif.body}</p>
+                              <p className={`mt-0.5 text-[13px] leading-snug text-stone-500 ${isOpen ? 'whitespace-pre-line' : 'line-clamp-1'}`}>{notif.body}</p>
+                            )}
+                            {isOpen && link && (
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); navigate(link); }}
+                                className="mt-3 inline-flex h-10 items-center gap-1.5 rounded-full bg-lime px-4 text-sm font-semibold text-ink active:scale-95 transition-transform"
+                              >
+                                {link.startsWith('/event/') ? "Voir l'événement" : 'Ouvrir'}
+                                <ArrowRight size={16} strokeWidth={2} />
+                              </button>
                             )}
                           </div>
 
                           {!notif.is_read && (
                             <span aria-label="Non lue" className="size-2.5 flex-shrink-0 self-start mt-2 rounded-full bg-lime ring-4 ring-lime/25" />
                           )}
-                        </button>
+                        </div>
                       );
                     })}
                   </div>
