@@ -17,6 +17,8 @@ const translations: Record<string, Record<Lang, string>> = {
   // ==================== AUTH ====================
   'update.available': { fr: 'Nouvelle version disponible', en: 'New version available' },
   'update.cta': { fr: 'Mettre à jour', en: 'Update' },
+  'update.installing': { fr: 'On installe les nouveautés', en: 'Installing what’s new' },
+  'update.done': { fr: 'VIBE est à jour', en: 'VIBE is up to date' },
   'auth.tabLogin': { fr: "Connexion", en: "Log in" },
   'auth.tabSignup': { fr: "Inscription", en: "Sign up" },
   'auth.forgotTitle': { fr: "Mot de passe oublié", en: "Forgot password" },
