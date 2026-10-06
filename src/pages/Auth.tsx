@@ -106,7 +106,13 @@ const Auth = () => {
   const [capsLock, setCapsLock] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [sentTo, setSentTo] = useState<string | null>(null); // écran « vérifiez votre boîte mail »
+  const [sentTo, setSentTo] = useState<string | null>(null); // adresse à qui le code a été envoyé
+  // Code à 6 chiffres reçu par e-mail : il remplace les liens, qui s'ouvrent
+  // dans Safari et non dans l'app installée (limite iOS des web apps).
+  const [codeFor, setCodeFor] = useState<"signup" | "recovery" | null>(null);
+  const [code, setCode] = useState("");
+  const [resendIn, setResendIn] = useState(0);
+  const recoveringRef = useRef(false); // vérif. du code de réinitialisation en cours
   const firstFieldRef = useRef<HTMLInputElement>(null);
   const [flip, setFlip] = useState<Flip>("idle");
   const [flipDir, setFlipDir] = useState<1 | -1>(1);
@@ -158,13 +164,29 @@ const Auth = () => {
 
   // Déjà connecté → accueil (sauf pendant la saisie d'un nouveau mot de passe)
   useEffect(() => {
-    if (user && mode !== "reset") navigate("/");
+    if (user && mode !== "reset" && !recoveringRef.current) navigate("/");
   }, [user, mode, navigate]);
+
+  // Délai avant de pouvoir redemander un code
+  useEffect(() => {
+    if (resendIn <= 0) return;
+    const id = window.setTimeout(() => setResendIn((n) => n - 1), 1000);
+    return () => window.clearTimeout(id);
+  }, [resendIn]);
+
+  const showCodeScreen = (address: string, kind: "signup" | "recovery") => {
+    setSentTo(address);
+    setCodeFor(kind);
+    setCode("");
+    setResendIn(30);
+  };
 
   // Changement d'onglet : on nettoie l'état et on place le curseur
   useEffect(() => {
     setError(null);
     setSentTo(null);
+    setCodeFor(null);
+    setCode("");
     setPassword("");
     setConfirmPassword("");
     setShowPassword(false);
@@ -186,10 +208,50 @@ const Auth = () => {
     setCapsLock(e.getModifierState?.("CapsLock") ?? false);
   };
 
+  const sendCode = async (kind: "signup" | "recovery", address: string) =>
+    kind === "signup"
+      ? supabase.auth.resend({ type: "signup", email: address, options: { emailRedirectTo: `${getSiteUrl()}/` } })
+      : supabase.auth.resetPasswordForEmail(address, { redirectTo: `${getSiteUrl()}/auth?mode=reset` });
+
+  const resendCode = async () => {
+    if (!sentTo || !codeFor || resendIn > 0) return;
+    setError(null);
+    const { error } = await sendCode(codeFor, sentTo);
+    if (error) setError(t(errorKey(error)));
+    else {
+      toast.success(t("auth.codeResent"));
+      setResendIn(30);
+    }
+  };
+
+  const verifyCode = async () => {
+    if (!sentTo || !codeFor) return;
+    const token = code.replace(/\D/g, "");
+    if (token.length < 6) return setError(t("auth.errCode"));
+    setLoading(true);
+    try {
+      if (codeFor === "recovery") recoveringRef.current = true;
+      const { error } = await supabase.auth.verifyOtp({ email: sentTo, token, type: codeFor });
+      if (error) {
+        recoveringRef.current = false;
+        const key = errorKey(error);
+        return setError(t(key === "auth.errGeneric" ? "auth.errCode" : key));
+      }
+      if (codeFor === "recovery") setMode("reset"); // connecté : on choisit le nouveau mot de passe
+      else {
+        toast.success(t("auth.accountActivated"));
+        navigate("/");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
     setError(null);
+    if (codeFor) return verifyCode();
 
     if (needsStrongPassword) {
       if (password.length < MIN_PASSWORD) return setError(t("auth.errWeak"));
@@ -201,22 +263,26 @@ const Auth = () => {
     try {
       if (mode === "login") {
         const { error } = await signIn(email.trim(), password);
-        if (error) setError(t(errorKey(error)));
+        if (error && errorKey(error) === "auth.errNotConfirmed") {
+          // Compte pas encore activé : on renvoie un code et on le demande
+          const { error: sendError } = await sendCode("signup", email.trim());
+          if (sendError) setError(t(errorKey(sendError)));
+          else showCodeScreen(email.trim(), "signup");
+        } else if (error) setError(t(errorKey(error)));
       } else if (mode === "signup") {
         const { error, needsConfirmation } = await signUp(email.trim(), password, fullName.trim());
         if (error) setError(t(errorKey(error)));
-        else if (needsConfirmation) setSentTo(email.trim());
+        else if (needsConfirmation) showCodeScreen(email.trim(), "signup");
       } else if (mode === "forgot") {
         if (!email.trim()) return setError(t("auth.enterEmail"));
-        const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-          redirectTo: `${getSiteUrl()}/auth?mode=reset`,
-        });
+        const { error } = await sendCode("recovery", email.trim());
         if (error) setError(t(errorKey(error)));
-        else setSentTo(email.trim());
+        else showCodeScreen(email.trim(), "recovery");
       } else {
         const { error } = await supabase.auth.updateUser({ password });
         if (error) setError(t(errorKey(error)));
         else {
+          recoveringRef.current = false;
           toast.success(t("auth.resetDone"));
           navigate("/");
         }
@@ -296,17 +362,54 @@ const Auth = () => {
             </button>
           )}
 
-          {sentTo ? (
-            /* Écran de confirmation : email envoyé */
-            <div className="pr-12" aria-live="polite">
+          {sentTo && codeFor ? (
+            /* Saisie du code reçu par e-mail (reste dans l'app) */
+            <div aria-live="polite">
               <span className="mb-5 flex size-14 items-center justify-center rounded-2xl bg-lime">
                 <MailCheck size={24} strokeWidth={1.75} className="text-ink" />
               </span>
-              <h1 className="text-[32px] leading-[0.95] tracking-tighter text-ink">{t("auth.checkInbox")}</h1>
+              <h1 className="pr-12 text-[32px] leading-[0.95] tracking-tighter text-ink">{t("auth.codeTitle")}</h1>
               <p className="mt-3 text-[15px] text-stone-600">
-                {t("auth.linkSentTo")} <span className="font-medium text-ink">{sentTo}</span>.
-                {mode === "signup" && <> {t("auth.confirmSignup")}</>}
+                {t("auth.codeSentTo")} <span className="font-medium text-ink">{sentTo}</span>. {t("auth.codeHint")}
               </p>
+              <form onSubmit={handleSubmit} className="mt-6 space-y-3">
+                <input
+                  ref={firstFieldRef}
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  pattern="[0-9]*"
+                  maxLength={8}
+                  placeholder={t("auth.codePlaceholder")}
+                  aria-label={t("auth.codePlaceholder")}
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 8))}
+                  autoFocus
+                  className={`${inputClass} h-14 text-center text-2xl font-semibold tracking-[0.4em] placeholder:text-base placeholder:font-normal placeholder:tracking-normal`}
+                />
+                {error && (
+                  <p role="alert" className="flex items-start gap-2 rounded-xl bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
+                    <AlertCircle size={16} strokeWidth={1.75} className="mt-0.5 flex-shrink-0" />
+                    {error}
+                  </p>
+                )}
+                <button
+                  type="submit"
+                  disabled={loading || code.length < 6}
+                  className="flex w-full h-12 items-center justify-center gap-2 rounded-full bg-lime text-ink text-[15px] font-medium hover:bg-lime-deep transition-colors active:scale-[0.98] disabled:opacity-60"
+                >
+                  {loading && <Loader2 size={18} strokeWidth={2} className="animate-spin" />}
+                  {codeFor === "signup" ? t("auth.verifySignup") : t("auth.verifyReset")}
+                </button>
+                <button
+                  type="button"
+                  onClick={resendCode}
+                  disabled={resendIn > 0}
+                  className="w-full py-2 text-sm font-medium text-stone-600 hover:text-ink disabled:text-stone-400 transition-colors"
+                >
+                  {t("auth.resendCode")}{resendIn > 0 ? ` (${resendIn} s)` : ""}
+                </button>
+              </form>
             </div>
           ) : (
             <>

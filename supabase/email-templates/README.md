@@ -6,12 +6,15 @@ par le contenu du fichier `.html` correspondant, et enregistrer.
 
 | Modèle Supabase        | Fichier             | Sujet                                  |
 |------------------------|---------------------|----------------------------------------|
-| Confirm signup         | `confirmation.html` | Bienvenue sur VIBE ✦ active ton compte |
-| Reset Password         | `recovery.html`     | Ton nouveau mot de passe VIBE |
+| Confirm signup         | `confirmation.html` | Ton code d'activation · VIBE |
+| Reset Password         | `recovery.html`     | Ton code de réinitialisation · VIBE |
 | Change Email Address   | `email-change.html` | Confirme ta nouvelle adresse e-mail    |
 | Magic Link             | `magic-link.html`   | Ton lien de connexion VIBE             |
 
-Les variables `{{ .ConfirmationURL }}`, `{{ .Email }}` et `{{ .NewEmail }}` sont
+Inscription et mot de passe oublié envoient un **code à 6 chiffres** (`{{ .Token }}`)
+saisi dans l'app : un lien ouvrirait Safari au lieu de l'app installée sur iPhone.
+
+Les variables `{{ .Token }}`, `{{ .ConfirmationURL }}`, `{{ .Email }}` et `{{ .NewEmail }}` sont
 remplacées automatiquement par Supabase : ne pas les modifier.
 
 Style « Bandeau noir » (P2). Mise en page : tableaux + styles en ligne et
