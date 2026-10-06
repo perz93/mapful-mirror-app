@@ -342,14 +342,9 @@ const MapView = () => {
       const timeFormatted = formatEventTime(event.time);
       const defaultImage = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=320&q=70&fm=webp';
 
-      const priceLabel = event.is_paid && event.price
-        ? `${Number(event.price).toLocaleString('fr-FR')} FCFA`
-        : t('event.free');
-
       const popupContent = `
         <div class="event-popup-card">
           <div class="popup-card-image" style="background-image: url('${safeUrl(event.image_url, defaultImage)}')">
-            <span class="popup-price">${escapeHtml(priceLabel)}</span>
             <div class="popup-card-gradient">
               <div class="popup-card-row">
                 <div class="popup-date-box">

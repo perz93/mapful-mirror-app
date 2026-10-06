@@ -101,9 +101,6 @@ const EventCard = () => {
                 {t(status.key).replace('{n}', String(status.n ?? ''))}
               </span>
             ) : <span />}
-            <span className="inline-flex h-6 items-center rounded-full bg-white px-2.5 text-[11px] font-medium text-ink tabular">
-              {currentEvent.is_paid && currentEvent.price ? `${Number(currentEvent.price).toLocaleString('fr-FR')} FCFA` : t('event.free')}
-            </span>
           </div>
 
           <div className="absolute inset-x-4 bottom-3.5 flex items-end justify-between gap-3">
