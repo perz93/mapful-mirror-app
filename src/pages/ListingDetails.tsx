@@ -10,6 +10,7 @@ import ImageLightbox from '@/components/ImageLightbox';
 import ShimmerImage from '@/components/ShimmerImage';
 import { marketplaceCategoryLabel } from '@/lib/marketplaceCategories';
 import { useDarkPageBackground } from '@/hooks/useDarkPageBackground';
+import OrganizerCard from '@/components/OrganizerCard';
 
 const priceTypeLabels: Record<string, Record<string, string>> = {
   fixed: { fr: 'Prix fixe', en: 'Fixed price' },
@@ -170,6 +171,9 @@ const ListingDetails = () => {
               </div>
             )}
           </div>
+
+          {/* Vendeur → profil public */}
+          <OrganizerCard userId={listing.user_id} kind="listing" />
 
           {/* À propos : un seul style de texte, uniforme */}
           {listing.description && (

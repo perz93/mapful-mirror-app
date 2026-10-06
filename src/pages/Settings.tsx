@@ -2,7 +2,7 @@ import LargeTitle from '@/components/LargeTitle';
 import { useState, useEffect } from 'react';
 import SectionTitle from '@/components/SectionTitle';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Mail, Lock, Bell, Smartphone, Globe, Shield, ChevronRight, ExternalLink } from 'lucide-react';
+import { ArrowLeft, UserRound, Mail, Lock, Bell, Smartphone, Globe, Shield, ChevronRight, ExternalLink } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNotifications } from '@/contexts/NotificationContext';
@@ -19,6 +19,11 @@ const Settings = () => {
   const [updating, setUpdating] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
+
+  // Profil public (nom affiché + bio, visibles sur /u/:id)
+  const [publicName, setPublicName] = useState('');
+  const [bio, setBio] = useState('');
+  const [savingProfile, setSavingProfile] = useState(false);
 
   // Email form
   const [newEmail, setNewEmail] = useState('');
@@ -52,7 +57,7 @@ const Settings = () => {
       try {
         const { data, error } = await supabase
           .from('profiles')
-          .select('notification_email, notification_events')
+          .select('notification_email, notification_events, full_name, bio')
           .eq('id', user.id)
           .single();
 
@@ -72,6 +77,8 @@ const Settings = () => {
         } else if (data) {
           setNotificationEmail(data.notification_email ?? true);
           setNotificationEvents(data.notification_events ?? true);
+          setPublicName(data.full_name ?? '');
+          setBio(data.bio ?? '');
         }
       } catch (error: any) {
         console.error('Error loading preferences:', error);
@@ -81,6 +88,24 @@ const Settings = () => {
     };
     loadPreferences();
   }, [user]);
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    setSavingProfile(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ full_name: publicName.trim() || null, bio: bio.trim() || null })
+        .eq('id', user.id);
+      if (error) throw error;
+      toast.success(lang === 'fr' ? 'Profil mis à jour' : 'Profile updated');
+    } catch {
+      toast.error(t('common.error'));
+    } finally {
+      setSavingProfile(false);
+    }
+  };
 
   const handleUpdateEmail = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -193,6 +218,58 @@ const Settings = () => {
         </div>
 
         <div className="space-y-6">
+          {/* Profil public */}
+          <div className="rounded-3xl bg-white p-5">
+            <div className="mb-1 -mt-1">
+              <SectionTitle icon={UserRound}>{lang === 'fr' ? 'Profil public' : 'Public profile'}</SectionTitle>
+            </div>
+            <p className="text-sm text-stone-500 mb-4">
+              {lang === 'fr'
+                ? 'Visible par tous sur vos événements et annonces. Votre e-mail reste privé.'
+                : 'Shown to everyone on your events and listings. Your email stays private.'}
+            </p>
+            <form onSubmit={handleSaveProfile} className="space-y-4">
+              <div>
+                <label htmlFor="public-name" className="block text-sm font-medium text-stone-600 mb-1.5">
+                  {lang === 'fr' ? 'Nom affiché' : 'Display name'}
+                </label>
+                <input
+                  id="public-name"
+                  value={publicName}
+                  maxLength={60}
+                  onChange={e => setPublicName(e.target.value)}
+                  placeholder={lang === 'fr' ? 'Ex. Kofi Events' : 'e.g. Kofi Events'}
+                  className="w-full h-12 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 focus:outline-none focus:ring-0 focus:border-ink"
+                />
+              </div>
+              <div>
+                <label htmlFor="public-bio" className="block text-sm font-medium text-stone-600 mb-1.5">Bio</label>
+                <textarea
+                  id="public-bio"
+                  value={bio}
+                  maxLength={160}
+                  rows={3}
+                  onChange={e => setBio(e.target.value)}
+                  placeholder={lang === 'fr' ? 'Soirées, brunchs et pool parties à Cocody…' : 'Parties, brunches and pool parties in Abidjan…'}
+                  className="w-full rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 py-3 resize-none focus:outline-none focus:ring-0 focus:border-ink"
+                />
+                <p className="mt-1 text-right text-xs text-stone-400 tabular">{bio.length}/160</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  type="submit"
+                  disabled={savingProfile}
+                  className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-lime text-ink text-sm font-medium hover:bg-lime-deep transition-colors active:scale-95 disabled:opacity-50"
+                >
+                  {lang === 'fr' ? 'Enregistrer' : 'Save'}
+                </button>
+                <Link to={`/u/${user.id}`} className="text-sm font-medium text-ink link-underline">
+                  {lang === 'fr' ? 'Voir mon profil' : 'View my profile'}
+                </Link>
+              </div>
+            </form>
+          </div>
+
           {/* Email Section */}
           <div className="rounded-3xl bg-white p-5">
             <div className="mb-1 -mt-1">

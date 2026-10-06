@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useDarkPageBackground } from '@/hooks/useDarkPageBackground';
+import OrganizerCard from '@/components/OrganizerCard';
 import { ArrowLeft, MapPin, Share2, Heart, Bell, BellRing } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -244,6 +245,9 @@ const EventDetails = () => {
             </span>
             <span className="flex-shrink-0 text-sm font-medium text-ink dark:text-white link-underline">{t('event.directions')}</span>
           </button>
+
+          {/* Organisateur → profil public */}
+          <OrganizerCard userId={event.user_id} kind="event" />
 
           {/* Points clés */}
           {keyPoints && keyPoints.length > 0 && (
