@@ -34,66 +34,29 @@ function concat(...arrays: Uint8Array[]): Uint8Array {
   return result;
 }
 
-function encodeLength(len: number): Uint8Array {
-  const buf = new Uint8Array(2);
-  buf[0] = (len >> 8) & 0xff;
-  buf[1] = len & 0xff;
-  return buf;
+async function hmac(key: Uint8Array, data: Uint8Array): Promise<Uint8Array> {
+  const k = await crypto.subtle.importKey("raw", key, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  return new Uint8Array(await crypto.subtle.sign("HMAC", k, data));
 }
 
-async function createInfo(
-  type: string,
-  clientPublicKey: Uint8Array,
-  serverPublicKey: Uint8Array
-): Promise<Uint8Array> {
-  const encoder = new TextEncoder();
-  const info = encoder.encode(`Content-Encoding: ${type}\0`);
-  return concat(
-    info,
-    new Uint8Array([0]),
-    encodeLength(clientPublicKey.length),
-    clientPublicKey,
-    encodeLength(serverPublicKey.length),
-    serverPublicKey
-  );
-}
-
-async function hkdf(
-  salt: Uint8Array,
-  ikm: Uint8Array,
-  info: Uint8Array,
-  length: number
-): Promise<Uint8Array> {
-  const key = await crypto.subtle.importKey("raw", ikm, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  const prk = new Uint8Array(await crypto.subtle.sign("HMAC", key, salt));
-
-  const infoKey = await crypto.subtle.importKey("raw", prk, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  const infoWithCounter = concat(info, new Uint8Array([1]));
-  const result = new Uint8Array(await crypto.subtle.sign("HMAC", infoKey, infoWithCounter));
-
-  return result.slice(0, length);
-}
-
+// Chiffrement « aes128gcm » (RFC 8291 + RFC 8188) — seul format accepté
+// par Safari/iOS ; l'ancien « aesgcm » est accepté par Apple mais jamais affiché.
 async function encryptPayload(
   clientPublicKeyStr: string,
   clientAuthStr: string,
   payload: string
-): Promise<{ encrypted: Uint8Array; serverPublicKey: Uint8Array; salt: Uint8Array }> {
+): Promise<Uint8Array> {
   const clientPublicKey = base64UrlDecode(clientPublicKeyStr);
   const clientAuth = base64UrlDecode(clientAuthStr);
+  const encoder = new TextEncoder();
 
-  // Generate server ECDH key pair
   const serverKeys = await crypto.subtle.generateKey(
     { name: "ECDH", namedCurve: "P-256" },
     true,
     ["deriveBits"]
   );
+  const serverPublicKey = new Uint8Array(await crypto.subtle.exportKey("raw", serverKeys.publicKey));
 
-  const serverPublicKeyRaw = new Uint8Array(
-    await crypto.subtle.exportKey("raw", serverKeys.publicKey)
-  );
-
-  // Import client public key
   const clientKey = await crypto.subtle.importKey(
     "raw",
     clientPublicKey,
@@ -101,53 +64,34 @@ async function encryptPayload(
     false,
     []
   );
-
-  // ECDH shared secret
-  const sharedSecret = new Uint8Array(
-    await crypto.subtle.deriveBits(
-      { name: "ECDH", public: clientKey },
-      serverKeys.privateKey,
-      256
-    )
+  const ecdhSecret = new Uint8Array(
+    await crypto.subtle.deriveBits({ name: "ECDH", public: clientKey }, serverKeys.privateKey, 256)
   );
 
-  // Generate salt
+  // IKM = HKDF(auth, ecdh, "WebPush: info" || 0 || ua_public || as_public, 32)
+  const prkKey = await hmac(clientAuth, ecdhSecret);
+  const keyInfo = concat(encoder.encode("WebPush: info\0"), clientPublicKey, serverPublicKey);
+  const ikm = await hmac(prkKey, concat(keyInfo, new Uint8Array([1])));
+
   const salt = crypto.getRandomValues(new Uint8Array(16));
+  const prk = await hmac(salt, ikm);
+  const cek = (await hmac(prk, concat(encoder.encode("Content-Encoding: aes128gcm\0"), new Uint8Array([1])))).slice(0, 16);
+  const nonce = (await hmac(prk, concat(encoder.encode("Content-Encoding: nonce\0"), new Uint8Array([1])))).slice(0, 12);
 
-  // HKDF for auth info
-  const encoder = new TextEncoder();
-  const authInfo = encoder.encode("Content-Encoding: auth\0");
-  const prk = await hkdf(clientAuth, sharedSecret, authInfo, 32);
+  // Un seul enregistrement : contenu + délimiteur 0x02
+  const plaintext = concat(encoder.encode(payload), new Uint8Array([2]));
+  const aesKey = await crypto.subtle.importKey("raw", cek, { name: "AES-GCM" }, false, ["encrypt"]);
+  const ciphertext = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv: nonce }, aesKey, plaintext));
 
-  // Derive content encryption key and nonce
-  const cekInfo = await createInfo("aesgcm", clientPublicKey, serverPublicKeyRaw);
-  const nonceInfo = await createInfo("nonce", clientPublicKey, serverPublicKeyRaw);
-
-  const contentEncryptionKey = await hkdf(salt, prk, cekInfo, 16);
-  const nonce = await hkdf(salt, prk, nonceInfo, 12);
-
-  // Pad and encrypt payload
-  const payloadBytes = encoder.encode(payload);
-  const padding = new Uint8Array(2); // 2 bytes padding length = 0
-  const paddedPayload = concat(padding, payloadBytes);
-
-  const aesKey = await crypto.subtle.importKey(
-    "raw",
-    contentEncryptionKey,
-    { name: "AES-GCM" },
-    false,
-    ["encrypt"]
+  // En-tête : salt(16) || rs(4) || idlen(1) || keyid(65)
+  const rs = 4096;
+  const header = concat(
+    salt,
+    new Uint8Array([(rs >>> 24) & 0xff, (rs >>> 16) & 0xff, (rs >>> 8) & 0xff, rs & 0xff]),
+    new Uint8Array([serverPublicKey.length]),
+    serverPublicKey
   );
-
-  const encrypted = new Uint8Array(
-    await crypto.subtle.encrypt(
-      { name: "AES-GCM", iv: nonce },
-      aesKey,
-      paddedPayload
-    )
-  );
-
-  return { encrypted, serverPublicKey: serverPublicKeyRaw, salt };
+  return concat(header, ciphertext);
 }
 
 async function createVapidAuthHeader(
@@ -162,7 +106,7 @@ async function createVapidAuthHeader(
   const now = Math.floor(Date.now() / 1000);
   const payload = {
     aud: audience,
-    exp: now + 86400,
+    exp: now + 12 * 3600, // Apple refuse les jetons de plus de 24 h
     sub: VAPID_SUBJECT,
   };
 
@@ -228,11 +172,7 @@ async function sendWebPush(
   sub: { endpoint: string; p256dh: string; auth: string },
   payload: string
 ): Promise<Response> {
-  const { encrypted, serverPublicKey, salt } = await encryptPayload(
-    sub.p256dh,
-    sub.auth,
-    payload
-  );
+  const body = await encryptPayload(sub.p256dh, sub.auth, payload);
 
   const vapidToken = await createVapidAuthHeader(
     sub.endpoint,
@@ -240,21 +180,17 @@ async function sendWebPush(
     VAPID_PRIVATE_KEY
   );
 
-  const response = await fetch(sub.endpoint, {
+  return await fetch(sub.endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/octet-stream",
-      "Content-Encoding": "aesgcm",
-      "Content-Length": String(encrypted.length),
+      "Content-Encoding": "aes128gcm",
       "TTL": "86400",
-      "Crypto-Key": `dh=${base64UrlEncode(serverPublicKey)};p256ecdsa=${VAPID_PUBLIC_KEY}`,
-      "Encryption": `salt=${base64UrlEncode(salt)}`,
-      "Authorization": `WebPush ${vapidToken}`,
+      "Urgency": "high",
+      "Authorization": `vapid t=${vapidToken}, k=${VAPID_PUBLIC_KEY}`,
     },
-    body: encrypted,
+    body,
   });
-
-  return response;
 }
 
 // Appels serveur uniquement : le jeton doit être une clé « service_role ».
