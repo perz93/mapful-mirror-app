@@ -304,6 +304,7 @@ const translations: Record<string, Record<Lang, string>> = {
   'map.route': { fr: 'Itinéraire', en: 'Route' },
   'map.routeCalculating': { fr: 'Calcul en cours...', en: 'Calculating...' },
   'map.routeUnavailable': { fr: 'Itinéraire indisponible', en: 'Route unavailable' },
+  'map.routeNeedsLocation': { fr: 'Activer ma position', en: 'Turn on location' },
   'map.closeRoute': { fr: "Fermer l'itinéraire", en: 'Close route' },
 
   // ==================== REMINDER ====================

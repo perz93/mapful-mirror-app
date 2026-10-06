@@ -20,7 +20,7 @@ const UpdateBanner = () => {
   return (
     <div
       className="fixed inset-x-0 z-[60] flex justify-center px-3 animate-fade-in"
-      style={{ top: 'calc(env(safe-area-inset-top, 0px) + 10px)' }}
+      style={{ top: 'calc(env(safe-area-inset-top, 0px) + 76px)' }}
     >
       <Pill
         kind="success"

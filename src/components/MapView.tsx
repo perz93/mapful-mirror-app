@@ -45,7 +45,7 @@ const MapView = () => {
   // Expose map instance and route coords to RouteInfoPanel via state
   const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
   const [routeCoordinates, setRouteCoordinates] = useState<L.LatLngTuple[]>([]);
-  const [routeInfo, setRouteInfo] = useState<{ distanceKm: number | null; durationMin: number | null; loading: boolean; error: boolean }>({
+  const [routeInfo, setRouteInfo] = useState<{ distanceKm: number | null; durationMin: number | null; loading: boolean; error: boolean; needsLocation?: boolean }>({
     distanceKm: null,
     durationMin: null,
     loading: false,
@@ -593,8 +593,8 @@ const MapView = () => {
         setRouteInfo({ distanceKm: null, durationMin: null, loading: true, error: false });
         return;
       }
-      toast.info(t('map.enableForRoute'));
-      setRouteInfo({ distanceKm: null, durationMin: null, loading: false, error: true });
+      // Pas de toast (il se superposait aux pastilles) : la pastille le dit
+      setRouteInfo({ distanceKm: null, durationMin: null, loading: false, error: true, needsLocation: true });
       return;
     }
 
@@ -717,6 +717,7 @@ const MapView = () => {
         durationMin={routeInfo.durationMin}
         loading={routeInfo.loading}
         error={routeInfo.error}
+        needsLocation={routeInfo.needsLocation}
         mapInstance={mapInstance}
         routeCoordinates={routeCoordinates}
       />

@@ -49,8 +49,17 @@ const NotificationPrompt = () => {
     setTimeout(() => { setVisible(false); setShowSteps(false); }, 300);
   };
 
+  // Les toasts passent sous ce bandeau tant qu'il est affiché
+  const shown = visible && !routeDestination;
+  useEffect(() => {
+    if (!shown) return;
+    const root = document.documentElement;
+    root.style.setProperty('--toast-extra', '56px');
+    return () => { root.style.removeProperty('--toast-extra'); };
+  }, [shown]);
+
   // Pas par-dessus le panneau d'itinéraire
-  if (!visible || routeDestination) return null;
+  if (!shown) return null;
 
   const steps = isIOS() ? STEPS_IOS : STEPS_ANDROID;
 

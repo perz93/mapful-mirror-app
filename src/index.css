@@ -927,13 +927,11 @@ All colors MUST be HSL.
   }
 }
 
-/* Force Sonner toast position below status bar */
-[data-sonner-toaster] {
-  top: calc(env(safe-area-inset-top, 0px) + 60px) !important;
-}
-
+/* Toasts sous la rangée de boutons du haut (cloche / menu) ; --toast-extra
+   les pousse sous les pastilles d'itinéraire quand elles sont affichées */
+[data-sonner-toaster],
 [data-sonner-toaster][data-y-position="top"] {
-  top: calc(env(safe-area-inset-top, 0px) + 60px) !important;
+  top: calc(env(safe-area-inset-top, 0px) + 76px + var(--toast-extra, 0px)) !important;
 }
 
 /* Fix date/time inputs overflow on iOS */

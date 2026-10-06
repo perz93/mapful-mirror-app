@@ -1,4 +1,5 @@
-import { X, Clock } from 'lucide-react';
+import { useEffect } from 'react';
+import { X, Clock, MapPinOff, AlertCircle } from 'lucide-react';
 import { useSearch } from '@/contexts/SearchContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -7,6 +8,7 @@ interface RouteInfoPanelProps {
   durationMin: number | null;
   loading: boolean;
   error: boolean;
+  needsLocation?: boolean;
   mapInstance?: L.Map | null;
   routeCoordinates?: L.LatLngTuple[];
 }
@@ -22,9 +24,17 @@ const formatDistance = (km: number) =>
  * un bouton fermer. Le nom de la destination est posé sur le point d'arrivée
  * (voir le marqueur dans MapView).
  */
-const RouteInfoPanel = ({ distanceKm, durationMin, loading, error }: RouteInfoPanelProps) => {
+const RouteInfoPanel = ({ distanceKm, durationMin, loading, error, needsLocation }: RouteInfoPanelProps) => {
   const { routeDestination, setRouteDestination } = useSearch();
   const { t } = useLanguage();
+
+  // Les toasts passent sous les pastilles tant que l'itinéraire est affiché
+  useEffect(() => {
+    if (!routeDestination) return;
+    const root = document.documentElement;
+    root.style.setProperty('--toast-extra', '56px');
+    return () => { root.style.removeProperty('--toast-extra'); };
+  }, [routeDestination]);
 
   if (!routeDestination) return null;
 
@@ -51,10 +61,23 @@ const RouteInfoPanel = ({ distanceKm, durationMin, loading, error }: RouteInfoPa
             </span>
             <span className={`${pill} font-semibold text-stone-600`}>{formatDistance(distanceKm)}</span>
           </>
-        ) : (
-          <span className={`${pill} font-medium ${error ? 'text-red-600' : 'text-stone-500'}`}>
-            {error ? t('map.routeUnavailable') : t('map.routeCalculating')}
+        ) : needsLocation ? (
+          // Un tap = geste utilisateur → déclenche la demande de position (iOS)
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event('recenterMap'))}
+            className={`${pill} font-semibold active:scale-95 transition-transform`}
+          >
+            <MapPinOff size={17} strokeWidth={2} />
+            {t('map.routeNeedsLocation')}
+          </button>
+        ) : error ? (
+          <span className={`${pill} font-medium`}>
+            <AlertCircle size={17} strokeWidth={2} className="text-red-600" />
+            {t('map.routeUnavailable')}
           </span>
+        ) : (
+          <span className={`${pill} font-medium text-stone-500`}>{t('map.routeCalculating')}</span>
         )}
         <button
           type="button"
