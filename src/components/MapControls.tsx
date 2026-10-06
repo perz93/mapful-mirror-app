@@ -1,8 +1,33 @@
 import { Plus, Minus, Crosshair, ShoppingCart } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+// Zoom / position (modèle A2) : discrets au repos, normaux dès qu'on touche
+// ou bouge la carte, puis rediscrets après IDLE_MS sans interaction.
+const IDLE_MS = 3000;
 
 const MapControls = () => {
   const navigate = useNavigate();
+  const [active, setActive] = useState(true); // visibles au chargement, puis discrets
+  const timer = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    const wake = () => {
+      setActive(true);
+      clearTimeout(timer.current);
+      timer.current = setTimeout(() => setActive(false), IDLE_MS);
+    };
+    const onPointer = (e: Event) => {
+      if ((e.target as Element | null)?.closest?.('.leaflet-container, [data-map-controls]')) wake();
+    };
+    const events = ['pointerdown', 'pointermove', 'wheel', 'touchstart'] as const;
+    events.forEach((ev) => document.addEventListener(ev, onPointer, { passive: true }));
+    timer.current = setTimeout(() => setActive(false), IDLE_MS);
+    return () => {
+      events.forEach((ev) => document.removeEventListener(ev, onPointer));
+      clearTimeout(timer.current);
+    };
+  }, []);
 
   const handleRecenter = () => {
     // This is a user gesture (tap) — dispatches event that triggers geo.request()
@@ -24,7 +49,10 @@ const MapControls = () => {
 
   return <>
       {/* Left side controls: Zoom + Position */}
-      <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2.5">
+      <div
+        data-map-controls
+        className={`absolute left-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2.5 origin-left transition-[opacity,transform] duration-300 ease-out ${active ? 'opacity-100 scale-100' : 'opacity-40 scale-[0.85]'}`}
+      >
         <button onClick={handleZoomIn} className="flex size-10 items-center justify-center rounded-full bg-white dark:bg-stone-900/95 btn-float active:scale-95 transition-transform" aria-label="Zoom in">
           <Plus className="text-ink dark:text-white" size={18} strokeWidth={1.9} />
         </button>
