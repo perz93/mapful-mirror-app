@@ -52,6 +52,19 @@ const EventDetails = () => {
   const { isFavorite, toggleFavorite, loading: favLoading } = useFavorite(id || '');
   const { isSupported: pushSupported, isSubscribed: pushSubscribed, subscribe: subscribePush } = useNotifications();
 
+  // iOS teinte le flou de la barre d'état avec le fond de la page : sur
+  // l'affiche, un fond clair donnait un bandeau blanchâtre en haut.
+  useEffect(() => {
+    const root = document.documentElement;
+    const prev = [root.style.backgroundColor, document.body.style.backgroundColor];
+    root.style.backgroundColor = '#14140f';
+    document.body.style.backgroundColor = '#14140f';
+    return () => {
+      root.style.backgroundColor = prev[0];
+      document.body.style.backgroundColor = prev[1];
+    };
+  }, []);
+
   // Check if reminder already set (from Supabase)
   useEffect(() => {
     if (!id || !user) return;
