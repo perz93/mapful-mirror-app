@@ -292,8 +292,8 @@ body {
 }
 
 .marker-image-wrapper {
-  width: 54px;
-  height: 54px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   overflow: hidden;
   /* Ton de chargement crème, recouvert par la photo une fois chargée */
@@ -312,9 +312,9 @@ body {
   width: 0;
   height: 0;
   margin-top: -1px;
-  border-left: 7px solid transparent;
-  border-right: 7px solid transparent;
-  border-top: 9px solid #ffffff;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid #ffffff;
   filter: drop-shadow(0 2px 2px rgba(20, 20, 15, 0.18));
   transition: border-top-color 0.2s ease;
 }
@@ -1014,11 +1014,11 @@ textarea::placeholder {
   background: #14140f !important;
   color: #a6e22e !important;
   border-radius: 9999px;
-  /* Pastille centrée dans l'anneau (icône de 50 px : 50 − 34 = 16 → 8 px de chaque côté).
+  /* Pastille centrée dans l'anneau (icône de 42 px : 42 − 30 = 12 → 6 px de chaque côté).
      Le CSS par défaut de markercluster la calait pour une icône de 40 px. */
-  width: 34px !important;
-  height: 34px !important;
-  margin: 8px !important;
+  width: 30px !important;
+  height: 30px !important;
+  margin: 6px !important;
   display: flex;
   align-items: center;
   justify-content: center;

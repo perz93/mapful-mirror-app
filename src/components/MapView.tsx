@@ -123,7 +123,7 @@ const MapView = () => {
         return L.divIcon({
           html: `<div class="cluster-inner cluster-${dominantType}"><span>${count}</span></div>`,
           className: `marker-cluster marker-cluster-${sizeClass}`,
-          iconSize: L.point(50, 50),
+          iconSize: L.point(42, 42),
         });
       },
     });
@@ -300,9 +300,9 @@ const MapView = () => {
             </div>
           </div>
         `,
-        iconSize: [60, 66],
-        iconAnchor: [30, 66],
-        popupAnchor: [0, -68],
+        iconSize: [48, 54],
+        iconAnchor: [24, 54],
+        popupAnchor: [0, -56],
       });
     };
 
