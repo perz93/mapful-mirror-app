@@ -15,7 +15,5 @@ Les variables `{{ .ConfirmationURL }}`, `{{ .Email }}` et `{{ .NewEmail }}` sont
 remplacées automatiquement par Supabase : ne pas les modifier.
 
 Style « Poster lime » (E4). Mise en page : tableaux + styles en ligne et
-polices système (Arial), compatibles Gmail, Outlook et Apple Mail. Le logo
-« vibe. » est en texte ; seules les 3 icônes de l'e-mail de bienvenue sont des
-images, servies depuis `public/email/` du site en production : elles
-s'affichent une fois cette branche mise en ligne.
+polices système (Arial), compatibles Gmail, Outlook et Apple Mail. Aucune image : le logo
+« vibe. » et les catégories sont en texte, rien n'est bloqué par les messageries.
