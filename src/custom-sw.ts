@@ -108,9 +108,14 @@ registerRoute(
 // ============================================
 
 self.addEventListener('push', (event) => {
-  if (!event.data) return;
-
-  const data = event.data.json();
+  // Toujours afficher quelque chose : sur iPhone, un push sans notification
+  // visible finit par faire révoquer l'abonnement par le système.
+  let data: { title?: string; body?: string; image?: string; tag?: string; url?: string; actions?: unknown[] } = {};
+  try {
+    data = event.data?.json() ?? {};
+  } catch {
+    data = { body: event.data?.text() || '' };
+  }
 
   const options: NotificationOptions & { image?: string; vibrate?: number[]; renotify?: boolean; actions?: unknown[] } = {
     body: data.body || '',
