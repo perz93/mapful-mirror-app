@@ -4,11 +4,13 @@ import { Event } from './useEvents';
 import { eventStart, isUpcomingOrLive, todayIso } from '@/lib/eventStatus';
 
 const MAX_FEATURED = 6;
+/** En dessous, le cadre est complété par les derniers événements passés. */
+const MIN_FEATURED = 5;
 
 /**
  * Événements du cadre de la carte : ceux en cours d'abord, puis les prochains
- * par date de début (le plus proche en premier). Les événements terminés ne
- * sont montrés que s'il n'y a plus rien à venir.
+ * par date de début (le plus proche en premier). S'il y en a moins de 5, on
+ * complète avec les derniers événements passés pour que le cadre défile.
  */
 export const useFeaturedEvents = () => {
   return useQuery({
@@ -33,16 +35,20 @@ export const useFeaturedEvents = () => {
         .filter(isUpcomingOrLive)
         .sort((a, b) => eventStart(a).getTime() - eventStart(b).getTime())
         .slice(0, MAX_FEATURED);
-      if (upcoming.length > 0) return upcoming;
+      if (upcoming.length >= MIN_FEATURED) return upcoming;
 
-      // Rien à venir : les derniers événements passés, pour ne pas laisser la carte vide
+      // Pas assez d'événements à venir pour que le cadre défile : on complète
+      // avec les plus récents déjà passés (affichés « Terminé »), après ceux à venir.
       const { data: past } = await supabase
         .from('events')
         .select('*')
         .eq('is_published', true)
+        .lt('date', today)
         .order('date', { ascending: false })
-        .limit(3);
-      return (past ?? []) as Event[];
+        .limit(MIN_FEATURED);
+      const seen = new Set(upcoming.map((e) => e.id));
+      const filler = ((past ?? []) as Event[]).filter((e) => !seen.has(e.id) && !isUpcomingOrLive(e));
+      return [...upcoming, ...filler].slice(0, Math.max(MIN_FEATURED, upcoming.length));
     },
     staleTime: 5 * 60 * 1000,
     refetchInterval: 5 * 60 * 1000,
