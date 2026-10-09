@@ -12,11 +12,11 @@ import { softCase } from '@/lib/softCase';
 const OUT_MS = 320;
 const IN_MS = 520;
 const AUTOPLAY_MS = 5000;
-// Événement affiché, gardé pendant la session : en revenant sur la carte
-// (autre page, app mise en arrière-plan), on reprend là où on en était.
-const STORAGE_KEY = 'vibe-featured-event';
-const readStored = () => { try { return sessionStorage.getItem(STORAGE_KEY); } catch { return null; } };
-const store = (id: string) => { try { sessionStorage.setItem(STORAGE_KEY, id); } catch { /* */ } };
+// Le défilement suit l'horloge : l'événement affiché ne dépend que de l'heure.
+// Il « continue » donc pendant qu'on est sur une autre page ou hors de l'app,
+// et au retour on tombe sur l'événement où il en serait arrivé.
+const slotNow = () => Math.floor(Date.now() / AUTOPLAY_MS);
+const indexAt = (n: number) => (n > 0 ? slotNow() % n : 0);
 
 const EventCard = () => {
   const { t } = useLanguage();
@@ -24,11 +24,7 @@ const EventCard = () => {
     data: events,
     isLoading
   } = useFeaturedEvents();
-  const [currentIndex, setCurrentIndex] = useState(() => {
-    const id = readStored();
-    const i = id && events ? events.findIndex((e) => e.id === id) : -1;
-    return i >= 0 ? i : 0;
-  });
+  const [currentIndex, setCurrentIndex] = useState(() => indexAt(events?.length ?? 0));
 
   const [isTransitioning, setIsTransitioning] = useState(false);
   const currentIndexRef = useRef(0);
@@ -49,26 +45,23 @@ const EventCard = () => {
 
   useEffect(() => {
     events?.forEach((event) => decodeImage(event.image_url));
-    if (!events?.length) return;
-    // Liste rechargée : on reste sur le même événement s'il y est encore
-    const id = readStored();
-    const i = id ? events.findIndex((e) => e.id === id) : -1;
-    setCurrentIndex(i >= 0 ? i : Math.min(currentIndexRef.current, events.length - 1));
+    // Liste (re)chargée : on se place directement au bon événement, sans animation
+    if (events?.length) setCurrentIndex(indexAt(events.length));
   }, [events]);
 
   useEffect(() => {
-    const ev = events?.[currentIndex];
-    if (ev) store(ev.id);
-  }, [events, currentIndex]);
-
-
-
-  useEffect(() => {
     if (!events || events.length < 2) return;
+    const n = events.length;
     let cancelled = false;
+    let tickTimer: ReturnType<typeof setTimeout>;
     let swapTimer: ReturnType<typeof setTimeout>;
-    const interval = setInterval(async () => {
-      const next = (currentIndexRef.current + 1) % events.length;
+
+    const show = async (next: number, animate: boolean) => {
+      if (next === currentIndexRef.current) return;
+      if (!animate) {
+        setCurrentIndex(next);
+        return;
+      }
       // On attend que l'image suivante soit décodée avant de lancer l'animation.
       await decodeImage(events[next].image_url);
       if (cancelled) return;
@@ -79,11 +72,33 @@ const EventCard = () => {
         setCurrentIndex(next);
         requestAnimationFrame(() => setIsTransitioning(false));
       }, OUT_MS);
-    }, AUTOPLAY_MS);
+    };
+
+    // Prochain changement calé sur l'horloge (toutes les AUTOPLAY_MS)
+    const schedule = () => {
+      const wait = AUTOPLAY_MS - (Date.now() % AUTOPLAY_MS) + 20;
+      tickTimer = setTimeout(() => {
+        if (cancelled) return;
+        show(indexAt(n), true);
+        schedule();
+      }, wait);
+    };
+    schedule();
+
+    // Retour dans l'app : les minuteurs étaient en pause, on rattrape d'un coup
+    const onVisible = () => {
+      if (document.visibilityState !== 'visible') return;
+      clearTimeout(tickTimer);
+      show(indexAt(n), false);
+      schedule();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+
     return () => {
       cancelled = true;
-      clearInterval(interval);
+      clearTimeout(tickTimer);
       clearTimeout(swapTimer);
+      document.removeEventListener('visibilitychange', onVisible);
     };
   }, [events]);
 
