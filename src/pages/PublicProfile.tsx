@@ -10,6 +10,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import ContactFab from '@/components/ContactFab';
 import ShimmerImage from '@/components/ShimmerImage';
 import { toast } from '@/components/PillToast';
+import { softCase } from '@/lib/softCase';
 
 interface ProfileEvent {
   id: string;
@@ -150,7 +151,7 @@ const PublicProfile = () => {
   );
 
   const eventSub = (e: ProfileEvent) =>
-    [format(new Date(e.date), fr ? 'EEE d MMM' : 'EEE, MMM d', { locale }).replace('.', ''), e.time?.slice(0, 5), e.venue]
+    [format(new Date(e.date), fr ? 'EEE d MMM' : 'EEE, MMM d', { locale }).replace('.', ''), e.time?.slice(0, 5), softCase(e.venue)]
       .filter(Boolean)
       .join(' · ');
 
@@ -219,7 +220,7 @@ const PublicProfile = () => {
               <section>
                 <h2 className="eyebrow mb-3 text-stone-500">{fr ? 'Prochains événements' : 'Upcoming events'}</h2>
                 <div className="space-y-2">
-                  {upcoming.map((e) => <Row key={e.id} to={`/event/${e.id}`} image={e.image_url} title={e.title} sub={eventSub(e)} />)}
+                  {upcoming.map((e) => <Row key={e.id} to={`/event/${e.id}`} image={e.image_url} title={softCase(e.title)} sub={eventSub(e)} />)}
                 </div>
               </section>
             )}
@@ -233,8 +234,8 @@ const PublicProfile = () => {
                       key={l.id}
                       to={`/listing/${l.id}`}
                       image={l.image_url}
-                      title={l.title}
-                      sub={[l.price != null ? `${l.price.toLocaleString('fr-FR')} FCFA` : null, l.location].filter(Boolean).join(' · ')}
+                      title={softCase(l.title)}
+                      sub={[l.price != null ? `${l.price.toLocaleString('fr-FR')} FCFA` : null, softCase(l.location)].filter(Boolean).join(' · ')}
                     />
                   ))}
                 </div>
@@ -245,7 +246,7 @@ const PublicProfile = () => {
               <section>
                 <h2 className="eyebrow mb-3 text-stone-500">{fr ? 'Événements passés' : 'Past events'}</h2>
                 <div className="space-y-2 opacity-80">
-                  {past.map((e) => <Row key={e.id} to={`/event/${e.id}`} image={e.image_url} title={e.title} sub={eventSub(e)} />)}
+                  {past.map((e) => <Row key={e.id} to={`/event/${e.id}`} image={e.image_url} title={softCase(e.title)} sub={eventSub(e)} />)}
                 </div>
               </section>
             )}

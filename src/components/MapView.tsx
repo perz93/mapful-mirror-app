@@ -19,6 +19,7 @@ import RouteInfoPanel from './RouteInfoPanel';
 import { fuzzyMatch } from '@/lib/fuzzyMatch';
 import { getDistanceKm } from '@/hooks/useNearbyEvents';
 import { supabase } from '@/integrations/supabase/client';
+import { softCase } from '@/lib/softCase';
 
 const MapView = () => {
   const mapRef = useRef<HTMLDivElement>(null);
@@ -352,8 +353,8 @@ const MapView = () => {
                   <div class="popup-date-day">${dateFormatted.day}</div>
                 </div>
                 <div class="popup-card-info">
-                  <h3 class="popup-card-title">${escapeHtml(event.title)}</h3>
-                  <div class="popup-card-meta">${escapeHtml(event.venue)} · ${escapeHtml(timeFormatted)}</div>
+                  <h3 class="popup-card-title">${escapeHtml(softCase(event.title))}</h3>
+                  <div class="popup-card-meta">${escapeHtml(softCase(event.venue))} · ${escapeHtml(timeFormatted)}</div>
                 </div>
               </div>
               <div class="popup-actions">

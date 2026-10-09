@@ -20,6 +20,7 @@ import { getEventCategory } from '@/lib/eventCategories';
 import { useSearch } from '@/contexts/SearchContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { eventStatus } from '@/lib/eventStatus';
+import { softCase } from '@/lib/softCase';
 
 
 const EventDetails = () => {
@@ -159,7 +160,7 @@ const EventDetails = () => {
   const ticketCells = [
     { label: t('event.dateLabel'), value: format(eventDate, 'EEE d MMM', { locale }).replace('.', '') },
     { label: t('event.timeLabel'), value: formattedTime },
-    { label: lang === 'fr' ? 'Lieu' : 'Venue', value: event.venue },
+    { label: lang === 'fr' ? 'Lieu' : 'Venue', value: softCase(event.venue) },
     { label: t('event.price'), value: priceText },
   ];
 
@@ -229,7 +230,7 @@ const EventDetails = () => {
                 </span>
               ) : null}
             </div>
-            <h1 className="mt-3 text-[32px] leading-[0.98] tracking-tighter text-ink dark:text-white">{event.title}</h1>
+            <h1 className="mt-3 text-[32px] leading-[0.98] tracking-tighter text-ink dark:text-white">{softCase(event.title)}</h1>
           </div>
 
           {/* Ligne détachable du billet */}
@@ -250,9 +251,6 @@ const EventDetails = () => {
         </article>
 
         <div className="mt-6 space-y-6">
-          {/* Organisateur → profil public */}
-          <OrganizerCard userId={event.user_id} kind="event" />
-
           {/* Points clés */}
           {keyPoints && keyPoints.length > 0 && (
             <section>
@@ -267,6 +265,9 @@ const EventDetails = () => {
               </ol>
             </section>
           )}
+
+          {/* Organisateur → profil public */}
+          <OrganizerCard userId={event.user_id} kind="event" />
 
           {/* À propos : un seul style de texte, uniforme */}
           {event.description && (

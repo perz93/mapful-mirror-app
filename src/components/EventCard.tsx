@@ -8,6 +8,7 @@ import { fr } from 'date-fns/locale';
 import EventCardSkeleton from './EventCardSkeleton';
 import { eventStatus } from '@/lib/eventStatus';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { softCase } from '@/lib/softCase';
 const OUT_MS = 320;
 const IN_MS = 520;
 
@@ -112,12 +113,12 @@ const EventCard = () => {
                 </p>
               </div>
               <div className="min-w-0 flex-1">
-                <p className="font-display truncate text-[17px] leading-[1.1] tracking-tight text-ink">{currentEvent.title}</p>
+                <p className="font-display truncate text-[17px] leading-[1.1] tracking-tight text-ink">{softCase(currentEvent.title)}</p>
                 <div className="mt-1.5 flex min-w-0 gap-1.5">
                   {currentEvent.venue && (
                     <span className="inline-flex h-[22px] min-w-0 items-center gap-1 rounded-full bg-parchment px-2 text-[11px] font-semibold text-ink">
                       <MapPin size={11} strokeWidth={2.2} className="flex-shrink-0" />
-                      <span className="truncate">{currentEvent.venue}</span>
+                      <span className="truncate">{softCase(currentEvent.venue)}</span>
                     </span>
                   )}
                   {currentEvent.time && (

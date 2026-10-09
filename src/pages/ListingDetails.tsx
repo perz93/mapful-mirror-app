@@ -11,6 +11,7 @@ import ShimmerImage from '@/components/ShimmerImage';
 import { marketplaceCategoryLabel } from '@/lib/marketplaceCategories';
 import { useDarkPageBackground } from '@/hooks/useDarkPageBackground';
 import OrganizerCard from '@/components/OrganizerCard';
+import { softCase } from '@/lib/softCase';
 
 const priceTypeLabels: Record<string, Record<string, string>> = {
   fixed: { fr: 'Prix fixe', en: 'Fixed price' },
@@ -147,7 +148,7 @@ const ListingDetails = () => {
 
           <div className="absolute inset-x-5 bottom-6 text-parchment">
             <span className="inline-flex h-7 items-center rounded-full bg-lime px-3 text-xs font-medium text-ink">{catLabel}</span>
-            <h1 className="mt-3 text-[38px] leading-[0.98] tracking-tighter text-parchment">{listing.title}</h1>
+            <h1 className="mt-3 text-[38px] leading-[0.98] tracking-tighter text-parchment">{softCase(listing.title)}</h1>
           </div>
         </div>
 
@@ -162,7 +163,7 @@ const ListingDetails = () => {
             {listing.location ? (
               <div className="card-shadow rounded-[20px] bg-white p-3.5">
                 <p className="eyebrow text-stone-500">{lang === 'fr' ? 'Lieu' : 'Location'}</p>
-                <p className="font-display mt-1.5 text-[19px] leading-[1.05] tracking-tight text-ink line-clamp-2">{listing.location}</p>
+                <p className="font-display mt-1.5 text-[19px] leading-[1.05] tracking-tight text-ink line-clamp-2">{softCase(listing.location)}</p>
               </div>
             ) : (
               <div className="card-shadow rounded-[20px] bg-white p-3.5">

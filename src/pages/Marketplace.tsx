@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ShimmerImage from '@/components/ShimmerImage';
+import { softCase } from '@/lib/softCase';
 
 type CategoryKey = string;
 
@@ -185,12 +186,12 @@ const Marketplace = () => {
                         </span>
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="font-display text-[20px] leading-[1.05] tracking-tight text-ink line-clamp-2">{listing.title}</h3>
+                        <h3 className="font-display text-[20px] leading-[1.05] tracking-tight text-ink line-clamp-2">{softCase(listing.title)}</h3>
                         <div className="mt-2 flex min-w-0 flex-wrap gap-1.5">
                           {listing.location && (
                             <span className="inline-flex h-[26px] min-w-0 max-w-full items-center gap-1 rounded-full bg-parchment px-2.5 text-[12px] font-semibold text-ink">
                               <MapPin size={13} strokeWidth={2.2} className="flex-shrink-0" />
-                              <span className="truncate">{listing.location}</span>
+                              <span className="truncate">{softCase(listing.location)}</span>
                             </span>
                           )}
                           {listing.price !== null && listing.price_type === 'negotiable' && (

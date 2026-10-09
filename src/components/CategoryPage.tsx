@@ -12,6 +12,7 @@ import { CategoryPageSkeleton } from './PageSkeleton';
 import ShimmerImage from './ShimmerImage';
 import { getEventCategory } from '@/lib/eventCategories';
 import EventCategoryChips from './EventCategoryChips';
+import { softCase } from '@/lib/softCase';
 interface CategoryPageProps {
   category: string;
   /** Facultatifs : déduits de la liste des catégories */
@@ -111,12 +112,12 @@ const CategoryPage = ({
                           <p className="font-display mt-0.5 text-[28px] tracking-tight text-ink tabular">{format(d, 'dd')}</p>
                         </div>
                         <div className="min-w-0 flex-1">
-                          <h3 className="font-display text-[20px] leading-[1.05] tracking-tight text-ink line-clamp-2">{event.title}</h3>
+                          <h3 className="font-display text-[20px] leading-[1.05] tracking-tight text-ink line-clamp-2">{softCase(event.title)}</h3>
                           {/* Q2 : quartier et heure en pastilles crème, plus lisibles */}
                           <div className="mt-2 flex min-w-0 flex-wrap gap-1.5">
                             <span className="inline-flex h-[26px] min-w-0 max-w-full items-center gap-1 rounded-full bg-parchment px-2.5 text-[12px] font-semibold text-ink">
                               <MapPin size={13} strokeWidth={2.2} className="flex-shrink-0" />
-                              <span className="truncate">{event.venue}</span>
+                              <span className="truncate">{softCase(event.venue)}</span>
                             </span>
                             {event.time && (
                               <span className="inline-flex h-[26px] flex-shrink-0 items-center gap-1 rounded-full bg-parchment px-2.5 text-[12px] font-semibold text-ink tabular">
