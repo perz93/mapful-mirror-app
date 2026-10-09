@@ -296,7 +296,7 @@ const MapView = () => {
       return L.divIcon({
         className: 'custom-marker',
         html: `
-          <div class="pin-label marker-${escapeHtml(eventType)}">
+          <div class="pin-label" data-cat="${escapeHtml(eventType)}">
             <span class="pin-label-img"><img src="${safeUrl(imageUrl, defaultImage)}" alt="" loading="lazy" /></span>
             <b class="pin-label-title">${escapeHtml(softCase(title))}</b>${hour ? `<em class="pin-label-time"> · ${escapeHtml(hour)}</em>` : ''}
           </div>

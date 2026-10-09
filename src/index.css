@@ -1144,7 +1144,7 @@ vercel-live-feedback,
   max-width: 170px;
   padding: 3px 11px 3px 3px;
   border-radius: 9999px;
-  background: #fff;
+  background: #f7f5ea;
   color: #14140f;
   white-space: nowrap;
   box-shadow: 0 3px 10px rgb(20 20 15 / 0.2);
@@ -1161,7 +1161,7 @@ vercel-live-feedback,
   margin-left: -5px;
   border: 5px solid transparent;
   border-bottom: 0;
-  border-top-color: #fff;
+  border-top-color: #f7f5ea;
 }
 .pin-label-img {
   flex-shrink: 0;
