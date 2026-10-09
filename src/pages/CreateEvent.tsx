@@ -2,6 +2,7 @@ import LargeTitle from '@/components/LargeTitle';
 import { useState, useEffect, useRef } from 'react';
 import { FormPageSkeleton } from '@/components/PageSkeleton';
 import SectionTitle from '@/components/SectionTitle';
+import EventScheduleFields from '@/components/EventScheduleFields';
 import { addBaseMap } from '@/lib/mapTiles';
 import { searchPlaces, reversePlace, type PlaceResult } from '@/lib/geocode';
 import { cityOf } from '@/lib/cities';
@@ -56,6 +57,9 @@ const CreateEvent = () => {
     address: '',
     date: '',
     time: '',
+    endDate: '',
+    endTime: '',
+    multiDay: false,
     price: '',
     capacity: '',
     description: '',
@@ -266,6 +270,11 @@ const CreateEvent = () => {
       return;
     }
 
+    if (formData.multiDay && formData.endDate && formData.endDate < formData.date) {
+      toast.error(t('form.endDateError'));
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -303,6 +312,8 @@ const CreateEvent = () => {
           address: formData.address,
           date: formData.date,
           time: formData.time,
+          end_date: formData.multiDay && formData.endDate > formData.date ? formData.endDate : null,
+          end_time: formData.endTime || null,
           price: formData.price ? parseFloat(formData.price) : null,
           capacity: formData.capacity ? parseInt(formData.capacity) : null,
           description: formData.description || null,
@@ -320,7 +331,7 @@ const CreateEvent = () => {
           contact_twitter: formData.contactTwitter || null,
           contact_email: formData.contactEmail || null,
           key_points: validKeyPoints.length > 0 ? validKeyPoints : null
-        }, ['contact_email'], (p) => supabase.from('events').insert(p));
+        }, ['contact_email', 'end_date', 'end_time'], (p) => supabase.from('events').insert(p));
 
       if (insertError) {
         throw insertError;
@@ -348,6 +359,9 @@ const CreateEvent = () => {
         address: '',
         date: '',
         time: '',
+        endDate: '',
+        endTime: '',
+        multiDay: false,
         price: '',
         capacity: '',
         description: '',
@@ -573,42 +587,12 @@ const CreateEvent = () => {
             <div className={cardClass}>
               <SectionTitle icon={CalendarDays}>{t('form.dateTime')}</SectionTitle>
 
-              <div className="space-y-3 overflow-hidden">
-                <Label htmlFor="date" className={labelClass}>{t('form.date')}</Label>
-                <div className="relative overflow-hidden">
-                  <Input
-                    id="date"
-                    type="date"
-                    value={formData.date}
-                    onChange={e => setFormData({ ...formData, date: e.target.value })}
-                    required
-                    className={`${inputClass} w-full max-w-full`}
-                  />
-                  {formData.date && (
-                    <button type="button" onClick={() => setFormData({ ...formData, date: '' })} className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full bg-stone-300/40 flex items-center justify-center hover:bg-stone-400/40 transition-colors">
-                      <X className="w-2.5 h-2.5 text-stone-500" />
-                    </button>
-                  )}
-                </div>
-              </div>
-              <div className="space-y-3 overflow-hidden">
-                <Label htmlFor="time" className={labelClass}>{t('form.time')}</Label>
-                <div className="relative overflow-hidden">
-                  <Input
-                    id="time"
-                    type="time"
-                    value={formData.time}
-                    onChange={e => setFormData({ ...formData, time: e.target.value })}
-                    required
-                    className={`${inputClass} w-full max-w-full`}
-                  />
-                  {formData.time && (
-                    <button type="button" onClick={() => setFormData({ ...formData, time: '' })} className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full bg-stone-300/40 flex items-center justify-center hover:bg-stone-400/40 transition-colors">
-                      <X className="w-2.5 h-2.5 text-stone-500" />
-                    </button>
-                  )}
-                </div>
-              </div>
+              <EventScheduleFields
+                value={{ date: formData.date, time: formData.time, endDate: formData.endDate, endTime: formData.endTime, multiDay: formData.multiDay }}
+                onChange={(v) => setFormData({ ...formData, ...v })}
+                inputClass={inputClass}
+                labelClass={labelClass}
+              />
             </div>
 
             {/* Price and Capacity Card */}

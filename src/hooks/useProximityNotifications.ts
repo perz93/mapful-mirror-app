@@ -62,9 +62,10 @@ export function useProximityNotifications() {
         const today = new Date().toISOString().split('T')[0];
         const { data: events } = await supabase
           .from('events')
-          .select('id, title, venue, date, time, latitude, longitude, image_url')
+          .select('id, title, venue, date, time, end_date, latitude, longitude, image_url')
           .eq('is_published', true)
-          .eq('date', today); // « près de toi » n'a de sens que pour aujourd'hui
+          .lte('date', today)
+          .or(`date.eq.${today},end_date.gte.${today}`); // « près de toi » : seulement ce qui a lieu aujourd'hui
 
         if (!events || events.length === 0) return;
 

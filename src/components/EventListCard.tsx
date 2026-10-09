@@ -1,7 +1,6 @@
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
 import { Link } from 'react-router-dom';
 import { Event } from '@/hooks/useEvents';
+import { dateRangeLabel, timeRangeLabel } from '@/lib/eventStatus';
 import ShimmerImage from './ShimmerImage';
 
 interface EventListCardProps {
@@ -10,11 +9,6 @@ interface EventListCardProps {
 
 const EventListCard = ({ event }: EventListCardProps) => {
   if (!event) return null;
-  const formatEventDate = (date: string, time: string) => {
-    const eventDate = new Date(date);
-    const [hours] = time.split(':');
-    return `${format(eventDate, 'EEE, d MMM', { locale: fr })} • ${hours}h00`;
-  };
 
   return (
     <div className="w-full pointer-events-auto touch-auto">
@@ -28,7 +22,7 @@ const EventListCard = ({ event }: EventListCardProps) => {
               {event.title}
             </p>
             <p className="text-stone-500 dark:text-stone-400 text-xs font-normal leading-normal">
-              {formatEventDate(event.date, event.time)}
+              {dateRangeLabel(event)} • {timeRangeLabel(event)}
             </p>
           </div>
           <Link 

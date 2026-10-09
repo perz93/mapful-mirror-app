@@ -2,6 +2,7 @@ import LargeTitle from '@/components/LargeTitle';
 import { EVENT_CATEGORIES, normalizeEventCategory } from '@/lib/eventCategories';
 import { useState, useEffect, useRef } from 'react';
 import SectionTitle from '@/components/SectionTitle';
+import EventScheduleFields from '@/components/EventScheduleFields';
 import { ArrowLeft, Upload, Loader2, Image as ImageIcon, Phone, MessageCircle, Instagram, Facebook, Mail, Type, CalendarDays, Ticket } from 'lucide-react';
 import TikTokIcon from '@/components/icons/TikTokIcon';
 import { retryWithoutNewColumns } from '@/lib/retryWithoutNewColumns';
@@ -38,6 +39,9 @@ const EditEvent = () => {
     category: '',
     date: '',
     time: '',
+    endDate: '',
+    endTime: '',
+    multiDay: false,
     price: '',
     capacity: '',
     is_paid: false,
@@ -77,7 +81,10 @@ const EditEvent = () => {
         address: data.address || '',
         category: normalizeEventCategory(data.category),
         date: data.date,
-        time: data.time,
+        time: data.time?.slice(0, 5) ?? '',
+        endDate: data.end_date || '',
+        endTime: data.end_time?.slice(0, 5) ?? '',
+        multiDay: !!data.end_date && data.end_date > data.date,
         price: data.price?.toString() || '',
         capacity: data.capacity?.toString() || '',
         is_paid: data.is_paid,
@@ -146,6 +153,8 @@ const EditEvent = () => {
           category: formData.category,
           date: formData.date,
           time: formData.time,
+          end_date: formData.multiDay && formData.endDate > formData.date ? formData.endDate : null,
+          end_time: formData.endTime || null,
           price: formData.price ? parseFloat(formData.price) : null,
           capacity: formData.capacity ? parseInt(formData.capacity) : null,
           is_paid: formData.is_paid,
@@ -159,7 +168,7 @@ const EditEvent = () => {
           contact_tiktok: formData.contact_tiktok || null,
           contact_twitter: formData.contact_twitter || null,
           contact_email: formData.contact_email || null,
-        }, ['contact_email'], (p) => supabase.from('events').update(p).eq('id', id!));
+        }, ['contact_email', 'end_date', 'end_time'], (p) => supabase.from('events').update(p).eq('id', id!));
 
       if (error) throw error;
       await queryClient.invalidateQueries();
@@ -258,18 +267,16 @@ const EditEvent = () => {
               </div>
             </div>
 
-            {/* Date & Time — stacked */}
+            {/* Date & Time */}
             <div className={cardClass}>
               <SectionTitle icon={CalendarDays}>{t('form.dateTime')}</SectionTitle>
 
-              <div className="space-y-2">
-                <label className={labelClass}>{t('form.date')}</label>
-                <input type="date" required value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} className={inputClass} />
-              </div>
-              <div className="space-y-2">
-                <label className={labelClass}>{t('form.time')}</label>
-                <input type="time" required value={formData.time} onChange={e => setFormData({...formData, time: e.target.value})} className={inputClass} />
-              </div>
+              <EventScheduleFields
+                value={{ date: formData.date, time: formData.time, endDate: formData.endDate, endTime: formData.endTime, multiDay: formData.multiDay }}
+                onChange={(v) => setFormData({ ...formData, ...v })}
+                inputClass={inputClass}
+                labelClass={labelClass}
+              />
             </div>
 
             {/* Price & Capacity */}

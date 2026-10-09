@@ -29,7 +29,7 @@ async function updateBadge() {
       .from('events')
       .select('id, latitude, longitude, date')
       .eq('is_published', true)
-      .gte('date', today);
+      .or(`date.gte.${today},end_date.gte.${today}`);
 
     if (!events || events.length === 0) {
       await (navigator as any).clearAppBadge();

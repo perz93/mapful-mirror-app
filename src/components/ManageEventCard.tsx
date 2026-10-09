@@ -1,9 +1,8 @@
-import { format } from 'date-fns';
 import ShimmerImage from './ShimmerImage';
-import { fr } from 'date-fns/locale';
 import { Link } from 'react-router-dom';
 import { Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
 import { Event } from '@/hooks/useEvents';
+import { dateRangeLabel, timeRangeLabel } from '@/lib/eventStatus';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/PillToast';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -29,11 +28,6 @@ interface ManageEventCardProps {
 const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) => {
   const { t } = useLanguage();
   const queryClient = useQueryClient();
-  const formatEventDate = (date: string, time: string) => {
-    const eventDate = new Date(date);
-    const [hours] = time.split(':');
-    return `${format(eventDate, 'EEE, d MMM', { locale: fr })} • ${hours}h00`;
-  };
 
   const handleDelete = async () => {
     try {
@@ -99,7 +93,7 @@ const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) 
               {event.venue}
             </p>
             <p className="text-stone-500 dark:text-stone-400 text-xs font-normal leading-normal">
-              {formatEventDate(event.date, event.time)}
+              {dateRangeLabel(event)} • {timeRangeLabel(event)}
             </p>
           </div>
           

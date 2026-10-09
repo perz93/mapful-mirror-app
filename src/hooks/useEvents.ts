@@ -10,6 +10,10 @@ export interface Event {
   category: string;
   date: string;
   time: string;
+  /** Dernier jour si l'événement dure plusieurs jours */
+  end_date?: string | null;
+  /** Heure de fin facultative */
+  end_time?: string | null;
   price: number | null;
   capacity: number | null;
   image_url: string | null;

@@ -19,7 +19,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { getEventCategory } from '@/lib/eventCategories';
 import { useSearch } from '@/contexts/SearchContext';
 import { useNotifications } from '@/contexts/NotificationContext';
-import { eventStatus } from '@/lib/eventStatus';
+import { eventStatus, dateRangeLabel, timeRangeLabel, isMultiDay } from '@/lib/eventStatus';
 import { softCase } from '@/lib/softCase';
 
 
@@ -127,12 +127,12 @@ const EventDetails = () => {
 
   const locale = lang === 'fr' ? fr : enUS;
   const eventDate = new Date(`${event.date}T00:00:00`);
-  const formattedDate = format(eventDate, "EEEE d MMMM yyyy", { locale });
-  const formattedTime = event.time.substring(0, 5);
+  const formattedDate = isMultiDay(event) ? dateRangeLabel(event, lang) : format(eventDate, "EEEE d MMMM yyyy", { locale });
+  const formattedTime = timeRangeLabel(event);
   const showAddress = !!event.address && event.address.trim().toLowerCase() !== event.venue.trim().toLowerCase();
   const keyPoints = event.key_points as string[] | null;
   const category = getEventCategory(event.category);
-  const status = eventStatus(event.date, event.time);
+  const status = eventStatus(event);
   // Itinéraire tracé dans l'app, sur la carte (même fonction que le bouton des popups)
   const showRoute = () => {
     setRouteDestination({ lat: Number(event.latitude), lng: Number(event.longitude), label: event.title });
@@ -158,7 +158,7 @@ const EventDetails = () => {
   const priceText = event.is_paid && event.price ? `${Number(event.price).toLocaleString('fr-FR')} FCFA` : t('event.free');
   const categoryLabel = category ? t(category.tKey) : event.category;
   const ticketCells = [
-    { label: t('event.dateLabel'), value: format(eventDate, 'EEE d MMM', { locale }).replace('.', '') },
+    { label: t('event.dateLabel'), value: dateRangeLabel(event, lang) },
     { label: t('event.timeLabel'), value: formattedTime },
     { label: lang === 'fr' ? 'Lieu' : 'Venue', value: softCase(event.venue) },
     { label: t('event.price'), value: priceText },

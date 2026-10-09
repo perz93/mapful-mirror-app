@@ -1,7 +1,6 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { fr as frLocale, enUS } from 'date-fns/locale';
 import { ArrowLeft, Share2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { usePublicProfile, profileDisplayName, initials } from '@/hooks/usePublicProfile';
@@ -11,12 +10,15 @@ import ContactFab from '@/components/ContactFab';
 import ShimmerImage from '@/components/ShimmerImage';
 import { toast } from '@/components/PillToast';
 import { softCase } from '@/lib/softCase';
+import { dateRangeLabel, lastDay, timeRangeLabel } from '@/lib/eventStatus';
 
 interface ProfileEvent {
   id: string;
   title: string;
   date: string;
   time: string | null;
+  end_date?: string | null;
+  end_time?: string | null;
   venue: string | null;
   image_url: string | null;
   created_at: string;
@@ -29,7 +31,7 @@ interface ProfileEvent {
   contact_email: string | null;
 }
 
-interface ProfileListing extends Omit<ProfileEvent, 'date' | 'time' | 'venue'> {
+interface ProfileListing extends Omit<ProfileEvent, 'date' | 'time' | 'end_date' | 'end_time' | 'venue'> {
   location: string | null;
   price: number | null;
 }
@@ -46,7 +48,6 @@ const PublicProfile = () => {
   const navigate = useNavigate();
   const { lang, t } = useLanguage();
   const fr = lang === 'fr';
-  const locale = fr ? frLocale : enUS;
 
   const { data: profile, isLoading: loadingProfile } = usePublicProfile(id);
   const { data, isLoading } = useQuery({
@@ -56,7 +57,7 @@ const PublicProfile = () => {
       const [ev, li] = await Promise.all([
         supabase
           .from('events')
-          .select(`id, title, date, time, venue, image_url, created_at, ${CONTACT_COLS}`)
+          .select(`id, title, date, time, end_date, end_time, venue, image_url, created_at, ${CONTACT_COLS}`)
           .eq('user_id', id!)
           .eq('is_published', true)
           .order('date', { ascending: false }),
@@ -81,8 +82,8 @@ const PublicProfile = () => {
   const events = data?.events ?? [];
   const listings = data?.listings ?? [];
   const today = format(new Date(), 'yyyy-MM-dd');
-  const upcoming = events.filter((e) => e.date >= today).sort((a, b) => a.date.localeCompare(b.date));
-  const past = events.filter((e) => e.date < today).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6);
+  const upcoming = events.filter((e) => lastDay(e) >= today).sort((a, b) => a.date.localeCompare(b.date));
+  const past = events.filter((e) => lastDay(e) < today).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6);
 
   // Bannière : les affiches les plus récentes (événements puis annonces)
   const banner = [...events, ...listings]
@@ -151,7 +152,7 @@ const PublicProfile = () => {
   );
 
   const eventSub = (e: ProfileEvent) =>
-    [format(new Date(e.date), fr ? 'EEE d MMM' : 'EEE, MMM d', { locale }).replace('.', ''), e.time?.slice(0, 5), softCase(e.venue)]
+    [dateRangeLabel(e, lang), timeRangeLabel(e), softCase(e.venue)]
       .filter(Boolean)
       .join(' · ');
 

@@ -6,7 +6,7 @@ import { useFeaturedEvents } from '@/hooks/useFeaturedEvents';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import EventCardSkeleton from './EventCardSkeleton';
-import { eventStatus } from '@/lib/eventStatus';
+import { eventStatus, isMultiDay, lastDay, timeRangeLabel } from '@/lib/eventStatus';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { softCase } from '@/lib/softCase';
 const OUT_MS = 320;
@@ -71,7 +71,7 @@ const EventCard = () => {
     return null;
   }
   const currentEvent = events[currentIndex];
-  const status = eventStatus(currentEvent.date, currentEvent.time);
+  const status = eventStatus(currentEvent);
   return <div className="fixed bottom-36 left-0 right-0 max-w-md mx-auto px-4 pointer-events-none z-10 touch-none">
       <div className="pointer-events-auto touch-auto">
         <div
@@ -108,8 +108,9 @@ const EventCard = () => {
                 <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-ink">
                   {format(new Date(`${currentEvent.date}T00:00:00`), 'MMM', { locale: fr }).replace('.', '')}
                 </p>
-                <p className="font-display mt-0.5 text-[24px] tracking-tight text-ink tabular">
+                <p className={`font-display mt-0.5 tracking-tight text-ink tabular ${isMultiDay(currentEvent) ? 'text-[18px]' : 'text-[24px]'}`}>
                   {format(new Date(`${currentEvent.date}T00:00:00`), 'd')}
+                  {isMultiDay(currentEvent) && `–${format(new Date(`${lastDay(currentEvent)}T00:00:00`), 'd')}`}
                 </p>
               </div>
               <div className="min-w-0 flex-1">
@@ -124,7 +125,7 @@ const EventCard = () => {
                   {currentEvent.time && (
                     <span className="inline-flex h-[22px] flex-shrink-0 items-center gap-1 rounded-full bg-parchment px-2 text-[11px] font-semibold text-ink tabular">
                       <Clock size={11} strokeWidth={2.2} />
-                      {currentEvent.time.slice(0, 5)}
+                      {timeRangeLabel(currentEvent)}
                     </span>
                   )}
                 </div>

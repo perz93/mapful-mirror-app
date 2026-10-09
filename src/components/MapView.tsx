@@ -19,6 +19,7 @@ import RouteInfoPanel from './RouteInfoPanel';
 import { fuzzyMatch } from '@/lib/fuzzyMatch';
 import { getDistanceKm } from '@/hooks/useNearbyEvents';
 import { cityOf } from '@/lib/cities';
+import { happensBetween, isMultiDay, lastDay } from '@/lib/eventStatus';
 import { supabase } from '@/integrations/supabase/client';
 import { softCase } from '@/lib/softCase';
 
@@ -342,7 +343,10 @@ const MapView = () => {
       });
 
       const dateFormatted = formatEventDate(event.date);
-      const timeFormatted = formatEventTime(event.time);
+      if (isMultiDay(event)) dateFormatted.day = `${dateFormatted.day}–${format(parseISO(lastDay(event)), 'd')}`;
+      const timeFormatted = event.end_time
+        ? `${formatEventTime(event.time)} – ${formatEventTime(event.end_time)}`
+        : formatEventTime(event.time);
       const defaultImage = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=320&q=70&fm=webp';
 
       const popupContent = `
@@ -590,11 +594,11 @@ const MapView = () => {
       // Date filter
       let matchesDate = true;
       if (dateFilter === 'today') {
-        matchesDate = eventData.date === todayStr;
+        matchesDate = happensBetween(eventData, todayStr, todayStr);
       } else if (dateFilter === 'week') {
-        matchesDate = eventData.date >= todayStr && eventData.date <= weekEndStr;
+        matchesDate = happensBetween(eventData, todayStr, weekEndStr);
       } else if (dateFilter === 'month') {
-        matchesDate = eventData.date >= todayStr && eventData.date <= monthEndStr;
+        matchesDate = happensBetween(eventData, todayStr, monthEndStr);
       }
 
       // Price filter

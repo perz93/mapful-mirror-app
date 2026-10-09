@@ -6,7 +6,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useEventsByCategory } from '@/hooks/useEventsByCategory';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { eventStatus } from '@/lib/eventStatus';
+import { eventStatus, isMultiDay, lastDay, timeRangeLabel } from '@/lib/eventStatus';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { CategoryPageSkeleton } from './PageSkeleton';
 import ShimmerImage from './ShimmerImage';
@@ -81,7 +81,7 @@ const CategoryPage = ({
                 {/* Carte sombre : photo, statut + prix dessus, date « OCT 30 » à côté du titre */}
                 {(() => {
                   const d = new Date(`${event.date}T00:00:00`);
-                  const status = eventStatus(event.date, event.time);
+                  const status = eventStatus(event);
                   const showStatus = status && (status.live || ['status.soon', 'status.inHours', 'status.tomorrow'].includes(status.key));
                   return (
                     <article
@@ -109,7 +109,10 @@ const CategoryPage = ({
                           <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-ink">
                             {format(d, 'MMM', { locale: fr }).replace('.', '')}
                           </p>
-                          <p className="font-display mt-0.5 text-[28px] tracking-tight text-ink tabular">{format(d, 'dd')}</p>
+                          <p className={`font-display mt-0.5 tracking-tight text-ink tabular ${isMultiDay(event) ? 'text-[20px]' : 'text-[28px]'}`}>
+                            {format(d, 'dd')}
+                            {isMultiDay(event) && `–${format(new Date(`${lastDay(event)}T00:00:00`), 'dd')}`}
+                          </p>
                         </div>
                         <div className="min-w-0 flex-1">
                           <h3 className="font-display text-[20px] leading-[1.05] tracking-tight text-ink line-clamp-2">{softCase(event.title)}</h3>
@@ -122,7 +125,7 @@ const CategoryPage = ({
                             {event.time && (
                               <span className="inline-flex h-[26px] flex-shrink-0 items-center gap-1 rounded-full bg-parchment px-2.5 text-[12px] font-semibold text-ink tabular">
                                 <Clock size={13} strokeWidth={2.2} />
-                                {event.time.slice(0, 5)}
+                                {timeRangeLabel(event)}
                               </span>
                             )}
                           </div>
