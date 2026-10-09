@@ -2,8 +2,9 @@ import LargeTitle from '@/components/LargeTitle';
 import { useState, useEffect } from 'react';
 import SectionTitle from '@/components/SectionTitle';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, UserRound, Mail, Lock, Bell, Smartphone, Globe, Shield, ChevronRight, ExternalLink } from 'lucide-react';
+import { ArrowLeft, UserRound, Mail, Lock, Bell, Smartphone, Globe, Shield, ChevronRight, ChevronDown, Check, ExternalLink } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { useLanguage, Lang } from '@/contexts/LanguageContext';
@@ -432,35 +433,46 @@ const Settings = () => {
             </div>
           </div>
 
-          {/* Language Section */}
-          <div className="rounded-3xl bg-white p-5">
-            <div className="mb-1 -mt-1">
-              <SectionTitle icon={Globe}>{t('settings.language')}</SectionTitle>
-            </div>
-            <p className="text-sm text-stone-500 mb-4">
-              {t('settings.languageDesc')}
-            </p>
-            <div className="flex gap-3">
-              {([
-                { id: 'fr' as Lang, label: 'Français', flag: '🇫🇷' },
-                { id: 'en' as Lang, label: 'English', flag: '🇬🇧' },
-              ]).map((option) => (
-                <button
-                  key={option.id}
-                  onClick={() => {
-                    setLang(option.id);
-                    toast.success(option.id === 'fr' ? 'Langue changée en français' : 'Language changed to English');
-                  }}
-                  className={`flex-1 flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-sm font-medium transition-all ${
-                    lang === option.id
-                      ? 'bg-lime text-ink scale-[1.02]'
-                      : 'bg-white/60 text-stone-600 border border-stone-200 hover:bg-white/80 hover:scale-[1.02]'
-                  }`}
-                >
-                  <span className="text-lg">{option.flag}</span>
-                  {option.label}
-                </button>
-              ))}
+          {/* Langue : une ligne, la langue actuelle en pastille (L3) */}
+          <div className="rounded-3xl bg-white px-5 py-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="-my-1">
+                <SectionTitle icon={Globe}>{t('settings.language')}</SectionTitle>
+              </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label={t('settings.languageDesc')}
+                    className="inline-flex h-9 flex-shrink-0 items-center gap-1.5 rounded-full bg-parchment px-3.5 text-sm font-semibold text-ink active:scale-95 transition-transform"
+                  >
+                    <span>{lang === 'fr' ? '🇫🇷' : '🇬🇧'}</span>
+                    {lang === 'fr' ? 'Français' : 'English'}
+                    <ChevronDown size={15} strokeWidth={2} className="text-stone-400" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-48 rounded-2xl border-stone-200 p-1.5">
+                  {([
+                    { id: 'fr' as Lang, label: 'Français', flag: '🇫🇷' },
+                    { id: 'en' as Lang, label: 'English', flag: '🇬🇧' },
+                  ]).map((option) => (
+                    <button
+                      key={option.id}
+                      type="button"
+                      onClick={() => {
+                        if (lang === option.id) return;
+                        setLang(option.id);
+                        toast.success(option.id === 'fr' ? 'Langue changée en français' : 'Language changed to English');
+                      }}
+                      className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-ink transition-colors ${lang === option.id ? 'bg-parchment' : 'hover:bg-parchment/60'}`}
+                    >
+                      <span className="text-base">{option.flag}</span>
+                      <span className="flex-1 text-left">{option.label}</span>
+                      {lang === option.id && <Check size={16} strokeWidth={2.2} />}
+                    </button>
+                  ))}
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
 
