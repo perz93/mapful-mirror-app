@@ -13,9 +13,7 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="preload" href="/splash-photo-2.jpg" as="image" />
     <link rel="preload" href="/splash-logo.png" as="image" />
-    <link rel="preload" href="/splash-v-mask.png" as="image" />
 
     
     <meta property="og:title" content="VIBE — Découvre les events à Abidjan" />
@@ -31,15 +29,32 @@
     <meta name="twitter:title" content="VIBE — Découvre les events à Abidjan" />
     <meta name="twitter:description" content="Concerts, festivals, expos, brunch... Trouve ce qui se passe autour de toi ce soir." />
     <meta name="twitter:image" content="%SITE_ORIGIN%/og-image.jpg" />
+    <style>
+      /* Splash : logo découpé (pin, v, i, b, e, point) et animé pièce par pièce */
+      .sp-logo{position:absolute;left:50%;top:50%;width:240px;height:120px;transform:translate(-50%,-55%)}
+      .sp{position:absolute;inset:0;width:100%;height:100%;opacity:0;will-change:transform,opacity}
+      .sp-pin{animation:sp-drop .7s cubic-bezier(.33,0,.67,1) .15s forwards}
+      .sp-v,.sp-i,.sp-b,.sp-e{animation:sp-up .55s cubic-bezier(.2,.9,.3,1.25) forwards}
+      .sp-v{animation-delay:.7s}.sp-i{animation-delay:.78s}.sp-b{animation-delay:.86s}.sp-e{animation-delay:.94s}
+      .sp-dot{transform-origin:76% 71%;animation:sp-pop .5s cubic-bezier(.2,.9,.3,1.4) 1.2s forwards}
+      @keyframes sp-drop{0%{opacity:1;transform:translateY(-55vh)}55%{transform:translateY(0)}70%{transform:translateY(-14%)}85%{transform:translateY(0)}93%{transform:translateY(-4%)}100%{opacity:1;transform:translateY(0)}}
+      @keyframes sp-up{0%{opacity:0;transform:translateY(30%)}100%{opacity:1;transform:none}}
+      @keyframes sp-pop{0%{opacity:0;transform:scale(0)}60%{opacity:1;transform:scale(1.5)}100%{opacity:1;transform:scale(1)}}
+      @media (prefers-reduced-motion:reduce){.sp{animation:none!important;opacity:1!important}}
+    </style>
   </head>
 
   <body>
-    <!-- Instant splash: shows before React loads -->
+    <!-- Splash animé : le pin tombe sur le « i », puis les lettres montent une à une -->
     <div id="instant-splash" style="position:fixed;inset:0;z-index:9999;background:#000;overflow:hidden;transition:transform 0.7s cubic-bezier(0.4,0,0.2,1);">
-      <!-- Affiche qui s'efface en V doux -->
-      <div style="position:absolute;left:0;right:0;top:0;height:62%;background:url('/splash-photo-2.jpg') center top/cover no-repeat;-webkit-mask:url('/splash-v-mask.png') center/100% 100% no-repeat;mask:url('/splash-v-mask.png') center/100% 100% no-repeat;"></div>
-      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.35) 0%,rgba(0,0,0,0) 12%);"></div>
-      <img src="/splash-logo.png" alt="VIBE" style="position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20%);transform:translateX(-50%);width:220px;height:auto;" />
+      <div class="sp-logo" role="img" aria-label="VIBE">
+        <img src="/splash-logo.png" alt="" class="sp sp-v" style="clip-path:inset(0 62.67% 0 21.67%);-webkit-clip-path:inset(0 62.67% 0 21.67%)" />
+        <img src="/splash-logo.png" alt="" class="sp sp-i" style="clip-path:inset(41.67% 57.33% 0 37.33%);-webkit-clip-path:inset(41.67% 57.33% 0 37.33%)" />
+        <img src="/splash-logo.png" alt="" class="sp sp-b" style="clip-path:inset(0 41.83% 0 42.67%);-webkit-clip-path:inset(0 41.83% 0 42.67%)" />
+        <img src="/splash-logo.png" alt="" class="sp sp-e" style="clip-path:inset(0 27.17% 0 58.17%);-webkit-clip-path:inset(0 27.17% 0 58.17%)" />
+        <img src="/splash-logo.png" alt="" class="sp sp-pin" style="clip-path:inset(20% 57% 58.33% 35.67%);-webkit-clip-path:inset(20% 57% 58.33% 35.67%)" />
+        <img src="/splash-logo.png" alt="" class="sp sp-dot" style="clip-path:inset(0 21.67% 0 72.83%);-webkit-clip-path:inset(0 21.67% 0 72.83%)" />
+      </div>
     </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>

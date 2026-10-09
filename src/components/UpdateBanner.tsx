@@ -6,8 +6,6 @@ import { pwaUpdate } from '@/lib/pwaUpdate';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const UPDATED_KEY = 'vibe-just-updated';
-// Même V doux que le splash (index.html)
-const PHOTO_MASK = "url('/splash-v-mask.png') center / 100% 100% no-repeat";
 
 /** Bandeau « Nouvelle version » : l'utilisateur met à jour quand il veut. */
 const UpdateBanner = () => {
@@ -40,28 +38,17 @@ const UpdateBanner = () => {
   };
 
   if (updating) {
-    // Écran « affiche » (même visuel que le splash de démarrage)
+    // Même visuel que le splash de démarrage : fond noir, logo centré
     return createPortal(
       <div className="fixed inset-0 z-[10000] overflow-hidden bg-black animate-fade-in" role="status" aria-live="polite">
-        <div
-          className="absolute inset-x-0 top-0 h-[62%] bg-cover bg-top"
-          style={{ backgroundImage: "url('/splash-photo-2.jpg')", WebkitMask: PHOTO_MASK, mask: PHOTO_MASK }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{ background: 'linear-gradient(180deg,rgba(0,0,0,0.35) 0%,rgba(0,0,0,0) 12%)' }}
-        />
-        {/* Logo à la même place que sur le splash : pas de saut au rechargement */}
+        {/* Logo à la même place que sur le splash (centré) : pas de saut au rechargement */}
         <img
           src="/splash-logo.png"
           alt="VIBE"
-          className="absolute left-1/2 w-[220px] h-auto -translate-x-1/2"
-          style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 20%)' }}
+          className="absolute left-1/2 top-1/2 h-[120px] w-[240px]"
+          style={{ transform: 'translate(-50%, -55%)' }}
         />
-        <div
-          className="absolute inset-x-0 flex flex-col items-center"
-          style={{ top: 'calc(80% - env(safe-area-inset-bottom, 0px) + 28px)' }}
-        >
+        <div className="absolute inset-x-0 top-1/2 mt-16 flex flex-col items-center">
           <p className="text-[15px] font-semibold text-[#f5f5eb]">{t('update.installing')}</p>
           <div className="mt-3.5 flex gap-1.5" aria-hidden>
             {[0, 1, 2].map((i) => (
