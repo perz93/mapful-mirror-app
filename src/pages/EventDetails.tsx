@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import OrganizerCard from '@/components/OrganizerCard';
-import { ArrowLeft, MapPin, Share2, Heart, Bell, BellRing } from 'lucide-react';
+import { ArrowLeft, MapPin, Share2, Heart, Bell, BellRing, Users } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
@@ -216,11 +216,20 @@ const EventDetails = () => {
           </div>
 
           <div className="px-5 pb-5 pt-2">
-            <p className="eyebrow text-stone-500">
-              {categoryLabel}
-              {event.capacity ? ` · ${event.capacity} ${lang === 'fr' ? 'places' : 'spots'}` : ''}
-            </p>
-            <h1 className="mt-1.5 text-[32px] leading-[0.98] tracking-tighter text-ink dark:text-white">{event.title}</h1>
+            {/* Catégorie (pastille noire) + places (pastille crème) */}
+            <div className="flex flex-wrap gap-1.5">
+              <span className="inline-flex h-7 items-center gap-1.5 rounded-full bg-ink px-3 text-xs font-semibold text-lime">
+                {category && <img src={category.icon} alt="" className="size-4 object-contain invert" />}
+                {categoryLabel}
+              </span>
+              {event.capacity ? (
+                <span className="inline-flex h-7 items-center gap-1.5 rounded-full bg-parchment px-3 text-xs font-semibold text-ink">
+                  <Users size={13} strokeWidth={2} />
+                  {event.capacity} {lang === 'fr' ? 'places' : 'spots'}
+                </span>
+              ) : null}
+            </div>
+            <h1 className="mt-3 text-[32px] leading-[0.98] tracking-tighter text-ink dark:text-white">{event.title}</h1>
           </div>
 
           {/* Ligne détachable du billet */}
@@ -231,7 +240,7 @@ const EventDetails = () => {
 
           <dl className="grid grid-cols-2 gap-x-4 gap-y-4 px-5 pb-5 pt-4">
             {ticketCells.map((cell) => (
-              <div key={cell.label} className="min-w-0">
+              <div key={cell.label} className="min-w-0 border-l-2 border-ink dark:border-stone-300 pl-3">
                 <dt className="eyebrow text-stone-500">{cell.label}</dt>
                 <dd className="mt-1 line-clamp-2 text-[16px] leading-tight font-semibold tracking-tight text-ink dark:text-white tabular first-letter:uppercase">{cell.value}</dd>
               </div>
