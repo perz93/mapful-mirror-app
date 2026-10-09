@@ -29,9 +29,7 @@ const EventCard = () => {
     const i = id && events ? events.findIndex((e) => e.id === id) : -1;
     return i >= 0 ? i : 0;
   });
-  // Relance la lecture auto (après un glissement ou un tap sur les points)
-  const [autoplayKey, setAutoplayKey] = useState(0);
-  const touchStartX = useRef<number | null>(null);
+
   const [isTransitioning, setIsTransitioning] = useState(false);
   const currentIndexRef = useRef(0);
   currentIndexRef.current = currentIndex;
@@ -63,26 +61,7 @@ const EventCard = () => {
     if (ev) store(ev.id);
   }, [events, currentIndex]);
 
-  const goTo = (next: number) => {
-    if (!events || next === currentIndexRef.current) return;
-    decodeImage(events[next].image_url);
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setCurrentIndex(next);
-      requestAnimationFrame(() => setIsTransitioning(false));
-    }, OUT_MS);
-    setAutoplayKey((k) => k + 1);
-  };
 
-  const onTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
-  const onTouchEnd = (e: React.TouchEvent) => {
-    if (!events || events.length < 2 || touchStartX.current === null) return;
-    const dx = e.changedTouches[0].clientX - touchStartX.current;
-    touchStartX.current = null;
-    if (Math.abs(dx) < 40) return;
-    const n = events.length;
-    goTo(dx < 0 ? (currentIndexRef.current + 1) % n : (currentIndexRef.current - 1 + n) % n);
-  };
 
   useEffect(() => {
     if (!events || events.length < 2) return;
@@ -106,7 +85,7 @@ const EventCard = () => {
       clearInterval(interval);
       clearTimeout(swapTimer);
     };
-  }, [events, autoplayKey]);
+  }, [events]);
 
   if (isLoading) {
     return <EventCardSkeleton />;
@@ -117,7 +96,7 @@ const EventCard = () => {
   const currentEvent = events[Math.min(currentIndex, events.length - 1)];
   const status = eventStatus(currentEvent);
   return <div className="fixed bottom-36 left-0 right-0 max-w-md mx-auto px-4 pointer-events-none z-10 touch-none">
-      <div className="pointer-events-auto touch-auto" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+      <div className="pointer-events-auto touch-auto">
         <div
           className="relative h-[164px] overflow-hidden rounded-3xl bg-white shadow-[0_14px_32px_-14px_rgba(20,20,15,0.45)] [isolation:isolate] transform-gpu will-change-[opacity,transform] motion-reduce:transition-none"
           style={{
@@ -131,7 +110,8 @@ const EventCard = () => {
           }}
         >
           {/* C2 : photo en bandeau, puis date « MAI 8 », titre et pastilles (comme les listes) */}
-          <Link to={`/event/${currentEvent.id}`} aria-label={`${currentEvent.title} — ${t('seeDetails')}`} className="no-press flex h-full flex-col p-[7px]">
+          {/* Seul le bouton noir ouvre les détails : toucher le cadre ne fait rien */}
+          <div className="flex h-full flex-col p-[7px]">
             <div className="relative h-[96px] flex-shrink-0 overflow-hidden rounded-[18px] bg-[#ebe9dd]">
               <ShimmerImage
                 key={currentEvent.id}
@@ -174,26 +154,20 @@ const EventCard = () => {
                   )}
                 </div>
               </div>
-              <span aria-hidden className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-ink text-parchment">
+              <Link
+                to={`/event/${currentEvent.id}`}
+                aria-label={`${currentEvent.title} — ${t('seeDetails')}`}
+                className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-ink text-parchment active:scale-95 transition-transform"
+              >
                 <ArrowRight size={18} strokeWidth={2} />
-              </span>
+              </Link>
             </div>
-          </Link>
+          </div>
         </div>
 
         {/* Progress indicators */}
         <div className="flex justify-center gap-1.5 mt-3">
-          {events.map((ev, index) => (
-            <button
-              key={ev.id}
-              type="button"
-              onClick={() => goTo(index)}
-              aria-label={softCase(ev.title)}
-              className="flex h-4 items-center"
-            >
-              <span className={`block h-1 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-6 bg-ink' : 'w-1.5 bg-ink/20 dark:bg-stone-600'}`} />
-            </button>
-          ))}
+          {events.map((ev, index) => <div key={ev.id} className={`h-1 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-6 bg-ink' : 'w-1.5 bg-ink/20 dark:bg-stone-600'}`} />)}
         </div>
       </div>
     </div>;
