@@ -406,6 +406,7 @@ const translations: Record<string, Record<Lang, string>> = {
   'nav.filter': { fr: 'filtre', en: 'filter' },
   'nav.showAll': { fr: 'Tout afficher', en: 'Show all' },
   'nav.nearMe': { fr: 'Autour de moi', en: 'Near me' },
+  'nav.city': { fr: 'Ville', en: 'City' },
   'nav.allDistance': { fr: 'Tout', en: 'All' },
 };
 

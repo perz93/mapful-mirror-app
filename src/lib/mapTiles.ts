@@ -31,7 +31,7 @@ const C = {
   land: '#fafaf8',
   residential: '#f7f6f2',
   building: '#efede6',
-  water: '#dbe8f3',
+  water: '#a9d9f2',
   park: '#e8f1de',
   wood: '#e2edd5',
   road: '#efe9da',
@@ -90,7 +90,7 @@ export function recolorStyle(style: StyleSpec): StyleSpec {
       }
     } else if (layer.type === 'symbol') {
       if (src === 'water_name' || src === 'waterway') {
-        paint['text-color'] = '#7f9ab3';
+        paint['text-color'] = '#3f7fa6';
       } else if (src === 'place') {
         const isCity = has(id, 'city', 'capital', 'town');
         paint['text-color'] = isCity ? C.labelStrong : C.label;

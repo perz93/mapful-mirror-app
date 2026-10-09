@@ -11,6 +11,8 @@ import { useSearch } from '@/contexts/SearchContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 import { EVENT_CATEGORIES } from '@/lib/eventCategories';
+import { useEvents } from '@/hooks/useEvents';
+import { cityOf, findCity } from '@/lib/cities';
 
 
 interface BottomNavigationProps {
@@ -23,9 +25,30 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const {
     searchQuery, setSearchQuery, selectedCategories, setSelectedCategories, toggleCategory,
-    distanceFilter, setDistanceFilter, activeFilterCount, clearFilters, searchOpen, setSearchOpen,
+    distanceFilter, setDistanceFilter, cityFilter, setCityFilter, activeFilterCount, clearFilters, searchOpen, setSearchOpen,
   } = useSearch();
   const { t } = useLanguage();
+  const { data: events } = useEvents();
+
+  // Villes où il y a des publications, les plus actives d'abord
+  const cityCounts = new Map<string, number>();
+  for (const ev of events ?? []) {
+    const city = cityOf(ev.latitude, ev.longitude);
+    if (city) cityCounts.set(city, (cityCounts.get(city) ?? 0) + 1);
+  }
+  const cities = [...cityCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'fr'));
+
+  const chooseCity = (name: string | null) => {
+    const next = name === cityFilter ? null : name;
+    setCityFilter(next);
+    const city = findCity(next);
+    if (city) {
+      window.dispatchEvent(new CustomEvent('map:flyto', {
+        detail: { lat: city.lat, lng: city.lng, zoom: city.radiusKm >= 10 ? 12 : 13 },
+      }));
+    }
+  };
+
   const [canScroll, setCanScroll] = useState(false);
   const trackRef = useRef<HTMLDivElement | null>(null);
   const thumbRef = useRef<HTMLDivElement | null>(null);
@@ -162,6 +185,37 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
 
             {/* Divider */}
             <div className="h-px bg-stone-200 mx-5" />
+
+            {/* Ville */}
+            {cities.length > 0 && (
+              <>
+                <div className="px-5 py-4 space-y-3">
+                  <p className="eyebrow text-stone-500">{t('nav.city')}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[{ name: null as string | null, label: t('nav.allDistance'), count: 0 },
+                      ...cities.map(([name, count]) => ({ name: name as string | null, label: name, count }))].map((opt) => (
+                      <button
+                        key={opt.label}
+                        onClick={() => chooseCity(opt.name)}
+                        className={`h-8 px-3.5 rounded-full border text-[13px] font-medium transition-all active:scale-95 inline-flex items-center gap-1.5 ${
+                          cityFilter === opt.name
+                            ? 'bg-ink text-parchment border-ink'
+                            : 'bg-white text-stone-700 border-stone-200 hover:border-ink'
+                        }`}
+                      >
+                        {opt.label}
+                        {opt.count > 0 && (
+                          <span className={cityFilter === opt.name ? 'text-parchment/60' : 'text-stone-400'}>{opt.count}</span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div className="h-px bg-stone-200 mx-5" />
+              </>
+            )}
 
             {/* Distance */}
             <div className="px-5 py-4 space-y-3">

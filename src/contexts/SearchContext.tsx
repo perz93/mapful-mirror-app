@@ -19,11 +19,14 @@ interface SearchContextType {
   setRouteDestination: (dest: RouteDestination | null) => void;
   distanceFilter: number | null;
   setDistanceFilter: (km: number | null) => void;
+  /** Ville choisie (voir lib/cities), null = toutes */
+  cityFilter: string | null;
+  setCityFilter: (city: string | null) => void;
   dateFilter: DateFilter;
   setDateFilter: (f: DateFilter) => void;
   priceFilter: PriceFilter;
   setPriceFilter: (f: PriceFilter) => void;
-  /** Nombre de filtres actifs (texte, catégories, distance, date, prix) */
+  /** Nombre de filtres actifs (texte, catégories, ville, distance, date, prix) */
   activeFilterCount: number;
   /** Tout réinitialiser en un geste */
   clearFilters: () => void;
@@ -38,6 +41,7 @@ export const SearchProvider = ({ children }: { children: ReactNode }) => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [routeDestination, setRouteDestination] = useState<RouteDestination | null>(null);
   const [distanceFilter, setDistanceFilter] = useState<number | null>(null);
+  const [cityFilter, setCityFilter] = useState<string | null>(null);
   const [dateFilter, setDateFilter] = useState<DateFilter>('all');
   const [priceFilter, setPriceFilter] = useState<PriceFilter>('all');
   const [searchOpen, setSearchOpen] = useState(false);
@@ -46,6 +50,7 @@ export const SearchProvider = ({ children }: { children: ReactNode }) => {
     (searchQuery.trim() ? 1 : 0) +
     selectedCategories.length +
     (distanceFilter !== null ? 1 : 0) +
+    (cityFilter !== null ? 1 : 0) +
     (dateFilter !== 'all' ? 1 : 0) +
     (priceFilter !== 'all' ? 1 : 0);
 
@@ -53,6 +58,7 @@ export const SearchProvider = ({ children }: { children: ReactNode }) => {
     setSearchQuery('');
     setSelectedCategories([]);
     setDistanceFilter(null);
+    setCityFilter(null);
     setDateFilter('all');
     setPriceFilter('all');
   };
@@ -78,6 +84,8 @@ export const SearchProvider = ({ children }: { children: ReactNode }) => {
       setRouteDestination,
       distanceFilter,
       setDistanceFilter,
+      cityFilter,
+      setCityFilter,
       dateFilter,
       setDateFilter,
       priceFilter,

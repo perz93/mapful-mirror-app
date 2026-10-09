@@ -18,6 +18,7 @@ import { toast } from '@/components/PillToast';
 import RouteInfoPanel from './RouteInfoPanel';
 import { fuzzyMatch } from '@/lib/fuzzyMatch';
 import { getDistanceKm } from '@/hooks/useNearbyEvents';
+import { cityOf } from '@/lib/cities';
 import { supabase } from '@/integrations/supabase/client';
 import { softCase } from '@/lib/softCase';
 
@@ -25,7 +26,7 @@ const MapView = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const navigate = useNavigate();
-  const { searchQuery, selectedCategories, routeDestination, setRouteDestination, distanceFilter, dateFilter, priceFilter } = useSearch();
+  const { searchQuery, selectedCategories, routeDestination, setRouteDestination, distanceFilter, cityFilter, dateFilter, priceFilter } = useSearch();
   const { t } = useLanguage();
   const { data: events, isLoading } = useEvents();
   const geo = useGeolocation();
@@ -584,6 +585,8 @@ const MapView = () => {
         matchesDistance = dist <= distanceFilter;
       }
 
+      const matchesCity = !cityFilter || cityOf(eventData.lat, eventData.lng) === cityFilter;
+
       // Date filter
       let matchesDate = true;
       if (dateFilter === 'today') {
@@ -602,11 +605,11 @@ const MapView = () => {
         matchesPrice = !!eventData.is_paid;
       }
 
-      if (matchesSearch && matchesCategory && matchesDistance && matchesDate && matchesPrice) {
+      if (matchesSearch && matchesCategory && matchesCity && matchesDistance && matchesDate && matchesPrice) {
         clusterGroup.addLayer(marker);
       }
     });
-  }, [searchQuery, selectedCategories, distanceFilter, dateFilter, priceFilter, geo.position]);
+  }, [searchQuery, selectedCategories, cityFilter, distanceFilter, dateFilter, priceFilter, geo.position]);
 
   return (
     <>
