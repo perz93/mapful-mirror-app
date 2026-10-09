@@ -772,7 +772,7 @@ All colors MUST be HSL.
                 border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  button:active, a:active {
+  button:active, a:active:not(.no-press) {
     transform: scale(0.97);
   }
 

@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ShimmerImage from '@/components/ShimmerImage';
+import { ListCardSkeleton } from '@/components/PageSkeleton';
 import { softCase } from '@/lib/softCase';
 
 type CategoryKey = string;
@@ -126,18 +127,7 @@ const Marketplace = () => {
       <div className="flex-1 px-4 pt-1 pb-24">
         {isLoading ? (
           <div className="grid gap-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="card-shadow rounded-[26px] bg-white p-2">
-                <div className="h-48 rounded-[20px] skeleton" />
-                <div className="mt-2 flex gap-2">
-                  <div className="flex-1 space-y-2 px-2 py-1.5">
-                    <div className="h-5 w-3/4 rounded-md skeleton skeleton-on-white" />
-                    <div className="h-3 w-1/2 rounded-md skeleton skeleton-on-white" />
-                  </div>
-                  <div className="h-14 w-24 rounded-2xl skeleton skeleton-on-white" />
-                </div>
-              </div>
-            ))}
+            {[1, 2, 3].map((i) => <ListCardSkeleton key={i} />)}
           </div>
         ) : listings && listings.length > 0 ? (
           <div key={selectedCategory} className="grid gap-4">
@@ -149,16 +139,16 @@ const Marketplace = () => {
                   key={listing.id}
                   to={`/listing/${listing.id}`}
                   style={{ animationDelay: `${Math.min(index * 60, 360)}ms`, animationFillMode: 'backwards' }}
-                  className="group block animate-fade-in"
+                  className="group block no-press animate-fade-in"
                 >
                   {/* Cadre calqué sur les événements (K1) */}
-                  <article className="card-shadow overflow-hidden rounded-[26px] bg-white p-2 transition-transform duration-300 active:scale-[0.99]">
+                  <article className="card-shadow overflow-hidden rounded-[26px] bg-white p-2">
                     <div className="relative h-44 overflow-hidden rounded-[20px] bg-[#ebe9dd]">
                       {listing.image_url ? (
                         <ShimmerImage
                           src={listing.image_url}
                           alt={listing.title}
-                          className="h-full w-full [&_img]:transition-transform [&_img]:duration-500 [&_img]:group-hover:scale-[1.03]"
+                          className="h-full w-full"
                         />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center bg-parchment">

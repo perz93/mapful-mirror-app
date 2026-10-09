@@ -32,6 +32,12 @@
     <style>
       /* Pendant le splash, fond noir partout (sinon iOS teinte la barre d'état en clair) */
       html.splashing,html.splashing body{background:#000!important}
+      /* VIBE se tient en portrait : en paysage sur téléphone, message plein écran */
+      #rotate-hint{display:none}
+      @media (orientation:landscape) and (max-height:500px) and (pointer:coarse){
+        #rotate-hint{display:flex;position:fixed;inset:0;z-index:100000;background:#000;color:#f5f5eb;flex-direction:column;align-items:center;justify-content:center;gap:14px;font:600 15px/1.4 -apple-system,system-ui,sans-serif;text-align:center}
+        #rotate-hint img{width:150px;height:auto}
+      }
       /* Splash : logo découpé (pin, v, i, b, e, point) et animé pièce par pièce */
       .sp-logo{position:absolute;left:50%;top:50%;width:240px;height:120px;transform:translate(-50%,-55%)}
       .sp{position:absolute;inset:0;width:100%;height:100%;opacity:0;will-change:transform,opacity}
@@ -58,6 +64,8 @@
         <img src="/splash-logo.png" alt="" class="sp sp-dot" style="clip-path:inset(0 21.67% 0 72.83%);-webkit-clip-path:inset(0 21.67% 0 72.83%)" />
       </div>
     </div>
+    <!-- Téléphone tourné en paysage : on demande de revenir en portrait -->
+    <div id="rotate-hint" aria-hidden="true"><img src="/splash-logo.png" alt="" /><p>Tourne ton téléphone<br />pour utiliser VIBE</p></div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

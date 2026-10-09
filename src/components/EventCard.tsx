@@ -87,7 +87,7 @@ const EventCard = () => {
           }}
         >
           {/* C2 : photo en bandeau, puis date « MAI 8 », titre et pastilles (comme les listes) */}
-          <Link to={`/event/${currentEvent.id}`} aria-label={`${currentEvent.title} — ${t('seeDetails')}`} className="flex h-full flex-col p-[7px]">
+          <Link to={`/event/${currentEvent.id}`} aria-label={`${currentEvent.title} — ${t('seeDetails')}`} className="no-press flex h-full flex-col p-[7px]">
             <div className="relative h-[96px] flex-shrink-0 overflow-hidden rounded-[18px] bg-[#ebe9dd]">
               <ShimmerImage
                 key={currentEvent.id}

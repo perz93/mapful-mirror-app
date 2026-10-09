@@ -139,7 +139,7 @@ const PublicProfile = () => {
   }
 
   const Row = ({ to, image, title, sub }: { to: string; image: string | null; title: string; sub: string }) => (
-    <Link to={to} className="card-shadow flex items-center gap-3 rounded-[20px] bg-white p-2.5 active:scale-[0.99] transition-transform">
+    <Link to={to} className="no-press card-shadow flex items-center gap-3 rounded-[20px] bg-white p-2.5">
       <div className="size-14 flex-shrink-0 overflow-hidden rounded-2xl bg-stone-200">
         {image && <ShimmerImage src={image} alt="" className="h-full w-full" />}
       </div>

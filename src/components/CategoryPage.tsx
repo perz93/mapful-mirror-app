@@ -77,7 +77,7 @@ const CategoryPage = ({
         {header}
 
         <div className="p-4 pt-5 space-y-4 pb-10">
-          {!events || events.length === 0 ? <EmptyState icon={CalendarDays} title={t('event.noEvents')} /> : events.map((event, i) => <Link key={event.id} to={`/event/${event.id}`} className="block group">
+          {!events || events.length === 0 ? <EmptyState icon={CalendarDays} title={t('event.noEvents')} /> : events.map((event, i) => <Link key={event.id} to={`/event/${event.id}`} className="block group no-press">
                 {/* Carte sombre : photo, statut + prix dessus, date « OCT 30 » à côté du titre */}
                 {(() => {
                   const d = new Date(`${event.date}T00:00:00`);
@@ -85,14 +85,14 @@ const CategoryPage = ({
                   const showStatus = status && (status.live || ['status.soon', 'status.inHours', 'status.tomorrow'].includes(status.key));
                   return (
                     <article
-                      className="card-shadow overflow-hidden rounded-[26px] bg-white p-2 text-ink transition-transform duration-300 active:scale-[0.99] animate-fade-in"
+                      className="card-shadow overflow-hidden rounded-[26px] bg-white p-2 text-ink animate-fade-in"
                       style={{ animationDelay: `${i * 0.06}s` }}
                     >
                       <div className="relative h-44 overflow-hidden rounded-[20px]">
                         <ShimmerImage
                           src={event.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&q=75&fm=webp'}
                           alt={event.title}
-                          className="h-full w-full transition-transform duration-500 group-hover:scale-[1.03]"
+                          className="h-full w-full"
                         />
                         {showStatus && (
                           <span className={`absolute left-2.5 top-2.5 inline-flex h-7 items-center gap-1.5 rounded-full px-3 text-xs font-medium ${status!.live ? 'bg-parchment text-ink' : 'bg-white text-ink'}`}>
