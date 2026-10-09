@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Camera, Users, Calendar, Heart, ShoppingBag, Trash2, Edit } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -44,6 +45,7 @@ const ListSkeleton = ({ tall = false }: { tall?: boolean }) => (
 const MyAccount = () => {
   const { user } = useAuth();
   const { t } = useLanguage();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
   // ?tab=favorites (lien « Favoris » du menu) ouvre directement l'onglet
@@ -134,6 +136,7 @@ const MyAccount = () => {
       return;
     }
     toast.success(t('account.listingDeleted'));
+    queryClient.invalidateQueries();
     loadUserListings();
   };
 

@@ -2,7 +2,7 @@
 import { cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
 import { clientsClaim } from 'workbox-core';
 import { registerRoute, NavigationRoute } from 'workbox-routing';
-import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies';
+import { CacheFirst, NetworkFirst } from 'workbox-strategies';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 
@@ -78,18 +78,25 @@ registerRoute(
   })
 );
 
-// Supabase API — stale-while-revalidate (serve cached then update in background)
-// Much better for 4G: user sees data instantly, fresh data loads silently
+// Supabase API — réseau d'abord, cache seulement hors ligne ou réseau trop lent.
+// (Avant : stale-while-revalidate servait une réponse de 30 min, si bien qu'un
+// événement qu'on venait de créer n'apparaissait ni sur la carte ni dans le compte.)
 registerRoute(
-  ({ url }) => url.hostname.includes('supabase.co') && url.pathname.startsWith('/rest/'),
-  new StaleWhileRevalidate({
-    cacheName: 'supabase-api',
+  ({ url, request }) => url.hostname.includes('supabase.co') && url.pathname.startsWith('/rest/') && request.method === 'GET',
+  new NetworkFirst({
+    cacheName: 'supabase-api-v2',
+    networkTimeoutSeconds: 8,
     plugins: [
-      new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 60 * 30 }), // 30min cache
-      new CacheableResponsePlugin({ statuses: [0, 200] }),
+      new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 }),
+      new CacheableResponsePlugin({ statuses: [200] }),
     ],
   })
 );
+
+// L'ancien cache peut encore contenir des réponses périmées : on le supprime
+self.addEventListener('activate', (event) => {
+  event.waitUntil(caches.delete('supabase-api'));
+});
 
 // Google Fonts — cache first
 registerRoute(

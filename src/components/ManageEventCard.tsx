@@ -7,6 +7,7 @@ import { Event } from '@/hooks/useEvents';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/PillToast';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,6 +28,7 @@ interface ManageEventCardProps {
 
 const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) => {
   const { t } = useLanguage();
+  const queryClient = useQueryClient();
   const formatEventDate = (date: string, time: string) => {
     const eventDate = new Date(date);
     const [hours] = time.split(':');
@@ -52,6 +54,7 @@ const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) 
       if (error) throw error;
 
       toast.success(t('event.deleted'));
+      queryClient.invalidateQueries();
       onDeleted(event.id);
     } catch (error: any) {
       console.error('Error deleting event:', error);
@@ -69,6 +72,7 @@ const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) 
       if (error) throw error;
 
       toast.success(event.is_published ? t('event.unpublished') : t('event.published'));
+      queryClient.invalidateQueries();
       onUpdated();
     } catch (error: any) {
       console.error('Error toggling publish:', error);

@@ -1,5 +1,6 @@
 import LargeTitle from '@/components/LargeTitle';
 import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { FormPageSkeleton } from '@/components/PageSkeleton';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, X, Image as ImageIcon, Type, AlignLeft, Ticket, MapPin, Phone, Mail, MessageCircle, Instagram, Facebook } from 'lucide-react';
@@ -47,6 +48,7 @@ const NEW_CONTACT_COLUMNS = SOCIAL_FIELDS.map((f) => f.key as string);
 const EditListing = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -195,6 +197,7 @@ const EditListing = () => {
       if (error) throw error;
 
       toast.success('Annonce mise à jour !');
+      await queryClient.invalidateQueries();
       navigate('/my-account');
     } catch (error: any) {
       console.error('Error updating listing:', error);

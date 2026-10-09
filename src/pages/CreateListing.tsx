@@ -1,5 +1,6 @@
 import LargeTitle from '@/components/LargeTitle';
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, X, Image as ImageIcon, Type, AlignLeft, Ticket, MapPin, Phone, Mail, MessageCircle, Instagram, Facebook } from 'lucide-react';
 import TikTokIcon from '@/components/icons/TikTokIcon';
@@ -43,6 +44,7 @@ const NEW_CONTACT_COLUMNS = SOCIAL_FIELDS.map((f) => f.key as string);
 
 const CreateListing = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { user } = useAuth();
   const { t } = useLanguage();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -141,6 +143,7 @@ const CreateListing = () => {
       if (error) throw error;
 
       toast.success(t('market.listingCreated'));
+      await queryClient.invalidateQueries();
       navigate('/marketplace');
     } catch (error: any) {
       console.error('Error creating listing:', error);

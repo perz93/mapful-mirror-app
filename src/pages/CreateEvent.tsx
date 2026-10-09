@@ -364,7 +364,7 @@ const CreateEvent = () => {
       setImagePreview(null);
 
       // Invalidate events cache so the map shows the new event immediately
-      await queryClient.invalidateQueries({ queryKey: ['events'] });
+      await queryClient.invalidateQueries();
 
       // Navigate to home
       navigate('/');

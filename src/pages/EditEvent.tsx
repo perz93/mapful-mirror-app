@@ -162,7 +162,7 @@ const EditEvent = () => {
         }, ['contact_email'], (p) => supabase.from('events').update(p).eq('id', id!));
 
       if (error) throw error;
-      await queryClient.invalidateQueries({ queryKey: ['events'] });
+      await queryClient.invalidateQueries();
       toast.success(t('event.updated'));
       navigate('/manage-events');
     } catch (error: any) {
