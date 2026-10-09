@@ -4,8 +4,8 @@ import L from 'leaflet';
  * Fond de carte VIBE.
  *
  * Carte vectorielle OpenFreeMap (aucune clé API) rendue par MapLibre sous les
- * marqueurs Leaflet, et recolorée pour un rendu doux : fond crème, routes
- * beige, eau bleu pâle, parcs vert tendre, quartiers en capitales grises.
+ * marqueurs Leaflet, et recolorée pour un rendu doux : fond presque blanc, routes
+ * beige clair, eau bleu pâle, parcs vert tendre, quartiers en capitales grises.
  * Si WebGL ou le style ne sont pas disponibles, on retombe sur les tuiles
  * raster OpenStreetMap.
  */
@@ -28,20 +28,20 @@ export const MAP_CREDITS = [
 ];
 
 const C = {
-  land: '#f6f3ea',
-  residential: '#f2eee3',
-  building: '#ebe6d8',
-  water: '#c9dcee',
-  park: '#dcebcb',
-  wood: '#d3e5c0',
-  road: '#ece2c6',
-  roadMajor: '#e6d8b0',
-  roadCasing: '#ddd0aa',
-  rail: '#c6c1b4',
-  boundary: '#d4cfc0',
+  land: '#fafaf8',
+  residential: '#f7f6f2',
+  building: '#efede6',
+  water: '#dbe8f3',
+  park: '#e8f1de',
+  wood: '#e2edd5',
+  road: '#efe9da',
+  roadMajor: '#eae0c6',
+  roadCasing: '#e3d9bf',
+  rail: '#d6d3cb',
+  boundary: '#e0ddd4',
   label: '#8c887c',
   labelStrong: '#4a473f',
-  halo: '#f6f3ea',
+  halo: '#fafaf8',
 };
 
 type StyleLayer = {
@@ -122,7 +122,7 @@ const supportsWebGL = () => {
 
 /**
  * Ajoute le fond de carte stylé. Renvoie une fonction de nettoyage.
- * Pendant le chargement, le conteneur affiche le fond crème avec le reflet
+ * Pendant le chargement, le conteneur affiche le fond clair avec le reflet
  * de chargement du site (classe .map-loading), retiré dès que les tuiles sont là.
  * En cas d'échec du vectoriel, tuiles OSM.
  *

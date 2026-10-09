@@ -205,7 +205,7 @@ body {
   width: 100%;
   height: 100%;
   /* Couleur du fond de carte : visible pendant le chargement des tuiles */
-  background: #f6f3ea !important;
+  background: #fafaf8 !important;
 }
 
 .map-tiles {
@@ -1144,7 +1144,7 @@ vercel-live-feedback,
   max-width: 170px;
   padding: 3px 11px 3px 3px;
   border-radius: 9999px;
-  background: #f7f5ea;
+  background: #ffffff;
   color: #14140f;
   white-space: nowrap;
   box-shadow: 0 3px 10px rgb(20 20 15 / 0.2);
@@ -1161,7 +1161,7 @@ vercel-live-feedback,
   margin-left: -5px;
   border: 5px solid transparent;
   border-bottom: 0;
-  border-top-color: #f7f5ea;
+  border-top-color: #ffffff;
 }
 .pin-label-img {
   flex-shrink: 0;
