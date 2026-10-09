@@ -240,7 +240,7 @@ const EventDetails = () => {
 
           <dl className="grid grid-cols-2 gap-x-4 gap-y-4 px-5 pb-5 pt-4">
             {ticketCells.map((cell) => (
-              <div key={cell.label} className="min-w-0 border-l-2 border-ink dark:border-stone-300 pl-3">
+              <div key={cell.label} className="min-w-0 border-l border-stone-300 dark:border-stone-600 pl-3">
                 <dt className="eyebrow text-stone-500">{cell.label}</dt>
                 <dd className="mt-1 line-clamp-2 text-[16px] leading-tight font-semibold tracking-tight text-ink dark:text-white tabular first-letter:uppercase">{cell.value}</dd>
               </div>
