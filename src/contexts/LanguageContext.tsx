@@ -418,6 +418,12 @@ const translations: Record<string, Record<Lang, string>> = {
   'nav.showAll': { fr: 'Tout afficher', en: 'Show all' },
   'nav.nearMe': { fr: 'Autour de moi', en: 'Near me' },
   'nav.city': { fr: 'Ville', en: 'City' },
+  'nav.otherCity': { fr: 'Autre ville', en: 'Other city' },
+  'nav.cityPlaceholder': { fr: 'Rechercher une ville…', en: 'Search a city…' },
+  'nav.cityNone': { fr: 'Aucune ville trouvée', en: 'No city found' },
+  'nav.cityHint': { fr: 'Tapez le nom de la ville', en: 'Type the city name' },
+  'nav.cityCount': { fr: '{n} événement(s)', en: '{n} event(s)' },
+  'nav.cityEmpty': { fr: 'aucun événement', en: 'no events' },
   'nav.allDistance': { fr: 'Tout', en: 'All' },
 };
 

@@ -69,4 +69,8 @@ export const cityOf = (lat: number, lng: number): string | null => {
   return best?.name ?? null;
 };
 
+/** Comparaison sans accents ni majuscules (« bouake » = « Bouaké »). */
+export const normalizeName = (text: string) =>
+  text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+
 export const findCity = (name: string | null) => CITIES.find((c) => c.name === name) ?? null;

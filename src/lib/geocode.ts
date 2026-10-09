@@ -4,7 +4,7 @@
  * taper « Bouaké » doit donner la ville de Bouaké, pas une rue d'Abidjan.
  * Les villes connues (lib/cities) qui correspondent à la saisie passent en tête.
  */
-import { CITIES, cityOf } from '@/lib/cities';
+import { CITIES, cityOf, normalizeName } from '@/lib/cities';
 
 export interface PlaceResult {
   lat: number;
@@ -26,8 +26,7 @@ interface NominatimItem {
 
 const BASE = 'https://nominatim.openstreetmap.org';
 
-const normalize = (text: string) =>
-  text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+const normalize = normalizeName;
 
 /** Villes de la liste dont le nom correspond à la saisie (« bouake », « Yamoussou »…). */
 const matchingCities = (query: string): PlaceResult[] => {

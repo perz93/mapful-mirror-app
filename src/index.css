@@ -493,10 +493,10 @@ body {
 
 .custom-popup-card .leaflet-popup-close-button {
   color: #14140f !important;
-  font-size: 16px !important;
+  font-size: 22px !important;
   font-weight: 400 !important;
-  width: 30px !important;
-  height: 30px !important;
+  width: 40px !important;
+  height: 40px !important;
   padding: 0 !important;
   display: flex !important;
   align-items: center !important;

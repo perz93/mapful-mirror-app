@@ -12,7 +12,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 import { EVENT_CATEGORIES } from '@/lib/eventCategories';
 import { useEvents } from '@/hooks/useEvents';
-import { cityOf, findCity } from '@/lib/cities';
+import { CITIES, cityOf, findCity, normalizeName } from '@/lib/cities';
 
 
 interface BottomNavigationProps {
@@ -38,7 +38,25 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
   }
   const cities = [...cityCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'fr'));
 
+  // Les villes les plus actives en pastilles ; les autres via « Autre ville »
+  const TOP_CITIES = 4;
+  const [cityQuery, setCityQuery] = useState('');
+  const [citySearchOpen, setCitySearchOpen] = useState(false);
+  const topCities = cities.slice(0, TOP_CITIES);
+  if (cityFilter && !topCities.some(([name]) => name === cityFilter)) {
+    topCities.push([cityFilter, cityCounts.get(cityFilter) ?? 0]);
+  }
+  const cityMatches = cityQuery.trim()
+    ? CITIES
+        .filter((c) => normalizeName(c.name).includes(normalizeName(cityQuery)))
+        .map((c) => [c.name, cityCounts.get(c.name) ?? 0] as const)
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'fr'))
+        .slice(0, 6)
+    : cities.slice(TOP_CITIES).map(([name, count]) => [name, count] as const);
+
   const chooseCity = (name: string | null) => {
+    setCitySearchOpen(false);
+    setCityQuery('');
     const next = name === cityFilter ? null : name;
     setCityFilter(next);
     const city = findCity(next);
@@ -109,9 +127,10 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
               </h2>
               <button
                 onClick={() => setSearchOpen(false)}
-                className="h-9 w-9 rounded-full bg-parchment flex items-center justify-center hover:bg-stone-200 transition-all active:scale-95"
+                aria-label={t('nav.clearBtn')}
+                className="h-11 w-11 rounded-full bg-parchment flex items-center justify-center hover:bg-stone-200 transition-all active:scale-95"
               >
-                <span className="text-ink text-sm">✕</span>
+                <X size={20} strokeWidth={2} className="text-ink" />
               </button>
             </div>
 
@@ -187,35 +206,72 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
             <div className="h-px bg-stone-200 mx-5" />
 
             {/* Ville */}
-            {cities.length > 0 && (
-              <>
-                <div className="px-5 py-4 space-y-3">
-                  <p className="eyebrow text-stone-500">{t('nav.city')}</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {[{ name: null as string | null, label: t('nav.allDistance'), count: 0 },
-                      ...cities.map(([name, count]) => ({ name: name as string | null, label: name, count }))].map((opt) => (
+            <div className="px-5 py-4 space-y-3">
+              <p className="eyebrow text-stone-500">{t('nav.city')}</p>
+              <div className="flex flex-wrap gap-1.5">
+                {[{ name: null as string | null, label: t('nav.allDistance'), count: 0 },
+                  ...topCities.map(([name, count]) => ({ name: name as string | null, label: name, count }))].map((opt) => (
+                  <button
+                    key={opt.label}
+                    onClick={() => chooseCity(opt.name)}
+                    className={`h-8 px-3.5 rounded-full border text-[13px] font-medium transition-all active:scale-95 inline-flex items-center gap-1.5 ${
+                      cityFilter === opt.name
+                        ? 'bg-ink text-parchment border-ink'
+                        : 'bg-white text-stone-700 border-stone-200 hover:border-ink'
+                    }`}
+                  >
+                    {opt.label}
+                    {opt.count > 0 && (
+                      <span className={cityFilter === opt.name ? 'text-parchment/60' : 'text-stone-400'}>{opt.count}</span>
+                    )}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setCitySearchOpen((o) => !o)}
+                  className={`h-8 px-3.5 rounded-full border border-dashed text-[13px] font-medium transition-all active:scale-95 inline-flex items-center gap-1.5 ${
+                    citySearchOpen ? 'border-ink text-ink' : 'border-stone-300 text-stone-600'
+                  }`}
+                >
+                  <Search size={13} strokeWidth={2} />
+                  {t('nav.otherCity')}
+                </button>
+              </div>
+
+              {citySearchOpen && (
+                <div className="rounded-2xl border border-stone-200 overflow-hidden animate-fade-in">
+                  <div className="relative border-b border-stone-100">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" size={15} />
+                    <input
+                      type="text"
+                      value={cityQuery}
+                      onChange={(e) => setCityQuery(e.target.value)}
+                      placeholder={t('nav.cityPlaceholder')}
+                      autoFocus
+                      className="w-full h-11 pl-10 pr-3 bg-white text-ink placeholder:text-stone-400 text-[15px] focus:outline-none"
+                    />
+                  </div>
+                  <div className="max-h-48 overflow-y-auto">
+                    {cityMatches.length === 0 ? (
+                      <p className="px-4 py-3 text-sm text-stone-500">{cityQuery.trim() ? t('nav.cityNone') : t('nav.cityHint')}</p>
+                    ) : cityMatches.map(([name, count]) => (
                       <button
-                        key={opt.label}
-                        onClick={() => chooseCity(opt.name)}
-                        className={`h-8 px-3.5 rounded-full border text-[13px] font-medium transition-all active:scale-95 inline-flex items-center gap-1.5 ${
-                          cityFilter === opt.name
-                            ? 'bg-ink text-parchment border-ink'
-                            : 'bg-white text-stone-700 border-stone-200 hover:border-ink'
-                        }`}
+                        key={name}
+                        onClick={() => chooseCity(name)}
+                        className="w-full flex items-center justify-between px-4 h-11 text-left text-[15px] text-ink border-b border-stone-100 last:border-b-0 active:bg-parchment"
                       >
-                        {opt.label}
-                        {opt.count > 0 && (
-                          <span className={cityFilter === opt.name ? 'text-parchment/60' : 'text-stone-400'}>{opt.count}</span>
-                        )}
+                        <span>{name}</span>
+                        <span className="text-xs text-stone-400">
+                          {count > 0 ? t('nav.cityCount').replace('{n}', String(count)) : t('nav.cityEmpty')}
+                        </span>
                       </button>
                     ))}
                   </div>
                 </div>
+              )}
+            </div>
 
-                {/* Divider */}
-                <div className="h-px bg-stone-200 mx-5" />
-              </>
-            )}
+            {/* Divider */}
+            <div className="h-px bg-stone-200 mx-5" />
 
             {/* Distance */}
             <div className="px-5 py-4 space-y-3">
