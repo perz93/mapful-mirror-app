@@ -180,19 +180,6 @@ const CreateEvent = () => {
   const [locatingMe, setLocatingMe] = useState(false);
   const skipGeocodeRef = useRef(false);   // adresse remplie par un choix : pas de nouvelle recherche
   const pinnedRef = useRef(false);        // position fixée à la main : on ne la déplace plus seule
-  const nearRef = useRef<{ lat: number; lng: number } | null>(null);
-
-  // Position approximative de l'utilisateur, seulement si déjà autorisée, pour classer les résultats
-  useEffect(() => {
-    navigator.permissions?.query({ name: 'geolocation' as PermissionName }).then((st) => {
-      if (st.state !== 'granted') return;
-      navigator.geolocation.getCurrentPosition(
-        (pos) => { nearRef.current = { lat: pos.coords.latitude, lng: pos.coords.longitude }; },
-        () => {},
-        { maximumAge: 600000, timeout: 8000 },
-      );
-    }).catch(() => {});
-  }, []);
 
   const placeMarker = (lat: number, lng: number, zoom = 16) => {
     setCoordinates({ lat, lng });
@@ -218,7 +205,6 @@ const CreateEvent = () => {
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude: lat, longitude: lng } = pos.coords;
-        nearRef.current = { lat, lng };
         pinnedRef.current = true;
         placeMarker(lat, lng, 17);
         if (!formData.address.trim()) {
@@ -253,8 +239,7 @@ const CreateEvent = () => {
     const timer = setTimeout(async () => {
       setGeocoding(true);
       try {
-        const near = nearRef.current ?? (mapRef.current ? { lat: mapRef.current.getCenter().lat, lng: mapRef.current.getCenter().lng } : null);
-        const results = await searchPlaces(query, near, controller.signal);
+        const results = await searchPlaces(query, controller.signal);
         setSuggestions(results);
         // Premier résultat posé d'office tant que la position n'a pas été choisie à la main
         if (results[0] && !pinnedRef.current) placeMarker(results[0].lat, results[0].lng, 15);

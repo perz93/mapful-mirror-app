@@ -1,9 +1,10 @@
 /**
  * Recherche de lieux pour la création d'événement (Nominatim / OpenStreetMap).
- * Toute la Côte d'Ivoire, pas seulement Abidjan : on privilégie seulement les
- * résultats proches de l'utilisateur (ou de la carte) quand on connaît sa position.
+ * Toute la Côte d'Ivoire, sans dépendre de la position de l'utilisateur :
+ * taper « Bouaké » doit donner la ville de Bouaké, pas une rue d'Abidjan.
+ * Les villes connues (lib/cities) qui correspondent à la saisie passent en tête.
  */
-import { cityOf } from '@/lib/cities';
+import { CITIES, cityOf } from '@/lib/cities';
 
 export interface PlaceResult {
   lat: number;
@@ -25,6 +26,26 @@ interface NominatimItem {
 
 const BASE = 'https://nominatim.openstreetmap.org';
 
+const normalize = (text: string) =>
+  text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+
+/** Villes de la liste dont le nom correspond à la saisie (« bouake », « Yamoussou »…). */
+const matchingCities = (query: string): PlaceResult[] => {
+  const q = normalize(query);
+  if (q.length < 3) return [];
+  return CITIES
+    .filter((c) => {
+      const name = normalize(c.name);
+      return name.startsWith(q) || q === name || q.startsWith(`${name} `) || q.endsWith(` ${name}`);
+    })
+    .map((c) => ({ lat: c.lat, lng: c.lng, title: c.name, subtitle: "Côte d'Ivoire" }));
+};
+
+const isOnlyCity = (query: string) => {
+  const q = normalize(query);
+  return CITIES.some((c) => normalize(c.name).startsWith(q) || normalize(c.name) === q);
+};
+
 const toPlace = (item: NominatimItem): PlaceResult => {
   const a = item.address ?? {};
   const lat = parseFloat(item.lat);
@@ -36,11 +57,8 @@ const toPlace = (item: NominatimItem): PlaceResult => {
   return { lat, lng, title, subtitle };
 };
 
-export async function searchPlaces(
-  query: string,
-  near?: { lat: number; lng: number } | null,
-  signal?: AbortSignal,
-): Promise<PlaceResult[]> {
+export async function searchPlaces(query: string, signal?: AbortSignal): Promise<PlaceResult[]> {
+  const cities = matchingCities(query);
   const params = new URLSearchParams({
     format: 'jsonv2',
     q: query,
@@ -49,15 +67,19 @@ export async function searchPlaces(
     limit: '5',
     'accept-language': 'fr',
   });
-  if (near) {
-    // Boîte d'environ 60 km autour du point : favorise sans exclure le reste du pays
-    const d = 0.3;
-    params.set('viewbox', `${near.lng - d},${near.lat + d},${near.lng + d},${near.lat - d}`);
+  let places: PlaceResult[] = [];
+  try {
+    const res = await fetch(`${BASE}/search?${params}`, { signal });
+    if (res.ok) places = ((await res.json()) as NominatimItem[]).map(toPlace);
+  } catch (err) {
+    if (!cities.length) throw err;
   }
-  const res = await fetch(`${BASE}/search?${params}`, { signal });
-  if (!res.ok) return [];
-  const data: NominatimItem[] = await res.json();
-  return data.map(toPlace);
+  // La saisie est juste un nom de ville : la ville d'abord, puis les lieux trouvés ailleurs
+  if (cities.length && isOnlyCity(query)) {
+    const rest = places.filter((p) => !cities.some((c) => normalize(c.title) === normalize(p.title)));
+    return [...cities, ...rest].slice(0, 5);
+  }
+  return [...places, ...cities.filter((c) => !places.some((p) => normalize(p.title) === normalize(c.title)))].slice(0, 5);
 }
 
 /** Nom lisible d'un point (pour « Ma position »). */
