@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="splashing">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
@@ -30,6 +30,8 @@
     <meta name="twitter:description" content="Concerts, festivals, expos, brunch... Trouve ce qui se passe autour de toi ce soir." />
     <meta name="twitter:image" content="%SITE_ORIGIN%/og-image.jpg" />
     <style>
+      /* Pendant le splash, fond noir partout (sinon iOS teinte la barre d'état en clair) */
+      html.splashing,html.splashing body{background:#000!important}
       /* Splash : logo découpé (pin, v, i, b, e, point) et animé pièce par pièce */
       .sp-logo{position:absolute;left:50%;top:50%;width:240px;height:120px;transform:translate(-50%,-55%)}
       .sp{position:absolute;inset:0;width:100%;height:100%;opacity:0;will-change:transform,opacity}
