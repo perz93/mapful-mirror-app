@@ -189,7 +189,7 @@ const PublicProfile = () => {
         </div>
 
         <div className="relative -mt-12 px-4">
-          <span className="flex size-20 items-center justify-center overflow-hidden rounded-full bg-ink text-2xl font-semibold text-lime ring-4 ring-parchment">
+          <span className="flex size-20 items-center justify-center overflow-hidden rounded-full bg-white text-2xl font-semibold text-ink ring-4 ring-parchment">
             {profile.avatar_url ? <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" /> : initials(name)}
           </span>
           <h1 className="mt-3 text-[32px] leading-[1] tracking-tighter text-ink">{name}</h1>

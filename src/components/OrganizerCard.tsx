@@ -44,7 +44,7 @@ const OrganizerCard = ({ userId, kind }: OrganizerCardProps) => {
       to={`/u/${userId}`}
       className="card-shadow flex w-full items-center gap-3.5 rounded-[20px] bg-white dark:bg-stone-900 p-3.5 active:scale-[0.99] transition-transform"
     >
-      <span className="flex size-11 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-ink text-sm font-semibold text-lime">
+      <span className="flex size-11 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-parchment text-sm font-semibold text-ink">
         {profile?.avatar_url ? <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" /> : initials(name)}
       </span>
       <span className="min-w-0 flex-1">

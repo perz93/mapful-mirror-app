@@ -218,8 +218,8 @@ const EventDetails = () => {
           <div className="px-5 pb-5 pt-2">
             {/* Catégorie (pastille noire) + places (pastille crème) */}
             <div className="flex flex-wrap gap-1.5">
-              <span className="inline-flex h-7 items-center gap-1.5 rounded-full bg-ink px-3 text-xs font-semibold text-lime">
-                {category && <img src={category.icon} alt="" className="size-4 object-contain invert" />}
+              <span className="inline-flex h-7 items-center gap-1.5 rounded-full bg-parchment px-3 text-xs font-semibold text-ink">
+                {category && <img src={category.icon} alt="" className="size-4 object-contain" />}
                 {categoryLabel}
               </span>
               {event.capacity ? (
