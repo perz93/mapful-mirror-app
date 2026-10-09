@@ -128,7 +128,7 @@ const EventCard = () => {
                   )}
                 </div>
               </div>
-              <span aria-hidden className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-lime text-ink">
+              <span aria-hidden className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-ink text-parchment">
                 <ArrowRight size={18} strokeWidth={2} />
               </span>
             </div>
