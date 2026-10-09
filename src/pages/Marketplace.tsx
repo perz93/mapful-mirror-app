@@ -150,9 +150,9 @@ const Marketplace = () => {
                   style={{ animationDelay: `${Math.min(index * 60, 360)}ms`, animationFillMode: 'backwards' }}
                   className="group block animate-fade-in"
                 >
-                  {/* K7 : carte blanche, prix en ticket vert détachable */}
+                  {/* Cadre calqué sur les événements (K1) */}
                   <article className="card-shadow overflow-hidden rounded-[26px] bg-white p-2 transition-transform duration-300 active:scale-[0.99]">
-                    <div className="relative h-48 overflow-hidden rounded-[20px] bg-[#ebe9dd]">
+                    <div className="relative h-44 overflow-hidden rounded-[20px] bg-[#ebe9dd]">
                       {listing.image_url ? (
                         <ShimmerImage
                           src={listing.image_url}
@@ -166,37 +166,39 @@ const Marketplace = () => {
                           </span>
                         </div>
                       )}
-                      <span className="absolute left-2.5 top-2.5 inline-flex h-7 items-center gap-1.5 rounded-full bg-white/90 px-3 text-xs font-medium text-ink backdrop-blur-sm">
-                        <Icon size={13} strokeWidth={1.75} />
-                        {lang === 'en' ? config.en : config.fr}
+                      {/* Prix en pastille verte, comme sur les cadres d'événement */}
+                      <span className="absolute right-2.5 top-2.5 inline-flex h-7 items-center rounded-full bg-lime px-3 text-xs font-medium text-ink tabular">
+                        {listing.price !== null
+                          ? `${listing.price.toLocaleString('fr-FR')} FCFA${listing.price_type === 'hourly' ? ' / h' : listing.price_type === 'daily' ? ' / jour' : ''}`
+                          : t('market.negotiable')}
                       </span>
                     </div>
 
-                    <div className="mt-2 flex items-stretch gap-2">
-                      <div className="min-w-0 flex-1 px-2 py-1.5">
-                        <h3 className="font-display text-[19px] leading-[1.05] tracking-[-0.03em] text-ink line-clamp-2">{listing.title}</h3>
-                        {listing.location && (
-                          <span className="mt-2 inline-flex h-[26px] min-w-0 max-w-full items-center gap-1 rounded-full bg-parchment px-2.5 text-[12px] font-semibold text-ink">
-                            <MapPin size={13} strokeWidth={2.2} className="flex-shrink-0" />
-                            <span className="truncate">{listing.location}</span>
-                          </span>
-                        )}
+                    {/* K1 : catégorie (icône + nom) à la place de la date */}
+                    <div className="flex items-center gap-3.5 px-2 pb-1.5 pt-3">
+                      <div className="flex w-[66px] flex-shrink-0 flex-col items-center border-r border-stone-200 pr-3.5 text-center">
+                        <span className="flex size-8 items-center justify-center rounded-[10px] bg-parchment">
+                          <Icon size={16} strokeWidth={1.75} className="text-ink" />
+                        </span>
+                        <span className="mt-1.5 text-[9.5px] font-semibold uppercase leading-[1.15] tracking-[0.06em] text-ink">
+                          {lang === 'en' ? config.en : config.fr}
+                        </span>
                       </div>
-                      {/* Prix en ticket vert */}
-                      <div className="relative flex flex-shrink-0 flex-col justify-center rounded-2xl bg-lime px-3.5 py-2 text-ink">
-                        {listing.price !== null ? (
-                          <>
-                            <span className="font-display text-[17px] leading-none tracking-tight tabular">{listing.price.toLocaleString('fr-FR')}</span>
-                            <span className="mt-1 text-[10px] font-semibold uppercase tracking-[0.08em]">
-                              FCFA
-                              {listing.price_type === 'negotiable' && ' · Négo.'}
-                              {listing.price_type === 'hourly' && ' / h'}
-                              {listing.price_type === 'daily' && ' / jour'}
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-display text-[20px] leading-[1.05] tracking-tight text-ink line-clamp-2">{listing.title}</h3>
+                        <div className="mt-2 flex min-w-0 flex-wrap gap-1.5">
+                          {listing.location && (
+                            <span className="inline-flex h-[26px] min-w-0 max-w-full items-center gap-1 rounded-full bg-parchment px-2.5 text-[12px] font-semibold text-ink">
+                              <MapPin size={13} strokeWidth={2.2} className="flex-shrink-0" />
+                              <span className="truncate">{listing.location}</span>
                             </span>
-                          </>
-                        ) : (
-                          <span className="font-display text-[15px] leading-tight tracking-tight">{t('market.negotiable')}</span>
-                        )}
+                          )}
+                          {listing.price !== null && listing.price_type === 'negotiable' && (
+                            <span className="inline-flex h-[26px] flex-shrink-0 items-center rounded-full bg-parchment px-2.5 text-[12px] font-semibold text-ink">
+                              {t('market.negotiable')}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </article>
