@@ -266,9 +266,6 @@ const EventDetails = () => {
             </section>
           )}
 
-          {/* Organisateur → profil public */}
-          <OrganizerCard userId={event.user_id} kind="event" />
-
           {/* À propos : un seul style de texte, uniforme */}
           {event.description && (
             <section>
@@ -276,6 +273,9 @@ const EventDetails = () => {
               <p className="text-[17px] font-medium leading-[1.5] tracking-[-0.01em] text-ink dark:text-stone-300 whitespace-pre-line">{event.description}</p>
             </section>
           )}
+
+          {/* Organisateur → profil public */}
+          <OrganizerCard userId={event.user_id} kind="event" />
         </div>
       </div>
 
