@@ -34,10 +34,10 @@ const inputClass = "h-12 px-4 rounded-xl bg-white border border-stone-300 text-i
 const XIcon = ({ className }: { className?: string }) => <span className={`font-bold leading-none ${className ?? ''}`}>𝕏</span>;
 const SOCIAL_FIELDS = [
   { key: 'contact_whatsapp', label: 'WhatsApp', Icon: MessageCircle, placeholder: '+225 XX XX XX XX XX', type: 'tel' },
-  { key: 'contact_instagram', label: 'Instagram', Icon: Instagram, placeholder: '@votre_compte', type: 'text' },
-  { key: 'contact_facebook', label: 'Facebook', Icon: Facebook, placeholder: 'Nom de page', type: 'text' },
-  { key: 'contact_tiktok', label: 'TikTok', Icon: TikTokIcon, placeholder: '@votre_compte', type: 'text' },
-  { key: 'contact_twitter', label: 'X (Twitter)', Icon: XIcon, placeholder: '@votre_compte', type: 'text' },
+  { key: 'contact_instagram', label: 'Instagram', Icon: Instagram, placeholder: '@votre_compte ou lien du profil', type: 'text' },
+  { key: 'contact_facebook', label: 'Facebook', Icon: Facebook, placeholder: 'Lien de la page (facebook.com/…)', type: 'text' },
+  { key: 'contact_tiktok', label: 'TikTok', Icon: TikTokIcon, placeholder: '@votre_compte ou lien du profil', type: 'text' },
+  { key: 'contact_twitter', label: 'X (Twitter)', Icon: XIcon, placeholder: '@votre_compte ou lien du profil', type: 'text' },
 ] as const;
 const NEW_CONTACT_COLUMNS = SOCIAL_FIELDS.map((f) => f.key as string);
 
