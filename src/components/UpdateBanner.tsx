@@ -30,6 +30,9 @@ const UpdateBanner = () => {
 
   const startUpdate = async () => {
     setUpdating(true);
+    // Fond noir partout (barre d'état comprise) pendant l'écran de mise à jour,
+    // et il le reste au rechargement jusqu'à la fin du splash
+    document.documentElement.classList.add('splashing');
     try { sessionStorage.setItem(UPDATED_KEY, '1'); } catch { /* ignore */ }
     // L'écran reste affiché au moins 4 s avant le rechargement
     await new Promise((r) => window.setTimeout(r, 4000));

@@ -56,6 +56,13 @@ if ('serviceWorker' in navigator) {
 }
 
 
+// Portrait verrouillé quand le navigateur le permet (Android, app installée).
+// iOS ne le permet pas aux web apps : le message « Tourne ton téléphone » prend le relais.
+try {
+  const orientation = screen.orientation as ScreenOrientation & { lock?: (o: string) => Promise<void> };
+  orientation?.lock?.('portrait').catch(() => {});
+} catch { /* non pris en charge */ }
+
 createRoot(document.getElementById("root")!).render(
   <ErrorBoundary>
     <App />
