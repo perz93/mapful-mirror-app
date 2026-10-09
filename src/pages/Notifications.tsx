@@ -3,7 +3,7 @@ import LargeTitle from '@/components/LargeTitle';
 import { useLocation, useNavigate } from 'react-router-dom';
 import EmptyState from '@/components/EmptyState';
 import ShimmerImage from '@/components/ShimmerImage';
-import { ArrowLeft, ArrowRight, BellRing, BellOff, CalendarDays, CalendarPlus, CheckCheck, Clock, MapPin, type LucideIcon } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BellRing, BellOff, CalendarDays, CalendarPlus, CheckCheck, CircleCheck, Clock, MapPin, type LucideIcon } from 'lucide-react';
 import { useNotificationInbox, type NotificationItem } from '@/hooks/useNotificationInbox';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -17,6 +17,7 @@ const TYPES: Record<string, { icon: LucideIcon; label: string }> = {
   event_reminder: { icon: BellRing, label: 'Rappel' },
   event_tomorrow: { icon: CalendarDays, label: 'Demain' },
   event_starting: { icon: Clock, label: 'Bientôt' },
+  event_published: { icon: CircleCheck, label: 'Publié' },
 };
 const typeOf = (type: string) => TYPES[type] ?? { icon: BellRing, label: 'VIBE' };
 

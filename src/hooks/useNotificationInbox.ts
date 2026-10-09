@@ -147,6 +147,7 @@ function getDefaultTitle(type: string, eventTitle: string, lang: string): string
       case 'event_reminder': return `Reminder: ${eventTitle}`;
       case 'event_tomorrow': return `Tomorrow: ${eventTitle}`;
       case 'event_starting': return `Starting soon: ${eventTitle}`;
+      case 'event_published': return `Your event is live: ${eventTitle}`;
       default: return eventTitle;
     }
   }
@@ -156,6 +157,7 @@ function getDefaultTitle(type: string, eventTitle: string, lang: string): string
     case 'event_reminder': return `Rappel : ${eventTitle}`;
     case 'event_tomorrow': return `Demain : ${eventTitle}`;
     case 'event_starting': return `Bientôt : ${eventTitle}`;
+    case 'event_published': return `Ton événement est en ligne : ${eventTitle}`;
     default: return eventTitle;
   }
 }
