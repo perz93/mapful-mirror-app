@@ -11,7 +11,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { softCase } from '@/lib/softCase';
 const OUT_MS = 320;
 const IN_MS = 520;
-const AUTOPLAY_MS = 6000;
+const AUTOPLAY_MS = 5000;
 // Événement affiché, gardé pendant la session : en revenant sur la carte
 // (autre page, app mise en arrière-plan), on reprend là où on en était.
 const STORAGE_KEY = 'vibe-featured-event';
