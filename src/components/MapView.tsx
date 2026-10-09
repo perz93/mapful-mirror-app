@@ -289,20 +289,21 @@ const MapView = () => {
       heatLayerRef.current = null;
     }
 
-    const createCustomIcon = (imageUrl: string, eventType: string) => {
+    // P4 : étiquette avec mini photo + nom court (heure affichée quand l'événement est sélectionné)
+    const createCustomIcon = (imageUrl: string, eventType: string, title: string, time: string) => {
       const defaultImage = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=80&q=60&fm=webp';
+      const hour = (time || '').slice(0, 5).replace(':', 'h').replace(/h00$/, 'h');
       return L.divIcon({
         className: 'custom-marker',
         html: `
-          <div class="marker-image-container">
-            <div class="marker-image-wrapper marker-${escapeHtml(eventType)}">
-              <img src="${safeUrl(imageUrl, defaultImage)}" alt="" class="marker-event-image" loading="lazy" />
-            </div>
+          <div class="pin-label marker-${escapeHtml(eventType)}">
+            <span class="pin-label-img"><img src="${safeUrl(imageUrl, defaultImage)}" alt="" loading="lazy" /></span>
+            <b class="pin-label-title">${escapeHtml(softCase(title))}</b>${hour ? `<em class="pin-label-time"> · ${escapeHtml(hour)}</em>` : ''}
           </div>
         `,
-        iconSize: [40, 44],
-        iconAnchor: [20, 44],
-        popupAnchor: [0, -46],
+        iconSize: [0, 0],
+        iconAnchor: [0, 0],
+        popupAnchor: [0, -44],
       });
     };
 
@@ -336,7 +337,7 @@ const MapView = () => {
 
     events.forEach((event) => {
       const marker = L.marker([event.latitude, event.longitude], {
-        icon: createCustomIcon(event.image_url || '', event.category),
+        icon: createCustomIcon(event.image_url || '', event.category, event.title, event.time),
       });
 
       const dateFormatted = formatEventDate(event.date);
