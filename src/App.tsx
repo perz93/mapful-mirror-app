@@ -12,7 +12,7 @@ import SplashScreenWrapper from "@/components/SplashScreen";
 import { useStatusBarColor } from "@/hooks/useStatusBarColor";
 import { usePWATheme } from "@/hooks/usePWATheme";
 import { useProximityNotifications } from "@/hooks/useProximityNotifications";
-import { useBadgeCount } from "@/hooks/useBadgeCount";
+import { useNotificationSync } from "@/hooks/useNotificationInbox";
 import Index from "./pages/Index";
 import Concerts from "./pages/Concerts";
 import Sports from "./pages/Sports";
@@ -47,7 +47,7 @@ const AppContent = () => {
   useStatusBarColor();
   usePWATheme();
   useProximityNotifications();
-  useBadgeCount();
+  useNotificationSync();
 
   return (
     <Routes>

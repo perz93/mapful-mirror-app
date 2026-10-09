@@ -139,9 +139,11 @@ self.addEventListener('push', (event) => {
   event.waitUntil(
     (async () => {
       await self.registration.showNotification(data.title || 'VIBE', options);
+      // App fermée : pastille = notifications affichées (celle-ci comprise).
+      // À l'ouverture, l'app la recale sur le vrai nombre de non-lus du compte.
       const allNotifications = await self.registration.getNotifications();
       if ('setAppBadge' in navigator) {
-        try { await (navigator as any).setAppBadge(allNotifications.length + 1); } catch {}
+        try { await (navigator as any).setAppBadge(Math.max(1, allNotifications.length)); } catch {}
       }
     })()
   );
