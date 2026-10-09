@@ -3,13 +3,15 @@ import { useState, useEffect, useRef } from 'react';
 import { FormPageSkeleton } from '@/components/PageSkeleton';
 import SectionTitle from '@/components/SectionTitle';
 import { addBaseMap } from '@/lib/mapTiles';
+import { searchPlaces, reversePlace, type PlaceResult } from '@/lib/geocode';
+import { cityOf } from '@/lib/cities';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign, ArrowLeft, Loader2, Phone, Instagram, Facebook, Twitter, MessageCircle, Plus, X, Mail, Type, CalendarDays, Ticket, AlignLeft, ListOrdered } from 'lucide-react';
+import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign, ArrowLeft, Loader2, Phone, Instagram, Facebook, Twitter, MessageCircle, Plus, X, Mail, Type, CalendarDays, Ticket, AlignLeft, ListOrdered, LocateFixed } from 'lucide-react';
 import TikTokIcon from '@/components/icons/TikTokIcon';
 import { retryWithoutNewColumns } from '@/lib/retryWithoutNewColumns';
 import { emailProviderLabel } from '@/lib/emailProvider';
@@ -142,8 +144,16 @@ const CreateEvent = () => {
         markerRef.current.on('dragend', () => {
           const position = markerRef.current?.getLatLng();
           if (position) {
+            pinnedRef.current = true;
             setCoordinates({ lat: position.lat, lng: position.lng });
           }
+        });
+
+        // Toucher la carte déplace le marqueur
+        mapRef.current.on('click', (e: L.LeafletMouseEvent) => {
+          pinnedRef.current = true;
+          markerRef.current?.setLatLng(e.latlng);
+          setCoordinates({ lat: e.latlng.lat, lng: e.latlng.lng });
         });
 
         // Force map to resize
@@ -164,48 +174,104 @@ const CreateEvent = () => {
     };
   }, []);
 
-  const geocodeAddress = async (address: string): Promise<{ lat: number; lng: number } | null> => {
-    try {
-      // Add "Abidjan, Côte d'Ivoire" if not already included to improve geocoding accuracy
-      const query = address.toLowerCase().includes('abidjan') || address.toLowerCase().includes('ivoire')
-        ? address
-        : `${address}, Abidjan, Côte d'Ivoire`;
+  // Lieu : suggestions dans toute la Côte d'Ivoire, la carte suit le choix
+  const [suggestions, setSuggestions] = useState<PlaceResult[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [locatingMe, setLocatingMe] = useState(false);
+  const skipGeocodeRef = useRef(false);   // adresse remplie par un choix : pas de nouvelle recherche
+  const pinnedRef = useRef(false);        // position fixée à la main : on ne la déplace plus seule
+  const nearRef = useRef<{ lat: number; lng: number } | null>(null);
 
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`
+  // Position approximative de l'utilisateur, seulement si déjà autorisée, pour classer les résultats
+  useEffect(() => {
+    navigator.permissions?.query({ name: 'geolocation' as PermissionName }).then((st) => {
+      if (st.state !== 'granted') return;
+      navigator.geolocation.getCurrentPosition(
+        (pos) => { nearRef.current = { lat: pos.coords.latitude, lng: pos.coords.longitude }; },
+        () => {},
+        { maximumAge: 600000, timeout: 8000 },
       );
-      const data = await response.json();
+    }).catch(() => {});
+  }, []);
 
-      if (data && data.length > 0) {
-        return {
-          lat: parseFloat(data[0].lat),
-          lng: parseFloat(data[0].lon)
-        };
-      }
-      return null;
-    } catch (error) {
-      console.error('Geocoding error:', error);
-      return null;
-    }
+  const placeMarker = (lat: number, lng: number, zoom = 16) => {
+    setCoordinates({ lat, lng });
+    markerRef.current?.setLatLng([lat, lng]);
+    mapRef.current?.setView([lat, lng], zoom);
   };
 
-  // Geocode when address changes
-  useEffect(() => {
-    const geocodeTimeout = setTimeout(async () => {
-      if (formData.address) {
-        setGeocoding(true);
-        const coords = await geocodeAddress(formData.address);
-        if (coords && mapRef.current && markerRef.current) {
-          setCoordinates(coords);
-          markerRef.current.setLatLng([coords.lat, coords.lng]);
-          mapRef.current.setView([coords.lat, coords.lng], 15);
+  const pickSuggestion = (place: PlaceResult) => {
+    skipGeocodeRef.current = true;
+    pinnedRef.current = true;
+    setFormData((f) => ({ ...f, address: place.subtitle ? `${place.title}, ${place.subtitle}` : place.title }));
+    setSuggestions([]);
+    setShowSuggestions(false);
+    placeMarker(place.lat, place.lng);
+  };
+
+  const locateMe = () => {
+    if (!navigator.geolocation) {
+      toast.error(t('map.gpsNotFound'));
+      return;
+    }
+    setLocatingMe(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude: lat, longitude: lng } = pos.coords;
+        nearRef.current = { lat, lng };
+        pinnedRef.current = true;
+        placeMarker(lat, lng, 17);
+        if (!formData.address.trim()) {
+          const place = await reversePlace(lat, lng);
+          if (place) {
+            skipGeocodeRef.current = true;
+            setFormData((f) => ({ ...f, address: place.subtitle ? `${place.title}, ${place.subtitle}` : place.title }));
+          }
         }
+        setLocatingMe(false);
+      },
+      () => {
+        setLocatingMe(false);
+        toast.error(t('map.enableLocation'));
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 },
+    );
+  };
+
+  // Recherche quand l'adresse change (anti-rebond)
+  useEffect(() => {
+    if (skipGeocodeRef.current) {
+      skipGeocodeRef.current = false;
+      return;
+    }
+    const query = formData.address.trim();
+    if (query.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      setGeocoding(true);
+      try {
+        const near = nearRef.current ?? (mapRef.current ? { lat: mapRef.current.getCenter().lat, lng: mapRef.current.getCenter().lng } : null);
+        const results = await searchPlaces(query, near, controller.signal);
+        setSuggestions(results);
+        // Premier résultat posé d'office tant que la position n'a pas été choisie à la main
+        if (results[0] && !pinnedRef.current) placeMarker(results[0].lat, results[0].lng, 15);
+      } catch {
+        /* recherche annulée ou hors ligne */
+      } finally {
         setGeocoding(false);
       }
-    }, 1000); // Debounce
+    }, 600);
 
-    return () => clearTimeout(geocodeTimeout);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
   }, [formData.address]);
+
+  const detectedCity = cityOf(coordinates.lat, coordinates.lng);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -442,14 +508,53 @@ const CreateEvent = () => {
 
               <div className="space-y-3">
                 <Label htmlFor="address" className={labelClass}>{t('form.address')}</Label>
-                <Input
-                  id="address"
-                  placeholder="Ex: Cocody Angré, Abidjan"
-                  value={formData.address}
-                  onChange={e => setFormData({ ...formData, address: e.target.value })}
-                  required
-                  className={inputClass}
-                />
+                <div className="relative">
+                  <Input
+                    id="address"
+                    placeholder={t('form.addressPlaceholder')}
+                    value={formData.address}
+                    onChange={e => {
+                      pinnedRef.current = false;
+                      setFormData({ ...formData, address: e.target.value });
+                      setShowSuggestions(true);
+                    }}
+                    onFocus={() => setShowSuggestions(true)}
+                    onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                    autoComplete="off"
+                    required
+                    className={inputClass}
+                  />
+                  {showSuggestions && suggestions.length > 0 && (
+                    <div className="absolute left-0 right-0 top-full mt-2 z-20 rounded-2xl bg-white border border-stone-200 shadow-xl overflow-hidden">
+                      {suggestions.map((place, i) => (
+                        <button
+                          key={`${place.lat},${place.lng},${i}`}
+                          type="button"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => pickSuggestion(place)}
+                          className="w-full flex items-center gap-3 px-4 py-3 text-left border-b border-stone-100 last:border-b-0 active:bg-parchment"
+                        >
+                          <span className="h-8 w-8 rounded-full bg-parchment flex items-center justify-center flex-shrink-0">
+                            <MapPin size={15} className="text-ink" />
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block text-sm font-medium text-ink truncate">{place.title}</span>
+                            {place.subtitle && <span className="block text-xs text-stone-500 truncate">{place.subtitle}</span>}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={locateMe}
+                  disabled={locatingMe}
+                  className="inline-flex items-center gap-2 h-9 px-3.5 rounded-full bg-parchment text-ink text-[13px] font-medium active:scale-95 transition-transform disabled:opacity-60"
+                >
+                  {locatingMe ? <Loader2 size={14} className="animate-spin" /> : <LocateFixed size={14} />}
+                  {t('form.useMyLocation')}
+                </button>
               </div>
 
               {/* Map for position adjustment */}
@@ -458,7 +563,7 @@ const CreateEvent = () => {
                   {t('form.mapPosition')} {geocoding && <span className="text-xs text-stone-400">({t('form.locating')})</span>}
                 </Label>
                 <div
-                  className="w-full h-48 rounded-2xl overflow-hidden border border-stone-300/40"
+                  className="w-full h-56 rounded-2xl overflow-hidden border border-stone-300/40"
                   style={{ position: 'relative', zIndex: 1 }}
                 >
                   <div
@@ -466,9 +571,16 @@ const CreateEvent = () => {
                     className="w-full h-full"
                   />
                 </div>
-                <p className="text-xs text-stone-400">
-                  {t('form.mapHint')}
-                </p>
+                <div className="flex items-start justify-between gap-3">
+                  <p className="text-xs text-stone-400">
+                    {t('form.mapHint')}
+                  </p>
+                  {detectedCity && (
+                    <span className="flex-shrink-0 inline-flex items-center gap-1 h-7 px-2.5 rounded-full bg-parchment text-ink text-xs font-medium">
+                      <MapPin size={12} /> {detectedCity}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
