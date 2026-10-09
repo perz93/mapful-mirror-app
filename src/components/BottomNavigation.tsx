@@ -12,7 +12,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 import { EVENT_CATEGORIES } from '@/lib/eventCategories';
 import { useEvents } from '@/hooks/useEvents';
-import { CITIES, cityOf, findCity, normalizeName } from '@/lib/cities';
+import { CITIES, eventCity, findCity, normalizeName } from '@/lib/cities';
 
 
 interface BottomNavigationProps {
@@ -32,9 +32,13 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
 
   // Villes où il y a des publications, les plus actives d'abord
   const cityCounts = new Map<string, number>();
+  const cityPoints = new Map<string, { lat: number; lng: number; n: number }>();
   for (const ev of events ?? []) {
-    const city = cityOf(ev.latitude, ev.longitude);
-    if (city) cityCounts.set(city, (cityCounts.get(city) ?? 0) + 1);
+    const city = eventCity(ev);
+    if (!city) continue;
+    cityCounts.set(city, (cityCounts.get(city) ?? 0) + 1);
+    const p = cityPoints.get(city) ?? { lat: 0, lng: 0, n: 0 };
+    cityPoints.set(city, { lat: p.lat + Number(ev.latitude), lng: p.lng + Number(ev.longitude), n: p.n + 1 });
   }
   const cities = [...cityCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'fr'));
 
@@ -46,10 +50,12 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
   if (cityFilter && !topCities.some(([name]) => name === cityFilter)) {
     topCities.push([cityFilter, cityCounts.get(cityFilter) ?? 0]);
   }
+  // Villes connues + localités où il y a des événements (villages, communes…)
+  const allCityNames = [...new Set([...CITIES.map((c) => c.name), ...cityCounts.keys()])];
   const cityMatches = cityQuery.trim()
-    ? CITIES
-        .filter((c) => normalizeName(c.name).includes(normalizeName(cityQuery)))
-        .map((c) => [c.name, cityCounts.get(c.name) ?? 0] as const)
+    ? allCityNames
+        .filter((name) => normalizeName(name).includes(normalizeName(cityQuery)))
+        .map((name) => [name, cityCounts.get(name) ?? 0] as const)
         .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'fr'))
         .slice(0, 6)
     : cities.slice(TOP_CITIES).map(([name, count]) => [name, count] as const);
@@ -60,11 +66,12 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
     const next = name === cityFilter ? null : name;
     setCityFilter(next);
     const city = findCity(next);
-    if (city) {
-      window.dispatchEvent(new CustomEvent('map:flyto', {
-        detail: { lat: city.lat, lng: city.lng, zoom: city.radiusKm >= 10 ? 12 : 13 },
-      }));
-    }
+    const pts = next ? cityPoints.get(next) : undefined;
+    // Ville connue : son centre ; sinon le centre de ses événements
+    const target = city
+      ? { lat: city.lat, lng: city.lng, zoom: city.radiusKm >= 10 ? 12 : 13 }
+      : pts ? { lat: pts.lat / pts.n, lng: pts.lng / pts.n, zoom: 14 } : null;
+    if (target) window.dispatchEvent(new CustomEvent('map:flyto', { detail: target }));
   };
 
   const [canScroll, setCanScroll] = useState(false);

@@ -6,6 +6,8 @@ export interface Event {
   title: string;
   description: string | null;
   venue: string;
+  /** Ville / localité (géocodage inverse à la création) */
+  city?: string | null;
   address: string | null;
   category: string;
   date: string;

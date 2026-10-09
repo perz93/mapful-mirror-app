@@ -13,6 +13,8 @@ export interface PlaceResult {
   title: string;
   /** Quartier, ville */
   subtitle: string;
+  /** Ville, commune ou village */
+  locality?: string;
 }
 
 type NominatimAddress = Record<string, string | undefined>;
@@ -53,7 +55,8 @@ const toPlace = (item: NominatimItem): PlaceResult => {
   const area = a.suburb || a.neighbourhood || a.quarter || a.city_district;
   const town = a.city || a.town || a.village || a.municipality || cityOf(lat, lng) || '';
   const subtitle = [area !== title ? area : null, town !== title ? town : null].filter(Boolean).join(', ');
-  return { lat, lng, title, subtitle };
+  const locality = a.city || a.town || a.village || a.municipality || undefined;
+  return { lat, lng, title, subtitle, locality };
 };
 
 export async function searchPlaces(query: string, signal?: AbortSignal): Promise<PlaceResult[]> {

@@ -54,7 +54,10 @@ export const CITIES: City[] = [
   { name: 'Sassandra', lat: 4.951, lng: -6.083, radiusKm: 3 },
 ];
 
-/** Ville d'une publication d'après ses coordonnées (la plus proche). */
+/** Au-delà de cette distance (en plus de l'étendue de la ville), on ne devine pas. */
+const MAX_GUESS_KM = 8;
+
+/** Ville d'une publication d'après ses coordonnées : la plus proche, si elle est assez près. */
 export const cityOf = (lat: number, lng: number): string | null => {
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
   let best: City | null = null;
@@ -66,8 +69,12 @@ export const cityOf = (lat: number, lng: number): string | null => {
       best = city;
     }
   }
-  return best?.name ?? null;
+  return best && bestScore <= MAX_GUESS_KM ? best.name : null;
 };
+
+/** Ville d'un événement : celle enregistrée à la création, sinon déduite de la position. */
+export const eventCity = (e: { city?: string | null; latitude?: number; longitude?: number; lat?: number; lng?: number }) =>
+  e.city?.trim() || cityOf(Number(e.latitude ?? e.lat), Number(e.longitude ?? e.lng));
 
 /** Comparaison sans accents ni majuscules (« bouake » = « Bouaké »). */
 export const normalizeName = (text: string) =>

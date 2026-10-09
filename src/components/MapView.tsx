@@ -18,7 +18,7 @@ import { toast } from '@/components/PillToast';
 import RouteInfoPanel from './RouteInfoPanel';
 import { fuzzyMatch } from '@/lib/fuzzyMatch';
 import { getDistanceKm } from '@/hooks/useNearbyEvents';
-import { cityOf } from '@/lib/cities';
+import { eventCity } from '@/lib/cities';
 import { happensBetween, isMultiDay, lastDay } from '@/lib/eventStatus';
 import { supabase } from '@/integrations/supabase/client';
 import { softCase } from '@/lib/softCase';
@@ -589,7 +589,7 @@ const MapView = () => {
         matchesDistance = dist <= distanceFilter;
       }
 
-      const matchesCity = !cityFilter || cityOf(eventData.lat, eventData.lng) === cityFilter;
+      const matchesCity = !cityFilter || eventCity(eventData) === cityFilter;
 
       // Date filter
       let matchesDate = true;

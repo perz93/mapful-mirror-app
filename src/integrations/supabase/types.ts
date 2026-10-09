@@ -48,6 +48,7 @@ export type Database = {
           address: string | null
           capacity: number | null
           category: string
+          city: string | null
           contact_facebook: string | null
           contact_instagram: string | null
           contact_phone: string | null
@@ -78,6 +79,7 @@ export type Database = {
           address?: string | null
           capacity?: number | null
           category: string
+          city?: string | null
           contact_facebook?: string | null
           contact_instagram?: string | null
           contact_phone?: string | null
@@ -108,6 +110,7 @@ export type Database = {
           address?: string | null
           capacity?: number | null
           category?: string
+          city?: string | null
           contact_facebook?: string | null
           contact_instagram?: string | null
           contact_phone?: string | null

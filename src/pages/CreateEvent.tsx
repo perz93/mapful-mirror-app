@@ -197,6 +197,7 @@ const CreateEvent = () => {
     setFormData((f) => ({ ...f, address: place.subtitle ? `${place.title}, ${place.subtitle}` : place.title }));
     setSuggestions([]);
     setShowSuggestions(false);
+    if (place.locality) setPlaceCity({ key: `${place.lat.toFixed(4)},${place.lng.toFixed(4)}`, name: place.locality });
     placeMarker(place.lat, place.lng);
   };
 
@@ -260,7 +261,20 @@ const CreateEvent = () => {
     };
   }, [formData.address]);
 
-  const detectedCity = cityOf(coordinates.lat, coordinates.lng);
+  // Ville / localité réelle du point choisi (géocodage inverse), enregistrée avec l'événement.
+  // En attendant la réponse (ou hors ligne) : la ville connue la plus proche, si elle est près.
+  const [placeCity, setPlaceCity] = useState<{ key: string; name: string | null } | null>(null);
+  const coordKey = `${coordinates.lat.toFixed(4)},${coordinates.lng.toFixed(4)}`;
+  useEffect(() => {
+    if (placeCity?.key === coordKey) return;
+    const timer = setTimeout(async () => {
+      const place = await reversePlace(coordinates.lat, coordinates.lng);
+      setPlaceCity({ key: coordKey, name: place?.locality ?? null });
+    }, 700);
+    return () => clearTimeout(timer);
+  }, [coordKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  const detectedCity =
+    (placeCity?.key === coordKey ? placeCity.name : null) ?? cityOf(coordinates.lat, coordinates.lng);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -318,6 +332,7 @@ const CreateEvent = () => {
           capacity: formData.capacity ? parseInt(formData.capacity) : null,
           description: formData.description || null,
           image_url: imageUrl,
+          city: detectedCity,
           latitude: coordinates.lat,
           longitude: coordinates.lng,
           is_paid: formData.price ? parseFloat(formData.price) > 0 : false,
@@ -331,7 +346,7 @@ const CreateEvent = () => {
           contact_twitter: formData.contactTwitter || null,
           contact_email: formData.contactEmail || null,
           key_points: validKeyPoints.length > 0 ? validKeyPoints : null
-        }, ['contact_email', 'end_date', 'end_time'], (p) => supabase.from('events').insert(p));
+        }, ['contact_email', 'end_date', 'end_time', 'city'], (p) => supabase.from('events').insert(p));
 
       if (insertError) {
         throw insertError;
