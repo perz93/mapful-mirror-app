@@ -11,6 +11,12 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { softCase } from '@/lib/softCase';
 const OUT_MS = 320;
 const IN_MS = 520;
+const AUTOPLAY_MS = 6000;
+// Événement affiché, gardé pendant la session : en revenant sur la carte
+// (autre page, app mise en arrière-plan), on reprend là où on en était.
+const STORAGE_KEY = 'vibe-featured-event';
+const readStored = () => { try { return sessionStorage.getItem(STORAGE_KEY); } catch { return null; } };
+const store = (id: string) => { try { sessionStorage.setItem(STORAGE_KEY, id); } catch { /* */ } };
 
 const EventCard = () => {
   const { t } = useLanguage();
@@ -18,7 +24,14 @@ const EventCard = () => {
     data: events,
     isLoading
   } = useFeaturedEvents();
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    const id = readStored();
+    const i = id && events ? events.findIndex((e) => e.id === id) : -1;
+    return i >= 0 ? i : 0;
+  });
+  // Relance la lecture auto (après un glissement ou un tap sur les points)
+  const [autoplayKey, setAutoplayKey] = useState(0);
+  const touchStartX = useRef<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const currentIndexRef = useRef(0);
   currentIndexRef.current = currentIndex;
@@ -38,7 +51,38 @@ const EventCard = () => {
 
   useEffect(() => {
     events?.forEach((event) => decodeImage(event.image_url));
+    if (!events?.length) return;
+    // Liste rechargée : on reste sur le même événement s'il y est encore
+    const id = readStored();
+    const i = id ? events.findIndex((e) => e.id === id) : -1;
+    setCurrentIndex(i >= 0 ? i : Math.min(currentIndexRef.current, events.length - 1));
   }, [events]);
+
+  useEffect(() => {
+    const ev = events?.[currentIndex];
+    if (ev) store(ev.id);
+  }, [events, currentIndex]);
+
+  const goTo = (next: number) => {
+    if (!events || next === currentIndexRef.current) return;
+    decodeImage(events[next].image_url);
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setCurrentIndex(next);
+      requestAnimationFrame(() => setIsTransitioning(false));
+    }, OUT_MS);
+    setAutoplayKey((k) => k + 1);
+  };
+
+  const onTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (!events || events.length < 2 || touchStartX.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(dx) < 40) return;
+    const n = events.length;
+    goTo(dx < 0 ? (currentIndexRef.current + 1) % n : (currentIndexRef.current - 1 + n) % n);
+  };
 
   useEffect(() => {
     if (!events || events.length < 2) return;
@@ -56,13 +100,13 @@ const EventCard = () => {
         setCurrentIndex(next);
         requestAnimationFrame(() => setIsTransitioning(false));
       }, OUT_MS);
-    }, 5000);
+    }, AUTOPLAY_MS);
     return () => {
       cancelled = true;
       clearInterval(interval);
       clearTimeout(swapTimer);
     };
-  }, [events]);
+  }, [events, autoplayKey]);
 
   if (isLoading) {
     return <EventCardSkeleton />;
@@ -70,10 +114,10 @@ const EventCard = () => {
   if (!events || events.length === 0) {
     return null;
   }
-  const currentEvent = events[currentIndex];
+  const currentEvent = events[Math.min(currentIndex, events.length - 1)];
   const status = eventStatus(currentEvent);
   return <div className="fixed bottom-36 left-0 right-0 max-w-md mx-auto px-4 pointer-events-none z-10 touch-none">
-      <div className="pointer-events-auto touch-auto">
+      <div className="pointer-events-auto touch-auto" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
         <div
           className="relative h-[164px] overflow-hidden rounded-3xl bg-white shadow-[0_14px_32px_-14px_rgba(20,20,15,0.45)] [isolation:isolate] transform-gpu will-change-[opacity,transform] motion-reduce:transition-none"
           style={{
@@ -139,7 +183,17 @@ const EventCard = () => {
 
         {/* Progress indicators */}
         <div className="flex justify-center gap-1.5 mt-3">
-          {events.map((_, index) => <div key={index} className={`h-1 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-6 bg-ink' : 'w-1.5 bg-ink/20 dark:bg-stone-600'}`} />)}
+          {events.map((ev, index) => (
+            <button
+              key={ev.id}
+              type="button"
+              onClick={() => goTo(index)}
+              aria-label={softCase(ev.title)}
+              className="flex h-4 items-center"
+            >
+              <span className={`block h-1 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-6 bg-ink' : 'w-1.5 bg-ink/20 dark:bg-stone-600'}`} />
+            </button>
+          ))}
         </div>
       </div>
     </div>;
