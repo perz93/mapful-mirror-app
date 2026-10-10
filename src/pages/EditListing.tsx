@@ -9,6 +9,7 @@ import { retryWithoutNewColumns } from '@/lib/retryWithoutNewColumns';
 import { emailProviderLabel } from '@/lib/emailProvider';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { compressImage, IMMUTABLE_CACHE } from '@/lib/compressImage';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -158,12 +159,12 @@ const EditListing = () => {
 
       // Upload new image if changed
       if (imageFile) {
-        const fileExt = imageFile.name.split('.').pop();
-        const fileName = `${user!.id}/${Date.now()}.${fileExt}`;
+        const image = await compressImage(imageFile);
+        const fileName = `${user!.id}/${Date.now()}.${image.ext}`;
         
         const { error: uploadError } = await supabase.storage
           .from('event-images')
-          .upload(fileName, imageFile);
+          .upload(fileName, image.blob, { contentType: image.contentType, cacheControl: IMMUTABLE_CACHE });
 
         if (uploadError) throw uploadError;
 

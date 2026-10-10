@@ -21,6 +21,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
+import { compressImage, IMMUTABLE_CACHE } from '@/lib/compressImage';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -297,12 +298,12 @@ const CreateEvent = () => {
 
       // Upload image if selected
       if (imageFile) {
-        const fileExt = imageFile.name.split('.').pop();
-        const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+        const image = await compressImage(imageFile);
+        const fileName = `${user.id}/${Date.now()}.${image.ext}`;
 
         const { error: uploadError } = await supabase.storage
           .from('event-images')
-          .upload(fileName, imageFile);
+          .upload(fileName, image.blob, { contentType: image.contentType, cacheControl: IMMUTABLE_CACHE });
 
         if (uploadError) {
           throw uploadError;

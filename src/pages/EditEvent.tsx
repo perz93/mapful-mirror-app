@@ -11,6 +11,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
+import { compressImage, IMMUTABLE_CACHE } from '@/lib/compressImage';
 import { toast } from '@/components/PillToast';
 import { useQueryClient } from '@tanstack/react-query';
 import { EditEventSkeleton } from '@/components/PageSkeleton';
@@ -137,9 +138,9 @@ const EditEvent = () => {
           const oldPath = currentEvent.image_url.split('/').slice(-2).join('/');
           await supabase.storage.from('event-images').remove([oldPath]);
         }
-        const fileExt = imageFile.name.split('.').pop();
-        const filePath = `${user.id}/${Math.random()}.${fileExt}`;
-        const { error: uploadError } = await supabase.storage.from('event-images').upload(filePath, imageFile);
+        const image = await compressImage(imageFile);
+        const filePath = `${user.id}/${Date.now()}.${image.ext}`;
+        const { error: uploadError } = await supabase.storage.from('event-images').upload(filePath, image.blob, { contentType: image.contentType, cacheControl: IMMUTABLE_CACHE });
         if (uploadError) throw uploadError;
         const { data: { publicUrl } } = supabase.storage.from('event-images').getPublicUrl(filePath);
         imageUrl = publicUrl;

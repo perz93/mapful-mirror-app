@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
+import { compressImage, IMMUTABLE_CACHE } from '@/lib/compressImage';
 import { useEvents, Event } from '@/hooks/useEvents';
 import EventListCard from '@/components/EventListCard';
 import { toast } from '@/components/PillToast';
@@ -161,10 +162,9 @@ const MyAccount = () => {
         const oldPath = profile.avatar_url.split('/').pop();
         if (oldPath) await supabase.storage.from('avatars').remove([`${user.id}/${oldPath}`]);
       }
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `${user.id}/${fileName}`;
-      const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file);
+      const image = await compressImage(file, 512);
+      const filePath = `${user.id}/${Date.now()}.${image.ext}`;
+      const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, image.blob, { contentType: image.contentType, cacheControl: IMMUTABLE_CACHE });
       if (uploadError) throw uploadError;
       const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(filePath);
       const { error: updateError } = await supabase.from('profiles').update({ avatar_url: publicUrl }).eq('id', user.id);
