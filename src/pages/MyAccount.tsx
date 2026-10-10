@@ -75,7 +75,10 @@ const MyAccount = () => {
 
   useEffect(() => {
     if (user && allEvents) {
-      const filtered = allEvents.filter(event => event.user_id === user.id);
+      // Les plus récemment publiés en premier
+      const filtered = allEvents
+        .filter(event => event.user_id === user.id)
+        .sort((a, b) => b.created_at.localeCompare(a.created_at));
       setUserEvents(filtered);
     }
   }, [user, allEvents]);
@@ -103,11 +106,14 @@ const MyAccount = () => {
     const { data: favs } = await supabase
       .from('event_favorites')
       .select('event_id')
-      .eq('user_id', user.id);
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
 
     if (favs && favs.length > 0 && allEvents) {
       const favIds = favs.map(f => f.event_id);
-      setFavoriteEvents(allEvents.filter(e => favIds.includes(e.id)));
+      // Dans l'ordre des favoris : le dernier ajouté en premier
+      const byId = new Map(allEvents.map(e => [e.id, e]));
+      setFavoriteEvents(favIds.map(id => byId.get(id)).filter((e): e is NonNullable<typeof e> => !!e));
     } else {
       setFavoriteEvents([]);
     }

@@ -82,7 +82,7 @@ const PublicProfile = () => {
   const events = data?.events ?? [];
   const listings = data?.listings ?? [];
   const today = format(new Date(), 'yyyy-MM-dd');
-  const upcoming = events.filter((e) => lastDay(e) >= today).sort((a, b) => a.date.localeCompare(b.date));
+  const upcoming = events.filter((e) => lastDay(e) >= today).sort((a, b) => b.created_at.localeCompare(a.created_at));
   const past = events.filter((e) => lastDay(e) < today).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6);
 
   // Bannière : les affiches les plus récentes (événements puis annonces)

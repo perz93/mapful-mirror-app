@@ -2,6 +2,7 @@ import ShimmerImage from './ShimmerImage';
 import { Link } from 'react-router-dom';
 import { Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
 import { Event } from '@/hooks/useEvents';
+import { softCase } from '@/lib/softCase';
 import { dateRangeLabel, timeRangeLabel } from '@/lib/eventStatus';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/PillToast';
@@ -81,7 +82,7 @@ const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) 
           <div className="flex flex-col gap-0.5">
             <div className="flex items-center gap-2">
               <p className="text-stone-900 dark:text-white text-sm font-bold leading-tight">
-                {event.title}
+                {softCase(event.title)}
               </p>
               {!event.is_published && (
                 <span className="px-2 py-0.5 text-xs bg-muted text-muted-foreground rounded-full">
@@ -90,7 +91,7 @@ const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) 
               )}
             </div>
             <p className="text-stone-500 dark:text-stone-400 text-xs font-normal leading-normal">
-              {event.venue}
+              {softCase(event.venue)}
             </p>
             <p className="text-stone-500 dark:text-stone-400 text-xs font-normal leading-normal">
               {dateRangeLabel(event)} • {timeRangeLabel(event)}
