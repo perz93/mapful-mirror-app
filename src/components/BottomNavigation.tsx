@@ -325,45 +325,45 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
       </Dialog>
 
       <div className={`fixed bottom-0 left-0 right-0 max-w-md mx-auto flex-shrink-0 px-4 pb-safe z-40 ${className}`}>
-        <div className="neo-white-bottom h-[72px] rounded-full bg-white dark:bg-stone-900/90 mb-2 overflow-hidden">
+        <div className="neo-white-bottom h-[92px] rounded-[34px] bg-white dark:bg-stone-900/90 mb-2 overflow-hidden">
           <div className="relative h-full flex items-center">
             <button
               onClick={() => setSearchOpen(true)}
-              className="flex-shrink-0 h-14 w-14 ml-2 flex items-center justify-center rounded-full bg-lime text-ink hover:bg-lime-deep transition-all duration-300 active:scale-95"
+              className="flex-shrink-0 h-[66px] w-[66px] ml-2.5 flex items-center justify-center rounded-full bg-lime text-ink hover:bg-lime-deep transition-all duration-300 active:scale-95"
               aria-label={t('nav.search')}
             >
-              <Search size={22} strokeWidth={1.75} />
+              <Search size={26} strokeWidth={2} />
             </button>
 
             <div className="flex-1 relative h-full min-w-0">
               <div
                 ref={scrollRef}
-                className="flex items-center h-full overflow-x-auto overflow-y-hidden scrollbar-hide px-2 gap-1 whitespace-nowrap"
+                className="flex items-center h-full overflow-x-auto overflow-y-hidden scrollbar-hide px-1.5 gap-0.5 whitespace-nowrap"
               >
                 {navItems.map((item, index) => {
                   const isActive = location.pathname === item.path;
+                  // N2 : la catégorie dans un cercle, son nom court dessous
+                  const shortLabel = item.label.split(/\s+&\s+/)[0];
                   return (
                     <Link
                       key={index}
                       to={item.path}
-                      className={`flex-shrink-0 flex h-14 w-[92px] flex-col items-center justify-center gap-[3px] rounded-[22px] transition-all duration-300 ease-in-out active:scale-95 ${
-                        isActive
-                          ? 'bg-[#eaf7cf] text-ink dark:bg-stone-800'
-                          : 'text-ink dark:text-stone-300'
-                      }`}
-                      style={{ transitionProperty: 'all' }}
+                      aria-label={item.label}
+                      className="no-press flex-shrink-0 flex w-[74px] flex-col items-center justify-center gap-1.5 pb-2 active:scale-95 transition-transform"
                     >
-                      <img
-                        src={item.icon}
-                        alt={item.label}
-                        className={`size-[22px] flex-shrink-0 transition-all duration-300 ease-in-out ${
-                          isActive ? 'opacity-100' : 'opacity-55'
+                      <span
+                        className={`flex size-[50px] items-center justify-center rounded-full transition-colors duration-300 ${
+                          isActive ? 'bg-ink' : 'bg-[#efeee8] dark:bg-stone-800'
                         }`}
-                      />
-                      {/* Zone texte toujours haute de 2 lignes : les icônes restent alignées,
-                          un nom court est centré dans la zone */}
-                      <p className={`flex h-6 max-w-[84px] items-center text-center text-[10.5px] leading-[1.15] whitespace-normal transition-all duration-300 ease-in-out ${isActive ? 'font-bold' : 'font-semibold'}`}>
-                        {item.label}
+                      >
+                        <img
+                          src={item.icon}
+                          alt=""
+                          className={`size-[24px] transition-all duration-300 ${isActive ? 'invert opacity-100' : 'opacity-80'}`}
+                        />
+                      </span>
+                      <p className={`max-w-[74px] truncate text-[11.5px] leading-none text-ink dark:text-stone-300 ${isActive ? 'font-bold' : 'font-semibold'}`}>
+                        {shortLabel}
                       </p>
                     </Link>
                   );
