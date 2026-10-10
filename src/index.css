@@ -1206,3 +1206,11 @@ vercel-live-feedback,
 /* Anneau vert de l'étiquette sélectionnée (pas une ombre) */
 .custom-marker.is-selected .pin-label-img { box-shadow: 0 0 0 2px #a6e22e !important; }
 .custom-marker.is-selected .marker-image-wrapper { box-shadow: 0 0 0 2.5px #a6e22e !important; }
+
+/* Exception : sur la carte, boutons flottants et étiquettes gardent leur ombre
+   (sinon ils se fondent dans le fond clair de la carte). */
+.map-shadow.map-shadow.map-shadow {
+  box-shadow: 0 2px 4px rgb(20 20 15 / 0.10), 0 10px 22px -6px rgb(20 20 15 / 0.32) !important;
+}
+.pin-label.pin-label { box-shadow: 0 3px 10px rgb(20 20 15 / 0.2) !important; }
+.custom-marker.is-selected .pin-label.pin-label { box-shadow: 0 4px 14px rgb(20 20 15 / 0.35) !important; }
