@@ -1183,3 +1183,26 @@ vercel-live-feedback,
   from { opacity: 0; transform: translate(-50%, calc(-100% + 4px)) scale(0.8); }
   to { opacity: 1; transform: translate(-50%, calc(-100% - 7px)) scale(1); }
 }
+
+/* ── Pas d'ombres portées sur les éléments (choix produit) ──
+   Les utilitaires Tailwind shadow-* passent par --tw-shadow : on le neutralise
+   (les anneaux ring-* restent). Puis les ombres écrites à la main. */
+*, *::before, *::after {
+  --tw-shadow: 0 0 #0000 !important;
+  --tw-shadow-colored: 0 0 #0000 !important;
+}
+.neo-white-bottom.neo-white-bottom,
+.card-shadow,
+.btn-float.btn-float.btn-float,
+.btn-float.btn-float.btn-float.bg-lime,
+.custom-popup-card .leaflet-popup-content-wrapper,
+.pin-label,
+.custom-marker.is-selected .pin-label,
+.marker-image-wrapper,
+.marker-image-wrapper:hover {
+  box-shadow: none !important;
+}
+.marker-image-container::after { filter: none !important; }
+/* Anneau vert de l'étiquette sélectionnée (pas une ombre) */
+.custom-marker.is-selected .pin-label-img { box-shadow: 0 0 0 2px #a6e22e !important; }
+.custom-marker.is-selected .marker-image-wrapper { box-shadow: 0 0 0 2.5px #a6e22e !important; }
