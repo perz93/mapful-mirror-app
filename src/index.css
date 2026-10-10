@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+@import '@fontsource-variable/bricolage-grotesque/opsz.css';
+@import '@fontsource-variable/instrument-sans/index.css';
 
 @tailwind base;
 @tailwind components;
@@ -24,19 +25,19 @@
     height: 3px;
   }
   .scrollbar-black::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.05);
+    background: rgb(20 20 15 / 0.06);
   }
   .scrollbar-black::-webkit-scrollbar-thumb {
-    background: #000;
+    background: #14140f;
     border-radius: 2px;
     opacity: 1;
   }
   .scrollbar-black::-webkit-scrollbar-thumb:hover {
-    background: #333;
+    background: #30302a;
   }
   .scrollbar-black {
     scrollbar-width: thin;
-    scrollbar-color: #000 rgba(0, 0, 0, 0.05);
+    scrollbar-color: #14140f rgb(20 20 15 / 0.06);
   }
 }
 
@@ -53,7 +54,6 @@
   outline-width: 0 !important;
   box-shadow: none !important;
   -webkit-tap-highlight-color: transparent !important;
-  border-color: inherit !important;
 }
 
 button, a, input, select, textarea, [role="button"], [role="menuitem"], [role="option"], [tabindex],
@@ -95,151 +95,127 @@ div:focus, div:focus-visible,
 
 body {
   min-height: 100dvh;
-  font-family: 'Kanit', sans-serif;
+  font-family: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif;
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
   -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 @layer utilities {
-  /* Neo-brutalist signature — assumé et visible */
-  .neo-soft {
-    border: 2px solid hsl(var(--foreground));
-    box-shadow: var(--shadow-neo);
-    transition: box-shadow 150ms ease, transform 150ms ease;
-    border-radius: 0.75rem;
+  /* Micro-label en capitales espacées — la signature éditoriale */
+  .eyebrow {
+    font-size: 11px;
+    line-height: 1.4;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
   }
-  .neo-soft:hover {
-    box-shadow: var(--shadow-neo-lg);
-    transform: translate(-2px, -2px);
+  .tabular {
+    font-variant-numeric: tabular-nums;
   }
-  .neo-soft-lg {
-    border: 2.5px solid hsl(var(--foreground));
-    box-shadow: var(--shadow-neo-lg);
-    border-radius: 0.75rem;
+
+  /* Surfaces — séparées par le ton, jamais par l'ombre */
+  .surface-paper {
+    background: #ffffff;
+    border: 1px solid hsl(var(--border));
+    border-radius: 28px;
   }
-  .neo-btn {
-    border: 2px solid hsl(var(--foreground));
-    box-shadow: var(--shadow-neo);
-    transition: box-shadow 120ms ease, transform 120ms ease;
-    border-radius: 0.75rem;
+  .surface-parchment {
+    background: #f5f5eb;
+    border-radius: 28px;
   }
-  .neo-btn:hover {
-    box-shadow: var(--shadow-neo-lg);
-    transform: translate(-2px, -2px);
+  .surface-island {
+    background: #30302a;
+    color: #f5f5eb;
+    border-radius: 28px;
   }
-  .neo-btn:active {
-    box-shadow: 0 0 0 0 hsl(var(--foreground));
-    transform: translate(3px, 3px);
+
+  /* Bouton principal : la pilule lime, seul aplat chromatique du système */
+  .btn-lime {
+    background: #a6e22e;
+    color: #14140f;
+    font-weight: 500;
+    border-radius: 9999px;
+    transition: background-color 150ms ease, transform 150ms ease;
+  }
+  .btn-lime:hover { background: #93cc1f; }
+  .btn-lime:active { transform: scale(0.98); }
+
+  .btn-ink {
+    background: #14140f;
+    color: #f5f5eb;
+    font-weight: 500;
+    border-radius: 9999px;
+    transition: background-color 150ms ease, transform 150ms ease;
+  }
+  .btn-ink:hover { background: #30302a; }
+
+  .link-underline {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
   }
 }
 
-/* Global neo-brutalist pass — applique l'effet automatiquement aux
-   surfaces shadcn (cards, buttons, inputs, dialogs) sans toucher aux composants. */
+/* Champs : fond blanc, filet 1px — la bordure EST l'affordance */
 @layer components {
-  /* Cards */
-  [class*="rounded-"][class*="bg-card"],
-  .bg-card {
-    border: 2px solid hsl(var(--foreground)) !important;
-    box-shadow: var(--shadow-neo) !important;
-  }
-
-  /* Inputs & textareas */
-  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
   textarea,
   select {
-    border: 2px solid hsl(var(--foreground)) !important;
-    box-shadow: var(--shadow-neo-sm) !important;
-    border-radius: 0.6rem !important;
-    background: hsl(var(--card)) !important;
+    border-color: hsl(var(--input));
+    border-radius: 12px;
+    transition: border-color 150ms ease;
   }
-  input:focus, textarea:focus, select:focus {
-    box-shadow: var(--shadow-neo) !important;
-    transform: translate(-1px, -1px);
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+  textarea:focus,
+  select:focus {
+    border-color: #14140f !important;
   }
-
-  /* Primary/solid buttons — shadcn */
-  button.bg-primary,
-  button.bg-foreground,
-  button.bg-accent,
-  button.bg-destructive,
-  a.bg-primary,
-  a.bg-foreground,
-  [role="button"].bg-primary {
-    border: 2px solid hsl(var(--foreground)) !important;
-    box-shadow: var(--shadow-neo) !important;
-    transition: box-shadow 120ms ease, transform 120ms ease !important;
+  ::placeholder {
+    color: #919183;
   }
-  button.bg-primary:hover,
-  button.bg-foreground:hover,
-  button.bg-accent:hover,
-  a.bg-primary:hover {
-    box-shadow: var(--shadow-neo-lg) !important;
-    transform: translate(-2px, -2px) !important;
+  ::selection {
+    background: #a6e22e;
+    color: #14140f;
   }
-  button.bg-primary:active,
-  button.bg-foreground:active,
-  button.bg-accent:active,
-  a.bg-primary:active {
-    box-shadow: 0 0 0 0 hsl(var(--foreground)) !important;
-    transform: translate(3px, 3px) !important;
+  /* Appui long sur une photo : ni sélection verte ni menu système */
+  img, [style*="background-image"] {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
   }
-
-  /* Dialogs / popovers */
-  [role="dialog"] > div,
-  [data-radix-popper-content-wrapper] > * {
-    border: 2px solid hsl(var(--foreground)) !important;
-    box-shadow: var(--shadow-neo-lg) !important;
+  img::selection {
+    background: transparent;
   }
-
-  /* Surfaces "maison" (cards glassmorphism / blanches) — event card, marketplace,
-     détails d'événement, réglages, formulaires. */
-  [class*="rounded-xl"][class*="bg-white"],
-  [class*="rounded-2xl"][class*="bg-white"],
-  [class*="rounded-3xl"][class*="bg-white"],
-  [class*="rounded-xl"][class*="bg-card"],
-  [class*="rounded-2xl"][class*="backdrop-blur"],
-  [class*="rounded-3xl"][class*="backdrop-blur"],
-  [class*="rounded-2xl"][class*="bg-amber-50"],
-  [class*="rounded-2xl"][class*="bg-stone-50"],
-  [class*="rounded-3xl"][class*="bg-stone-900"],
-  [class*="rounded-2xl"][class*="bg-stone-900"] {
-    border: 2px solid hsl(var(--foreground)) !important;
-    box-shadow: var(--shadow-neo) !important;
-  }
-
-  /* Image héro des détails d'événement */
-  [class*="rounded-3xl"][class*="overflow-hidden"] {
-    border: 2px solid hsl(var(--foreground)) !important;
-    box-shadow: var(--shadow-neo) !important;
-  }
-
-  /* Chips / badges pilule → contour net */
-  [class*="rounded-full"][class*="bg-[#ee9d2b]/10"],
-  [class*="rounded-full"][class*="bg-stone-100"],
-  [class*="rounded-full"][class*="bg-stone-500/15"] {
-    border: 1.5px solid hsl(var(--foreground)) !important;
+  a, button, article {
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
-/* White lower edge for the two floating map frames.
-   Kept outside Tailwind layers so it wins over the global neo pass. */
-/* Cadres doux (EventCard + BottomNavigation) : pas de contour noir, ombre douce */
+/* Cadres flottants sur la carte (EventCard + BottomNavigation) */
 .neo-white-bottom.neo-white-bottom {
-  border: 1px solid hsl(0 0% 100% / 0.7) !important;
-  box-shadow: 0 10px 20px -6px hsl(220 15% 40% / 0.28), 0 2px 6px -2px hsl(220 15% 40% / 0.18) !important;
+  border: 1px solid rgb(20 20 15 / 0.08) !important;
+  box-shadow: 0 1px 2px rgb(20 20 15 / 0.06), 0 14px 32px -16px rgb(20 20 15 / 0.35) !important;
 }
-
-
-
 
 .leaflet-container {
   width: 100%;
   height: 100%;
+  /* Couleur du fond de carte : visible pendant le chargement des tuiles */
+  background: #fafaf8 !important;
 }
 
 .map-tiles {
-  /* Removed grayscale filter for colorful map */
+  /* Teinte chaude et désaturée pour rester dans la palette parchemin */
+  filter: saturate(0.7) sepia(0.12) brightness(1.03) contrast(0.96);
+}
+
+/* Pas d'attribution posée sur la carte : crédits dans Paramètres */
+.leaflet-control-attribution {
+  display: none !important;
 }
 
 
@@ -316,33 +292,39 @@ body {
 }
 
 .marker-image-wrapper {
-  width: 50px;
-  height: 50px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   overflow: hidden;
-  background: white;
+  /* Ton de chargement crème, recouvert par la photo une fois chargée */
+  background: #ebe9dd;
   border: none;
   box-shadow:
-    0 0 0 3px white,
-    0 4px 16px rgba(0, 0, 0, 0.2),
-    0 2px 8px rgba(0, 0, 0, 0.15);
+    0 0 0 2.5px white,
+    0 3px 10px rgba(0, 0, 0, 0.2),
+    0 1px 4px rgba(0, 0, 0, 0.15);
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
 }
 
-.marker-image-wrapper::after {
+.marker-image-container::after {
   content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 8px solid white;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+  margin-top: -1px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid #ffffff;
+  filter: drop-shadow(0 2px 2px rgba(20, 20, 15, 0.18));
+  transition: border-top-color 0.2s ease;
 }
+
+.custom-marker.is-selected { z-index: 1000 !important; }
+.custom-marker.is-selected .marker-image-container { transform: scale(1.14); transform-origin: 50% 100%; }
+.custom-marker.is-selected .marker-image-wrapper {
+  box-shadow: 0 0 0 2.5px #a6e22e, 0 4px 12px rgba(20, 20, 15, 0.3);
+}
+.custom-marker.is-selected .marker-image-container::after { border-top-color: #a6e22e; }
 
 .marker-image-wrapper:hover {
   transform: scale(1.1);
@@ -352,7 +334,20 @@ body {
     0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 
+.marker-image-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(100deg, rgb(251 250 243 / 0) 20%, rgb(251 250 243 / 0.6) 50%, rgb(251 250 243 / 0) 80%);
+  background-size: 300% 100%;
+  animation: map-shimmer 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  z-index: 0;
+}
+
 .marker-event-image {
+  position: relative;
+  z-index: 1;
   width: 100% !important;
   height: 100% !important;
   min-width: 100% !important;
@@ -476,32 +471,32 @@ body {
   }
 }
 
-/* Custom popup styles - Compact card design with image overlay */
+/* Popup de la carte — ticket photo plein cadre (C1) */
 .custom-popup-card .leaflet-popup-content-wrapper {
   padding: 0;
-  border-radius: 14px;
+  border-radius: 26px;
   overflow: hidden;
-  border: 2px solid #1a1a1a;
-  box-shadow: 5px 5px 0 #1a1a1a;
-  background: transparent;
+  border: 0;
+  box-shadow: 0 2px 4px rgb(20 20 15 / 0.12), 0 22px 44px -18px rgb(20 20 15 / 0.55);
+  background: #14140f;
 }
 
 .custom-popup-card .leaflet-popup-content {
   margin: 0;
-  width: 220px !important;
+  width: 240px !important;
 }
 
 .custom-popup-card .leaflet-popup-tip {
-  background: white;
-  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.1);
+  background: #14140f;
+  box-shadow: none;
 }
 
 .custom-popup-card .leaflet-popup-close-button {
-  color: rgba(0, 0, 0, 0.8) !important;
-  font-size: 18px !important;
-  font-weight: 500 !important;
-  width: 36px !important;
-  height: 36px !important;
+  color: #14140f !important;
+  font-size: 22px !important;
+  font-weight: 400 !important;
+  width: 40px !important;
+  height: 40px !important;
   padding: 0 !important;
   display: flex !important;
   align-items: center !important;
@@ -509,247 +504,159 @@ body {
   line-height: 1 !important;
   text-shadow: none;
   z-index: 10;
-  background: #ffffff !important;
-  border: 2px solid #1a1a1a !important;
-  border-radius: 50% !important;
-  right: 10px !important;
-  top: 10px !important;
-  box-shadow: 3px 3px 0 #1a1a1a !important;
-  transition: all 0.2s ease !important;
-  backdrop-filter: blur(8px);
-}
-
-.custom-popup-card .leaflet-popup-close-button:hover {
-  background: rgba(255, 255, 255, 0.9) !important;
-  transform: scale(1.1);
+  background: rgb(255 255 255 / 0.92) !important;
+  border: 0 !important;
+  border-radius: 9999px !important;
+  left: 12px !important;
+  right: auto !important;
+  top: 12px !important;
+  box-shadow: none !important;
 }
 
 .custom-popup-card, .event-popup-card, .event-popup-card * {
-  font-family: 'Kanit', sans-serif !important;
+  font-family: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif !important;
   font-style: normal !important;
 }
 
-.event-popup-card {
-  display: flex;
-  flex-direction: column;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-  background: transparent;
+.popup-card-title, .popup-date-day {
+  font-family: 'Bricolage Grotesque Variable', 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif !important;
+  font-weight: 600 !important;
 }
 
-.event-popup-card:hover {
-  transform: scale(1.02);
+.event-popup-card {
+  cursor: pointer;
+  background: #14140f;
 }
 
 .popup-card-image {
-  height: 280px;
+  background-color: #2a2a24;
+  height: 310px;
   background-size: cover;
   background-position: center;
   position: relative;
-  border-radius: 16px;
   overflow: hidden;
+}
+
+.popup-price {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  height: 28px;
+  padding: 0 11px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  background: #a6e22e;
+  color: #14140f;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .popup-card-gradient {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, 
-    rgba(0, 0, 0, 0) 0%, 
-    rgba(0, 0, 0, 0.5) 40%,
-    rgba(0, 0, 0, 0.75) 70%,
-    rgba(0, 0, 0, 0.92) 100%);
-  padding: 0 16px 16px;
+  background: linear-gradient(to bottom,
+    rgb(20 20 15 / 0) 30%,
+    rgb(20 20 15 / 0.55) 58%,
+    rgb(20 20 15 / 0.92) 100%);
+  padding: 0 10px 10px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  align-items: flex-start;
   gap: 12px;
 }
 
-.popup-card-title {
-  color: white;
-  font-size: 22px;
-  font-weight: 700;
-  margin: 0;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
-  line-height: 1.2;
-  letter-spacing: -0.3px;
-  align-self: flex-start;
-}
-
-.popup-card-details {
-  width: 100%;
+.popup-card-row {
   display: flex;
-  align-items: flex-end;
-  gap: 8px;
+  align-items: center;
+  gap: 12px;
+  padding: 0 6px;
 }
 
 .popup-date-box {
-  background: white;
-  padding: 6px 10px;
-  border-radius: 8px;
   text-align: center;
-  min-width: 50px;
-  border: 2px solid #1a1a1a;
-  box-shadow: 3px 3px 0 #1a1a1a;
+  padding-right: 12px;
+  border-right: 1px solid rgb(245 245 235 / 0.2);
   flex-shrink: 0;
 }
 
 .popup-date-month {
-  color: #16a085;
-  font-size: 9px;
+  color: #a6e22e;
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .popup-date-day {
-  color: #1a1a1a;
-  font-size: 20px;
-  font-weight: 700;
+  color: #f5f5eb;
+  font-size: 26px;
   line-height: 1;
-  margin: 2px 0 1px;
-}
-
-.popup-date-weekday {
-  color: #888;
-  font-size: 9px;
-  font-weight: 500;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
+  letter-spacing: -0.035em;
+  margin-top: 2px;
 }
 
 .popup-card-info {
-  flex: 1;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
+  flex: 1;
 }
 
-.popup-venue-row {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-  gap: 2px;
-  margin-top: -2px;
-}
-
-.popup-card-venue {
-  color: white;
-  font-size: 13px;
-  font-weight: 700;
+.popup-card-title {
+  color: #f5f5eb;
+  font-size: 20px;
   margin: 0;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
-  line-height: 1.2;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  word-break: break-word;
+  overflow: hidden;
 }
 
-.popup-card-time {
+.popup-card-meta {
+  color: rgb(245 245 235 / 0.72);
+  font-size: 12.5px;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.popup-actions {
   display: flex;
-  align-items: center;
-  align-self: flex-start;
+  gap: 6px;
 }
 
-.popup-time-value {
-  color: white;
-  font-size: 13px;
-  font-weight: 700;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
-  line-height: 1;
-}
-
-.popup-details-btn {
-  width: 100%;
-  margin: 0;
-  padding: 10px 20px;
-  background: #ffffff;
-  color: #1a1a1a;
-  border: 2px solid #1a1a1a;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  text-align: center;
-  box-shadow: 3px 3px 0 #1a1a1a;
-  letter-spacing: 0.3px;
-}
-
-.popup-details-btn:hover {
-  background: white;
-  transform: translate(-2px, -2px);
-  box-shadow: 5px 5px 0 #1a1a1a;
-}
-
-.popup-details-btn:active {
-  transform: translate(3px, 3px);
-  box-shadow: 0 0 0 #1a1a1a;
-}
-
-/* Glass badge for venue & time in popup */
-.popup-badge-glass {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: #ffffff;
-  border: 2px solid #1a1a1a;
-  color: #1a1a1a;
-  font-size: 12px;
-  font-weight: 600;
-  font-family: 'Kanit', sans-serif;
-  text-shadow: none;
-  box-shadow: 2px 2px 0 #1a1a1a;
-}
-
-/* Glass button for itinerary in popup */
-.popup-btn-glass {
+.popup-route-btn, .popup-details-btn {
   flex: 1;
-  background: #ee9d2b !important;
-  color: #1a1a1a !important;
-  border: 2px solid #1a1a1a !important;
-  border-radius: 12px;
-  padding: 6px 10px;
-  font-size: 11px;
-  font-weight: 700;
+  height: 44px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  transition: all 0.15s ease;
-  box-shadow: 3px 3px 0 #1a1a1a;
-  text-shadow: none;
+  transition: transform 0.15s ease, background-color 0.15s ease;
 }
 
-.popup-btn-glass img {
-  filter: none;
+.popup-route-btn {
+  background: rgb(20 20 15 / 0.35);
+  color: #f5f5eb;
+  border: 1px solid rgb(245 245 235 / 0.28);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
 }
 
-.popup-btn-glass:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 5px 5px 0 #1a1a1a;
+.popup-details-btn {
+  background: #a6e22e;
+  color: #14140f;
+  border: 0;
 }
 
-.popup-btn-glass:active {
-  transform: translate(3px, 3px);
-  box-shadow: 0 0 0 #1a1a1a;
-}
-
-.event-popup-modern {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  width: 210px;
-  max-height: 280px;
+.popup-route-btn:active, .popup-details-btn:active {
+  transform: scale(0.97);
 }
 
 /* PWA safe area support */
@@ -763,53 +670,47 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Sable & Terracotta — Neo-soft palette */
-    --background: 38 44% 96%;         /* #faf6ef cream */
-    --foreground: 0 0% 10%;           /* #1a1a1a ink */
+    /* VIBE — Encre & Parchemin, accent lime unique (Perk × Notion) */
+    --background: 60 33% 94%;         /* #f5f5eb parchemin */
+    --foreground: 60 14% 7%;          /* #14140f encre */
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
+    --card-foreground: 60 14% 7%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
+    --popover-foreground: 60 14% 7%;
 
-    --primary: 36 85% 54%;            /* keep orange #ee9d2b for brand continuity */
-    --primary-foreground: 0 0% 10%;
+    --primary: 80 76% 53%;            /* #a6e22e lime */
+    --primary-foreground: 60 14% 7%;
 
-    --secondary: 34 44% 88%;          /* #f0e4d3 sand */
-    --secondary-foreground: 0 0% 10%;
+    --secondary: 60 22% 91%;          /* #edede2 */
+    --secondary-foreground: 60 14% 7%;
 
-    --muted: 34 44% 92%;
-    --muted-foreground: 0 0% 30%;
+    --muted: 60 22% 91%;
+    --muted-foreground: 60 5% 41%;    /* #6e6e64 graphite */
 
-    --accent: 12 51% 53%;             /* #c4654a terracotta */
-    --accent-foreground: 0 0% 100%;
+    --accent: 60 22% 91%;
+    --accent-foreground: 60 14% 7%;
 
-    --destructive: 0 72% 45%;
+    --destructive: 4 70% 46%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 34 30% 82%;             /* soft sand border */
-    --input: 34 30% 82%;
-    --ring: 12 51% 53%;
+    --border: 60 10% 80%;             /* #d2d2c8 cendre */
+    --input: 60 10% 80%;
+    --ring: 60 14% 7%;
 
-    --radius: 1rem;                   /* softer corners */
+    --radius: 0.5rem;
 
-    /* Neo-soft signature: offset ink shadow */
-    --shadow-neo: 3px 3px 0 0 hsl(0 0% 10% / 0.9);
-    --shadow-neo-sm: 2px 2px 0 0 hsl(0 0% 10% / 0.9);
-    --shadow-neo-lg: 5px 5px 0 0 hsl(0 0% 10% / 0.9);
+    --sidebar-background: 60 33% 94%;
+    --sidebar-foreground: 60 14% 7%;
+    --sidebar-primary: 60 14% 7%;
+    --sidebar-primary-foreground: 60 33% 94%;
+    --sidebar-accent: 60 22% 91%;
+    --sidebar-accent-foreground: 60 14% 7%;
+    --sidebar-border: 60 10% 80%;
+    --sidebar-ring: 60 14% 7%;
 
-    --sidebar-background: 38 44% 96%;
-    --sidebar-foreground: 0 0% 10%;
-    --sidebar-primary: 12 51% 53%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 34 44% 88%;
-    --sidebar-accent-foreground: 0 0% 10%;
-    --sidebar-border: 34 30% 82%;
-    --sidebar-ring: 12 51% 53%;
-
-    /* Scroll indicator (pure ink) */
-    --scroll-indicator: 0 0% 10%;
+    --scroll-indicator: 60 14% 7%;
   }
 
   .dark {
@@ -822,7 +723,7 @@ All colors MUST be HSL.
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 36 85% 54%;
+    --primary: 80 76% 53%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -862,16 +763,16 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 
-  /* Performance-optimized smooth animations */
+  /* Transitions légères. Pas de will-change global : sur mobile, une couche
+     GPU par bouton/lien sature la mémoire et fait saccader la carte. */
   button, a, .card {
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
                 opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
                 background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
                 border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform;
   }
 
-  button:active, a:active {
+  button:active, a:active:not(.no-press) {
     transform: scale(0.97);
   }
 
@@ -910,7 +811,7 @@ All colors MUST be HSL.
   @keyframes scaleIn {
     from {
       opacity: 0;
-      transform: scale(0.95);
+      transform: translate3d(0, 28px, 0) scale(0.96);
     }
     to {
       opacity: 1;
@@ -936,6 +837,49 @@ All colors MUST be HSL.
 
   .animate-zoom-smooth {
     animation: zoomSmooth 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* Ouverture de page — UNE seule animation pour tout le site (celle de
+     Paramètres : fondu + zoom + montée).
+     fill-mode « backwards » : une fois finie, plus aucun transform ne reste
+     sur la page (sinon les éléments `fixed` — barres, boutons flottants —
+     seraient positionnés par rapport à la page au lieu de l'écran). */
+  @keyframes pageEnter {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 28px, 0) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .page-enter {
+    /* origine en haut : même montée sur une page courte ou longue */
+    transform-origin: 50% 0;
+    animation: pageEnter 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .page-enter { animation-duration: 0.01ms; }
+  }
+
+  /* Ombre douce des cadres de liste (annonces, événements) : sépare
+     chaque cadre du fond parchemin sans effet « flottant » appuyé */
+  .card-shadow {
+    box-shadow: 0 1px 2px rgb(20 20 15 / 0.05), 0 10px 28px -14px rgb(20 20 15 / 0.22);
+  }
+
+  /* Rangée de filtres collée sous la barre compacte (LargeTitle) */
+  .sticky-chips {
+    position: sticky;
+    top: calc(env(safe-area-inset-top, 0px) + 57px);
+    z-index: 30;
+    padding: 8px 0 10px;
+    background: hsl(60 33% 94% / 0.92);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
   }
 
   /* Slide up for detail pages */
@@ -983,13 +927,11 @@ All colors MUST be HSL.
   }
 }
 
-/* Force Sonner toast position below status bar */
-[data-sonner-toaster] {
-  top: calc(env(safe-area-inset-top, 0px) + 60px) !important;
-}
-
+/* Toasts sous la rangée de boutons du haut (cloche / menu) ; --toast-extra
+   les pousse sous les pastilles d'itinéraire quand elles sont affichées */
+[data-sonner-toaster],
 [data-sonner-toaster][data-y-position="top"] {
-  top: calc(env(safe-area-inset-top, 0px) + 60px) !important;
+  top: calc(env(safe-area-inset-top, 0px) + 76px + var(--toast-extra, 0px)) !important;
 }
 
 /* Fix date/time inputs overflow on iOS */
@@ -1003,7 +945,7 @@ input[type="time"] {
 }
 
 
-/* ===== Kanit : police unique du site ===== */
+/* ===== Polices : Instrument Sans (texte, UI) + Bricolage Grotesque (titres) ===== */
 *,
 *::before,
 *::after,
@@ -1013,30 +955,231 @@ input,
 textarea,
 select,
 optgroup,
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Kanit', sans-serif !important;
+h4, h5, h6 {
+  font-family: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif !important;
+}
+
+h1, h2, h3, .font-display, .font-heading {
+  font-family: 'Bricolage Grotesque Variable', 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif !important;
+  font-optical-sizing: auto;
 }
 
 body { font-weight: 400; }
 
-nav, nav a, nav button, label, .nav-item {
+nav, nav a, nav button, label, .nav-item,
+h3, h4, h5, h6, button, .btn, [role="button"] {
   font-weight: 500;
 }
 
-h3, h4, h5, h6, button, .btn, [role="button"] {
-  font-weight: 600;
+/* Titres : Bricolage en 600, interlignage serré, tracking négatif */
+h1, h2, h3, .font-display {
+  font-weight: 600 !important;
 }
 
 h1, h2 {
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
+  line-height: 1;
+  letter-spacing: -0.035em;
 }
 
-h1 { font-size: 36px; }
-h2 { font-size: 30px; }
+h3 {
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+h1 { font-size: 40px; }
+h2 { font-size: 28px; }
 
 @media (min-width: 768px) {
-  h1 { font-size: 56px; }
+  h1 { font-size: 60px; }
   h2 { font-size: 40px; }
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #919183;
+  opacity: 1;
+}
+
+/* Groupes de marqueurs : pastille encre + anneau lime, chiffre en chiffres tabulaires */
+.marker-cluster.marker-cluster-small,
+.marker-cluster.marker-cluster-medium,
+.marker-cluster.marker-cluster-large {
+  background: rgb(166 226 46 / 0.5) !important;
+  border-radius: 9999px;
+}
+.marker-cluster .cluster-inner,
+.marker-cluster.marker-cluster-small div,
+.marker-cluster.marker-cluster-medium div,
+.marker-cluster.marker-cluster-large div {
+  background: #14140f !important;
+  color: #a6e22e !important;
+  border-radius: 9999px;
+  /* Pastille centrée dans l'anneau (icône de 34 px : 34 − 24 = 10 → 5 px de chaque côté) */
+  width: 24px !important;
+  height: 24px !important;
+  margin: 5px !important;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.marker-cluster span { line-height: 1 !important; }
+.marker-cluster span {
+  font-family: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: #a6e22e;
+}
+
+/* Les micro-labels restent en Instrument Sans, même posés sur un titre (h2.eyebrow…) */
+.eyebrow,
+h1.eyebrow, h2.eyebrow, h3.eyebrow {
+  font-family: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif !important;
+  font-weight: 600 !important;
+  line-height: 1.4;
+  letter-spacing: 0.09em;
+}
+
+
+/* ===== Chargement : bloc parchemin + reflet crème discret =====
+   Une seule classe pour tout le site (squelettes, images, carte). */
+.skeleton {
+  overflow: hidden;
+  isolation: isolate;
+  background-color: #ebe9dd;
+}
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    100deg,
+    rgb(251 250 243 / 0) 20%,
+    rgb(251 250 243 / 0.55) 50%,
+    rgb(251 250 243 / 0) 80%
+  );
+  animation: skeleton-shimmer 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+/* Positionné pour le reflet, SAUF si le bloc est déjà en absolute/fixed
+   (calque posé sur une image) : sinon il perdait sa taille et devenait invisible. */
+.skeleton:where(:not(.absolute):not(.fixed)) { position: relative; }
+.skeleton-on-white { background-color: #f1efe6; }
+@keyframes skeleton-shimmer {
+  100% { transform: translateX(100%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after { animation: none; }
+}
+
+/* Reflet de chargement sur la carte.
+   Posé AU-DESSUS du fond (le canvas MapLibre peint tout de suite un crème opaque
+   qui masquait l'effet) mais sous les contrôles ; translucide et sans clic.
+   Ton « squelette » légèrement plus soutenu que le fond pour que le balayage
+   se voie, puis fondu à la fin du chargement. */
+.leaflet-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 450;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    #ebe9dd 30%,
+    #f8f6ee 50%,
+    #ebe9dd 70%
+  );
+  background-size: 300% 100%;
+  opacity: 0;
+  transition: opacity 450ms ease-out;
+  animation: map-shimmer 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation-play-state: paused;
+}
+.leaflet-container.map-loading::after {
+  opacity: 0.92;
+  animation-play-state: running;
+}
+@keyframes map-shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: 0 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaflet-container::after { animation: none; }
+}
+
+/* Boutons ronds d'en-tête : plus grands, effet flottant */
+/* Spécificité doublée + !important : passe devant la règle globale
+   « button, a { box-shadow: none !important } » (y compris au focus) */
+.btn-float.btn-float.btn-float {
+  box-shadow: 0 2px 4px rgb(20 20 15 / 0.10), 0 12px 24px -4px rgb(20 20 15 / 0.35) !important;
+}
+.btn-float.btn-float.btn-float.bg-lime {
+  box-shadow: 0 2px 4px rgb(60 90 0 / 0.18), 0 12px 24px -4px rgb(80 120 0 / 0.45) !important;
+}
+
+/* Barre d'outils Vercel (versions d'aperçu uniquement) : jamais affichée dans
+   l'app, même si une ancienne page mise en cache l'injecte encore. */
+vercel-live-feedback,
+#vercel-live-feedback {
+  display: none !important;
+}
+
+/* Points animés de l'écran de mise à jour */
+@keyframes update-dot {
+  0%, 80%, 100% { opacity: 0.25; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1); }
+}
+.animate-update-dot { animation: update-dot 1.1s ease-in-out infinite; }
+
+/* Marqueurs P4 : étiquette blanche (mini photo + nom), noire quand sélectionnée */
+.pin-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, calc(-100% - 7px));
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 170px;
+  padding: 3px 11px 3px 3px;
+  border-radius: 9999px;
+  background: #ffffff;
+  color: #14140f;
+  white-space: nowrap;
+  box-shadow: 0 3px 10px rgb(20 20 15 / 0.2);
+  font-family: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif;
+  font-size: 11.5px;
+  line-height: 1;
+  animation: pinLabelIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.pin-label::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  margin-left: -5px;
+  border: 5px solid transparent;
+  border-bottom: 0;
+  border-top-color: #ffffff;
+}
+.pin-label-img {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #ebe9dd;
+}
+.pin-label-img img { width: 100% !important; height: 100% !important; object-fit: cover; display: block; }
+.pin-label-title { font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
+.pin-label-time { display: none; font-style: normal; font-weight: 600; color: #a6e22e; }
+.custom-marker.is-selected { z-index: 1000 !important; }
+.custom-marker.is-selected .pin-label { background: #14140f; color: #f5f5eb; box-shadow: 0 4px 14px rgb(20 20 15 / 0.35); }
+.custom-marker.is-selected .pin-label::after { border-top-color: #14140f; }
+.custom-marker.is-selected .pin-label-img { box-shadow: 0 0 0 2px #a6e22e; }
+.custom-marker.is-selected .pin-label-time { display: inline; }
+@keyframes pinLabelIn {
+  from { opacity: 0; transform: translate(-50%, calc(-100% + 4px)) scale(0.8); }
+  to { opacity: 1; transform: translate(-50%, calc(-100% - 7px)) scale(1); }
 }

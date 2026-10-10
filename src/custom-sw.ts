@@ -2,7 +2,7 @@
 import { cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
 import { clientsClaim } from 'workbox-core';
 import { registerRoute, NavigationRoute } from 'workbox-routing';
-import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies';
+import { CacheFirst, NetworkFirst } from 'workbox-strategies';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 
@@ -12,7 +12,12 @@ declare const self: ServiceWorkerGlobalScope;
 cleanupOutdatedCaches();
 precacheAndRoute(self.__WB_MANIFEST);
 clientsClaim();
-self.skipWaiting();
+
+// La nouvelle version attend que l'utilisateur clique « Mettre à jour »
+// (bandeau UpdateBanner) au lieu de recharger l'app en pleine navigation.
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
+});
 
 // SPA navigation fallback — serve index.html for all navigation requests
 const handler = createHandlerBoundToURL('/index.html');
@@ -27,7 +32,7 @@ registerRoute(navigationRoute);
 
 // Map tiles — cache first (30 days)
 registerRoute(
-  ({ url }) => url.hostname.includes('tile.openstreetmap.org') || url.hostname.includes('basemaps.cartocdn.com'),
+  ({ url }) => url.hostname.includes('tile.openstreetmap.org') || url.hostname.includes('basemaps.cartocdn.com') || url.hostname.includes('tiles.openfreemap.org'),
   new CacheFirst({
     cacheName: 'map-tiles',
     plugins: [
@@ -73,18 +78,25 @@ registerRoute(
   })
 );
 
-// Supabase API — stale-while-revalidate (serve cached then update in background)
-// Much better for 4G: user sees data instantly, fresh data loads silently
+// Supabase API — réseau d'abord, cache seulement hors ligne ou réseau trop lent.
+// (Avant : stale-while-revalidate servait une réponse de 30 min, si bien qu'un
+// événement qu'on venait de créer n'apparaissait ni sur la carte ni dans le compte.)
 registerRoute(
-  ({ url }) => url.hostname.includes('supabase.co') && url.pathname.startsWith('/rest/'),
-  new StaleWhileRevalidate({
-    cacheName: 'supabase-api',
+  ({ url, request }) => url.hostname.includes('supabase.co') && url.pathname.startsWith('/rest/') && request.method === 'GET',
+  new NetworkFirst({
+    cacheName: 'supabase-api-v2',
+    networkTimeoutSeconds: 8,
     plugins: [
-      new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 60 * 30 }), // 30min cache
-      new CacheableResponsePlugin({ statuses: [0, 200] }),
+      new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 }),
+      new CacheableResponsePlugin({ statuses: [200] }),
     ],
   })
 );
+
+// L'ancien cache peut encore contenir des réponses périmées : on le supprime
+self.addEventListener('activate', (event) => {
+  event.waitUntil(caches.delete('supabase-api'));
+});
 
 // Google Fonts — cache first
 registerRoute(
@@ -103,9 +115,14 @@ registerRoute(
 // ============================================
 
 self.addEventListener('push', (event) => {
-  if (!event.data) return;
-
-  const data = event.data.json();
+  // Toujours afficher quelque chose : sur iPhone, un push sans notification
+  // visible finit par faire révoquer l'abonnement par le système.
+  let data: { title?: string; body?: string; image?: string; tag?: string; url?: string; actions?: unknown[] } = {};
+  try {
+    data = event.data?.json() ?? {};
+  } catch {
+    data = { body: event.data?.text() || '' };
+  }
 
   const options: NotificationOptions & { image?: string; vibrate?: number[]; renotify?: boolean; actions?: unknown[] } = {
     body: data.body || '',
@@ -122,9 +139,11 @@ self.addEventListener('push', (event) => {
   event.waitUntil(
     (async () => {
       await self.registration.showNotification(data.title || 'VIBE', options);
+      // App fermée : pastille = notifications affichées (celle-ci comprise).
+      // À l'ouverture, l'app la recale sur le vrai nombre de non-lus du compte.
       const allNotifications = await self.registration.getNotifications();
       if ('setAppBadge' in navigator) {
-        try { await (navigator as any).setAppBadge(allNotifications.length + 1); } catch {}
+        try { await (navigator as any).setAppBadge(Math.max(1, allNotifications.length)); } catch {}
       }
     })()
   );

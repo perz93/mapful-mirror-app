@@ -1,53 +1,38 @@
+import LargeTitle from '@/components/LargeTitle';
 import { useState, useEffect, useRef } from 'react';
+import { FormPageSkeleton } from '@/components/PageSkeleton';
+import SectionTitle from '@/components/SectionTitle';
+import EventScheduleFields from '@/components/EventScheduleFields';
+import { addBaseMap } from '@/lib/mapTiles';
+import { searchPlaces, reversePlace, type PlaceResult } from '@/lib/geocode';
+import { cityOf } from '@/lib/cities';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign, ArrowLeft, Loader2, Phone, Instagram, Facebook, Twitter, MessageCircle, Plus, X, Sparkles } from 'lucide-react';
+import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign, ArrowLeft, Loader2, Phone, Instagram, Facebook, Twitter, MessageCircle, Plus, X, Mail, Type, CalendarDays, Ticket, AlignLeft, ListOrdered, LocateFixed } from 'lucide-react';
 import TikTokIcon from '@/components/icons/TikTokIcon';
-import { useToast } from '@/hooks/use-toast';
+import { retryWithoutNewColumns } from '@/lib/retryWithoutNewColumns';
+import { emailProviderLabel } from '@/lib/emailProvider';
+import { toast } from '@/components/PillToast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLanguage } from '@/contexts/LanguageContext';
-import mapBackground from '@/assets/map-background.jpg';
 import { supabase } from '@/integrations/supabase/client';
+import { compressImage, IMMUTABLE_CACHE } from '@/lib/compressImage';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 // Import category icons
-import atelierIcon from '@/assets/icons/atelier.png';
-import brunchIcon from '@/assets/icons/brunch.png';
-import concertIcon from '@/assets/icons/concert.png';
-import conferenceIcon from '@/assets/icons/conference.png';
-import expositionIcon from '@/assets/icons/exposition.png';
-import festivalIcon from '@/assets/icons/festival.png';
-import meetupIcon from '@/assets/icons/meetup.png';
-import religieuxIcon from '@/assets/icons/religieux.png';
-import spectacleIcon from '@/assets/icons/spectacle.png';
-import sportIcon from '@/assets/icons/sport.png';
+import { EVENT_CATEGORIES } from '@/lib/eventCategories';
 
-const categoryIcons: Record<string, string> = {
-  workshops: atelierIcon,
-  brunch: brunchIcon,
-  music: concertIcon,
-  conferences: conferenceIcon,
-  exhibitions: expositionIcon,
-  festivals: festivalIcon,
-  meetups: meetupIcon,
-  religious: religieuxIcon,
-  shows: spectacleIcon,
-  sports: sportIcon,
-};
-
-const inputClass = "h-9 rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50 [&]:ring-0 [&]:outline-none";
+const inputClass = "h-12 px-4 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] focus:outline-none focus:ring-0 focus:border-ink [&]:ring-0 [&]:outline-none";
 const labelClass = "text-sm text-stone-600 font-normal";
-const cardClass = "rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.08)] p-4 space-y-3";
-const sectionTitleClass = "text-lg  text-stone-800 mb-4 flex items-center gap-2";
+const cardClass = "rounded-3xl bg-white p-5 space-y-3";
 
 const CreateEvent = () => {
-  const { toast } = useToast();
   const { user, loading } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -56,14 +41,10 @@ const CreateEvent = () => {
   // Redirect if not authenticated
   useEffect(() => {
     if (!loading && !user) {
-      toast({
-        title: t('auth.loginRequired'),
-        description: t('auth.mustBeLoggedIn'),
-        variant: "destructive"
-      });
+      toast.info(t('auth.loginRequired'), { description: t('auth.mustBeLoggedIn') });
       navigate('/auth');
     }
-  }, [user, loading, navigate, toast]);
+  }, [user, loading, navigate]);
   // Load saved contacts from localStorage
   const savedContacts = (() => {
     try {
@@ -77,6 +58,9 @@ const CreateEvent = () => {
     address: '',
     date: '',
     time: '',
+    endDate: '',
+    endTime: '',
+    multiDay: false,
     price: '',
     capacity: '',
     description: '',
@@ -86,6 +70,7 @@ const CreateEvent = () => {
     contactFacebook: savedContacts.contactFacebook || '',
     contactTiktok: savedContacts.contactTiktok || '',
     contactTwitter: savedContacts.contactTwitter || '',
+    contactEmail: savedContacts.contactEmail || '',
   });
 
   const [keyPoints, setKeyPoints] = useState<string[]>(['']);
@@ -123,21 +108,13 @@ const CreateEvent = () => {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      toast({
-        title: "Erreur",
-        description: t('form.invalidImage'),
-        variant: "destructive"
-      });
+      toast.error(t('form.invalidImage'));
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      toast({
-        title: "Erreur",
-        description: t('form.imageTooLarge'),
-        variant: "destructive"
-      });
+      toast.error(t('form.imageTooLarge'));
       return;
     }
 
@@ -152,17 +129,14 @@ const CreateEvent = () => {
       if (!mapContainerRef.current || mapRef.current) return;
 
       try {
-        mapRef.current = L.map(mapContainerRef.current).setView([5.3600, -4.0083], 12);
+        mapRef.current = L.map(mapContainerRef.current, { attributionControl: false, maxZoom: 19 }).setView([5.3600, -4.0083], 12);
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-          maxZoom: 20,
-        }).addTo(mapRef.current);
+        addBaseMap(mapRef.current);
 
         // Add initial marker
         const customIcon = L.divIcon({
           className: 'custom-marker',
-          html: `<div style="width: 40px; height: 40px; background: #ef4444; border: 3px solid white; border-radius: 50%; cursor: move; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>`,
+          html: `<div style="width: 40px; height: 40px; background: #14140f; border: 4px solid #a6e22e; border-radius: 50%; cursor: move; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>`,
           iconSize: [40, 40],
           iconAnchor: [20, 20],
         });
@@ -175,8 +149,16 @@ const CreateEvent = () => {
         markerRef.current.on('dragend', () => {
           const position = markerRef.current?.getLatLng();
           if (position) {
+            pinnedRef.current = true;
             setCoordinates({ lat: position.lat, lng: position.lng });
           }
+        });
+
+        // Toucher la carte déplace le marqueur
+        mapRef.current.on('click', (e: L.LeafletMouseEvent) => {
+          pinnedRef.current = true;
+          markerRef.current?.setLatLng(e.latlng);
+          setCoordinates({ lat: e.latlng.lat, lng: e.latlng.lng });
         });
 
         // Force map to resize
@@ -197,58 +179,114 @@ const CreateEvent = () => {
     };
   }, []);
 
-  const geocodeAddress = async (address: string): Promise<{ lat: number; lng: number } | null> => {
-    try {
-      // Add "Abidjan, Côte d'Ivoire" if not already included to improve geocoding accuracy
-      const query = address.toLowerCase().includes('abidjan') || address.toLowerCase().includes('ivoire')
-        ? address
-        : `${address}, Abidjan, Côte d'Ivoire`;
+  // Lieu : suggestions dans toute la Côte d'Ivoire, la carte suit le choix
+  const [suggestions, setSuggestions] = useState<PlaceResult[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [locatingMe, setLocatingMe] = useState(false);
+  const skipGeocodeRef = useRef(false);   // adresse remplie par un choix : pas de nouvelle recherche
+  const pinnedRef = useRef(false);        // position fixée à la main : on ne la déplace plus seule
 
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`
-      );
-      const data = await response.json();
-
-      if (data && data.length > 0) {
-        return {
-          lat: parseFloat(data[0].lat),
-          lng: parseFloat(data[0].lon)
-        };
-      }
-      return null;
-    } catch (error) {
-      console.error('Geocoding error:', error);
-      return null;
-    }
+  const placeMarker = (lat: number, lng: number, zoom = 16) => {
+    setCoordinates({ lat, lng });
+    markerRef.current?.setLatLng([lat, lng]);
+    mapRef.current?.setView([lat, lng], zoom);
   };
 
-  // Geocode when address changes
-  useEffect(() => {
-    const geocodeTimeout = setTimeout(async () => {
-      if (formData.address) {
-        setGeocoding(true);
-        const coords = await geocodeAddress(formData.address);
-        if (coords && mapRef.current && markerRef.current) {
-          setCoordinates(coords);
-          markerRef.current.setLatLng([coords.lat, coords.lng]);
-          mapRef.current.setView([coords.lat, coords.lng], 15);
+  const pickSuggestion = (place: PlaceResult) => {
+    skipGeocodeRef.current = true;
+    pinnedRef.current = true;
+    setFormData((f) => ({ ...f, address: place.subtitle ? `${place.title}, ${place.subtitle}` : place.title }));
+    setSuggestions([]);
+    setShowSuggestions(false);
+    if (place.locality) setPlaceCity({ key: `${place.lat.toFixed(4)},${place.lng.toFixed(4)}`, name: place.locality });
+    placeMarker(place.lat, place.lng);
+  };
+
+  const locateMe = () => {
+    if (!navigator.geolocation) {
+      toast.error(t('map.gpsNotFound'));
+      return;
+    }
+    setLocatingMe(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude: lat, longitude: lng } = pos.coords;
+        pinnedRef.current = true;
+        placeMarker(lat, lng, 17);
+        if (!formData.address.trim()) {
+          const place = await reversePlace(lat, lng);
+          if (place) {
+            skipGeocodeRef.current = true;
+            setFormData((f) => ({ ...f, address: place.subtitle ? `${place.title}, ${place.subtitle}` : place.title }));
+          }
         }
+        setLocatingMe(false);
+      },
+      () => {
+        setLocatingMe(false);
+        toast.error(t('map.enableLocation'));
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 },
+    );
+  };
+
+  // Recherche quand l'adresse change (anti-rebond)
+  useEffect(() => {
+    if (skipGeocodeRef.current) {
+      skipGeocodeRef.current = false;
+      return;
+    }
+    const query = formData.address.trim();
+    if (query.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      setGeocoding(true);
+      try {
+        const results = await searchPlaces(query, controller.signal);
+        setSuggestions(results);
+        // Premier résultat posé d'office tant que la position n'a pas été choisie à la main
+        if (results[0] && !pinnedRef.current) placeMarker(results[0].lat, results[0].lng, 15);
+      } catch {
+        /* recherche annulée ou hors ligne */
+      } finally {
         setGeocoding(false);
       }
-    }, 1000); // Debounce
+    }, 600);
 
-    return () => clearTimeout(geocodeTimeout);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
   }, [formData.address]);
+
+  // Ville / localité réelle du point choisi (géocodage inverse), enregistrée avec l'événement.
+  // En attendant la réponse (ou hors ligne) : la ville connue la plus proche, si elle est près.
+  const [placeCity, setPlaceCity] = useState<{ key: string; name: string | null } | null>(null);
+  const coordKey = `${coordinates.lat.toFixed(4)},${coordinates.lng.toFixed(4)}`;
+  useEffect(() => {
+    if (placeCity?.key === coordKey) return;
+    const timer = setTimeout(async () => {
+      const place = await reversePlace(coordinates.lat, coordinates.lng);
+      setPlaceCity({ key: coordKey, name: place?.locality ?? null });
+    }, 700);
+    return () => clearTimeout(timer);
+  }, [coordKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  const detectedCity =
+    (placeCity?.key === coordKey ? placeCity.name : null) ?? cityOf(coordinates.lat, coordinates.lng);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!user) {
-      toast({
-        title: "Erreur",
-        description: t('auth.mustBeLoggedIn'),
-        variant: "destructive"
-      });
+      toast.error(t('auth.mustBeLoggedIn'));
+      return;
+    }
+
+    if (formData.multiDay && formData.endDate && formData.endDate < formData.date) {
+      toast.error(t('form.endDateError'));
       return;
     }
 
@@ -260,12 +298,12 @@ const CreateEvent = () => {
 
       // Upload image if selected
       if (imageFile) {
-        const fileExt = imageFile.name.split('.').pop();
-        const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+        const image = await compressImage(imageFile);
+        const fileName = `${user.id}/${Date.now()}.${image.ext}`;
 
         const { error: uploadError } = await supabase.storage
           .from('event-images')
-          .upload(fileName, imageFile);
+          .upload(fileName, image.blob, { contentType: image.contentType, cacheControl: IMMUTABLE_CACHE });
 
         if (uploadError) {
           throw uploadError;
@@ -282,19 +320,20 @@ const CreateEvent = () => {
       // Filter out empty key points
       const validKeyPoints = keyPoints.filter(kp => kp.trim() !== '');
 
-      const { error: insertError } = await supabase
-        .from('events')
-        .insert({
+      const { error: insertError } = await retryWithoutNewColumns({
           title: formData.title,
           category: formData.category,
           venue: formData.address,
           address: formData.address,
           date: formData.date,
           time: formData.time,
+          end_date: formData.multiDay && formData.endDate > formData.date ? formData.endDate : null,
+          end_time: formData.endTime || null,
           price: formData.price ? parseFloat(formData.price) : null,
           capacity: formData.capacity ? parseInt(formData.capacity) : null,
           description: formData.description || null,
           image_url: imageUrl,
+          city: detectedCity,
           latitude: coordinates.lat,
           longitude: coordinates.lng,
           is_paid: formData.price ? parseFloat(formData.price) > 0 : false,
@@ -306,17 +345,15 @@ const CreateEvent = () => {
           contact_facebook: formData.contactFacebook || null,
           contact_tiktok: formData.contactTiktok || null,
           contact_twitter: formData.contactTwitter || null,
+          contact_email: formData.contactEmail || null,
           key_points: validKeyPoints.length > 0 ? validKeyPoints : null
-        });
+        }, ['contact_email', 'end_date', 'end_time', 'city'], (p) => supabase.from('events').insert(p));
 
       if (insertError) {
         throw insertError;
       }
 
-      toast({
-        title: t('event.created'),
-        description: t('event.createdDesc')
-      });
+      toast.success(t('event.created'), { description: t('event.createdDesc') });
 
       // Save contacts for next time
       try {
@@ -327,6 +364,7 @@ const CreateEvent = () => {
           contactFacebook: formData.contactFacebook,
           contactTiktok: formData.contactTiktok,
           contactTwitter: formData.contactTwitter,
+          contactEmail: formData.contactEmail,
         }));
       } catch { /* */ }
 
@@ -337,6 +375,9 @@ const CreateEvent = () => {
         address: '',
         date: '',
         time: '',
+        endDate: '',
+        endTime: '',
+        multiDay: false,
         price: '',
         capacity: '',
         description: '',
@@ -346,24 +387,21 @@ const CreateEvent = () => {
         contactFacebook: formData.contactFacebook,
         contactTiktok: formData.contactTiktok,
         contactTwitter: formData.contactTwitter,
+        contactEmail: formData.contactEmail,
       });
       setKeyPoints(['']);
       setImageFile(null);
       setImagePreview(null);
 
       // Invalidate events cache so the map shows the new event immediately
-      await queryClient.invalidateQueries({ queryKey: ['events'] });
+      await queryClient.invalidateQueries();
 
       // Navigate to home
       navigate('/');
 
     } catch (error) {
       console.error('Error creating event:', error);
-      toast({
-        title: "Erreur",
-        description: t('event.createError'),
-        variant: "destructive"
-      });
+      toast.error(t('event.createError'));
     } finally {
       setSubmitting(false);
     }
@@ -372,9 +410,7 @@ const CreateEvent = () => {
   // Show loading state while checking authentication
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-10 h-10 border-3 border-[#ee9d2b] border-t-transparent rounded-full animate-spin" />
-      </div>
+      <FormPageSkeleton />
     );
   }
 
@@ -384,33 +420,23 @@ const CreateEvent = () => {
   }
 
   return (
-    <div className="relative min-h-screen pb-32 animate-fade-in animate-zoom-smooth overflow-hidden overscroll-none bg-stone-200">
-      {/* Static Map Background — lighter, more natural */}
-      <div className="fixed inset-0 pointer-events-none">
-        <img
-          src={mapBackground}
-          alt=""
-          className="w-full h-full object-cover opacity-60"
-        />
-      </div>
+    <div className="relative min-h-screen pb-32 page-enter overflow-hidden overscroll-none bg-parchment">
 
-      {/* Light blur overlay — less dark, more natural */}
-      <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
 
       {/* Content */}
       <div className="relative mx-auto max-w-md">
         {/* Header */}
-        <div className="px-4 sm:px-6 pt-12 sm:pt-16 pb-8 sm:pb-10">
+        <div className="px-4 sm:px-6 pb-6" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
           <Link
             to="/"
-            className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white/70 backdrop-blur-md shadow-sm border border-white/60 hover:scale-105 active:scale-95 transition-all mb-8"
+            className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform mb-6"
           >
-            <ArrowLeft className="w-5 h-5 text-stone-700" />
+            <ArrowLeft size={20} strokeWidth={1.75} className="text-ink" />
           </Link>
-          <h1 className="text-4xl  text-stone-800 mb-3 text-center">
+          <LargeTitle className="text-[40px] leading-[0.95] tracking-tighter text-ink" backTo="/">
             {t('event.create')}
-          </h1>
-          <p className="text-stone-500 font-light text-center">{t('form.shareEvent')}</p>
+          </LargeTitle>
+          <p className="mt-2 text-stone-500">{t('form.shareEvent')}</p>
         </div>
 
         {/* Form Cards */}
@@ -442,7 +468,9 @@ const CreateEvent = () => {
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-center">
-                    <ImageIcon className="h-10 w-10 text-[#ee9d2b] mb-4" strokeWidth={1.5} />
+                    <span className="flex size-14 items-center justify-center rounded-2xl bg-lime mb-4">
+                      <ImageIcon size={24} strokeWidth={1.75} className="text-ink" />
+                    </span>
                     <h3 className="font-light text-stone-700 mb-1">{t('form.addImage')}</h3>
                     <p className="text-sm text-stone-400 font-light">{t('form.clickToUpload')}</p>
                   </div>
@@ -452,9 +480,7 @@ const CreateEvent = () => {
 
             {/* Basic Information Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                {t('form.basicInfo')}
-              </h2>
+              <SectionTitle icon={Type}>{t('form.basicInfo')}</SectionTitle>
 
               <div className="space-y-3">
                 <Label htmlFor="title" className={labelClass}>{t('form.title')}</Label>
@@ -477,67 +503,15 @@ const CreateEvent = () => {
                   <SelectTrigger className={inputClass}>
                     <SelectValue placeholder={t('form.selectCategory')} />
                   </SelectTrigger>
-                  <SelectContent className="backdrop-blur-2xl bg-white/95 border-stone-200/60">
-                    <SelectItem value="workshops">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.workshops} alt="" className="w-5 h-5" />
-                        {t('cat.workshops')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="brunch">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.brunch} alt="" className="w-5 h-5" />
-                        {t('cat.brunch')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="music">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.music} alt="" className="w-5 h-5" />
-                        {t('cat.concerts')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="conferences">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.conferences} alt="" className="w-5 h-5" />
-                        {t('cat.conferences')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="exhibitions">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.exhibitions} alt="" className="w-5 h-5" />
-                        {t('cat.exhibitions')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="festivals">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.festivals} alt="" className="w-5 h-5" />
-                        {t('cat.festivals')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="meetups">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.meetups} alt="" className="w-5 h-5" />
-                        {t('cat.meetups')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="religious">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.religious} alt="" className="w-5 h-5" />
-                        {t('cat.religious')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="shows">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.shows} alt="" className="w-5 h-5" />
-                        {t('cat.shows')}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="sports">
-                      <span className="flex items-center gap-2">
-                        <img src={categoryIcons.sports} alt="" className="w-5 h-5" />
-                        {t('cat.sports')}
-                      </span>
-                    </SelectItem>
+                  <SelectContent className="bg-white border-stone-200">
+                    {EVENT_CATEGORIES.map((c) => (
+                      <SelectItem key={c.value} value={c.value}>
+                        <span className="flex items-center gap-2">
+                          <img src={c.icon} alt="" className="w-5 h-5" />
+                          {t(c.tKey)}
+                        </span>
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -545,21 +519,57 @@ const CreateEvent = () => {
 
             {/* Location Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                <MapPin className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
-                {t('form.location')}
-              </h2>
+              <SectionTitle icon={MapPin}>{t('form.location')}</SectionTitle>
 
               <div className="space-y-3">
                 <Label htmlFor="address" className={labelClass}>{t('form.address')}</Label>
-                <Input
-                  id="address"
-                  placeholder="Ex: Cocody Angré, Abidjan"
-                  value={formData.address}
-                  onChange={e => setFormData({ ...formData, address: e.target.value })}
-                  required
-                  className={inputClass}
-                />
+                <div className="relative">
+                  <Input
+                    id="address"
+                    placeholder={t('form.addressPlaceholder')}
+                    value={formData.address}
+                    onChange={e => {
+                      pinnedRef.current = false;
+                      setFormData({ ...formData, address: e.target.value });
+                      setShowSuggestions(true);
+                    }}
+                    onFocus={() => setShowSuggestions(true)}
+                    onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                    autoComplete="off"
+                    required
+                    className={inputClass}
+                  />
+                  {showSuggestions && suggestions.length > 0 && (
+                    <div className="absolute left-0 right-0 top-full mt-2 z-20 rounded-2xl bg-white border border-stone-200 shadow-xl overflow-hidden">
+                      {suggestions.map((place, i) => (
+                        <button
+                          key={`${place.lat},${place.lng},${i}`}
+                          type="button"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => pickSuggestion(place)}
+                          className="w-full flex items-center gap-3 px-4 py-3 text-left border-b border-stone-100 last:border-b-0 active:bg-parchment"
+                        >
+                          <span className="h-8 w-8 rounded-full bg-parchment flex items-center justify-center flex-shrink-0">
+                            <MapPin size={15} className="text-ink" />
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block text-sm font-medium text-ink truncate">{place.title}</span>
+                            {place.subtitle && <span className="block text-xs text-stone-500 truncate">{place.subtitle}</span>}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={locateMe}
+                  disabled={locatingMe}
+                  className="inline-flex items-center gap-2 h-9 px-3.5 rounded-full bg-parchment text-ink text-[13px] font-medium active:scale-95 transition-transform disabled:opacity-60"
+                >
+                  {locatingMe ? <Loader2 size={14} className="animate-spin" /> : <LocateFixed size={14} />}
+                  {t('form.useMyLocation')}
+                </button>
               </div>
 
               {/* Map for position adjustment */}
@@ -568,7 +578,7 @@ const CreateEvent = () => {
                   {t('form.mapPosition')} {geocoding && <span className="text-xs text-stone-400">({t('form.locating')})</span>}
                 </Label>
                 <div
-                  className="w-full h-48 rounded-2xl overflow-hidden border border-stone-300/40"
+                  className="w-full h-56 rounded-2xl overflow-hidden border border-stone-300/40"
                   style={{ position: 'relative', zIndex: 1 }}
                 >
                   <div
@@ -576,62 +586,34 @@ const CreateEvent = () => {
                     className="w-full h-full"
                   />
                 </div>
-                <p className="text-xs text-stone-400">
-                  {t('form.mapHint')}
-                </p>
+                <div className="flex items-start justify-between gap-3">
+                  <p className="text-xs text-stone-400">
+                    {t('form.mapHint')}
+                  </p>
+                  {detectedCity && (
+                    <span className="flex-shrink-0 inline-flex items-center gap-1 h-7 px-2.5 rounded-full bg-parchment text-ink text-xs font-medium">
+                      <MapPin size={12} /> {detectedCity}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Date and Time Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                <Calendar className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
-                {t('form.dateTime')}
-              </h2>
+              <SectionTitle icon={CalendarDays}>{t('form.dateTime')}</SectionTitle>
 
-              <div className="space-y-3 overflow-hidden">
-                <Label htmlFor="date" className={labelClass}>{t('form.date')}</Label>
-                <div className="relative overflow-hidden">
-                  <Input
-                    id="date"
-                    type="date"
-                    value={formData.date}
-                    onChange={e => setFormData({ ...formData, date: e.target.value })}
-                    required
-                    className={`${inputClass} w-full max-w-full`}
-                  />
-                  {formData.date && (
-                    <button type="button" onClick={() => setFormData({ ...formData, date: '' })} className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full bg-stone-300/40 flex items-center justify-center hover:bg-stone-400/40 transition-colors">
-                      <X className="w-2.5 h-2.5 text-stone-500" />
-                    </button>
-                  )}
-                </div>
-              </div>
-              <div className="space-y-3 overflow-hidden">
-                <Label htmlFor="time" className={labelClass}>{t('form.time')}</Label>
-                <div className="relative overflow-hidden">
-                  <Input
-                    id="time"
-                    type="time"
-                    value={formData.time}
-                    onChange={e => setFormData({ ...formData, time: e.target.value })}
-                    required
-                    className={`${inputClass} w-full max-w-full`}
-                  />
-                  {formData.time && (
-                    <button type="button" onClick={() => setFormData({ ...formData, time: '' })} className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full bg-stone-300/40 flex items-center justify-center hover:bg-stone-400/40 transition-colors">
-                      <X className="w-2.5 h-2.5 text-stone-500" />
-                    </button>
-                  )}
-                </div>
-              </div>
+              <EventScheduleFields
+                value={{ date: formData.date, time: formData.time, endDate: formData.endDate, endTime: formData.endTime, multiDay: formData.multiDay }}
+                onChange={(v) => setFormData({ ...formData, ...v })}
+                inputClass={inputClass}
+                labelClass={labelClass}
+              />
             </div>
 
             {/* Price and Capacity Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                {t('form.priceCapacity')}
-              </h2>
+              <SectionTitle icon={Ticket}>{t('form.priceCapacity')}</SectionTitle>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-3">
@@ -660,9 +642,7 @@ const CreateEvent = () => {
 
             {/* Description Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                {t('form.description')}
-              </h2>
+              <SectionTitle icon={AlignLeft}>{t('form.description')}</SectionTitle>
 
               <div className="space-y-3">
                 <Textarea
@@ -671,17 +651,14 @@ const CreateEvent = () => {
                   value={formData.description}
                   onChange={e => setFormData({ ...formData, description: e.target.value })}
                   rows={5}
-                  className="rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50 resize-none"
+                  className="rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 py-3 focus:outline-none focus:ring-0 focus:border-ink resize-none"
                 />
               </div>
             </div>
 
             {/* Key Points Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                <Sparkles className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
-                {t('form.keyPoints')}
-              </h2>
+              <SectionTitle icon={ListOrdered}>{t('form.keyPoints')}</SectionTitle>
 
               <div className="space-y-3">
                 {keyPoints.map((point, index) => (
@@ -708,7 +685,7 @@ const CreateEvent = () => {
                   <button
                     type="button"
                     onClick={addKeyPoint}
-                    className="flex items-center gap-2 text-[#ee9d2b] hover:text-[#ee9d2b]/80 transition-colors text-sm font-medium"
+                    className="flex items-center gap-2 text-ink hover:text-graphite transition-colors text-sm font-medium"
                   >
                     <Plus className="w-4 h-4" />
                     {t('form.addKeyPoint')}
@@ -720,15 +697,12 @@ const CreateEvent = () => {
 
             {/* Contact Card */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                <Phone className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
-                {t('form.contact')}
-              </h2>
+              <SectionTitle icon={Phone}>{t('form.contact')}</SectionTitle>
 
               <div className="space-y-4">
                 <div className="space-y-3">
                   <Label htmlFor="contactPhone" className={`${labelClass} flex items-center gap-2`}>
-                    <Phone className="w-4 h-4 text-[#ee9d2b]" />
+                    <Phone className="w-4 h-4 text-ink" />
                     {t('form.phone')}
                   </Label>
                   <Input
@@ -742,7 +716,7 @@ const CreateEvent = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="contactWhatsapp" className={`${labelClass} flex items-center gap-2`}>
-                    <MessageCircle className="w-4 h-4 text-[#ee9d2b]" />
+                    <MessageCircle className="w-4 h-4 text-ink" />
                     {t('form.whatsapp')}
                   </Label>
                   <Input
@@ -756,7 +730,7 @@ const CreateEvent = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="contactInstagram" className={`${labelClass} flex items-center gap-2`}>
-                    <Instagram className="w-4 h-4 text-[#ee9d2b]" />
+                    <Instagram className="w-4 h-4 text-ink" />
                     {t('form.instagram')}
                   </Label>
                   <Input
@@ -770,7 +744,7 @@ const CreateEvent = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="contactFacebook" className={`${labelClass} flex items-center gap-2`}>
-                    <Facebook className="w-4 h-4 text-[#ee9d2b]" />
+                    <Facebook className="w-4 h-4 text-ink" />
                     {t('form.facebook')}
                   </Label>
                   <Input
@@ -784,7 +758,7 @@ const CreateEvent = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="contactTiktok" className={`${labelClass} flex items-center gap-2`}>
-                    <TikTokIcon className="w-4 h-4 text-[#ee9d2b]" />
+                    <TikTokIcon className="w-4 h-4 text-ink" />
                     {t('form.tiktok')}
                   </Label>
                   <Input
@@ -798,7 +772,7 @@ const CreateEvent = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="contactTwitter" className={`${labelClass} flex items-center gap-2`}>
-                    <Twitter className="w-4 h-4 text-[#ee9d2b]" />
+                    <Twitter className="w-4 h-4 text-ink" />
                     {t('form.twitter')}
                   </Label>
                   <Input
@@ -806,6 +780,23 @@ const CreateEvent = () => {
                     placeholder={t('form.accountPlaceholder')}
                     value={formData.contactTwitter}
                     onChange={e => setFormData({ ...formData, contactTwitter: e.target.value })}
+                    className={inputClass}
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <Label htmlFor="contactEmail" className={`${labelClass} flex items-center gap-2`}>
+                    <Mail className="w-4 h-4 text-ink" />
+                    {formData.contactEmail.includes('@') ? emailProviderLabel(formData.contactEmail) : 'Email'}
+                  </Label>
+                  <Input
+                    id="contactEmail"
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    placeholder="exemple@gmail.com"
+                    value={formData.contactEmail}
+                    onChange={e => setFormData({ ...formData, contactEmail: e.target.value })}
                     className={inputClass}
                   />
                 </div>
@@ -817,7 +808,7 @@ const CreateEvent = () => {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="w-full h-12 rounded-full bg-[#ee9d2b] text-white font-semibold text-base hover:opacity-90 transition-all active:scale-[0.98]"
+                className="w-full h-12 rounded-full bg-lime text-ink text-[15px] font-medium hover:bg-lime-deep transition-colors active:scale-[0.98]"
               >
                 {submitting ? (
                   <>

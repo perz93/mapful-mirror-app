@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Phone, Instagram, Facebook, MessageCircle, X, MessageSquare } from 'lucide-react';
+import { Phone, Instagram, Facebook, MessageCircle, X, MessageSquare, Mail } from 'lucide-react';
+import { emailProviderLabel, mailtoHref } from '@/lib/emailProvider';
 import { cn } from '@/lib/utils';
-import { getDisplayUrl } from '@/components/profile/social/SocialPlatformConfig';
+import { webLink, openInApp, type SocialPlatform } from '@/lib/contactLinks';
 import TikTokIcon from '@/components/icons/TikTokIcon';
 
 interface ContactFabProps {
@@ -11,11 +12,20 @@ interface ContactFabProps {
   contactFacebook?: string | null;
   contactTiktok?: string | null;
   contactTwitter?: string | null;
+  contactEmail?: string | null;
+  /** Objet du mail pré-rempli */
+  emailSubject?: string;
+  /** « pill » : bouton « Contacter » intégré dans une barre (page détails) au lieu du bouton flottant */
+  variant?: 'fab' | 'pill';
+  label?: string;
+  closeLabel?: string;
 }
 
 interface ContactItem {
   icon: React.ReactNode;
   href: string;
+  /** Réseau social : ouvert dans son application quand c'est possible */
+  app?: { platform: SocialPlatform; value: string };
   bgColor: string;
   label: string;
 }
@@ -26,7 +36,12 @@ const ContactFab = ({
   contactInstagram,
   contactFacebook,
   contactTiktok,
-  contactTwitter
+  contactTwitter,
+  contactEmail,
+  emailSubject,
+  variant = 'fab',
+  label = 'Contacter',
+  closeLabel = 'Fermer',
 }: ContactFabProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
@@ -54,7 +69,7 @@ const ContactFab = ({
     contacts.push({
       icon: <Phone className="w-5 h-5 text-white" />,
       href: `tel:${contactPhone}`,
-      bgColor: 'bg-green-500',
+      bgColor: 'bg-ink',
       label: 'Téléphone'
     });
   }
@@ -62,8 +77,9 @@ const ContactFab = ({
   if (contactWhatsapp) {
     contacts.push({
       icon: <MessageCircle className="w-5 h-5 text-white" />,
-      href: getDisplayUrl('whatsapp', contactWhatsapp),
-      bgColor: 'bg-green-600',
+      href: webLink('whatsapp', contactWhatsapp),
+      app: { platform: 'whatsapp', value: contactWhatsapp },
+      bgColor: 'bg-ink',
       label: 'WhatsApp'
     });
   }
@@ -71,8 +87,9 @@ const ContactFab = ({
   if (contactInstagram) {
     contacts.push({
       icon: <Instagram className="w-5 h-5 text-white" />,
-      href: getDisplayUrl('instagram', contactInstagram),
-      bgColor: 'bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400',
+      href: webLink('instagram', contactInstagram),
+      app: { platform: 'instagram', value: contactInstagram },
+      bgColor: 'bg-ink',
       label: 'Instagram'
     });
   }
@@ -80,8 +97,9 @@ const ContactFab = ({
   if (contactFacebook) {
     contacts.push({
       icon: <Facebook className="w-5 h-5 text-white" />,
-      href: getDisplayUrl('facebook', contactFacebook),
-      bgColor: 'bg-blue-600',
+      href: webLink('facebook', contactFacebook),
+      app: { platform: 'facebook', value: contactFacebook },
+      bgColor: 'bg-ink',
       label: 'Facebook'
     });
   }
@@ -89,8 +107,9 @@ const ContactFab = ({
   if (contactTiktok) {
     contacts.push({
       icon: <TikTokIcon className="w-5 h-5 text-white" />,
-      href: getDisplayUrl('tiktok', contactTiktok),
-      bgColor: 'bg-black',
+      href: webLink('tiktok', contactTiktok),
+      app: { platform: 'tiktok', value: contactTiktok },
+      bgColor: 'bg-ink',
       label: 'TikTok'
     });
   }
@@ -98,54 +117,53 @@ const ContactFab = ({
   if (contactTwitter) {
     contacts.push({
       icon: <span className="text-white font-bold text-base">𝕏</span>,
-      href: getDisplayUrl('twitter', contactTwitter),
-      bgColor: 'bg-black',
+      href: webLink('twitter', contactTwitter),
+      app: { platform: 'twitter', value: contactTwitter },
+      bgColor: 'bg-ink',
       label: 'X'
+    });
+  }
+
+  if (contactEmail) {
+    contacts.push({
+      icon: <Mail className="w-5 h-5 text-white" />,
+      href: mailtoHref(contactEmail, emailSubject),
+      bgColor: 'bg-ink',
+      label: emailProviderLabel(contactEmail)
     });
   }
 
   const hasContacts = contacts.length > 0;
 
-  // Semi-circle fan towards upper-left with generous spacing
-  const getPosition = (index: number, total: number) => {
-    if (total === 1) {
-      return { x: 0, y: -90 };
-    }
-
-    // Bigger radius = more space between icons
-    const radius = 75 + total * 15;
-    // Spread from 90° (straight up) to 180° (straight left)
-    const startAngle = 90;
-    const endAngle = 185;
-    const angleStep = (endAngle - startAngle) / (total - 1);
-    const angle = (startAngle + index * angleStep) * (Math.PI / 180);
-
-    return {
-      x: Math.cos(angle) * radius,
-      y: -Math.sin(angle) * radius
-    };
-  };
+  // Colonne verticale au-dessus du bouton principal, alignée sur son axe
+  // (bouton 56 px, contacts 48 px → décalage de 4 px pour centrer)
+  const getPosition = (index: number) =>
+    variant === 'pill'
+      ? { x: -6, y: -(70 + index * 58) } // aligné sur le bord droit du bouton « Contacter »
+      : { x: -4, y: -(72 + index * 60) };
 
   if (!hasContacts) {
     return null;
   }
 
   return (
-    <div className="fixed bottom-24 right-6 z-50">
-      {/* Contact icons in semi-circle */}
+    <div className={variant === 'pill' ? 'relative' : 'fixed bottom-24 right-6 z-50'}>
+      {/* Contacts empilés verticalement */}
       {shouldRender && contacts.map((contact, index) => {
-        const position = getPosition(index, contacts.length);
-        const openDelay = index * 0.13;
-        const closeDelay = (contacts.length - index - 1) * 0.08;
+        const position = getPosition(index);
+        const openDelay = index * 0.06;
+        const closeDelay = (contacts.length - index - 1) * 0.04;
 
         return (
           <a
             key={index}
             href={contact.href}
-            target="_blank"
+            // tel: et mailto: s'ouvrent sur place (un nouvel onglet laisserait une page blanche)
+            target={contact.href.startsWith('http') ? '_blank' : undefined}
             rel="noopener noreferrer"
             onClick={(e) => {
               e.stopPropagation();
+              if (contact.app && openInApp(contact.app.platform, contact.app.value)) e.preventDefault();
               setIsOpen(false);
             }}
             className={cn(
@@ -154,22 +172,43 @@ const ContactFab = ({
             )}
             style={{
               transform: animateIn
-                ? `translate(${position.x}px, ${position.y}px) scale(1) rotate(0deg)`
-                : 'translate(0, 0) scale(0.3) rotate(-45deg)',
+                ? `translate(${position.x}px, ${position.y}px) scale(1)`
+                : `translate(${position.x}px, -24px) scale(0.6)`,
               opacity: animateIn ? 1 : 0,
               pointerEvents: animateIn ? 'auto' : 'none',
-              transition: `transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${animateIn ? openDelay : closeDelay}s, opacity 0.35s ease ${animateIn ? openDelay : closeDelay}s`,
+              transition: `transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${animateIn ? openDelay : closeDelay}s, opacity 0.25s ease ${animateIn ? openDelay : closeDelay}s`,
               bottom: 0,
               right: 0
             }}
             title={contact.label}
+            aria-label={contact.label}
           >
             {contact.icon}
+            {/* Libellé à gauche de l'icône */}
+            <span className="pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-full bg-white px-3 py-1.5 text-xs font-medium text-ink shadow-lg">
+              {contact.label}
+            </span>
           </a>
         );
       })}
 
       {/* Main FAB button */}
+      {variant === 'pill' ? (
+        <button
+          onClick={() => {
+            if ('vibrate' in navigator) navigator.vibrate(10);
+            setIsOpen(!isOpen);
+          }}
+          aria-expanded={isOpen}
+          className={cn(
+            'inline-flex h-12 items-center gap-2 rounded-full px-5 text-[15px] font-medium transition-colors duration-300 active:scale-[0.97]',
+            isOpen ? 'bg-parchment text-ink' : 'bg-lime text-ink hover:bg-lime-deep'
+          )}
+        >
+          {isOpen ? <X className="h-4 w-4" strokeWidth={2} /> : <MessageSquare className="h-4 w-4" strokeWidth={1.75} />}
+          {isOpen ? closeLabel : label}
+        </button>
+      ) : (
       <button
         onClick={() => {
           // Haptic feedback on mobile
@@ -181,7 +220,7 @@ const ContactFab = ({
         className={cn(
 "w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all duration-300",
           isOpen 
-            ? "bg-stone-800 rotate-180" 
+            ? "bg-ink rotate-180" 
             : "bg-primary hover:bg-primary/90"
         )}
         style={{
@@ -189,17 +228,18 @@ const ContactFab = ({
         }}
       >
         {isOpen ? (
-          <X className="w-6 h-6 text-white transition-transform duration-300" />
+          <X className="w-6 h-6 text-parchment transition-transform duration-300" strokeWidth={1.75} />
         ) : (
-          <MessageSquare className="w-6 h-6 text-white transition-transform duration-300" />
+          <MessageSquare className="w-6 h-6 text-ink transition-transform duration-300" strokeWidth={1.75} />
         )}
       </button>
+      )}
 
       {/* Backdrop when open */}
       {shouldRender && (
         <div 
           className={cn(
-"fixed inset-0 bg-black/30 backdrop-blur-sm -z-10 transition-opacity duration-300",
+"fixed inset-0 bg-ink/30 backdrop-blur-sm -z-10 transition-opacity duration-300",
             isOpen ? "opacity-100" : "opacity-0"
           )}
           onClick={() => setIsOpen(false)}

@@ -2,20 +2,16 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, MapPin, Phone, Mail, Tag, Share2 } from 'lucide-react';
+import { ArrowLeft, Tag, Share2 } from 'lucide-react';
+import ContactFab from '@/components/ContactFab';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { toast } from 'sonner';
+import { toast } from '@/components/PillToast';
 import ImageLightbox from '@/components/ImageLightbox';
 import ShimmerImage from '@/components/ShimmerImage';
-import mapBackground from '@/assets/map-background.jpg';
-
-const categoryLabels: Record<string, Record<string, string>> = {
-  location_espaces: { fr: 'Location espaces', en: 'Venue rental' },
-  traiteurs: { fr: 'Traiteurs', en: 'Catering' },
-  animation_dj: { fr: 'Animation / DJ', en: 'Entertainment / DJ' },
-  decoration: { fr: 'Décoration', en: 'Decoration' },
-  autre: { fr: 'Autre', en: 'Other' },
-};
+import { marketplaceCategoryLabel } from '@/lib/marketplaceCategories';
+import { useDarkPageBackground } from '@/hooks/useDarkPageBackground';
+import OrganizerCard from '@/components/OrganizerCard';
+import { softCase } from '@/lib/softCase';
 
 const priceTypeLabels: Record<string, Record<string, string>> = {
   fixed: { fr: 'Prix fixe', en: 'Fixed price' },
@@ -44,6 +40,7 @@ const ListingDetails = () => {
     },
     enabled: !!id,
   });
+  useDarkPageBackground(!!listing);
 
   const handleShare = () => {
     if (navigator.share) {
@@ -60,48 +57,32 @@ const ListingDetails = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-stone-200 animate-fade-in animate-zoom-smooth">
-        <div className="fixed inset-0 pointer-events-none">
-          <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
-        </div>
-        <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
+      <div className="min-h-screen relative overflow-hidden bg-parchment page-enter">
         <div className="relative z-10 mx-auto max-w-md">
-          <div className="mx-4 mt-2">
-            <div className="h-72 rounded-3xl bg-stone-200/70 relative overflow-hidden">
-              <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
-            </div>
-          </div>
+          <div className="h-[52vh] min-h-[340px] max-h-[480px] rounded-b-[32px] skeleton" />
           <div className="px-4 pt-5 space-y-4">
-            <div className="rounded-2xl bg-white/50 border border-white/60 p-5 space-y-3">
-              <div className="h-6 bg-stone-200/70 rounded-lg w-3/4 relative overflow-hidden">
-                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+            <div className="rounded-3xl bg-white p-5 space-y-3">
+              <div className="h-6 skeleton rounded-lg w-3/4">
               </div>
-              <div className="h-8 bg-stone-200/70 rounded-lg w-1/2 relative overflow-hidden">
-                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              <div className="h-8 skeleton rounded-lg w-1/2">
               </div>
             </div>
-            <div className="rounded-2xl bg-white/50 border border-white/60 p-4 flex items-start gap-3">
-              <div className="w-10 h-10 rounded-full bg-stone-200/70 relative overflow-hidden flex-shrink-0">
-                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+            <div className="rounded-3xl bg-white p-4 flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full skeleton flex-shrink-0">
               </div>
               <div className="flex-1 space-y-2">
-                <div className="h-3 bg-stone-200/70 rounded w-16 relative overflow-hidden">
-                  <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+                <div className="h-3 skeleton rounded w-16">
                 </div>
-                <div className="h-4 bg-stone-200/70 rounded w-2/3 relative overflow-hidden">
-                  <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+                <div className="h-4 skeleton rounded w-2/3">
                 </div>
               </div>
             </div>
-            <div className="rounded-2xl bg-white/50 border border-white/60 p-5 space-y-3">
-              <div className="h-5 bg-stone-200/70 rounded w-1/3 relative overflow-hidden">
-                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+            <div className="rounded-3xl bg-white p-5 space-y-3">
+              <div className="h-5 skeleton rounded w-1/3">
               </div>
-              <div className="h-4 bg-stone-200/70 rounded w-full relative overflow-hidden">
-                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              <div className="h-4 skeleton rounded w-full">
               </div>
-              <div className="h-4 bg-stone-200/70 rounded w-4/5 relative overflow-hidden">
-                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              <div className="h-4 skeleton rounded w-4/5">
               </div>
             </div>
           </div>
@@ -112,17 +93,13 @@ const ListingDetails = () => {
 
   if (error || !listing) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-stone-200 animate-fade-in animate-zoom-smooth">
-        <div className="fixed inset-0 pointer-events-none">
-          <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
-        </div>
-        <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
+      <div className="min-h-screen relative overflow-hidden bg-parchment page-enter">
         <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 gap-4">
           <Tag size={48} className="text-stone-300" />
           <p className="text-stone-600">{lang === 'fr' ? 'Annonce introuvable' : 'Listing not found'}</p>
           <button
             onClick={() => navigate('/marketplace')}
-            className="px-6 py-3 rounded-full bg-[#ee9d2b] text-white font-semibold text-sm hover:opacity-90 transition-all active:scale-95"
+            className="inline-flex items-center h-12 px-6 rounded-full bg-lime text-ink text-[15px] font-medium hover:bg-lime-deep transition-colors active:scale-[0.98]"
           >
             {lang === 'fr' ? 'Retour au marketplace' : 'Back to marketplace'}
           </button>
@@ -131,154 +108,111 @@ const ListingDetails = () => {
     );
   }
 
-  const catLabel = categoryLabels[listing.category]?.[lang] || listing.category;
+  const catLabel = marketplaceCategoryLabel(listing.category, lang);
   const priceLabel = listing.price_type ? (priceTypeLabels[listing.price_type]?.[lang] || listing.price_type) : '';
 
+  const priceValue = listing.price !== null ? `${listing.price.toLocaleString('fr-FR')} FCFA` : priceLabel || (lang === 'fr' ? 'Sur devis' : 'On quote');
+  const priceSub = listing.price !== null && listing.price_type && listing.price_type !== 'fixed' ? priceLabel : (lang === 'fr' ? 'Prix fixe' : 'Fixed price');
+  const hasContacts = !!(listing.contact_phone || listing.contact_whatsapp || listing.contact_instagram || listing.contact_facebook || listing.contact_tiktok || listing.contact_twitter || listing.contact_email);
+  const roundBtn = 'inline-flex size-12 btn-float items-center justify-center rounded-full active:scale-95 transition-transform';
+
   return (
-    <div className="min-h-screen relative overflow-hidden bg-stone-200 animate-fade-in animate-zoom-smooth">
-      {/* Map Background */}
-      <div className="fixed inset-0 pointer-events-none">
-        <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
-      </div>
-      <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
-
-      {/* Content */}
-      <div className="relative z-10 mx-auto max-w-md min-h-screen flex flex-col">
-        {/* Hero image */}
-        <div className="relative" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+    <div className="min-h-screen bg-parchment page-enter">
+      <div className="relative mx-auto max-w-md pb-32">
+        {/* Affiche : photo plein écran, titre posé dessus (comme les événements) */}
+        <div
+          onClick={() => listing.image_url && setLightboxOpen(true)}
+          className={`relative h-[52vh] min-h-[340px] max-h-[480px] overflow-hidden rounded-b-[32px] bg-white ${listing.image_url ? 'cursor-zoom-in' : ''}`}
+        >
           {listing.image_url ? (
-            <div
-              onClick={() => setLightboxOpen(true)}
-              className="relative h-72 mx-4 mt-2 rounded-3xl overflow-hidden cursor-zoom-in transition-transform active:scale-[0.99]"
-            >
-              <ShimmerImage
-                src={listing.image_url}
-                alt={listing.title}
-                className="w-full h-full"
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
-
-              {/* Category badge */}
-              <div className="absolute bottom-4 left-4">
-                <span className="px-3 py-1.5 rounded-full bg-[#ee9d2b] text-white text-xs font-semibold shadow-lg">
-                  {catLabel}
-                </span>
-              </div>
-            </div>
+            <ShimmerImage src={listing.image_url} alt={listing.title} className="absolute inset-0 w-full h-full" loading="eager" />
           ) : (
-            <div className="h-48 mx-4 mt-2 rounded-3xl bg-white/40 backdrop-blur-sm border border-white/60 flex flex-col items-center justify-center gap-2">
-              <Tag size={40} className="text-stone-300" />
-              <span className="px-3 py-1 rounded-full bg-[#ee9d2b]/10 text-[#ee9d2b] text-xs font-semibold">
-                {catLabel}
-              </span>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Tag size={44} className="text-stone-300" />
             </div>
           )}
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,20,15,0.4)_0%,transparent_28%,transparent_45%,rgba(20,20,15,0.88)_100%)]" />
 
-          {/* Top buttons */}
-          <div className="absolute left-4 right-4 flex items-center justify-between" style={{ top: 'calc(env(safe-area-inset-top, 0px) + 20px)' }}>
-            <button
-              onClick={() => navigate(-1)}
-              className="w-11 h-11 rounded-full bg-black/70 backdrop-blur-md flex items-center justify-center hover:bg-black/90 transition-all active:scale-95"
-            >
-              <ArrowLeft className="w-5 h-5 text-white" />
+          <div
+            className="fixed inset-x-0 z-30 mx-auto flex max-w-md items-center justify-between px-4"
+            style={{ top: 'calc(env(safe-area-inset-top, 0px) + 12px)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button onClick={() => navigate(-1)} aria-label="Retour" className={`${roundBtn} bg-white text-ink`}>
+              <ArrowLeft size={20} strokeWidth={1.75} />
             </button>
-            <button
-              onClick={handleShare}
-              className="w-11 h-11 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-all active:scale-95"
-            >
-              <Share2 className="w-5 h-5 text-white" />
+            <button onClick={handleShare} aria-label={t('event.share')} className={`${roundBtn} bg-white text-ink`}>
+              <Share2 size={18} strokeWidth={1.75} />
             </button>
+          </div>
+
+          <div className="absolute inset-x-5 bottom-6 text-parchment">
+            <span className="inline-flex h-7 items-center rounded-full bg-lime px-3 text-xs font-medium text-ink">{catLabel}</span>
+            <h1 className="mt-3 text-[38px] leading-[0.98] tracking-tighter text-parchment">{softCase(listing.title)}</h1>
           </div>
         </div>
 
-        {/* Info */}
-        <div className="px-4 pt-5 pb-8 space-y-4 flex-1">
-          {/* Title + Price card */}
-          <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
-            <h1 className="text-2xl font-bold text-stone-800 ">
-              {listing.title}
-            </h1>
-
-            {listing.price !== null && (
-              <div className="flex items-baseline gap-2 mt-3">
-                <p className="text-2xl font-bold text-[#ee9d2b]">
-                  {listing.price.toLocaleString()} FCFA
-                </p>
-                {listing.price_type && listing.price_type !== 'fixed' && (
-                  <span className="text-sm text-stone-500">
-                    ({priceLabel})
-                  </span>
-                )}
+        <div className="space-y-6 px-4 pt-5">
+          {/* Prix · Lieu */}
+          <div className="grid grid-cols-2 gap-2">
+            <div className="card-shadow rounded-[20px] bg-white p-3.5">
+              <p className="eyebrow text-stone-500">{lang === 'fr' ? 'Prix' : 'Price'}</p>
+              <p className="font-display mt-1.5 text-[22px] leading-none tracking-tight text-ink tabular">{priceValue}</p>
+              <p className="mt-1 truncate text-xs text-stone-500">{priceSub}</p>
+            </div>
+            {listing.location ? (
+              <div className="card-shadow rounded-[20px] bg-white p-3.5">
+                <p className="eyebrow text-stone-500">{lang === 'fr' ? 'Lieu' : 'Location'}</p>
+                <p className="font-display mt-1.5 text-[19px] leading-[1.05] tracking-tight text-ink line-clamp-2">{softCase(listing.location)}</p>
               </div>
-            )}
-            {listing.price === null && listing.price_type === 'negotiable' && (
-              <p className="text-lg text-[#ee9d2b] font-semibold mt-3">{priceLabel}</p>
+            ) : (
+              <div className="card-shadow rounded-[20px] bg-white p-3.5">
+                <p className="eyebrow text-stone-500">{lang === 'fr' ? 'Catégorie' : 'Category'}</p>
+                <p className="font-display mt-1.5 text-[19px] leading-[1.05] tracking-tight text-ink">{catLabel}</p>
+              </div>
             )}
           </div>
 
-          {/* Location */}
-          {listing.location && (
-            <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-4 flex items-start gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#ee9d2b]/10 flex-shrink-0">
-                <MapPin size={20} className="text-[#ee9d2b]" />
-              </div>
-              <div>
-                <p className="text-xs text-stone-500 uppercase tracking-wider font-semibold mb-0.5">
-                  {lang === 'fr' ? 'Localisation' : 'Location'}
-                </p>
-                <p className="text-stone-800 font-medium ">
-                  {listing.location}
-                </p>
-              </div>
-            </div>
-          )}
+          {/* Vendeur → profil public */}
+          <OrganizerCard userId={listing.user_id} kind="listing" />
 
-          {/* Description */}
+          {/* À propos : un seul style de texte, uniforme */}
           {listing.description && (
-            <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
-              <h2 className="text-lg font-bold text-stone-800  mb-3">
-                {t('form.description')}
-              </h2>
-              <p className="text-stone-600 leading-relaxed whitespace-pre-line text-sm">
-                {listing.description}
-              </p>
-            </div>
+            <section>
+              <h2 className="eyebrow text-stone-500 mb-3">{lang === 'fr' ? 'À propos' : 'About'}</h2>
+              <p className="text-[17px] font-medium leading-[1.5] tracking-[-0.01em] text-ink whitespace-pre-line">{listing.description}</p>
+            </section>
           )}
+        </div>
+      </div>
 
-          {/* Contact */}
-          <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
-            <h2 className="text-lg font-bold text-stone-800  mb-4">
-              {lang === 'fr' ? 'Contacter le vendeur' : 'Contact seller'}
-            </h2>
-
-            <div className="space-y-3">
-              {listing.contact_phone && (
-                <a
-                  href={`tel:${listing.contact_phone}`}
-                  className="flex items-center gap-3 w-full py-3 px-4 rounded-xl bg-[#ee9d2b] text-white font-semibold text-sm shadow-lg shadow-[#ee9d2b]/20 hover:opacity-90 transition-all active:scale-[0.98]"
-                >
-                  <Phone size={18} />
-                  {lang === 'fr' ? 'Appeler' : 'Call'} — {listing.contact_phone}
-                </a>
-              )}
-
-              {listing.contact_email && (
-                <a
-                  href={`mailto:${listing.contact_email}?subject=${encodeURIComponent(listing.title)}`}
-                  className="flex items-center gap-3 w-full py-3 px-4 rounded-xl bg-white/70 border border-stone-200/50 text-stone-700 font-semibold text-sm hover:bg-white/90 transition-all active:scale-[0.98]"
-                >
-                  <Mail size={18} className="text-[#ee9d2b]" />
-                  {lang === 'fr' ? 'Envoyer un email' : 'Send email'}
-                </a>
-              )}
-
-              {!listing.contact_phone && !listing.contact_email && (
-                <p className="text-stone-400 text-center text-sm py-2">
-                  {lang === 'fr' ? 'Aucune information de contact' : 'No contact information'}
-                </p>
-              )}
-            </div>
+      {/* Barre d'action fixe : prix + contact */}
+      <div
+        className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-md px-3"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)' }}
+      >
+        <div className="flex h-16 items-center justify-between gap-2 rounded-full bg-ink pl-6 pr-2 shadow-2xl">
+          <div className="min-w-0">
+            <p className="font-display truncate text-[20px] leading-none tracking-tight text-parchment tabular">{priceValue}</p>
+            <p className="mt-1 truncate text-[11px] text-stone-400">{priceSub}</p>
           </div>
+          {hasContacts ? (
+            <ContactFab
+              variant="pill"
+              label={t('event.contact')}
+              closeLabel={t('close')}
+              contactPhone={listing.contact_phone}
+              contactWhatsapp={listing.contact_whatsapp}
+              contactInstagram={listing.contact_instagram}
+              contactFacebook={listing.contact_facebook}
+              contactTiktok={listing.contact_tiktok}
+              contactTwitter={listing.contact_twitter}
+              contactEmail={listing.contact_email}
+              emailSubject={listing.title}
+            />
+          ) : (
+            <span className="px-4 text-xs text-stone-400">{lang === 'fr' ? 'Aucun contact' : 'No contact'}</span>
+          )}
         </div>
       </div>
 

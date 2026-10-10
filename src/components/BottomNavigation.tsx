@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   Dialog,
@@ -10,94 +10,113 @@ import {
 import { useSearch } from '@/contexts/SearchContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-// Import custom icons
-import atelierIcon from '@/assets/icons/atelier.png';
-import brunchIcon from '@/assets/icons/brunch.png';
-import concertIcon from '@/assets/icons/concert.png';
-import conferenceIcon from '@/assets/icons/conference.png';
-import expositionIcon from '@/assets/icons/exposition.png';
-import festivalIcon from '@/assets/icons/festival.png';
-import meetupIcon from '@/assets/icons/meetup.png';
-import religieuxIcon from '@/assets/icons/religieux.png';
-import spectacleIcon from '@/assets/icons/spectacle.png';
-import sportIcon from '@/assets/icons/sport.png';
+import { EVENT_CATEGORIES } from '@/lib/eventCategories';
+import { useEvents } from '@/hooks/useEvents';
+import { CITIES, eventCity, findCity, normalizeName } from '@/lib/cities';
 
-const CATEGORIES_META = [
-  { id: 'workshops', tKey: 'cat.workshops', color: 'bg-yellow-500' },
-  { id: 'brunch', tKey: 'cat.brunch', color: 'bg-amber-500' },
-  { id: 'music', tKey: 'cat.music', color: 'bg-purple-500' },
-  { id: 'conferences', tKey: 'cat.conferences', color: 'bg-indigo-500' },
-  { id: 'exhibitions', tKey: 'cat.exhibitions', color: 'bg-cyan-500' },
-  { id: 'festivals', tKey: 'cat.festivals', color: 'bg-red-500' },
-  { id: 'meetups', tKey: 'cat.meetups', color: 'bg-blue-500' },
-  { id: 'religious', tKey: 'cat.religious', color: 'bg-violet-500' },
-  { id: 'shows', tKey: 'cat.shows', color: 'bg-teal-500' },
-  { id: 'sports', tKey: 'cat.sports', color: 'bg-green-500' },
-];
 
 interface BottomNavigationProps {
   className?: string;
 }
 
-interface ScrollIndicatorState {
-  thumbWidth: number;  // % of track
-  thumbLeft: number;   // % position
-  canScroll: boolean;
-}
 
 const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
   const location = useLocation();
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const { searchQuery, setSearchQuery, selectedCategories, setSelectedCategories, toggleCategory, distanceFilter, setDistanceFilter } = useSearch();
+  const {
+    searchQuery, setSearchQuery, selectedCategories, setSelectedCategories, toggleCategory,
+    distanceFilter, setDistanceFilter, cityFilter, setCityFilter, activeFilterCount, clearFilters, searchOpen, setSearchOpen,
+  } = useSearch();
   const { t } = useLanguage();
-  const [indicator, setIndicator] = useState<ScrollIndicatorState>({
-    thumbWidth: 0,
-    thumbLeft: 0,
-    canScroll: false,
-  });
+  const { data: events } = useEvents();
 
+  // Villes où il y a des publications, les plus actives d'abord
+  const cityCounts = new Map<string, number>();
+  const cityPoints = new Map<string, { lat: number; lng: number; n: number }>();
+  for (const ev of events ?? []) {
+    const city = eventCity(ev);
+    if (!city) continue;
+    cityCounts.set(city, (cityCounts.get(city) ?? 0) + 1);
+    const p = cityPoints.get(city) ?? { lat: 0, lng: 0, n: 0 };
+    cityPoints.set(city, { lat: p.lat + Number(ev.latitude), lng: p.lng + Number(ev.longitude), n: p.n + 1 });
+  }
+  const cities = [...cityCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'fr'));
+
+  // Les villes les plus actives en pastilles ; les autres via « Autre ville »
+  const TOP_CITIES = 4;
+  const [cityQuery, setCityQuery] = useState('');
+  const [citySearchOpen, setCitySearchOpen] = useState(false);
+  const topCities = cities.slice(0, TOP_CITIES);
+  if (cityFilter && !topCities.some(([name]) => name === cityFilter)) {
+    topCities.push([cityFilter, cityCounts.get(cityFilter) ?? 0]);
+  }
+  // Villes connues + localités où il y a des événements (villages, communes…)
+  const allCityNames = [...new Set([...CITIES.map((c) => c.name), ...cityCounts.keys()])];
+  const cityMatches = cityQuery.trim()
+    ? allCityNames
+        .filter((name) => normalizeName(name).includes(normalizeName(cityQuery)))
+        .map((name) => [name, cityCounts.get(name) ?? 0] as const)
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'fr'))
+        .slice(0, 6)
+    : cities.slice(TOP_CITIES).map(([name, count]) => [name, count] as const);
+
+  const chooseCity = (name: string | null) => {
+    setCitySearchOpen(false);
+    setCityQuery('');
+    const next = name === cityFilter ? null : name;
+    setCityFilter(next);
+    const city = findCity(next);
+    const pts = next ? cityPoints.get(next) : undefined;
+    // Ville connue : son centre ; sinon le centre de ses événements
+    const target = city
+      ? { lat: city.lat, lng: city.lng, zoom: city.radiusKm >= 10 ? 12 : 13 }
+      : pts ? { lat: pts.lat / pts.n, lng: pts.lng / pts.n, zoom: 14 } : null;
+    if (target) window.dispatchEvent(new CustomEvent('map:flyto', { detail: target }));
+  };
+
+  const [canScroll, setCanScroll] = useState(false);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const thumbRef = useRef<HTMLDivElement | null>(null);
+
+  // Indicateur qui suit le doigt en temps réel : mis à jour directement (sans
+  // re-rendu React ni transition), à chaque image pendant le défilement.
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
+    let frame = 0;
 
     const update = () => {
+      frame = 0;
       const { scrollWidth, clientWidth, scrollLeft } = el;
       const maxScroll = scrollWidth - clientWidth;
-      if (maxScroll <= 1) {
-        setIndicator({ thumbWidth: 100, thumbLeft: 0, canScroll: false });
-        return;
-      }
-      // Thumb width = visible portion as % of total
-      const thumbW = (clientWidth / scrollWidth) * 100;
-      // Thumb position = scroll progress mapped to remaining track space
-      const thumbL = (scrollLeft / maxScroll) * (100 - thumbW);
-      setIndicator({ thumbWidth: thumbW, thumbLeft: thumbL, canScroll: true });
+      const scrollable = maxScroll > 1;
+      setCanScroll(scrollable);
+      const track = trackRef.current;
+      const thumb = thumbRef.current;
+      if (!scrollable || !track || !thumb) return;
+      const trackW = track.clientWidth;
+      const thumbW = Math.max(24, (clientWidth / scrollWidth) * trackW);
+      // Bornes : l'effet rebond d'iOS donne un scrollLeft < 0 ou > max
+      const progress = Math.min(1, Math.max(0, scrollLeft / maxScroll));
+      thumb.style.width = `${thumbW}px`;
+      thumb.style.transform = `translate3d(${progress * (trackW - thumbW)}px,0,0)`;
     };
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
 
-    const timer = setTimeout(update, 150);
-    el.addEventListener('scroll', update, { passive: true } as AddEventListenerOptions);
-    window.addEventListener('resize', update);
-
+    update();
+    const ro = new ResizeObserver(schedule);
+    ro.observe(el);
+    el.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
     return () => {
-      clearTimeout(timer);
-      el.removeEventListener('scroll', update);
-      window.removeEventListener('resize', update);
+      if (frame) cancelAnimationFrame(frame);
+      ro.disconnect();
+      el.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
     };
-  }, []);
+  }, [canScroll]);
 
-  const navItems = [
-    { icon: atelierIcon, label: t('cat.workshops'), path: '/workshops' },
-    { icon: brunchIcon, label: t('cat.brunch'), path: '/brunch' },
-    { icon: concertIcon, label: t('cat.music'), path: '/concerts' },
-    { icon: conferenceIcon, label: t('cat.conferences'), path: '/conferences' },
-    { icon: expositionIcon, label: t('cat.exhibitions'), path: '/exhibitions' },
-    { icon: festivalIcon, label: t('cat.festivals'), path: '/festivals' },
-    { icon: meetupIcon, label: t('cat.meetups'), path: '/meetups' },
-    { icon: religieuxIcon, label: t('cat.religious'), path: '/religious' },
-    { icon: spectacleIcon, label: t('cat.shows'), path: '/shows' },
-    { icon: sportIcon, label: t('cat.sports'), path: '/sports' },
-  ];
+  const navItems = EVENT_CATEGORIES.map((c) => ({ icon: c.icon, label: t(c.tKey).replace(/-/g, '\u2011'), path: c.path }));
 
   const handleSearch = () => {
     setSearchOpen(false);
@@ -107,58 +126,81 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
     <>
       <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
         <DialogContent className="max-w-[90vw] sm:max-w-md mx-auto top-[12%] translate-y-0 sm:top-[50%] sm:translate-y-[-50%] w-[90vw] sm:w-full p-0 rounded-3xl border-0 bg-transparent shadow-none [&>button]:hidden">
-          <div className="backdrop-blur-2xl bg-white/85 rounded-3xl border border-white/60 shadow-[0_8px_40px_-8px_rgba(0,0,0,0.2)] overflow-hidden">
+          <div className="bg-white rounded-3xl border border-stone-200 overflow-hidden">
             {/* Header */}
             <div className="px-5 pt-5 pb-3 flex items-center justify-between">
-              <h2 className="text-xl font-bold  text-stone-800">
+              <h2 className="text-[28px] leading-none font-medium tracking-tighter text-ink">
                 {t('nav.search')}
               </h2>
               <button
                 onClick={() => setSearchOpen(false)}
-                className="h-8 w-8 rounded-full bg-stone-100 flex items-center justify-center hover:bg-stone-200 transition-all active:scale-95"
+                aria-label={t('nav.clearBtn')}
+                className="h-11 w-11 rounded-full bg-parchment flex items-center justify-center hover:bg-stone-200 transition-all active:scale-95"
               >
-                <span className="text-stone-400 text-sm font-medium">✕</span>
+                <X size={20} strokeWidth={2} className="text-ink" />
               </button>
             </div>
 
             {/* Search input */}
             <div className="px-5 pb-4">
               <div className="relative">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" size={16} />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-500" size={16} />
                 <input
                   type="text"
                   placeholder={t('nav.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
-                  className="w-full h-10 pl-10 pr-4 rounded-2xl bg-stone-100/80 border-0 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#ee9d2b]/30 text-sm"
+                  onFocus={(e) => e.currentTarget.select()}
+                  enterKeyHint="search"
+                  className="w-full h-12 pl-10 pr-12 rounded-full bg-parchment border border-transparent text-ink placeholder:text-stone-400 focus:outline-none focus:bg-white focus:border-stone-300 text-[15px]"
                   autoFocus
                 />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    aria-label={t('nav.clearBtn')}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 flex size-8 items-center justify-center rounded-full bg-stone-200 text-ink active:scale-95 transition-transform"
+                  >
+                    <X size={14} strokeWidth={2} />
+                  </button>
+                )}
               </div>
             </div>
 
             {/* Divider */}
-            <div className="h-px bg-stone-200/60 mx-5" />
+            <div className="h-px bg-stone-200 mx-5" />
 
             {/* Categories */}
-            <div className="px-5 py-4 space-y-3">
+            <div className="px-5 py-2.5 space-y-2">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-bold uppercase tracking-[0.1em] text-stone-500">{t('nav.categories')}</p>
+                <p className="eyebrow text-stone-500">{t('nav.categories')}</p>
                 {selectedCategories.length > 0 && (
-                  <button onClick={() => setSelectedCategories([])} className="text-[11px] text-[#ee9d2b] font-semibold">
+                  <button onClick={() => setSelectedCategories([])} className="text-xs text-ink font-medium link-underline">
                     {t('nav.clearBtn')}
                   </button>
                 )}
               </div>
-              <div className="flex flex-wrap gap-1.5">
-                {CATEGORIES_META.map((category) => (
+              <div className="-mx-5 flex gap-1.5 overflow-x-auto px-5 scrollbar-hide">
+                <button
+                  onClick={() => setSelectedCategories([])}
+                  className={`h-8 px-3.5 flex-shrink-0 whitespace-nowrap rounded-full border text-[13px] font-medium transition-all active:scale-95 ${
+                    selectedCategories.length === 0
+                      ? 'bg-ink text-parchment border-ink'
+                      : 'bg-white text-stone-700 border-stone-200 hover:border-ink'
+                  }`}
+                >
+                  {t('nav.allDistance')}
+                </button>
+                {EVENT_CATEGORIES.map((category) => (
                   <button
-                    key={category.id}
-                    onClick={() => toggleCategory(category.id)}
-                    className={`px-3 py-1.5 rounded-full text-[11px] font-medium transition-all active:scale-95 ${
-                      selectedCategories.includes(category.id)
-                        ? 'bg-[#ee9d2b] text-white shadow-md'
-                        : 'bg-stone-100/80 text-stone-600 hover:bg-stone-200/80'
+                    key={category.value}
+                    onClick={() => toggleCategory(category.value)}
+                    className={`h-8 px-3.5 flex-shrink-0 whitespace-nowrap rounded-full border text-[13px] font-medium transition-all active:scale-95 ${
+                      selectedCategories.includes(category.value)
+                        ? 'bg-ink text-parchment border-ink'
+                        : 'bg-white text-stone-700 border-stone-200 hover:border-ink'
                     }`}
                   >
                     {t(category.tKey)}
@@ -167,13 +209,77 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
               </div>
             </div>
 
-            {/* Divider */}
-            <div className="h-px bg-stone-200/60 mx-5" />
+
+            {/* Ville */}
+            <div className="px-5 py-2.5 space-y-2">
+              <p className="eyebrow text-stone-500">{t('nav.city')}</p>
+              <div className="-mx-5 flex gap-1.5 overflow-x-auto px-5 scrollbar-hide">
+                <button
+                  onClick={() => setCitySearchOpen((o) => !o)}
+                  className={`h-8 px-3.5 flex-shrink-0 whitespace-nowrap rounded-full border border-dashed text-[13px] font-medium transition-all active:scale-95 inline-flex items-center gap-1.5 ${
+                    citySearchOpen ? 'border-ink text-ink' : 'border-stone-300 text-stone-600'
+                  }`}
+                >
+                  <Search size={13} strokeWidth={2} />
+                  {t('nav.otherCity')}
+                </button>
+                {[{ name: null as string | null, label: t('nav.allDistance'), count: 0 },
+                  ...topCities.map(([name, count]) => ({ name: name as string | null, label: name, count }))].map((opt) => (
+                  <button
+                    key={opt.label}
+                    onClick={() => chooseCity(opt.name)}
+                    className={`h-8 px-3.5 flex-shrink-0 whitespace-nowrap rounded-full border text-[13px] font-medium transition-all active:scale-95 inline-flex items-center gap-1.5 ${
+                      cityFilter === opt.name
+                        ? 'bg-ink text-parchment border-ink'
+                        : 'bg-white text-stone-700 border-stone-200 hover:border-ink'
+                    }`}
+                  >
+                    {opt.label}
+                    {opt.count > 0 && (
+                      <span className={cityFilter === opt.name ? 'text-parchment/60' : 'text-stone-400'}>{opt.count}</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {citySearchOpen && (
+                <div className="rounded-2xl border border-stone-200 overflow-hidden animate-fade-in">
+                  <div className="relative border-b border-stone-100">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" size={15} />
+                    <input
+                      type="text"
+                      value={cityQuery}
+                      onChange={(e) => setCityQuery(e.target.value)}
+                      placeholder={t('nav.cityPlaceholder')}
+                      autoFocus
+                      className="w-full h-11 pl-10 pr-3 bg-white text-ink placeholder:text-stone-400 text-[15px] focus:outline-none"
+                    />
+                  </div>
+                  <div className="max-h-48 overflow-y-auto">
+                    {cityMatches.length === 0 ? (
+                      <p className="px-4 py-3 text-sm text-stone-500">{cityQuery.trim() ? t('nav.cityNone') : t('nav.cityHint')}</p>
+                    ) : cityMatches.map(([name, count]) => (
+                      <button
+                        key={name}
+                        onClick={() => chooseCity(name)}
+                        className="w-full flex items-center justify-between px-4 h-11 text-left text-[15px] text-ink border-b border-stone-100 last:border-b-0 active:bg-parchment"
+                      >
+                        <span>{name}</span>
+                        <span className="text-xs text-stone-400">
+                          {count > 0 ? t('nav.cityCount').replace('{n}', String(count)) : t('nav.cityEmpty')}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
 
             {/* Distance */}
-            <div className="px-5 py-4 space-y-3">
-              <p className="text-xs font-bold uppercase tracking-[0.1em] text-stone-500">{t('nav.nearMe')}</p>
-              <div className="flex flex-wrap gap-1.5">
+            <div className="px-5 py-2.5 space-y-2">
+              <p className="eyebrow text-stone-500">{t('nav.nearMe')}</p>
+              <div className="-mx-5 flex gap-1.5 overflow-x-auto px-5 scrollbar-hide">
                 {[
                   { label: t('nav.allDistance'), value: null },
                   { label: '500m', value: 0.5 },
@@ -185,10 +291,10 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                   <button
                     key={opt.label}
                     onClick={() => setDistanceFilter(opt.value)}
-                    className={`px-3 py-1.5 rounded-full text-[11px] font-medium transition-all active:scale-95 ${
+                    className={`h-8 px-3.5 flex-shrink-0 whitespace-nowrap rounded-full border text-[13px] font-medium transition-all active:scale-95 ${
                       distanceFilter === opt.value
-                        ? 'bg-[#ee9d2b] text-white shadow-md'
-                        : 'bg-stone-100/80 text-stone-600 hover:bg-stone-200/80'
+                        ? 'bg-ink text-parchment border-ink'
+                        : 'bg-white text-stone-700 border-stone-200 hover:border-ink'
                     }`}
                   >
                     {opt.label}
@@ -198,10 +304,18 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
             </div>
 
             {/* Search button */}
-            <div className="px-5 pb-5 pt-1">
+            <div className="flex gap-2 px-5 pb-5 pt-3">
+              {activeFilterCount > 0 && (
+                <button
+                  onClick={clearFilters}
+                  className="h-12 px-5 rounded-full bg-parchment text-ink text-[15px] font-medium hover:bg-stone-200 transition-colors active:scale-[0.98]"
+                >
+                  {t('nav.reset')}
+                </button>
+              )}
               <button
                 onClick={handleSearch}
-                className="w-full h-11 rounded-2xl bg-[#ee9d2b] text-white font-semibold hover:opacity-90 transition-all active:scale-[0.98] text-sm shadow-lg shadow-[#ee9d2b]/20"
+                className="flex-1 h-12 rounded-full btn-lime text-[15px]"
               >
                 {t('nav.search')}
               </button>
@@ -211,11 +325,11 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
       </Dialog>
 
       <div className={`fixed bottom-0 left-0 right-0 max-w-md mx-auto flex-shrink-0 px-4 pb-safe z-40 ${className}`}>
-        <div className="neo-white-bottom h-[72px] rounded-xl backdrop-blur-xl bg-white/80 dark:bg-stone-900/80 mb-2 border border-stone-200/50 dark:border-stone-700/50 overflow-hidden">
+        <div className="neo-white-bottom h-[80px] rounded-full bg-white dark:bg-stone-900/90 mb-2 overflow-hidden">
           <div className="relative h-full flex items-center">
             <button
               onClick={() => setSearchOpen(true)}
-              className="flex-shrink-0 h-14 w-14 ml-2 flex items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-all duration-300 hover:scale-105 active:scale-95"
+              className="flex-shrink-0 h-[60px] w-[60px] ml-2 flex items-center justify-center rounded-full bg-lime text-ink hover:bg-lime-deep transition-all duration-300 active:scale-95"
               aria-label={t('nav.search')}
             >
               <Search size={24} strokeWidth={2} />
@@ -224,46 +338,36 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
             <div className="flex-1 relative h-full min-w-0">
               <div
                 ref={scrollRef}
-                className="flex items-center h-full overflow-x-auto overflow-y-hidden scrollbar-hide px-2 gap-1 whitespace-nowrap"
+                className="flex items-center h-full overflow-x-auto overflow-y-hidden scrollbar-hide px-2 pb-1.5 gap-1.5 whitespace-nowrap"
               >
                 {navItems.map((item, index) => {
                   const isActive = location.pathname === item.path;
+                  // N1 : chaque catégorie dans un cercle crème, icône + nom court écrit dedans ;
+                  // la page ouverte en noir
+                  const shortLabel = item.label.split(/\s+&\s+/)[0];
                   return (
                     <Link
                       key={index}
                       to={item.path}
-                      className={`flex-shrink-0 flex h-12 min-w-[90px] flex-col items-center justify-center gap-1 rounded-lg transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 ${
-                        isActive
-                          ? 'bg-primary/20 text-primary dark:bg-primary/30'
-                          : 'text-stone-500 dark:text-stone-400'
+                      aria-label={item.label}
+                      className={`no-press flex-shrink-0 flex size-[60px] flex-col items-center justify-center gap-[3px] rounded-full transition-colors duration-300 active:scale-95 ${
+                        isActive ? 'bg-ink text-parchment' : 'bg-parchment text-ink dark:bg-stone-800 dark:text-stone-200'
                       }`}
-                      style={{ transitionProperty: 'all' }}
                     >
                       <img
                         src={item.icon}
-                        alt={item.label}
-                        className={`w-6 h-6 transition-all duration-300 ease-in-out ${
-                          isActive ? 'opacity-100' : 'opacity-60'
-                        }`}
+                        alt=""
+                        className={`size-[22px] flex-shrink-0 transition-all duration-300 ${isActive ? 'invert' : 'opacity-85'}`}
                       />
-                      <p className="text-xs font-medium  leading-none transition-all duration-300 ease-in-out">
-                        {item.label}
-                      </p>
+                      <span className={`max-w-[54px] truncate text-[9px] leading-none tracking-[-0.01em] ${isActive ? 'font-bold' : 'font-semibold'}`}>{shortLabel}</span>
                     </Link>
                   );
                 })}
               </div>
 
-              {indicator.canScroll && (
-                <div className="pointer-events-none absolute bottom-1 left-2 right-2 h-[2px] rounded-full bg-black/[0.06]">
-                  <div
-                    className="absolute top-0 h-full rounded-full bg-stone-400/50"
-                    style={{
-                      width: `${indicator.thumbWidth}%`,
-                      left: `${indicator.thumbLeft}%`,
-                      transition: 'left 0.12s ease-out',
-                    }}
-                  />
+              {canScroll && (
+                <div ref={trackRef} className="pointer-events-none absolute bottom-1.5 left-6 right-6 h-[2px] rounded-full bg-ink/[0.06]">
+                  <div ref={thumbRef} className="absolute left-0 top-0 h-full rounded-full bg-ink/40 will-change-transform" />
                 </div>
               )}
             </div>

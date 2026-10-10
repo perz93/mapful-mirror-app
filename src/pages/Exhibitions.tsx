@@ -1,14 +1,5 @@
 import CategoryPage from '@/components/CategoryPage';
-import expositionIcon from '@/assets/icons/exposition.png';
 
-const Exhibitions = () => {
-  return (
-    <CategoryPage
-      category="exhibitions"
-      title="Expositions"
-      iconSrc={expositionIcon}
-    />
-  );
-};
+const Exhibitions = () => <CategoryPage category="exhibitions" />;
 
 export default Exhibitions;

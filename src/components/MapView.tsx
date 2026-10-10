@@ -1,10 +1,12 @@
+import { normalizeEventCategory } from '@/lib/eventCategories';
 import { useEffect, useRef, useState } from 'react';
+import { escapeHtml, safeUrl } from '@/lib/escapeHtml';
+import { addBaseMap } from '@/lib/mapTiles';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
-import 'leaflet.heat';
 import { useNavigate } from 'react-router-dom';
 import { useSearch } from '@/contexts/SearchContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -12,29 +14,26 @@ import { useEvents } from '@/hooks/useEvents';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { format, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { toast } from 'sonner';
+import { toast } from '@/components/PillToast';
 import RouteInfoPanel from './RouteInfoPanel';
-import itineraryIcon from '@/assets/itinerary-icon.png';
 import { fuzzyMatch } from '@/lib/fuzzyMatch';
 import { getDistanceKm } from '@/hooks/useNearbyEvents';
+import { eventCity } from '@/lib/cities';
+import { happensBetween, isMultiDay, lastDay } from '@/lib/eventStatus';
 import { supabase } from '@/integrations/supabase/client';
-
-// Tile layer URLs
-const TILE_LIGHT = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
-const TILE_DARK = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
-
-function getPrefersDark(): boolean {
-  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
-}
+import { softCase } from '@/lib/softCase';
 
 const MapView = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const navigate = useNavigate();
-  const { searchQuery, selectedCategories, routeDestination, setRouteDestination, distanceFilter, dateFilter, priceFilter } = useSearch();
+  const { searchQuery, selectedCategories, routeDestination, setRouteDestination, distanceFilter, cityFilter, dateFilter, priceFilter } = useSearch();
   const { t } = useLanguage();
   const { data: events, isLoading } = useEvents();
   const geo = useGeolocation();
+  // Itinéraire affiché : les recentrages automatiques ne doivent pas le cacher
+  const routeActiveRef = useRef(false);
+  routeActiveRef.current = !!routeDestination;
 
   const userMarkerRef = useRef<L.Marker | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
@@ -42,14 +41,13 @@ const MapView = () => {
   const didAutoRecenterRef = useRef(false);
   const routeLayerRef = useRef<L.Polyline | null>(null);
   const destinationMarkerRef = useRef<L.Marker | null>(null);
-  const tileLayerRef = useRef<L.TileLayer | null>(null);
   const heatLayerRef = useRef<any>(null);
   const didFlyToUserRef = useRef(false);
 
   // Expose map instance and route coords to RouteInfoPanel via state
   const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
   const [routeCoordinates, setRouteCoordinates] = useState<L.LatLngTuple[]>([]);
-  const [routeInfo, setRouteInfo] = useState<{ distanceKm: number | null; durationMin: number | null; loading: boolean; error: boolean }>({
+  const [routeInfo, setRouteInfo] = useState<{ distanceKm: number | null; durationMin: number | null; loading: boolean; error: boolean; needsLocation?: boolean }>({
     distanceKm: null,
     durationMin: null,
     loading: false,
@@ -79,26 +77,14 @@ const MapView = () => {
       zoom: initialZoom,
       zoomControl: false,
       attributionControl: false,
+      maxZoom: 19,
       preferCanvas: true,
       fadeAnimation: true,
       zoomAnimation: true,
       markerZoomAnimation: true,
     });
 
-    const isDark = getPrefersDark();
-    const tileLayer = L.tileLayer(isDark ? TILE_DARK : TILE_LIGHT, {
-      attribution: '© OpenStreetMap contributors © CARTO',
-      maxZoom: 20,
-    }).addTo(map);
-    tileLayerRef.current = tileLayer;
-
-    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleDarkModeChange = (e: MediaQueryListEvent) => {
-      if (tileLayerRef.current) {
-        tileLayerRef.current.setUrl(e.matches ? TILE_DARK : TILE_LIGHT);
-      }
-    };
-    darkModeQuery.addEventListener('change', handleDarkModeChange);
+    const removeBaseMap = addBaseMap(map);
 
     map.on('moveend', () => {
       const center = map.getCenter();
@@ -139,7 +125,7 @@ const MapView = () => {
         return L.divIcon({
           html: `<div class="cluster-inner cluster-${dominantType}"><span>${count}</span></div>`,
           className: `marker-cluster marker-cluster-${sizeClass}`,
-          iconSize: L.point(50, 50),
+          iconSize: L.point(34, 34),
         });
       },
     });
@@ -165,7 +151,7 @@ const MapView = () => {
 
     return () => {
       sizeTimers.forEach(t => clearTimeout(t));
-      darkModeQuery.removeEventListener('change', handleDarkModeChange);
+      removeBaseMap();
       markersRef.current = [];
       if (heatLayerRef.current && mapInstanceRef.current) {
         mapInstanceRef.current.removeLayer(heatLayerRef.current);
@@ -212,7 +198,7 @@ const MapView = () => {
     // Fly to user position on first fix (only if no saved map position)
     if (!didFlyToUserRef.current && !sessionStorage.getItem('mapPosition')) {
       didFlyToUserRef.current = true;
-      map.flyTo([lat, lng], 15, { duration: 1.5 });
+      if (!routeActiveRef.current) map.flyTo([lat, lng], 15, { duration: 1.5 });
     }
   }, [geo.position]);
 
@@ -259,11 +245,11 @@ const MapView = () => {
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
             const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true;
             if (isIOS && isStandalone) {
-              toast.error(t('map.iosVibe'), { duration: 6000 });
+              toast.info(t('map.iosVibe'), { duration: 6000 });
             } else if (isIOS) {
-              toast.error(t('map.iosSafari'), { duration: 6000 });
+              toast.info(t('map.iosSafari'), { duration: 6000 });
             } else {
-              toast.error(t('map.enableLocation'), { duration: 5000 });
+              toast.info(t('map.enableLocation'), { duration: 5000 });
             }
           } else {
             toast.error(t('map.gpsNotFound'));
@@ -305,19 +291,21 @@ const MapView = () => {
       heatLayerRef.current = null;
     }
 
-    const createCustomIcon = (imageUrl: string, eventType: string) => {
+    // P4 : étiquette avec mini photo + nom court (heure affichée quand l'événement est sélectionné)
+    const createCustomIcon = (imageUrl: string, eventType: string, title: string, time: string) => {
       const defaultImage = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=80&q=60&fm=webp';
+      const hour = (time || '').slice(0, 5).replace(':', 'h').replace(/h00$/, 'h');
       return L.divIcon({
         className: 'custom-marker',
         html: `
-          <div class="marker-image-container">
-            <div class="marker-image-wrapper marker-${eventType}">
-              <img src="${imageUrl || defaultImage}" alt="Event" class="marker-event-image" loading="lazy" />
-            </div>
+          <div class="pin-label" data-cat="${escapeHtml(eventType)}">
+            <span class="pin-label-img"><img src="${safeUrl(imageUrl, defaultImage)}" alt="" loading="lazy" /></span>
+            <b class="pin-label-title">${escapeHtml(softCase(title))}</b>${hour ? `<em class="pin-label-time"> · ${escapeHtml(hour)}</em>` : ''}
           </div>
         `,
-        iconSize: [50, 50],
-        iconAnchor: [25, 50],
+        iconSize: [0, 0],
+        iconAnchor: [0, 0],
+        popupAnchor: [0, -44],
       });
     };
 
@@ -351,34 +339,33 @@ const MapView = () => {
 
     events.forEach((event) => {
       const marker = L.marker([event.latitude, event.longitude], {
-        icon: createCustomIcon(event.image_url || '', event.category),
+        icon: createCustomIcon(event.image_url || '', event.category, event.title, event.time),
       });
 
       const dateFormatted = formatEventDate(event.date);
-      const timeFormatted = formatEventTime(event.time);
+      if (isMultiDay(event)) dateFormatted.day = `${dateFormatted.day}–${format(parseISO(lastDay(event)), 'd')}`;
+      const timeFormatted = event.end_time
+        ? `${formatEventTime(event.time)} – ${formatEventTime(event.end_time)}`
+        : formatEventTime(event.time);
       const defaultImage = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=320&q=70&fm=webp';
 
       const popupContent = `
         <div class="event-popup-card">
-          <div class="popup-card-image" style="background-image: url('${event.image_url || defaultImage}')">
+          <div class="popup-card-image" style="background-image: url('${safeUrl(event.image_url, defaultImage)}')">
             <div class="popup-card-gradient">
-              <h3 class="popup-card-title">${event.title}</h3>
-              <div class="popup-card-details">
+              <div class="popup-card-row">
                 <div class="popup-date-box">
                   <div class="popup-date-month">${dateFormatted.month}</div>
                   <div class="popup-date-day">${dateFormatted.day}</div>
-                  <div class="popup-date-weekday">${dateFormatted.weekday}</div>
                 </div>
                 <div class="popup-card-info">
-                  <div class="popup-venue-row">
-                    <span class="popup-badge-glass">${event.venue}</span>
-                    <span class="popup-badge-glass">${timeFormatted}</span>
-                  </div>
+                  <h3 class="popup-card-title">${escapeHtml(softCase(event.title))}</h3>
+                  <div class="popup-card-meta">${escapeHtml(softCase(event.venue))} · ${escapeHtml(timeFormatted)}</div>
                 </div>
               </div>
-              <div class="popup-actions" style="display:flex;gap:6px;margin-top:6px;">
-                <button class="popup-route-btn popup-btn-glass"><img src="${itineraryIcon}" alt="" style="width:20px;height:20px;object-fit:contain;" />Itinéraire</button>
-                <button class="popup-details-btn" style="flex:1;">Voir détails</button>
+              <div class="popup-actions">
+                <button class="popup-route-btn">Itinéraire</button>
+                <button class="popup-details-btn">Voir détails →</button>
               </div>
             </div>
           </div>
@@ -388,8 +375,8 @@ const MapView = () => {
       const popup = L.popup({
         className: 'custom-popup-card',
         closeButton: true,
-        maxWidth: 220,
-        minWidth: 220,
+        maxWidth: 240,
+        minWidth: 240,
       }).setContent(popupContent);
 
       marker.bindPopup(popup);
@@ -415,7 +402,12 @@ const MapView = () => {
         }
       });
 
+      marker.on('popupclose', () => {
+        marker.getElement()?.classList.remove('is-selected');
+      });
+
       marker.on('popupopen', async () => {
+        marker.getElement()?.classList.add('is-selected');
         const popupInstance = marker.getPopup();
         const popupElement = popupInstance?.getElement();
         if (!popupElement) return;
@@ -444,102 +436,6 @@ const MapView = () => {
       });
     });
 
-    // Heatmap
-    const HEATMAP_MIN_ZOOM = 11;
-
-    (async () => {
-      try {
-        const eventIds = events.map((e) => e.id);
-        const { data: attendeeCounts } = await supabase
-          .from('event_attendees' as any)
-          .select('event_id')
-          .in('event_id', eventIds);
-
-        const countMap: Record<string, number> = {};
-        if (attendeeCounts) {
-          for (const row of attendeeCounts as any[]) {
-            countMap[row.event_id] = (countMap[row.event_id] || 0) + 1;
-          }
-        }
-
-        const heatPoints = events.map((e) => {
-          const count = countMap[e.id] || 0;
-          const capacity = e.capacity || 50;
-          const pct = Math.min(count / capacity, 1);
-          const intensity = 0.35 + pct * 0.65;
-          return [e.latitude, e.longitude, intensity] as [number, number, number];
-        });
-
-        if (heatPoints.length > 0 && mapInstanceRef.current) {
-          if (heatLayerRef.current) {
-            mapInstanceRef.current.removeLayer(heatLayerRef.current);
-          }
-
-          const heatLayer = (L as any).heatLayer(heatPoints, {
-            radius: 35,
-            blur: 25,
-            maxZoom: 18,
-            max: 1.0,
-            minOpacity: 0.3,
-            gradient: {
-              0.0:  '#dbeafe',
-              0.15: '#93c5fd',
-              0.30: '#3b82f6',
-              0.50: '#2563eb',
-              0.60: '#f97316',
-              0.80: '#ea580c',
-              1.00: '#dc2626',
-            },
-          });
-
-          heatLayerRef.current = heatLayer;
-
-          const updateHeatmapVisibility = () => {
-            if (!mapInstanceRef.current) return;
-            const zoom = mapInstanceRef.current.getZoom();
-            if (zoom >= HEATMAP_MIN_ZOOM) {
-              if (!mapInstanceRef.current.hasLayer(heatLayer)) {
-                mapInstanceRef.current.addLayer(heatLayer);
-              }
-            } else {
-              if (mapInstanceRef.current.hasLayer(heatLayer)) {
-                mapInstanceRef.current.removeLayer(heatLayer);
-              }
-            }
-          };
-
-          updateHeatmapVisibility();
-          mapInstanceRef.current.on('zoomend', updateHeatmapVisibility);
-
-          const hotEvents = events.filter((e) => {
-            const count = countMap[e.id] || 0;
-            const capacity = e.capacity || 50;
-            return (count / capacity) >= 0.50;
-          });
-
-          if (hotEvents.length > 0) {
-            hotEvents.forEach((e) => {
-              const el = document.createElement('div');
-              el.className = 'heatmap-pulse-marker';
-              const icon = L.divIcon({
-                className: 'heatmap-pulse-icon',
-                html: el.outerHTML,
-                iconSize: [60, 60],
-                iconAnchor: [30, 30],
-              });
-              const pulseMarker = L.marker([e.latitude, e.longitude], {
-                icon,
-                interactive: false,
-                zIndexOffset: -1000,
-              });
-              markerClusterGroup.addLayer(pulseMarker);
-            });
-          }
-        }
-      } catch (err) {
-        console.error('Heatmap load failed:', err);
-      }
-    })();
 
     if (!didAutoRecenterRef.current) {
       const coords = events
@@ -548,7 +444,7 @@ const MapView = () => {
 
       if (coords.length > 0) {
         const bounds = L.latLngBounds(coords);
-        if (bounds.isValid() && !map.getBounds().intersects(bounds)) {
+        if (bounds.isValid() && !routeActiveRef.current && !map.getBounds().intersects(bounds)) {
           map.fitBounds(bounds, {
             padding: [36, 36],
             maxZoom: 13,
@@ -582,17 +478,28 @@ const MapView = () => {
       return;
     }
 
+    // Point d'arrivée (modèle I5) : pastille lime + nom de l'événement posé dessus
+    const safeLabel = String(routeDestination.label ?? '').replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
     const destIcon = L.divIcon({
       className: 'route-destination-marker',
-      html: `<div style="width:28px;height:28px;border-radius:50%;background:hsl(var(--primary));border:3px solid white;box-shadow:0 4px 12px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;color:white;font-size:14px;">📍</div>`,
-      iconSize: [28, 28],
-      iconAnchor: [14, 14],
+      html: `<div style="position:relative;width:24px;height:24px">
+        <div style="position:absolute;bottom:84px;left:50%;transform:translateX(-50%);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:#14140f;color:#f5f5eb;border-radius:999px;padding:5px 11px;font:600 12.5px 'Instrument Sans',sans-serif;box-shadow:0 6px 16px rgba(20,20,15,.3)">${safeLabel}</div>
+        <div style="width:24px;height:24px;border-radius:50%;background:#a6e22e;border:4px solid #fff;box-shadow:0 4px 12px rgba(20,20,15,.35)"></div>
+      </div>`,
+      iconSize: [24, 24],
+      iconAnchor: [12, 12],
     });
-    destinationMarkerRef.current = L.marker([routeDestination.lat, routeDestination.lng], { icon: destIcon }).addTo(map);
+    // Au-dessus du pin photo de l'événement (même position), nom placé plus haut que lui
+    destinationMarkerRef.current = L.marker([routeDestination.lat, routeDestination.lng], { icon: destIcon, zIndexOffset: 2000, interactive: false }).addTo(map);
 
     if (!geo.position) {
-      toast.error(t('map.enableForRoute'));
-      setRouteInfo({ distanceKm: null, durationMin: null, loading: false, error: true });
+      // Position en cours (ouverture depuis la page d'un événement) : on attend
+      if (geo.loading) {
+        setRouteInfo({ distanceKm: null, durationMin: null, loading: true, error: false });
+        return;
+      }
+      // Pas de toast (il se superposait aux pastilles) : la pastille le dit
+      setRouteInfo({ distanceKm: null, durationMin: null, loading: false, error: true, needsLocation: true });
       return;
     }
 
@@ -613,7 +520,7 @@ const MapView = () => {
 
         const coords: L.LatLngTuple[] = route.geometry.coordinates.map((c: [number, number]) => [c[1], c[0]]);
         const polyline = L.polyline(coords, {
-          color: 'hsl(24 95% 53%)',
+          color: '#14140f',
           weight: 5,
           opacity: 0.85,
           lineCap: 'round',
@@ -622,7 +529,8 @@ const MapView = () => {
         routeLayerRef.current = polyline;
         setRouteCoordinates(coords);
 
-        map.fitBounds(polyline.getBounds(), { padding: [60, 60], maxZoom: 15, animate: true });
+        // Marges : panneau d'itinéraire en haut, carte de l'événement + menu en bas
+        map.fitBounds(polyline.getBounds(), { paddingTopLeft: [70, 190], paddingBottomRight: [70, 360], maxZoom: 15, animate: true });
 
         setRouteInfo({
           distanceKm: route.distance / 1000,
@@ -638,7 +546,7 @@ const MapView = () => {
     })();
 
     return () => { cancelled = true; };
-  }, [routeDestination, geo.position]);
+  }, [routeDestination, geo.position, geo.loading]);
 
   // ========================================
   // Search & distance filter
@@ -670,7 +578,7 @@ const MapView = () => {
         fuzzyMatch(eventData.type, query);
 
       const matchesCategory = selectedCategories.length === 0 ||
-        selectedCategories.includes(eventData.category);
+        selectedCategories.includes(normalizeEventCategory(eventData.category));
 
       let matchesDistance = true;
       if (distanceFilter && geo.position) {
@@ -681,14 +589,16 @@ const MapView = () => {
         matchesDistance = dist <= distanceFilter;
       }
 
+      const matchesCity = !cityFilter || eventCity(eventData) === cityFilter;
+
       // Date filter
       let matchesDate = true;
       if (dateFilter === 'today') {
-        matchesDate = eventData.date === todayStr;
+        matchesDate = happensBetween(eventData, todayStr, todayStr);
       } else if (dateFilter === 'week') {
-        matchesDate = eventData.date >= todayStr && eventData.date <= weekEndStr;
+        matchesDate = happensBetween(eventData, todayStr, weekEndStr);
       } else if (dateFilter === 'month') {
-        matchesDate = eventData.date >= todayStr && eventData.date <= monthEndStr;
+        matchesDate = happensBetween(eventData, todayStr, monthEndStr);
       }
 
       // Price filter
@@ -699,11 +609,11 @@ const MapView = () => {
         matchesPrice = !!eventData.is_paid;
       }
 
-      if (matchesSearch && matchesCategory && matchesDistance && matchesDate && matchesPrice) {
+      if (matchesSearch && matchesCategory && matchesCity && matchesDistance && matchesDate && matchesPrice) {
         clusterGroup.addLayer(marker);
       }
     });
-  }, [searchQuery, selectedCategories, distanceFilter, dateFilter, priceFilter, geo.position]);
+  }, [searchQuery, selectedCategories, cityFilter, distanceFilter, dateFilter, priceFilter, geo.position]);
 
   return (
     <>
@@ -714,6 +624,7 @@ const MapView = () => {
         durationMin={routeInfo.durationMin}
         loading={routeInfo.loading}
         error={routeInfo.error}
+        needsLocation={routeInfo.needsLocation}
         mapInstance={mapInstance}
         routeCoordinates={routeCoordinates}
       />

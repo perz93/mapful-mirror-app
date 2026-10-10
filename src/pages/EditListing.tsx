@@ -1,25 +1,27 @@
+import LargeTitle from '@/components/LargeTitle';
 import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { FormPageSkeleton } from '@/components/PageSkeleton';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Upload, X } from 'lucide-react';
+import { ArrowLeft, X, Image as ImageIcon, Type, AlignLeft, Ticket, MapPin, Phone, Mail, MessageCircle, Instagram, Facebook } from 'lucide-react';
+import TikTokIcon from '@/components/icons/TikTokIcon';
+import { retryWithoutNewColumns } from '@/lib/retryWithoutNewColumns';
+import { emailProviderLabel } from '@/lib/emailProvider';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
+import { compressImage, IMMUTABLE_CACHE } from '@/lib/compressImage';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import SectionTitle from '@/components/SectionTitle';
+import { MARKETPLACE_CATEGORIES } from '@/lib/marketplaceCategories';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { toast } from '@/components/PillToast';
 import { Tables } from '@/integrations/supabase/types';
 
 type MarketplaceListing = Tables<'marketplace_listings'>;
 
-const categories = [
-  { value: 'location_espaces', label: 'Location espaces' },
-  { value: 'traiteurs', label: 'Traiteurs' },
-  { value: 'animation_dj', label: 'Animation/DJ' },
-  { value: 'decoration', label: 'Décoration' },
-  { value: 'autre', label: 'Autre' },
-];
+const categories = MARKETPLACE_CATEGORIES.map((c) => ({ value: c.value, label: c.fr, icon: c.icon }));
 
 const priceTypes = [
   { value: 'fixed', label: 'Prix fixe' },
@@ -28,9 +30,26 @@ const priceTypes = [
   { value: 'negotiable', label: 'Négociable' },
 ];
 
+const labelClass = "text-sm text-stone-600 font-normal";
+const cardClass = "rounded-3xl bg-white p-5 space-y-3";
+const inputClass = "h-12 px-4 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] focus:outline-none focus:ring-0 focus:border-ink";
+
+
+
+const XIcon = ({ className }: { className?: string }) => <span className={`font-bold leading-none ${className ?? ''}`}>𝕏</span>;
+const SOCIAL_FIELDS = [
+  { key: 'contact_whatsapp', label: 'WhatsApp', Icon: MessageCircle, placeholder: '+225 XX XX XX XX XX', type: 'tel' },
+  { key: 'contact_instagram', label: 'Instagram', Icon: Instagram, placeholder: '@votre_compte ou lien du profil', type: 'text' },
+  { key: 'contact_facebook', label: 'Facebook', Icon: Facebook, placeholder: 'Lien de la page (facebook.com/…)', type: 'text' },
+  { key: 'contact_tiktok', label: 'TikTok', Icon: TikTokIcon, placeholder: '@votre_compte ou lien du profil', type: 'text' },
+  { key: 'contact_twitter', label: 'X (Twitter)', Icon: XIcon, placeholder: '@votre_compte ou lien du profil', type: 'text' },
+] as const;
+const NEW_CONTACT_COLUMNS = SOCIAL_FIELDS.map((f) => f.key as string);
+
 const EditListing = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -46,6 +65,11 @@ const EditListing = () => {
     price_type: 'negotiable',
     contact_phone: '',
     contact_email: '',
+    contact_whatsapp: '',
+    contact_instagram: '',
+    contact_facebook: '',
+    contact_tiktok: '',
+    contact_twitter: '',
     location: '',
   });
 
@@ -87,6 +111,11 @@ const EditListing = () => {
       price_type: data.price_type || 'negotiable',
       contact_phone: data.contact_phone || '',
       contact_email: data.contact_email || '',
+      contact_whatsapp: data.contact_whatsapp || '',
+      contact_instagram: data.contact_instagram || '',
+      contact_facebook: data.contact_facebook || '',
+      contact_tiktok: data.contact_tiktok || '',
+      contact_twitter: data.contact_twitter || '',
       location: data.location || '',
     });
 
@@ -130,12 +159,12 @@ const EditListing = () => {
 
       // Upload new image if changed
       if (imageFile) {
-        const fileExt = imageFile.name.split('.').pop();
-        const fileName = `${user!.id}/${Date.now()}.${fileExt}`;
+        const image = await compressImage(imageFile);
+        const fileName = `${user!.id}/${Date.now()}.${image.ext}`;
         
         const { error: uploadError } = await supabase.storage
           .from('event-images')
-          .upload(fileName, imageFile);
+          .upload(fileName, image.blob, { contentType: image.contentType, cacheControl: IMMUTABLE_CACHE });
 
         if (uploadError) throw uploadError;
 
@@ -149,9 +178,7 @@ const EditListing = () => {
       }
 
       // Update listing
-      const { error } = await supabase
-        .from('marketplace_listings')
-        .update({
+      const { error } = await retryWithoutNewColumns({
           title: formData.title,
           description: formData.description || null,
           category: formData.category as any,
@@ -161,12 +188,17 @@ const EditListing = () => {
           contact_email: formData.contact_email || null,
           location: formData.location || null,
           image_url: imageUrl,
-        })
-        .eq('id', id);
+          contact_whatsapp: formData.contact_whatsapp.trim() || null,
+          contact_instagram: formData.contact_instagram.trim() || null,
+          contact_facebook: formData.contact_facebook.trim() || null,
+          contact_tiktok: formData.contact_tiktok.trim() || null,
+          contact_twitter: formData.contact_twitter.trim() || null,
+        }, NEW_CONTACT_COLUMNS, (p) => supabase.from('marketplace_listings').update(p).eq('id', id!));
 
       if (error) throw error;
 
       toast.success('Annonce mise à jour !');
+      await queryClient.invalidateQueries();
       navigate('/my-account');
     } catch (error: any) {
       console.error('Error updating listing:', error);
@@ -178,133 +210,83 @@ const EditListing = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      </div>
+      <FormPageSkeleton />
     );
   }
 
   return (
-    <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-background animate-fade-in animate-zoom-smooth">
+    <div className="relative mx-auto flex min-h-screen max-w-md flex-col bg-parchment page-enter">
       {/* Header */}
-      <div className="relative z-10 flex items-center gap-4 px-4 pt-12 pb-4">
+      <div className="relative z-10 px-4 pb-5" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         <Link
           to="/my-account"
-          className="flex size-10 items-center justify-center rounded-full bg-black/70 backdrop-blur-md"
+          className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform mb-6"
         >
-          <ArrowLeft className="text-white" size={20} />
+          <ArrowLeft size={20} strokeWidth={1.75} className="text-ink" />
         </Link>
-        <h1 className="text-xl font-bold">Modifier l'annonce</h1>
+        <LargeTitle className="text-[40px] leading-[0.95] tracking-tighter text-ink" backTo="/my-account">Modifier l'annonce</LargeTitle>
+        <p className="mt-2 text-stone-500">Mettez à jour les informations de votre service</p>
       </div>
 
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-4 pb-8">
-        <div className="space-y-6">
-          {/* Image Upload */}
-          <div>
-            <Label>Photo</Label>
-            <div className="mt-2">
-              {imagePreview ? (
-                <div className="relative">
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    className="h-48 w-full rounded-2xl object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={removeImage}
-                    className="absolute right-2 top-2 rounded-full bg-black/70 p-2"
-                  >
-                    <X className="text-white" size={16} />
-                  </button>
-                </div>
-              ) : (
-                <label className="flex h-48 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-muted-foreground/30 bg-white/50 dark:bg-stone-800/50 transition-colors hover:border-primary">
-                  <Upload className="mb-2 text-muted-foreground" size={32} />
-                  <span className="text-sm text-muted-foreground">Ajouter une photo</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="hidden"
-                  />
-                </label>
-              )}
-            </div>
+      {/* Form — même structure que « Créer un événement » */}
+      <form onSubmit={handleSubmit} className="relative z-10 flex-1 px-4 pb-10">
+        <div className="space-y-4">
+          {/* Photo */}
+          <div className={cardClass}>
+            {imagePreview ? (
+              <div className="relative">
+                <img src={imagePreview} alt="Preview" className="h-52 w-full rounded-2xl object-cover" />
+                <button
+                  type="button"
+                  onClick={removeImage}
+                  aria-label="Retirer la photo"
+                  className="absolute right-3 top-3 flex size-8 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform"
+                >
+                  <X size={16} strokeWidth={1.75} />
+                </button>
+              </div>
+            ) : (
+              <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-stone-300 p-8 text-center transition-colors hover:border-ink">
+                <span className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-lime">
+                  <ImageIcon size={24} strokeWidth={1.75} className="text-ink" />
+                </span>
+                <span className="font-medium text-ink">Ajouter une photo</span>
+                <span className="mt-1 text-sm text-stone-500">Touchez pour choisir une image</span>
+                <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+              </label>
+            )}
           </div>
 
-          {/* Title */}
-          <div>
-            <Label htmlFor="title">Titre *</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder="Ex: Salle de réception 200 personnes"
-              className="mt-2"
-              required
-            />
-          </div>
-
-          {/* Category */}
-          <div>
-            <Label>Catégorie *</Label>
-            <Select
-              value={formData.category}
-              onValueChange={(value) => setFormData({ ...formData, category: value })}
-            >
-              <SelectTrigger className="mt-2">
-                <SelectValue placeholder="Sélectionner une catégorie" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((cat) => (
-                  <SelectItem key={cat.value} value={cat.value}>
-                    {cat.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Description */}
-          <div>
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Décrivez votre service en détail..."
-              className="mt-2 min-h-[100px]"
-            />
-          </div>
-
-          {/* Price */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="price">Prix (FCFA)</Label>
+          {/* Informations */}
+          <div className={cardClass}>
+            <SectionTitle icon={Type}>Informations</SectionTitle>
+            <div className="space-y-2">
+              <Label htmlFor="title" className={labelClass}>Titre *</Label>
               <Input
-                id="price"
-                type="number"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                placeholder="0"
-                className="mt-2"
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder="Ex: Salle de réception 200 personnes"
+                className={inputClass}
+                required
               />
             </div>
-            <div>
-              <Label>Type de prix</Label>
+            <div className="space-y-2">
+              <Label className={labelClass}>Catégorie *</Label>
               <Select
-                value={formData.price_type}
-                onValueChange={(value) => setFormData({ ...formData, price_type: value })}
+                value={formData.category}
+                onValueChange={(value) => setFormData({ ...formData, category: value })}
               >
-                <SelectTrigger className="mt-2">
-                  <SelectValue />
+                <SelectTrigger className={inputClass}>
+                  <SelectValue placeholder="Sélectionner une catégorie" />
                 </SelectTrigger>
-                <SelectContent>
-                  {priceTypes.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>
-                      {type.label}
+                <SelectContent className="bg-white border-stone-200">
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.value} value={cat.value}>
+                      <span className="flex items-center gap-2.5">
+                        <cat.icon size={16} strokeWidth={1.75} className="text-stone-500" />
+                        {cat.label}
+                      </span>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -312,57 +294,126 @@ const EditListing = () => {
             </div>
           </div>
 
-          {/* Location */}
-          <div>
-            <Label htmlFor="location">Localisation</Label>
+          {/* Description */}
+          <div className={cardClass}>
+            <SectionTitle icon={AlignLeft}>Description</SectionTitle>
+            <Textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              placeholder="Décrivez votre service en détail..."
+              className="min-h-[120px]"
+            />
+          </div>
+
+          {/* Tarif */}
+          <div className={cardClass}>
+            <SectionTitle icon={Ticket}>Tarif</SectionTitle>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="price" className={labelClass}>Prix (FCFA)</Label>
+                <Input
+                  id="price"
+                  type="number"
+                  inputMode="numeric"
+                  value={formData.price}
+                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  placeholder="0"
+                  className={inputClass}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className={labelClass}>Type de prix</Label>
+                <Select
+                  value={formData.price_type}
+                  onValueChange={(value) => setFormData({ ...formData, price_type: value })}
+                >
+                  <SelectTrigger className={inputClass}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border-stone-200">
+                    {priceTypes.map((type) => (
+                      <SelectItem key={type.value} value={type.value}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          {/* Localisation */}
+          <div className={cardClass}>
+            <SectionTitle icon={MapPin}>Localisation</SectionTitle>
             <Input
               id="location"
               value={formData.location}
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
               placeholder="Ex: Cocody, Abidjan"
-              className="mt-2"
+              className={inputClass}
             />
           </div>
 
           {/* Contact */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="phone">Téléphone</Label>
+          <div className={cardClass}>
+            <SectionTitle icon={Phone}>Contact</SectionTitle>
+            <div className="space-y-2">
+              <Label htmlFor="phone" className={`${labelClass} flex items-center gap-2`}>
+                <Phone className="h-4 w-4 text-ink" strokeWidth={1.75} /> Téléphone
+              </Label>
               <Input
                 id="phone"
                 type="tel"
                 value={formData.contact_phone}
                 onChange={(e) => setFormData({ ...formData, contact_phone: e.target.value })}
-                placeholder="+225..."
-                className="mt-2"
+                placeholder="+225 XX XX XX XX XX"
+                className={inputClass}
               />
             </div>
-            <div>
-              <Label htmlFor="email">Email</Label>
+            <div className="space-y-2">
+              <Label htmlFor="email" className={`${labelClass} flex items-center gap-2`}>
+                <Mail className="h-4 w-4 text-ink" strokeWidth={1.75} /> {formData.contact_email.includes('@') ? emailProviderLabel(formData.contact_email) : 'Email'}
+              </Label>
               <Input
                 id="email"
                 type="email"
                 value={formData.contact_email}
                 onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })}
-                placeholder="contact@..."
-                className="mt-2"
+                placeholder="exemple@gmail.com"
+                className={inputClass}
               />
             </div>
+            {SOCIAL_FIELDS.map(({ key, label, Icon, placeholder, type }) => (
+              <div key={key} className="space-y-2">
+                <Label htmlFor={key} className={`${labelClass} flex items-center gap-2`}>
+                  <Icon className="h-4 w-4 text-ink" /> {label}
+                </Label>
+                <Input
+                  id={key}
+                  type={type}
+                  value={formData[key]}
+                  onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                  placeholder={placeholder}
+                  className={inputClass}
+                />
+              </div>
+            ))}
           </div>
 
           {/* Submit */}
-          <Button
+          <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-amber-500 hover:bg-amber-600"
+            className="w-full h-12 rounded-full bg-lime text-ink text-[15px] font-medium hover:bg-lime-deep transition-colors active:scale-[0.98] disabled:opacity-50"
           >
             {isSubmitting ? 'Mise à jour...' : 'Mettre à jour'}
-          </Button>
+          </button>
         </div>
       </form>
 
       {/* Background */}
-      <div className="fixed inset-0 -z-10 bg-gradient-to-b from-amber-50/50 to-background dark:from-amber-950/20" />
+      <div className="fixed inset-0 -z-10 bg-parchment" />
     </div>
   );
 };

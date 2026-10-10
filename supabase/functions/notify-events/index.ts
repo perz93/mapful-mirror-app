@@ -6,8 +6,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
  *
  * Called by pg_cron every 30 minutes. Handles:
  * 1. NEW_EVENT: Notify all users when a new event is published (last 35 min)
- * 2. EVENT_TOMORROW: Remind attendees of events happening tomorrow (at ~18h)
- * 3. EVENT_STARTING: Notify attendees ~1h before event starts
+ * 2. EVENT_TOMORROW: Remind interested users (favorites) of events happening tomorrow (at ~18h)
+ * 3. EVENT_STARTING: Notify interested users (favorites) ~1h before event starts
  * 4. EVENT_REMINDER: Send user-set reminders (from event_reminders table)
  */
 
@@ -27,6 +27,36 @@ async function callSendPush(params: Record<string, unknown>) {
   return res.json();
 }
 
+// Personnes intéressées par un événement : favoris (cœur) + anciens « J'y vais ».
+// deno-lint-ignore no-explicit-any
+async function audienceFor(supabase: any, eventId: string): Promise<string[]> {
+  const ids = new Set<string>();
+  for (const table of ["event_favorites", "event_attendees"]) {
+    const { data, error } = await supabase.from(table).select("user_id").eq("event_id", eventId);
+    if (error) continue; // table absente : on ignore
+    for (const row of data ?? []) if (row.user_id) ids.add(row.user_id);
+  }
+  return [...ids];
+}
+
+// Appels serveur uniquement : le jeton doit être une clé « service_role ».
+// La passerelle Supabase (verify_jwt) a déjà vérifié la signature du JWT ;
+// on contrôle ici son rôle (plusieurs clés service_role valides peuvent
+// coexister : celle du déclencheur SQL et celle de l'environnement).
+function isServiceRole(req: Request): boolean {
+  const token = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+  if (!token) return false;
+  if (SUPABASE_SERVICE_ROLE_KEY && token === SUPABASE_SERVICE_ROLE_KEY) return true;
+  const parts = token.split(".");
+  if (parts.length !== 3) return false;
+  try {
+    const json = atob(parts[1].replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(parts[1].length / 4) * 4, "="));
+    return JSON.parse(json).role === "service_role";
+  } catch {
+    return false;
+  }
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, {
@@ -35,6 +65,16 @@ serve(async (req) => {
         "Access-Control-Allow-Methods": "POST, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type, Authorization",
       },
+    });
+  }
+
+  // Seuls les appels serveur (cron, trigger, notify-events) avec la clé
+  // service_role peuvent déclencher des envois — sinon n'importe qui
+  // pourrait spammer tous les abonnés.
+  if (!isServiceRole(req)) {
+    return new Response(JSON.stringify({ error: "unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
     });
   }
 
@@ -47,7 +87,7 @@ serve(async (req) => {
     const thirtyFiveMinAgo = new Date(now.getTime() - 35 * 60 * 1000).toISOString();
     const { data: newEvents } = await supabase
       .from("events")
-      .select("id, title, category, venue, date, time, image_url")
+      .select("id, title, category, venue, date, time, image_url, user_id")
       .eq("is_published", true)
       .gte("created_at", thirtyFiveMinAgo);
 
@@ -61,6 +101,7 @@ serve(async (req) => {
           image: event.image_url,
           tag: `new-${event.id}`,
           send_to_all: true,
+          exclude_user_id: event.user_id,
           check_duplicates: true,
           notification_type: "new_event",
           event_id: event.id,
@@ -86,13 +127,9 @@ serve(async (req) => {
       if (tomorrowEvents && tomorrowEvents.length > 0) {
         const tomorrowResults = [];
         for (const event of tomorrowEvents) {
-          const { data: attendees } = await supabase
-            .from("event_attendees")
-            .select("user_id")
-            .eq("event_id", event.id);
+          const userIds = await audienceFor(supabase, event.id);
 
-          if (attendees && attendees.length > 0) {
-            const userIds = attendees.map((a) => a.user_id);
+          if (userIds.length > 0) {
             const result = await callSendPush({
               title: `📅 ${event.title}`,
               body: `${event.venue} — ${event.time.substring(0, 5)}`,
@@ -128,13 +165,15 @@ serve(async (req) => {
         const diffMinutes = (eventTime.getTime() - now.getTime()) / (60 * 1000);
 
         if (diffMinutes >= 30 && diffMinutes <= 65) {
-          const { data: attendees } = await supabase
-            .from("event_attendees")
+          // Ceux qui ont réglé un rappel le reçoivent déjà : pas de doublon
+          const { data: withReminder } = await supabase
+            .from("event_reminders")
             .select("user_id")
             .eq("event_id", event.id);
+          const skip = new Set((withReminder ?? []).map((r: { user_id: string }) => r.user_id));
+          const userIds = (await audienceFor(supabase, event.id)).filter((u) => !skip.has(u));
 
-          if (attendees && attendees.length > 0) {
-            const userIds = attendees.map((a) => a.user_id);
+          if (userIds.length > 0) {
             const result = await callSendPush({
               title: `⏰ ${event.title}`,
               body: `${event.venue} — dans ~1h`,
@@ -155,24 +194,16 @@ serve(async (req) => {
     }
 
     // --- 4. USER-SET REMINDERS (from event_reminders table) ---
-    const thirtyFiveMinFromNow = new Date(now.getTime() + 35 * 60 * 1000).toISOString();
+    // Le cron passe toutes les 30 min : on envoie les rappels arrivés à
+    // échéance (± 15 min), et on rattrape ceux manqués depuis moins de 2 h.
     const { data: dueReminders } = await supabase
       .from("event_reminders")
       .select("id, user_id, event_id, events(title, venue, time, image_url)")
       .eq("sent", false)
-      .lte("remind_at", thirtyFiveMinFromNow)
-      .gte("remind_at", now.toISOString().replace('T', ' ').substring(0, 19));
+      .lte("remind_at", new Date(now.getTime() + 15 * 60 * 1000).toISOString())
+      .gte("remind_at", new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString());
 
-    // Also get reminders that are past due but not sent (catch missed ones)
-    const { data: pastDueReminders } = await supabase
-      .from("event_reminders")
-      .select("id, user_id, event_id, events(title, venue, time, image_url)")
-      .eq("sent", false)
-      .lt("remind_at", now.toISOString());
-
-    const allDueReminders = [...(dueReminders || []), ...(pastDueReminders || [])];
-    // Dedupe by id
-    const uniqueReminders = Array.from(new Map(allDueReminders.map(r => [r.id, r])).values());
+    const uniqueReminders = dueReminders || [];
 
     if (uniqueReminders.length > 0) {
       const reminderResults = [];
