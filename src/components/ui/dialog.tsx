@@ -33,10 +33,17 @@ let openDialogs = 0;
 const DarkStatusBar = () => {
   React.useEffect(() => {
     openDialogs += 1;
-    document.documentElement.classList.add('modal-open');
+    const html = document.documentElement;
+    const meta = document.querySelector('meta[name="theme-color"]');
+    const previousTheme = meta?.getAttribute('content') ?? null;
+    html.classList.add('modal-open');
+    meta?.setAttribute('content', '#000000');
     return () => {
       openDialogs -= 1;
-      if (openDialogs === 0) document.documentElement.classList.remove('modal-open');
+      if (openDialogs === 0) {
+        html.classList.remove('modal-open');
+        if (meta && previousTheme !== null) meta.setAttribute('content', previousTheme);
+      }
     };
   }, []);
   return null;
