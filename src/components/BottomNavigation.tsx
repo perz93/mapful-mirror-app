@@ -173,7 +173,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
             <div className="h-px bg-stone-200 mx-5" />
 
             {/* Categories */}
-            <div className="px-5 py-4 space-y-3">
+            <div className="px-5 py-2.5 space-y-2">
               <div className="flex items-center justify-between">
                 <p className="eyebrow text-stone-500">{t('nav.categories')}</p>
                 {selectedCategories.length > 0 && (
@@ -182,10 +182,10 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                   </button>
                 )}
               </div>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="-mx-5 flex gap-1.5 overflow-x-auto px-5 scrollbar-hide">
                 <button
                   onClick={() => setSelectedCategories([])}
-                  className={`h-8 px-3.5 rounded-full border text-[13px] font-medium transition-all active:scale-95 ${
+                  className={`h-8 px-3.5 flex-shrink-0 whitespace-nowrap rounded-full border text-[13px] font-medium transition-all active:scale-95 ${
                     selectedCategories.length === 0
                       ? 'bg-ink text-parchment border-ink'
                       : 'bg-white text-stone-700 border-stone-200 hover:border-ink'
@@ -197,7 +197,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                   <button
                     key={category.value}
                     onClick={() => toggleCategory(category.value)}
-                    className={`h-8 px-3.5 rounded-full border text-[13px] font-medium transition-all active:scale-95 ${
+                    className={`h-8 px-3.5 flex-shrink-0 whitespace-nowrap rounded-full border text-[13px] font-medium transition-all active:scale-95 ${
                       selectedCategories.includes(category.value)
                         ? 'bg-ink text-parchment border-ink'
                         : 'bg-white text-stone-700 border-stone-200 hover:border-ink'
@@ -209,19 +209,26 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
               </div>
             </div>
 
-            {/* Divider */}
-            <div className="h-px bg-stone-200 mx-5" />
 
             {/* Ville */}
-            <div className="px-5 py-4 space-y-3">
+            <div className="px-5 py-2.5 space-y-2">
               <p className="eyebrow text-stone-500">{t('nav.city')}</p>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="-mx-5 flex gap-1.5 overflow-x-auto px-5 scrollbar-hide">
+                <button
+                  onClick={() => setCitySearchOpen((o) => !o)}
+                  className={`h-8 px-3.5 flex-shrink-0 whitespace-nowrap rounded-full border border-dashed text-[13px] font-medium transition-all active:scale-95 inline-flex items-center gap-1.5 ${
+                    citySearchOpen ? 'border-ink text-ink' : 'border-stone-300 text-stone-600'
+                  }`}
+                >
+                  <Search size={13} strokeWidth={2} />
+                  {t('nav.otherCity')}
+                </button>
                 {[{ name: null as string | null, label: t('nav.allDistance'), count: 0 },
                   ...topCities.map(([name, count]) => ({ name: name as string | null, label: name, count }))].map((opt) => (
                   <button
                     key={opt.label}
                     onClick={() => chooseCity(opt.name)}
-                    className={`h-8 px-3.5 rounded-full border text-[13px] font-medium transition-all active:scale-95 inline-flex items-center gap-1.5 ${
+                    className={`h-8 px-3.5 flex-shrink-0 whitespace-nowrap rounded-full border text-[13px] font-medium transition-all active:scale-95 inline-flex items-center gap-1.5 ${
                       cityFilter === opt.name
                         ? 'bg-ink text-parchment border-ink'
                         : 'bg-white text-stone-700 border-stone-200 hover:border-ink'
@@ -233,15 +240,6 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                     )}
                   </button>
                 ))}
-                <button
-                  onClick={() => setCitySearchOpen((o) => !o)}
-                  className={`h-8 px-3.5 rounded-full border border-dashed text-[13px] font-medium transition-all active:scale-95 inline-flex items-center gap-1.5 ${
-                    citySearchOpen ? 'border-ink text-ink' : 'border-stone-300 text-stone-600'
-                  }`}
-                >
-                  <Search size={13} strokeWidth={2} />
-                  {t('nav.otherCity')}
-                </button>
               </div>
 
               {citySearchOpen && (
@@ -277,13 +275,11 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
               )}
             </div>
 
-            {/* Divider */}
-            <div className="h-px bg-stone-200 mx-5" />
 
             {/* Distance */}
-            <div className="px-5 py-4 space-y-3">
+            <div className="px-5 py-2.5 space-y-2">
               <p className="eyebrow text-stone-500">{t('nav.nearMe')}</p>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="-mx-5 flex gap-1.5 overflow-x-auto px-5 scrollbar-hide">
                 {[
                   { label: t('nav.allDistance'), value: null },
                   { label: '500m', value: 0.5 },
@@ -295,7 +291,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                   <button
                     key={opt.label}
                     onClick={() => setDistanceFilter(opt.value)}
-                    className={`h-8 px-3.5 rounded-full border text-[13px] font-medium transition-all active:scale-95 ${
+                    className={`h-8 px-3.5 flex-shrink-0 whitespace-nowrap rounded-full border text-[13px] font-medium transition-all active:scale-95 ${
                       distanceFilter === opt.value
                         ? 'bg-ink text-parchment border-ink'
                         : 'bg-white text-stone-700 border-stone-200 hover:border-ink'
@@ -308,7 +304,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
             </div>
 
             {/* Search button */}
-            <div className="flex gap-2 px-5 pb-5 pt-1">
+            <div className="flex gap-2 px-5 pb-5 pt-3">
               {activeFilterCount > 0 && (
                 <button
                   onClick={clearFilters}
