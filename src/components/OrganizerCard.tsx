@@ -7,11 +7,11 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 interface OrganizerCardProps {
   userId?: string | null;
-  /** « event » → « Organisé par », « listing » → « Vendu par » */
+  /** « event » → « Organisé / publié par », « listing » → « Proposé par » */
   kind: 'event' | 'listing';
 }
 
-/** Carte « Organisé par / Vendu par » qui ouvre le profil public. */
+/** Carte « Organisé / publié par » ou « Proposé par » qui ouvre le profil public. */
 const OrganizerCard = ({ userId, kind }: OrganizerCardProps) => {
   const { lang } = useLanguage();
   const { data: profile } = usePublicProfile(userId);
@@ -31,7 +31,7 @@ const OrganizerCard = ({ userId, kind }: OrganizerCardProps) => {
   if (!userId) return null;
   const name = profileDisplayName(profile, lang);
   const fr = lang === 'fr';
-  const label = kind === 'event' ? (fr ? 'Organisé par' : 'Hosted by') : (fr ? 'Vendu par' : 'Sold by');
+  const label = kind === 'event' ? (fr ? 'Organisé / publié par' : 'Hosted / posted by') : (fr ? 'Proposé par' : 'Offered by');
   const sub = counts
     ? kind === 'event'
       ? `${counts.events} ${fr ? (counts.events > 1 ? 'événements' : 'événement') : counts.events > 1 ? 'events' : 'event'}`

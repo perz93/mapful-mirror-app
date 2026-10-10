@@ -173,9 +173,6 @@ const ListingDetails = () => {
             )}
           </div>
 
-          {/* Vendeur → profil public */}
-          <OrganizerCard userId={listing.user_id} kind="listing" />
-
           {/* À propos : un seul style de texte, uniforme */}
           {listing.description && (
             <section>
@@ -183,6 +180,9 @@ const ListingDetails = () => {
               <p className="text-[17px] font-medium leading-[1.5] tracking-[-0.01em] text-ink whitespace-pre-line">{listing.description}</p>
             </section>
           )}
+
+          {/* Annonceur → profil public, après la description */}
+          <OrganizerCard userId={listing.user_id} kind="listing" />
         </div>
       </div>
 
