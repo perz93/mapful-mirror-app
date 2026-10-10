@@ -325,46 +325,41 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
       </Dialog>
 
       <div className={`fixed bottom-0 left-0 right-0 max-w-md mx-auto flex-shrink-0 px-4 pb-safe z-40 ${className}`}>
-        <div className="neo-white-bottom h-[92px] rounded-[34px] bg-white dark:bg-stone-900/90 mb-2 overflow-hidden">
+        <div className="neo-white-bottom h-[80px] rounded-full bg-white dark:bg-stone-900/90 mb-2 overflow-hidden">
           <div className="relative h-full flex items-center">
             <button
               onClick={() => setSearchOpen(true)}
-              className="flex-shrink-0 h-[66px] w-[66px] ml-2.5 flex items-center justify-center rounded-full bg-lime text-ink hover:bg-lime-deep transition-all duration-300 active:scale-95"
+              className="flex-shrink-0 h-[60px] w-[60px] ml-2 flex items-center justify-center rounded-full bg-lime text-ink hover:bg-lime-deep transition-all duration-300 active:scale-95"
               aria-label={t('nav.search')}
             >
-              <Search size={26} strokeWidth={2} />
+              <Search size={24} strokeWidth={2} />
             </button>
 
             <div className="flex-1 relative h-full min-w-0">
               <div
                 ref={scrollRef}
-                className="flex items-center h-full overflow-x-auto overflow-y-hidden scrollbar-hide px-1.5 gap-0.5 whitespace-nowrap"
+                className="flex items-center h-full overflow-x-auto overflow-y-hidden scrollbar-hide px-2 pb-1.5 gap-1.5 whitespace-nowrap"
               >
                 {navItems.map((item, index) => {
                   const isActive = location.pathname === item.path;
-                  // N2 : la catégorie dans un cercle, son nom court dessous
+                  // N1 : chaque catégorie dans un cercle crème, icône + nom court écrit dedans ;
+                  // la page ouverte en noir
                   const shortLabel = item.label.split(/\s+&\s+/)[0];
                   return (
                     <Link
                       key={index}
                       to={item.path}
                       aria-label={item.label}
-                      className="no-press flex-shrink-0 flex w-[74px] flex-col items-center justify-center gap-1.5 pb-2 active:scale-95 transition-transform"
+                      className={`no-press flex-shrink-0 flex size-[60px] flex-col items-center justify-center gap-[3px] rounded-full transition-colors duration-300 active:scale-95 ${
+                        isActive ? 'bg-ink text-parchment' : 'bg-parchment text-ink dark:bg-stone-800 dark:text-stone-200'
+                      }`}
                     >
-                      <span
-                        className={`flex size-[50px] items-center justify-center rounded-full transition-colors duration-300 ${
-                          isActive ? 'bg-ink' : 'bg-[#efeee8] dark:bg-stone-800'
-                        }`}
-                      >
-                        <img
-                          src={item.icon}
-                          alt=""
-                          className={`size-[24px] transition-all duration-300 ${isActive ? 'invert opacity-100' : 'opacity-80'}`}
-                        />
-                      </span>
-                      <p className={`max-w-[74px] truncate text-[11.5px] leading-none text-ink dark:text-stone-300 ${isActive ? 'font-bold' : 'font-semibold'}`}>
-                        {shortLabel}
-                      </p>
+                      <img
+                        src={item.icon}
+                        alt=""
+                        className={`size-[22px] flex-shrink-0 transition-all duration-300 ${isActive ? 'invert' : 'opacity-85'}`}
+                      />
+                      <span className={`max-w-[54px] truncate text-[9px] leading-none tracking-[-0.01em] ${isActive ? 'font-bold' : 'font-semibold'}`}>{shortLabel}</span>
                     </Link>
                   );
                 })}
