@@ -31,7 +31,7 @@
     <meta name="twitter:image" content="%SITE_ORIGIN%/og-image.jpg" />
     <style>
       /* Pendant le splash, fond noir partout (sinon iOS teinte la barre d'état en clair) */
-      html.splashing,html.splashing body{background:#000!important}
+      html.splashing,html.splashing body,html.modal-open,html.modal-open body{background:#000!important}
       /* VIBE se tient en portrait : en paysage sur téléphone, message plein écran */
       #rotate-hint{display:none}
       @media (orientation:landscape) and (max-height:500px) and (pointer:coarse){

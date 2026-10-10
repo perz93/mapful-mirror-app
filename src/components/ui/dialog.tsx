@@ -27,6 +27,21 @@ const DialogOverlay = React.forwardRef<
 ));
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
+// Fenêtre ouverte : le haut de l'écran (barre d'état iOS, teintée par le fond
+// de la page) passe en noir comme le voile, au lieu de rester clair.
+let openDialogs = 0;
+const DarkStatusBar = () => {
+  React.useEffect(() => {
+    openDialogs += 1;
+    document.documentElement.classList.add('modal-open');
+    return () => {
+      openDialogs -= 1;
+      if (openDialogs === 0) document.documentElement.classList.remove('modal-open');
+    };
+  }, []);
+  return null;
+};
+
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
@@ -41,6 +56,7 @@ const DialogContent = React.forwardRef<
       )}
       {...props}
     >
+      <DarkStatusBar />
       {children}
       <DialogPrimitive.Close className="absolute right-4 top-4 flex size-10 items-center justify-center rounded-full bg-parchment text-ink hover:bg-stone-200 active:scale-95 transition-colors">
         <X className="h-4 w-4" strokeWidth={1.75} />
