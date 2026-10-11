@@ -2,6 +2,7 @@ import LargeTitle from '@/components/LargeTitle';
 import { useState, useEffect, useRef } from 'react';
 import { FormPageSkeleton } from '@/components/PageSkeleton';
 import SectionTitle from '@/components/SectionTitle';
+import ContactFields, { readContacts, writeContacts } from '@/components/ContactFields';
 import EventScheduleFields from '@/components/EventScheduleFields';
 import { addBaseMap } from '@/lib/mapTiles';
 import { searchPlaces, reversePlace, type PlaceResult } from '@/lib/geocode';
@@ -12,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign, ArrowLeft, Loader2, Phone, Instagram, Facebook, Twitter, MessageCircle, Plus, X, Mail, Type, CalendarDays, Ticket, AlignLeft, ListOrdered, LocateFixed } from 'lucide-react';
+import { Calendar, MapPin, Clock, Users, Image as ImageIcon, DollarSign, ArrowLeft, Loader2, Phone, Instagram, Facebook, Twitter, MessageCircle, Plus, X, Mail, Type, CalendarDays, Ticket, AlignLeft, ListOrdered, LocateFixed, ContactRound } from 'lucide-react';
 import TikTokIcon from '@/components/icons/TikTokIcon';
 import { retryWithoutNewColumns } from '@/lib/retryWithoutNewColumns';
 import { emailProviderLabel } from '@/lib/emailProvider';
@@ -695,112 +696,14 @@ const CreateEvent = () => {
               </div>
             </div>
 
-            {/* Contact Card */}
+            {/* Contact (C3) : numéro + WhatsApp, puis réseaux à la demande */}
             <div className={cardClass}>
-              <SectionTitle icon={Phone}>{t('form.contact')}</SectionTitle>
-
-              <div className="space-y-4">
-                <div className="space-y-3">
-                  <Label htmlFor="contactPhone" className={`${labelClass} flex items-center gap-2`}>
-                    <Phone className="w-4 h-4 text-ink" />
-                    {t('form.phone')}
-                  </Label>
-                  <Input
-                    id="contactPhone"
-                    placeholder="+225 XX XX XX XX XX"
-                    value={formData.contactPhone}
-                    onChange={e => setFormData({ ...formData, contactPhone: e.target.value })}
-                    className={inputClass}
-                  />
-                </div>
-
-                <div className="space-y-3">
-                  <Label htmlFor="contactWhatsapp" className={`${labelClass} flex items-center gap-2`}>
-                    <MessageCircle className="w-4 h-4 text-ink" />
-                    {t('form.whatsapp')}
-                  </Label>
-                  <Input
-                    id="contactWhatsapp"
-                    placeholder="+225 XX XX XX XX XX"
-                    value={formData.contactWhatsapp}
-                    onChange={e => setFormData({ ...formData, contactWhatsapp: e.target.value })}
-                    className={inputClass}
-                  />
-                </div>
-
-                <div className="space-y-3">
-                  <Label htmlFor="contactInstagram" className={`${labelClass} flex items-center gap-2`}>
-                    <Instagram className="w-4 h-4 text-ink" />
-                    {t('form.instagram')}
-                  </Label>
-                  <Input
-                    id="contactInstagram"
-                    placeholder={t('form.accountPlaceholder')}
-                    value={formData.contactInstagram}
-                    onChange={e => setFormData({ ...formData, contactInstagram: e.target.value })}
-                    className={inputClass}
-                  />
-                </div>
-
-                <div className="space-y-3">
-                  <Label htmlFor="contactFacebook" className={`${labelClass} flex items-center gap-2`}>
-                    <Facebook className="w-4 h-4 text-ink" />
-                    {t('form.facebook')}
-                  </Label>
-                  <Input
-                    id="contactFacebook"
-                    placeholder={t('form.pagePlaceholder')}
-                    value={formData.contactFacebook}
-                    onChange={e => setFormData({ ...formData, contactFacebook: e.target.value })}
-                    className={inputClass}
-                  />
-                </div>
-
-                <div className="space-y-3">
-                  <Label htmlFor="contactTiktok" className={`${labelClass} flex items-center gap-2`}>
-                    <TikTokIcon className="w-4 h-4 text-ink" />
-                    {t('form.tiktok')}
-                  </Label>
-                  <Input
-                    id="contactTiktok"
-                    placeholder={t('form.accountPlaceholder')}
-                    value={formData.contactTiktok}
-                    onChange={e => setFormData({ ...formData, contactTiktok: e.target.value })}
-                    className={inputClass}
-                  />
-                </div>
-
-                <div className="space-y-3">
-                  <Label htmlFor="contactTwitter" className={`${labelClass} flex items-center gap-2`}>
-                    <Twitter className="w-4 h-4 text-ink" />
-                    {t('form.twitter')}
-                  </Label>
-                  <Input
-                    id="contactTwitter"
-                    placeholder={t('form.accountPlaceholder')}
-                    value={formData.contactTwitter}
-                    onChange={e => setFormData({ ...formData, contactTwitter: e.target.value })}
-                    className={inputClass}
-                  />
-                </div>
-
-                <div className="space-y-3">
-                  <Label htmlFor="contactEmail" className={`${labelClass} flex items-center gap-2`}>
-                    <Mail className="w-4 h-4 text-ink" />
-                    {formData.contactEmail.includes('@') ? emailProviderLabel(formData.contactEmail) : 'Email'}
-                  </Label>
-                  <Input
-                    id="contactEmail"
-                    type="email"
-                    inputMode="email"
-                    autoComplete="email"
-                    placeholder="exemple@gmail.com"
-                    value={formData.contactEmail}
-                    onChange={e => setFormData({ ...formData, contactEmail: e.target.value })}
-                    className={inputClass}
-                  />
-                </div>
-              </div>
+              <SectionTitle icon={ContactRound}>{t('form.contact')}</SectionTitle>
+              <ContactFields
+                value={readContacts(formData, 'camel')}
+                onChange={(patch) => setFormData((f) => ({ ...f, ...writeContacts(patch, 'camel') }))}
+                inputClass={inputClass}
+              />
             </div>
 
             {/* Submit Button */}

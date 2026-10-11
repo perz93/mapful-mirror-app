@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { FormPageSkeleton } from '@/components/PageSkeleton';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, X, Image as ImageIcon, Type, AlignLeft, Ticket, MapPin, Phone, Mail, MessageCircle, Instagram, Facebook } from 'lucide-react';
+import { ArrowLeft, X, Image as ImageIcon, Type, AlignLeft, Ticket, MapPin, Phone, Mail, MessageCircle, Instagram, Facebook, ContactRound } from 'lucide-react';
 import TikTokIcon from '@/components/icons/TikTokIcon';
 import { retryWithoutNewColumns } from '@/lib/retryWithoutNewColumns';
 import { emailProviderLabel } from '@/lib/emailProvider';
@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import SectionTitle from '@/components/SectionTitle';
+import ContactFields, { readContacts, writeContacts } from '@/components/ContactFields';
 import { MARKETPLACE_CATEGORIES } from '@/lib/marketplaceCategories';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/components/PillToast';
@@ -355,50 +356,14 @@ const EditListing = () => {
             />
           </div>
 
-          {/* Contact */}
+          {/* Contact (C3) : numéro + WhatsApp, puis réseaux à la demande */}
           <div className={cardClass}>
-            <SectionTitle icon={Phone}>Contact</SectionTitle>
-            <div className="space-y-2">
-              <Label htmlFor="phone" className={`${labelClass} flex items-center gap-2`}>
-                <Phone className="h-4 w-4 text-ink" strokeWidth={1.75} /> Téléphone
-              </Label>
-              <Input
-                id="phone"
-                type="tel"
-                value={formData.contact_phone}
-                onChange={(e) => setFormData({ ...formData, contact_phone: e.target.value })}
-                placeholder="+225 XX XX XX XX XX"
-                className={inputClass}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email" className={`${labelClass} flex items-center gap-2`}>
-                <Mail className="h-4 w-4 text-ink" strokeWidth={1.75} /> {formData.contact_email.includes('@') ? emailProviderLabel(formData.contact_email) : 'Email'}
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.contact_email}
-                onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })}
-                placeholder="exemple@gmail.com"
-                className={inputClass}
-              />
-            </div>
-            {SOCIAL_FIELDS.map(({ key, label, Icon, placeholder, type }) => (
-              <div key={key} className="space-y-2">
-                <Label htmlFor={key} className={`${labelClass} flex items-center gap-2`}>
-                  <Icon className="h-4 w-4 text-ink" /> {label}
-                </Label>
-                <Input
-                  id={key}
-                  type={type}
-                  value={formData[key]}
-                  onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                  placeholder={placeholder}
-                  className={inputClass}
-                />
-              </div>
-            ))}
+            <SectionTitle icon={ContactRound}>Contact</SectionTitle>
+            <ContactFields
+              value={readContacts(formData, 'snake')}
+              onChange={(patch) => setFormData((f) => ({ ...f, ...writeContacts(patch, 'snake') }))}
+              inputClass={inputClass}
+            />
           </div>
 
           {/* Submit */}
