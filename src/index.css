@@ -1132,56 +1132,50 @@ vercel-live-feedback,
 }
 .animate-update-dot { animation: update-dot 1.1s ease-in-out infinite; }
 
-/* Marqueurs P4 : étiquette blanche (mini photo + nom), noire quand sélectionnée */
-.pin-label {
+/* Marqueurs P1 : goutte blanche avec la photo, verte et plus grande quand sélectionnée.
+   .pin-drop est une boîte droite dont le bas-centre est le lieu exact (sert d'origine au zoom) ;
+   .pin-drop-shape est un carré arrondi sauf un coin, tourné de -45° : ce coin devient la pointe
+   (centre → pointe = 22 × √2 ≈ 31px, d'où la hauteur 22 + 31 = 53px). */
+.pin-drop {
+  position: absolute;
+  left: -22px;
+  top: -53px;
+  width: 44px;
+  height: 53px;
+  transform-origin: 50% 100%;
+  cursor: pointer;
+  animation: pinDropIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.2s ease;
+}
+.pin-drop-shape {
   position: absolute;
   left: 0;
   top: 0;
-  transform: translate(-50%, calc(-100% - 7px));
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  max-width: 170px;
-  padding: 3px 11px 3px 3px;
-  border-radius: 9999px;
+  width: 44px;
+  height: 44px;
+  padding: 3px;
+  border-radius: 50% 50% 50% 0;
   background: #ffffff;
-  color: #14140f;
-  white-space: nowrap;
-  box-shadow: 0 3px 10px rgb(20 20 15 / 0.2);
-  font-family: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif;
-  font-size: 11.5px;
-  line-height: 1;
-  animation: pinLabelIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform: rotate(-45deg);
+  box-shadow: 0 3px 10px rgb(20 20 15 / 0.25);
+  transition: background-color 0.2s ease;
 }
-.pin-label::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: -5px;
-  margin-left: -5px;
-  border: 5px solid transparent;
-  border-bottom: 0;
-  border-top-color: #ffffff;
-}
-.pin-label-img {
-  flex-shrink: 0;
-  width: 24px;
-  height: 24px;
+.pin-drop-img {
+  display: block;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   overflow: hidden;
   background: #ebe9dd;
+  transform: rotate(45deg);
 }
-.pin-label-img img { width: 100% !important; height: 100% !important; object-fit: cover; display: block; }
-.pin-label-title { font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
-.pin-label-time { display: none; font-style: normal; font-weight: 600; color: #a6e22e; }
+.pin-drop-img img { width: 100% !important; height: 100% !important; object-fit: cover; display: block; }
 .custom-marker.is-selected { z-index: 1000 !important; }
-.custom-marker.is-selected .pin-label { background: #14140f; color: #f5f5eb; box-shadow: 0 4px 14px rgb(20 20 15 / 0.35); }
-.custom-marker.is-selected .pin-label::after { border-top-color: #14140f; }
-.custom-marker.is-selected .pin-label-img { box-shadow: 0 0 0 2px #a6e22e; }
-.custom-marker.is-selected .pin-label-time { display: inline; }
-@keyframes pinLabelIn {
-  from { opacity: 0; transform: translate(-50%, calc(-100% + 4px)) scale(0.8); }
-  to { opacity: 1; transform: translate(-50%, calc(-100% - 7px)) scale(1); }
+.custom-marker.is-selected .pin-drop { transform: scale(1.18); }
+.custom-marker.is-selected .pin-drop-shape { background: #a6e22e; }
+@keyframes pinDropIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.7); }
+  to { opacity: 1; transform: none; }
 }
 
 /* ── Pas d'ombres portées sur les éléments (choix produit) ──
@@ -1196,15 +1190,11 @@ vercel-live-feedback,
 .btn-float.btn-float.btn-float,
 .btn-float.btn-float.btn-float.bg-lime,
 .custom-popup-card .leaflet-popup-content-wrapper,
-.pin-label,
-.custom-marker.is-selected .pin-label,
 .marker-image-wrapper,
 .marker-image-wrapper:hover {
   box-shadow: none !important;
 }
 .marker-image-container::after { filter: none !important; }
-/* Anneau vert de l'étiquette sélectionnée (pas une ombre) */
-.custom-marker.is-selected .pin-label-img { box-shadow: 0 0 0 2px #a6e22e !important; }
 .custom-marker.is-selected .marker-image-wrapper { box-shadow: 0 0 0 2.5px #a6e22e !important; }
 
 /* Exception : sur la carte, boutons flottants et étiquettes gardent leur ombre
@@ -1212,5 +1202,5 @@ vercel-live-feedback,
 .map-shadow.map-shadow.map-shadow {
   box-shadow: 0 2px 4px rgb(20 20 15 / 0.10), 0 10px 22px -6px rgb(20 20 15 / 0.32) !important;
 }
-.pin-label.pin-label { box-shadow: 0 3px 10px rgb(20 20 15 / 0.2) !important; }
-.custom-marker.is-selected .pin-label.pin-label { box-shadow: 0 4px 14px rgb(20 20 15 / 0.35) !important; }
+.pin-drop-shape.pin-drop-shape { box-shadow: 0 3px 10px rgb(20 20 15 / 0.25) !important; }
+.custom-marker.is-selected .pin-drop-shape.pin-drop-shape { box-shadow: 0 5px 14px rgb(20 20 15 / 0.35) !important; }
