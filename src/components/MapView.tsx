@@ -98,14 +98,15 @@ const MapView = () => {
 
     const markerClusterGroup = L.markerClusterGroup({
       showCoverageOnHover: false,
-      zoomToBoundsOnClick: true,
-      spiderfyOnMaxZoom: true,
-      spiderfyDistanceMultiplier: 2,
+      // Groupe + étoile : les étiquettes trop proches sont regroupées à tous les zooms
+      // (sinon elles s'empilent) ; le clic sur un groupe est géré plus bas.
+      zoomToBoundsOnClick: false,
+      spiderfyOnMaxZoom: false,
+      spiderfyDistanceMultiplier: 2.6,
       removeOutsideVisibleBounds: true,
       animate: true,
       animateAddingMarkers: true,
-      disableClusteringAtZoom: 12,
-      maxClusterRadius: 50,
+      maxClusterRadius: 80,
       iconCreateFunction: function(cluster) {
         const count = cluster.getChildCount();
         let sizeClass = 'small';
@@ -128,6 +129,30 @@ const MapView = () => {
           iconSize: L.point(34, 34),
         });
       },
+    });
+
+    // Clic sur un groupe : jusqu'à 8 événements, on les ouvre en étoile au centre de la zone
+    // visible (entre le haut et le cadre événement du bas) ; au-delà, on zoome pour les séparer,
+    // et l'étoile ne sert qu'en dernier recours (événements au même endroit).
+    const STAR_MAX = 8;
+    markerClusterGroup.on('clusterclick', (e: L.LeafletEvent) => {
+      const cluster = (e as L.LeafletEvent & { layer: L.MarkerCluster }).layer;
+      const count = cluster.getChildCount();
+      const canZoom = map.getBoundsZoom(cluster.getBounds()) > map.getZoom() && map.getZoom() < map.getMaxZoom();
+      if (count > STAR_MAX && canZoom) {
+        cluster.zoomToBounds({ padding: [60, 60] });
+        return;
+      }
+      const size = map.getSize();
+      const target = L.point(size.x / 2, (100 + (size.y - 360)) / 2);
+      const at = map.latLngToContainerPoint(cluster.getLatLng());
+      const offset = at.subtract(target);
+      if (Math.abs(offset.x) < 8 && Math.abs(offset.y) < 8) {
+        cluster.spiderfy();
+        return;
+      }
+      map.once('moveend', () => cluster.spiderfy());
+      map.panBy(offset, { duration: 0.35 });
     });
 
     markerClusterGroupRef.current = markerClusterGroup;
@@ -291,19 +316,21 @@ const MapView = () => {
       heatLayerRef.current = null;
     }
 
-    // P1 : goutte (vraie forme de pin) avec la photo dedans ; verte et plus grande quand sélectionnée
-    const createCustomIcon = (imageUrl: string, eventType: string) => {
+    // P4 : étiquette avec mini photo + nom court (heure affichée quand l'événement est sélectionné)
+    const createCustomIcon = (imageUrl: string, eventType: string, title: string, time: string) => {
       const defaultImage = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=80&q=60&fm=webp';
+      const hour = (time || '').slice(0, 5).replace(':', 'h').replace(/h00$/, 'h');
       return L.divIcon({
         className: 'custom-marker',
         html: `
-          <div class="pin-drop" data-cat="${escapeHtml(eventType)}">
-            <span class="pin-drop-shape"><span class="pin-drop-img"><img src="${safeUrl(imageUrl, defaultImage)}" alt="" loading="lazy" /></span></span>
+          <div class="pin-label" data-cat="${escapeHtml(eventType)}">
+            <span class="pin-label-img"><img src="${safeUrl(imageUrl, defaultImage)}" alt="" loading="lazy" /></span>
+            <b class="pin-label-title">${escapeHtml(softCase(title))}</b>${hour ? `<em class="pin-label-time"> · ${escapeHtml(hour)}</em>` : ''}
           </div>
         `,
         iconSize: [0, 0],
         iconAnchor: [0, 0],
-        popupAnchor: [0, -54],
+        popupAnchor: [0, -44],
       });
     };
 
@@ -337,7 +364,7 @@ const MapView = () => {
 
     events.forEach((event) => {
       const marker = L.marker([event.latitude, event.longitude], {
-        icon: createCustomIcon(event.image_url || '', event.category),
+        icon: createCustomIcon(event.image_url || '', event.category, event.title, event.time),
       });
 
       const dateFormatted = formatEventDate(event.date);
@@ -392,7 +419,9 @@ const MapView = () => {
       marker.on('click', () => {
         const key = `${event.latitude}-${event.longitude}`;
         const countAtPosition = coordCounts.get(key) || 1;
-        if (countAtPosition === 1) {
+        // Ouvert depuis une étoile : on ne zoome pas (le zoom refermerait l'étoile et la fiche)
+        const inStar = !!(marker as L.Marker & { _preSpiderfyLatlng?: L.LatLng })._preSpiderfyLatlng;
+        if (countAtPosition === 1 && !inStar) {
           map.flyTo([event.latitude, event.longitude], 16, {
             duration: 0.8,
             easeLinearity: 0.25,
@@ -545,6 +574,20 @@ const MapView = () => {
 
     return () => { cancelled = true; };
   }, [routeDestination, geo.position, geo.loading]);
+
+  // Itinéraire affiché : on masque les indicateurs d'événements (seuls restent ta position,
+  // le tracé et le point d'arrivée) ; ils reviennent à la fermeture de l'itinéraire.
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    const clusterGroup = markerClusterGroupRef.current;
+    if (!map || !clusterGroup) return;
+    if (routeDestination) {
+      map.closePopup();
+      if (map.hasLayer(clusterGroup)) map.removeLayer(clusterGroup);
+    } else if (!map.hasLayer(clusterGroup)) {
+      map.addLayer(clusterGroup);
+    }
+  }, [routeDestination, mapInstance]);
 
   // ========================================
   // Search & distance filter
