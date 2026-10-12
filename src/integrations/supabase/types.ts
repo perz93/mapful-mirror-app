@@ -48,14 +48,19 @@ export type Database = {
           address: string | null
           capacity: number | null
           category: string
+          city: string | null
           contact_facebook: string | null
           contact_instagram: string | null
           contact_phone: string | null
           contact_twitter: string | null
+          contact_email: string | null
+          contact_tiktok: string | null
           contact_whatsapp: string | null
           created_at: string
           date: string
           description: string | null
+          end_date: string | null
+          end_time: string | null
           id: string
           image_url: string | null
           is_paid: boolean
@@ -74,14 +79,19 @@ export type Database = {
           address?: string | null
           capacity?: number | null
           category: string
+          city?: string | null
           contact_facebook?: string | null
           contact_instagram?: string | null
           contact_phone?: string | null
           contact_twitter?: string | null
+          contact_email?: string | null
+          contact_tiktok?: string | null
           contact_whatsapp?: string | null
           created_at?: string
           date: string
           description?: string | null
+          end_date?: string | null
+          end_time?: string | null
           id?: string
           image_url?: string | null
           is_paid?: boolean
@@ -100,14 +110,19 @@ export type Database = {
           address?: string | null
           capacity?: number | null
           category?: string
+          city?: string | null
           contact_facebook?: string | null
           contact_instagram?: string | null
           contact_phone?: string | null
           contact_twitter?: string | null
+          contact_email?: string | null
+          contact_tiktok?: string | null
           contact_whatsapp?: string | null
           created_at?: string
           date?: string
           description?: string | null
+          end_date?: string | null
+          end_time?: string | null
           id?: string
           image_url?: string | null
           is_paid?: boolean
@@ -129,6 +144,11 @@ export type Database = {
           category: Database["public"]["Enums"]["marketplace_category"]
           contact_email: string | null
           contact_phone: string | null
+          contact_whatsapp: string | null
+          contact_instagram: string | null
+          contact_facebook: string | null
+          contact_tiktok: string | null
+          contact_twitter: string | null
           created_at: string
           description: string | null
           id: string
@@ -145,6 +165,11 @@ export type Database = {
           category: Database["public"]["Enums"]["marketplace_category"]
           contact_email?: string | null
           contact_phone?: string | null
+          contact_whatsapp?: string | null
+          contact_instagram?: string | null
+          contact_facebook?: string | null
+          contact_tiktok?: string | null
+          contact_twitter?: string | null
           created_at?: string
           description?: string | null
           id?: string
@@ -161,6 +186,11 @@ export type Database = {
           category?: Database["public"]["Enums"]["marketplace_category"]
           contact_email?: string | null
           contact_phone?: string | null
+          contact_whatsapp?: string | null
+          contact_instagram?: string | null
+          contact_facebook?: string | null
+          contact_tiktok?: string | null
+          contact_twitter?: string | null
           created_at?: string
           description?: string | null
           id?: string
@@ -178,6 +208,7 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          bio: string | null
           created_at: string
           email: string
           full_name: string | null
@@ -189,6 +220,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           email: string
           full_name?: string | null
@@ -200,6 +232,7 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           email?: string
           full_name?: string | null
@@ -251,6 +284,9 @@ export type Database = {
         | "traiteurs"
         | "animation_dj"
         | "decoration"
+        | "materiel"
+        | "photo_video"
+        | "beaute_tenues"
         | "autre"
     }
     CompositeTypes: {
@@ -384,6 +420,9 @@ export const Constants = {
         "traiteurs",
         "animation_dj",
         "decoration",
+        "materiel",
+        "photo_video",
+        "beaute_tenues",
         "autre",
       ],
     },

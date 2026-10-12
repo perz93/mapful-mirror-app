@@ -12,7 +12,7 @@ export const useTonightEvents = () => {
         .from('events')
         .select('*')
         .eq('is_published', true)
-        .gte('date', today)
+        .or(`date.gte.${today},end_date.gte.${today}`) // en cours sur plusieurs jours inclus
         .order('date', { ascending: true })
         .order('time', { ascending: true })
         .limit(10);

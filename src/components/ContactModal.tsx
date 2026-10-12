@@ -53,7 +53,7 @@ const ContactModal = ({
     >
       <div 
         className={cn(
-"relative bg-white/95 backdrop-blur-xl rounded-3xl p-6 w-full max-w-sm shadow-2xl transition-all duration-500",
+"relative bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl transition-all duration-500",
           isAnimating 
             ? "opacity-100 scale-100 translate-y-0" 
             : "opacity-0 scale-75 translate-y-8"
@@ -65,10 +65,10 @@ const ContactModal = ({
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-11 h-11 rounded-full bg-white/80 dark:bg-stone-900/80 backdrop-blur-md hover:bg-white dark:hover:bg-stone-900 flex items-center justify-center shadow-[0_8px_24px_-6px_rgba(0,0,0,0.25)] hover:shadow-[0_12px_32px_-6px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-95 transition-all duration-300"
+          className="absolute top-4 right-4 flex size-10 items-center justify-center rounded-full bg-parchment text-ink hover:bg-stone-200 active:scale-95 transition-colors"
           aria-label="Fermer"
         >
-          <X className="w-4 h-4 text-stone-800 dark:text-stone-100" strokeWidth={2.5} />
+          <X className="h-4 w-4" strokeWidth={1.75} />
         </button>
 
         <h3 className="text-xl font-semibold text-stone-900 mb-6 text-center">Contacter l'organisateur</h3>
@@ -83,7 +83,7 @@ const ContactModal = ({
                 className="flex items-center gap-4 p-4 rounded-2xl bg-stone-50 hover:bg-stone-100 transition-all hover:scale-[1.02] active:scale-[0.98]"
                 style={{ animationDelay: '0.1s' }}
               >
-                <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-ink flex items-center justify-center">
                   <Phone className="w-5 h-5 text-white" />
                 </div>
                 <div>
@@ -101,7 +101,7 @@ const ContactModal = ({
                 className="flex items-center gap-4 p-4 rounded-2xl bg-stone-50 hover:bg-stone-100 transition-all hover:scale-[1.02] active:scale-[0.98]"
                 style={{ animationDelay: '0.15s' }}
               >
-                <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-ink flex items-center justify-center">
                   <MessageCircle className="w-5 h-5 text-white" />
                 </div>
                 <div>
@@ -119,7 +119,7 @@ const ContactModal = ({
                 className="flex items-center gap-4 p-4 rounded-2xl bg-stone-50 hover:bg-stone-100 transition-all hover:scale-[1.02] active:scale-[0.98]"
                 style={{ animationDelay: '0.2s' }}
               >
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-ink flex items-center justify-center">
                   <Instagram className="w-5 h-5 text-white" />
                 </div>
                 <div>
@@ -137,7 +137,7 @@ const ContactModal = ({
                 className="flex items-center gap-4 p-4 rounded-2xl bg-stone-50 hover:bg-stone-100 transition-all hover:scale-[1.02] active:scale-[0.98]"
                 style={{ animationDelay: '0.25s' }}
               >
-                <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-ink flex items-center justify-center">
                   <Facebook className="w-5 h-5 text-white" />
                 </div>
                 <div>

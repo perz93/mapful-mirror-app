@@ -27,6 +27,28 @@ const DialogOverlay = React.forwardRef<
 ));
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
+// Fenêtre ouverte : le haut de l'écran (barre d'état iOS, teintée par le fond
+// de la page) passe en noir comme le voile, au lieu de rester clair.
+let openDialogs = 0;
+const DarkStatusBar = () => {
+  React.useEffect(() => {
+    openDialogs += 1;
+    const html = document.documentElement;
+    const meta = document.querySelector('meta[name="theme-color"]');
+    const previousTheme = meta?.getAttribute('content') ?? null;
+    html.classList.add('modal-open');
+    meta?.setAttribute('content', '#000000');
+    return () => {
+      openDialogs -= 1;
+      if (openDialogs === 0) {
+        html.classList.remove('modal-open');
+        if (meta && previousTheme !== null) meta.setAttribute('content', previousTheme);
+      }
+    };
+  }, []);
+  return null;
+};
+
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
@@ -41,9 +63,10 @@ const DialogContent = React.forwardRef<
       )}
       {...props}
     >
+      <DarkStatusBar />
       {children}
-      <DialogPrimitive.Close className="absolute right-4 top-4 w-11 h-11 rounded-full bg-white/80 dark:bg-stone-900/80 backdrop-blur-md hover:bg-white dark:hover:bg-stone-900 flex items-center justify-center shadow-[0_8px_24px_-6px_rgba(0,0,0,0.25)] hover:shadow-[0_12px_32px_-6px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-95 transition-all duration-300 focus:outline-none">
-        <X className="h-4 w-4 text-stone-800 dark:text-stone-100" strokeWidth={2.5} />
+      <DialogPrimitive.Close className="absolute right-4 top-4 flex size-10 items-center justify-center rounded-full bg-parchment text-ink hover:bg-stone-200 active:scale-95 transition-colors">
+        <X className="h-4 w-4" strokeWidth={1.75} />
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
