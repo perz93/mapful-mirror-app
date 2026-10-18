@@ -103,6 +103,7 @@ const MapView = () => {
       zoomToBoundsOnClick: false,
       spiderfyOnMaxZoom: false,
       spiderfyDistanceMultiplier: 2.6,
+      spiderLegPolylineOptions: { weight: 1.5, color: '#14140f', opacity: 0.3 },
       removeOutsideVisibleBounds: true,
       animate: true,
       animateAddingMarkers: true,
@@ -131,28 +132,59 @@ const MapView = () => {
       },
     });
 
-    // Clic sur un groupe : jusqu'à 8 événements, on les ouvre en étoile au centre de la zone
-    // visible (entre le haut et le cadre événement du bas) ; au-delà, on zoome pour les séparer,
-    // et l'étoile ne sert qu'en dernier recours (événements au même endroit).
-    const STAR_MAX = 8;
-    markerClusterGroup.on('clusterclick', (e: L.LeafletEvent) => {
-      const cluster = (e as L.LeafletEvent & { layer: L.MarkerCluster }).layer;
-      const count = cluster.getChildCount();
-      const canZoom = map.getBoundsZoom(cluster.getBounds()) > map.getZoom() && map.getZoom() < map.getMaxZoom();
-      if (count > STAR_MAX && canZoom) {
-        cluster.zoomToBounds({ padding: [60, 60] });
-        return;
-      }
+    // Clic sur un groupe : on zoome dessus (jusqu'au zoom 16) pour séparer les événements ;
+    // s'ils restent groupés une fois là (même lieu ou quelques rues d'écart), on les ouvre
+    // en étoile au centre de la zone visible (entre le haut et le cadre événement du bas).
+    const STAR_ZOOM = 16;
+    // Étoile adaptée aux étiquettes (larges et basses) : un cercle dont le rayon grandit avec
+    // le nombre d'événements, en partant du haut, pour que deux étiquettes voisines ne se touchent pas.
+    (L.MarkerCluster.prototype as unknown as {
+      _generatePointsCircle: (count: number, centerPt: L.Point) => L.Point[];
+    })._generatePointsCircle = (count, centerPt) => {
+      const radius = Math.min(120, 50 + count * 9);
+      const step = (Math.PI * 2) / count;
+      return Array.from({ length: count }, (_, i) => {
+        const angle = -Math.PI / 2 + i * step;
+        return L.point(centerPt.x + radius * Math.cos(angle), centerPt.y + radius * Math.sin(angle)).round();
+      });
+    };
+    const openStar = (cluster: L.MarkerCluster) => {
       const size = map.getSize();
       const target = L.point(size.x / 2, (100 + (size.y - 360)) / 2);
-      const at = map.latLngToContainerPoint(cluster.getLatLng());
-      const offset = at.subtract(target);
+      const offset = map.latLngToContainerPoint(cluster.getLatLng()).subtract(target);
       if (Math.abs(offset.x) < 8 && Math.abs(offset.y) < 8) {
         cluster.spiderfy();
         return;
       }
       map.once('moveend', () => cluster.spiderfy());
       map.panBy(offset, { duration: 0.35 });
+    };
+    markerClusterGroup.on('clusterclick', (e: L.LeafletEvent) => {
+      const cluster = (e as L.LeafletEvent & { layer: L.MarkerCluster }).layer;
+      const bounds = cluster.getBounds();
+      const fitZoom = Math.min(map.getBoundsZoom(bounds, false, L.point(80, 500)), STAR_ZOOM);
+      if (fitZoom <= map.getZoom()) {
+        openStar(cluster);
+        return;
+      }
+      const children = cluster.getAllChildMarkers();
+      map.once('moveend', () => {
+        // Laisse le regroupement se recalculer après le zoom
+        setTimeout(() => {
+          const parent = markerClusterGroup.getVisibleParent(children[0]) as L.Marker | L.MarkerCluster | null;
+          if (parent && parent !== children[0] && 'getChildCount' in parent && parent.getChildCount() === children.length) {
+            openStar(parent);
+          }
+        }, 300);
+      });
+      map.flyToBounds(bounds, { paddingTopLeft: [40, 120], paddingBottomRight: [40, 380], maxZoom: STAR_ZOOM, duration: 0.7 });
+    });
+    // Dans l'étoile, l'étiquette est centrée sur le bout de son trait (et non posée au-dessus)
+    markerClusterGroup.on('spiderfied', (e: L.LeafletEvent) => {
+      (e as L.LeafletEvent & { markers: L.Marker[] }).markers.forEach((m) => m.getElement()?.classList.add('in-star'));
+    });
+    markerClusterGroup.on('unspiderfied', (e: L.LeafletEvent) => {
+      (e as L.LeafletEvent & { markers: L.Marker[] }).markers.forEach((m) => m.getElement()?.classList.remove('in-star'));
     });
 
     markerClusterGroupRef.current = markerClusterGroup;

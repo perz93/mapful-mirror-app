@@ -1179,6 +1179,9 @@ vercel-live-feedback,
 .custom-marker.is-selected .pin-label::after { border-top-color: #14140f; }
 .custom-marker.is-selected .pin-label-img { box-shadow: 0 0 0 2px #a6e22e; }
 .custom-marker.is-selected .pin-label-time { display: inline; }
+/* Étiquettes ouvertes en étoile : centrées sur le bout de leur trait, sans pointe */
+.custom-marker.in-star .pin-label { transform: translate(-50%, -50%); animation: none; }
+.custom-marker.in-star .pin-label::after { display: none; }
 @keyframes pinLabelIn {
   from { opacity: 0; transform: translate(-50%, calc(-100% + 4px)) scale(0.8); }
   to { opacity: 1; transform: translate(-50%, calc(-100% - 7px)) scale(1); }
