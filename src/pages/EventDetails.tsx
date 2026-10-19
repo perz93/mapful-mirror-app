@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import OrganizerCard from '@/components/OrganizerCard';
-import { ArrowLeft, MapPin, Share2, Heart, Bell, BellRing, Users, Pencil } from 'lucide-react';
+import { ArrowLeft, MapPin, Share2, Heart, Bell, BellRing, Users, Pencil, CalendarDays, Clock, Ticket } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
@@ -174,10 +174,10 @@ const EventDetails = () => {
   const priceText = event.is_paid && event.price ? `${Number(event.price).toLocaleString('fr-FR')} FCFA` : t('event.free');
   const categoryLabel = category ? t(category.tKey) : event.category;
   const ticketCells = [
-    { label: t('event.dateLabel'), value: dateRangeLabel(event, lang) },
-    { label: t('event.timeLabel'), value: formattedTime },
-    { label: lang === 'fr' ? 'Lieu' : 'Venue', value: softCase(event.venue) },
-    { label: t('event.price'), value: priceText },
+    { icon: CalendarDays, label: t('event.dateLabel'), value: dateRangeLabel(event, lang) },
+    { icon: Clock, label: t('event.timeLabel'), value: formattedTime },
+    { icon: MapPin, label: lang === 'fr' ? 'Lieu' : 'Venue', value: softCase(event.venue) },
+    { icon: Ticket, label: t('event.price'), value: priceText },
   ];
 
   return (
@@ -263,7 +263,10 @@ const EventDetails = () => {
           <dl className="grid grid-cols-2 gap-x-4 gap-y-4 px-5 pb-5 pt-4">
             {ticketCells.map((cell) => (
               <div key={cell.label} className="min-w-0 border-l border-stone-300 dark:border-stone-600 pl-3">
-                <dt className="eyebrow text-stone-500">{cell.label}</dt>
+                <dt className="eyebrow flex items-center gap-1.5 text-stone-500">
+                  <cell.icon size={13} strokeWidth={1.75} className="flex-shrink-0" />
+                  {cell.label}
+                </dt>
                 <dd className="mt-1 line-clamp-2 text-[16px] leading-tight font-semibold tracking-tight text-ink dark:text-white tabular first-letter:uppercase">{cell.value}</dd>
               </div>
             ))}

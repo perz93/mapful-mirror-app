@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Tag, Share2, Pencil } from 'lucide-react';
+import { ArrowLeft, Tag, Share2, Pencil, MapPin, Banknote } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import ContactFab from '@/components/ContactFab';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -158,18 +158,18 @@ const ListingDetails = () => {
           {/* Prix · Lieu */}
           <div className="grid grid-cols-2 gap-2">
             <div className="card-shadow rounded-[20px] bg-white p-3.5">
-              <p className="eyebrow text-stone-500">{lang === 'fr' ? 'Prix' : 'Price'}</p>
+              <p className="eyebrow flex items-center gap-1.5 text-stone-500"><Banknote size={13} strokeWidth={1.75} />{lang === 'fr' ? 'Prix' : 'Price'}</p>
               <p className="font-display mt-1.5 text-[22px] leading-none tracking-tight text-ink tabular">{priceValue}</p>
               <p className="mt-1 truncate text-xs text-stone-500">{priceSub}</p>
             </div>
             {listing.location ? (
               <div className="card-shadow rounded-[20px] bg-white p-3.5">
-                <p className="eyebrow text-stone-500">{lang === 'fr' ? 'Lieu' : 'Location'}</p>
+                <p className="eyebrow flex items-center gap-1.5 text-stone-500"><MapPin size={13} strokeWidth={1.75} />{lang === 'fr' ? 'Lieu' : 'Location'}</p>
                 <p className="font-display mt-1.5 text-[19px] leading-[1.05] tracking-tight text-ink line-clamp-2">{softCase(listing.location)}</p>
               </div>
             ) : (
               <div className="card-shadow rounded-[20px] bg-white p-3.5">
-                <p className="eyebrow text-stone-500">{lang === 'fr' ? 'Catégorie' : 'Category'}</p>
+                <p className="eyebrow flex items-center gap-1.5 text-stone-500"><Tag size={13} strokeWidth={1.75} />{lang === 'fr' ? 'Catégorie' : 'Category'}</p>
                 <p className="font-display mt-1.5 text-[19px] leading-[1.05] tracking-tight text-ink">{catLabel}</p>
               </div>
             )}
