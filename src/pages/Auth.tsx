@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { X, Eye, EyeOff, Check, Loader2, ArrowLeft, MailCheck, AlertCircle } from "lucide-react";
+import { X, Eye, EyeOff, Check, Loader2, ArrowLeft, MailCheck, AlertCircle, MapPin, BellRing, Megaphone, Store } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -89,6 +89,17 @@ const PasswordField = ({ id, value, onChange, placeholder, autoComplete, visible
     </button>
   </div>
 );
+
+const SIGNUP_PERKS = [
+  { icon: MapPin, key: "auth.perkNearby" },
+  { icon: BellRing, key: "auth.perkAlert" },
+  { icon: Megaphone, key: "auth.perkPublish" },
+  { icon: Store, key: "auth.perkMarket" },
+];
+
+/** Met en valeur les passages entre ** … ** d'un texte traduit. */
+const emphasize = (text: string, className: string) =>
+  text.split("**").map((part, i) => (i % 2 ? <span key={i} className={className}>{part}</span> : part));
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -414,8 +425,29 @@ const Auth = () => {
           ) : (
             <>
               <div className="mb-6 pr-12">
-                <h1 className="text-[40px] leading-[0.95] tracking-tighter text-ink">{titles[mode].title}</h1>
-                <p className="mt-3 text-[15px] text-stone-500">{titles[mode].desc}</p>
+                {mode === "signup" ? (
+                  <>
+                    {/* Inscription : « ta carte » en vert + avantages (sortir ET publier) */}
+                    <h1 className="text-[40px] leading-[0.95] tracking-tighter text-ink">
+                      {emphasize(t("auth.signupTitle"), "text-[#6fae12]")}
+                    </h1>
+                    <ul className="mt-4 space-y-2.5 text-[14px] leading-snug text-stone-500">
+                      {SIGNUP_PERKS.map(({ icon: Icon, key }) => (
+                        <li key={key} className="flex items-center gap-3">
+                          <span className="flex size-8 flex-shrink-0 items-center justify-center rounded-full bg-parchment text-ink">
+                            <Icon size={16} strokeWidth={1.75} />
+                          </span>
+                          <span>{emphasize(t(key), "font-semibold text-ink")}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : (
+                  <>
+                    <h1 className="text-[40px] leading-[0.95] tracking-tighter text-ink">{titles[mode].title}</h1>
+                    <p className="mt-3 text-[15px] text-stone-500">{titles[mode].desc}</p>
+                  </>
+                )}
               </div>
 
               <form onSubmit={handleSubmit} noValidate={false} className="space-y-3">

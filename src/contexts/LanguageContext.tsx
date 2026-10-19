@@ -62,6 +62,12 @@ const translations: Record<string, Record<Lang, string>> = {
   'auth.welcome': { fr: 'Content de te revoir.', en: 'Good to see you again.' },
   'auth.discoverCity': { fr: 'Tes prochaines sorties t’attendent.', en: 'Your next nights out are waiting.' },
   'auth.joinUs': { fr: 'Ne rate plus aucune vibe.', en: 'Never miss a vibe again.' },
+  // Inscription (M3 · V4) : titre avec « ta carte » en vert, avantages avec les mots clés en gras (**…**)
+  'auth.signupTitle': { fr: 'La ville entière, sur **ta carte**.', en: 'The whole city, on **your map**.' },
+  'auth.perkNearby': { fr: 'Trouve **les sorties autour de toi**, en un coup d’œil', en: 'Find **what’s on around you**, at a glance' },
+  'auth.perkAlert': { fr: '**Alerte** dès qu’un événement arrive près de chez toi', en: '**Get alerted** when an event pops up near you' },
+  'auth.perkPublish': { fr: '**Publie ton événement** en 2 min, visible sur la carte', en: '**Post your event** in 2 min, right on the map' },
+  'auth.perkMarket': { fr: 'Propose **tes services au Market**, contact direct', en: 'Offer **your services on the Market**, direct contact' },
   'auth.liveEveryMoment': { fr: 'Concerts, soirées, brunchs : tout Abidjan sur une carte.', en: 'Concerts, parties, brunches: all of Abidjan on one map.' },
   'auth.login': { fr: 'Se connecter', en: 'Log in' },
   'auth.signup': { fr: "S'inscrire", en: 'Sign up' },
