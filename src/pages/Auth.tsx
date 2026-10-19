@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { X, Eye, EyeOff, Check, Loader2, ArrowLeft, MailCheck, AlertCircle, MapPin, BellRing, Megaphone, Store } from "lucide-react";
+import { X, Eye, EyeOff, Check, Loader2, ArrowLeft, MailCheck, AlertCircle } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -89,13 +89,6 @@ const PasswordField = ({ id, value, onChange, placeholder, autoComplete, visible
     </button>
   </div>
 );
-
-const SIGNUP_PERKS = [
-  { icon: MapPin, key: "auth.perkNearby" },
-  { icon: BellRing, key: "auth.perkAlert" },
-  { icon: Megaphone, key: "auth.perkPublish" },
-  { icon: Store, key: "auth.perkMarket" },
-];
 
 /** Met en valeur les passages entre ** … ** d'un texte traduit. */
 const emphasize = (text: string, className: string) =>
@@ -305,7 +298,7 @@ const Auth = () => {
 
   const titles: Record<Mode, { title: string; desc: string }> = {
     login: { title: t("auth.welcome"), desc: t("auth.discoverCity") },
-    signup: { title: t("auth.joinUs"), desc: t("auth.liveEveryMoment") },
+    signup: { title: t("auth.signupTitle"), desc: t("auth.liveEveryMoment") },
     forgot: { title: t("auth.forgotTitle"), desc: t("auth.forgotDesc") },
     reset: { title: t("auth.resetTitle"), desc: t("auth.resetDesc") },
   };
@@ -425,37 +418,12 @@ const Auth = () => {
           ) : (
             <>
               <div className="mb-6">
-                {mode === "signup" ? (
-                  <>
-                    {/* Inscription : « ta carte » en vert + avantages (sortir ET publier) */}
-                    <h1 className="pr-12 text-[40px] leading-[0.95] tracking-tighter text-ink">
-                      {emphasize(t("auth.signupTitle"), "text-[#6fae12]")}
-                    </h1>
-                    {/* Avantages en grille 2×2 compacte : la page reste courte */}
-                    <ul className="mt-4 grid grid-cols-2 gap-2 text-[12.5px] leading-[1.25] text-stone-500">
-                      {SIGNUP_PERKS.map(({ icon: Icon, key }) => (
-                        <li key={key} className="flex items-center gap-2 rounded-2xl bg-parchment p-2 pr-2.5">
-                          <span className="flex size-7 flex-shrink-0 items-center justify-center rounded-full bg-white text-ink">
-                            <Icon size={14} strokeWidth={1.75} />
-                          </span>
-                          <span>{emphasize(t(key), "font-semibold text-ink")}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                ) : (
-                  <>
-                    <h1 className="pr-12 text-[40px] leading-[0.95] tracking-tighter text-ink">{titles[mode].title}</h1>
-                    <p className="mt-3 pr-12 text-[15px] text-stone-500">{titles[mode].desc}</p>
-                    {mode === "login" && (
-                      <p className="mt-3 flex items-center gap-2 rounded-2xl bg-parchment px-3 py-2.5 text-[12.5px] leading-snug text-stone-600">
-                        <span className="flex size-7 flex-shrink-0 items-center justify-center rounded-full bg-white text-ink">
-                          <Megaphone size={14} strokeWidth={1.75} />
-                        </span>
-                        <span>{emphasize(t("auth.loginPerk"), "font-semibold text-ink")}</span>
-                      </p>
-                    )}
-                  </>
+                <h1 className="pr-12 text-[40px] leading-[0.95] tracking-tighter text-ink">
+                  {emphasize(titles[mode].title, "text-[#6fae12]")}
+                </h1>
+                {/* Connexion / inscription : le grand titre seul ; les autres écrans gardent leur explication */}
+                {(mode === "forgot" || mode === "reset") && (
+                  <p className="mt-3 pr-12 text-[15px] text-stone-500">{titles[mode].desc}</p>
                 )}
               </div>
 
