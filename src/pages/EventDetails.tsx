@@ -263,8 +263,10 @@ const EventDetails = () => {
           <dl className="grid grid-cols-2 gap-x-4 gap-y-4 px-5 pb-5 pt-4">
             {ticketCells.map((cell) => (
               <div key={cell.label} className="min-w-0 border-l border-stone-300 dark:border-stone-600 pl-3">
-                <dt className="eyebrow flex items-center gap-1.5 text-stone-500">
-                  <cell.icon size={13} strokeWidth={1.75} className="flex-shrink-0" />
+                <dt className="eyebrow flex items-center gap-2 text-stone-500">
+                  <span className="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-parchment text-ink dark:bg-stone-800 dark:text-white">
+                    <cell.icon size={13} strokeWidth={1.75} />
+                  </span>
                   {cell.label}
                 </dt>
                 <dd className="mt-1 line-clamp-2 text-[16px] leading-tight font-semibold tracking-tight text-ink dark:text-white tabular first-letter:uppercase">{cell.value}</dd>

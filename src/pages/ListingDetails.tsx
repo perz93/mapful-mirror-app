@@ -158,18 +158,18 @@ const ListingDetails = () => {
           {/* Prix · Lieu */}
           <div className="grid grid-cols-2 gap-2">
             <div className="card-shadow rounded-[20px] bg-white p-3.5">
-              <p className="eyebrow flex items-center gap-1.5 text-stone-500"><Banknote size={13} strokeWidth={1.75} />{lang === 'fr' ? 'Prix' : 'Price'}</p>
+              <p className="eyebrow flex items-center gap-2 text-stone-500"><span className="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-parchment text-ink"><Banknote size={13} strokeWidth={1.75} /></span>{lang === 'fr' ? 'Prix' : 'Price'}</p>
               <p className="font-display mt-1.5 text-[22px] leading-none tracking-tight text-ink tabular">{priceValue}</p>
               <p className="mt-1 truncate text-xs text-stone-500">{priceSub}</p>
             </div>
             {listing.location ? (
               <div className="card-shadow rounded-[20px] bg-white p-3.5">
-                <p className="eyebrow flex items-center gap-1.5 text-stone-500"><MapPin size={13} strokeWidth={1.75} />{lang === 'fr' ? 'Lieu' : 'Location'}</p>
+                <p className="eyebrow flex items-center gap-2 text-stone-500"><span className="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-parchment text-ink"><MapPin size={13} strokeWidth={1.75} /></span>{lang === 'fr' ? 'Lieu' : 'Location'}</p>
                 <p className="font-display mt-1.5 text-[19px] leading-[1.05] tracking-tight text-ink line-clamp-2">{softCase(listing.location)}</p>
               </div>
             ) : (
               <div className="card-shadow rounded-[20px] bg-white p-3.5">
-                <p className="eyebrow flex items-center gap-1.5 text-stone-500"><Tag size={13} strokeWidth={1.75} />{lang === 'fr' ? 'Catégorie' : 'Category'}</p>
+                <p className="eyebrow flex items-center gap-2 text-stone-500"><span className="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-parchment text-ink"><Tag size={13} strokeWidth={1.75} /></span>{lang === 'fr' ? 'Catégorie' : 'Category'}</p>
                 <p className="font-display mt-1.5 text-[19px] leading-[1.05] tracking-tight text-ink">{catLabel}</p>
               </div>
             )}
