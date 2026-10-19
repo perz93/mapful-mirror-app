@@ -68,7 +68,7 @@ const translations: Record<string, Record<Lang, string>> = {
   'auth.perkNearby': { fr: '**Les sorties** autour de toi', en: '**What’s on** around you' },
   'auth.perkAlert': { fr: '**Alertes** près de chez toi', en: '**Alerts** near you' },
   'auth.perkPublish': { fr: '**Publie** ton event en 2 min', en: '**Post** an event in 2 min' },
-  'auth.perkMarket': { fr: '**Vends** au Market', en: '**Sell** on the Market' },
+  'auth.perkMarket': { fr: '**Propose** tes services', en: '**Offer** your services' },
   'auth.liveEveryMoment': { fr: 'Concerts, soirées, brunchs : tout Abidjan sur une carte.', en: 'Concerts, parties, brunches: all of Abidjan on one map.' },
   'auth.login': { fr: 'Se connecter', en: 'Log in' },
   'auth.signup': { fr: "S'inscrire", en: 'Sign up' },

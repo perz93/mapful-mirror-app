@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Share, SquarePlus, EllipsisVertical, Download, Copy, Check, AlertCircle } from 'lucide-react';
+import { Share, SquarePlus, EllipsisVertical, Download, Copy, Check, AlertCircle, MapPin, BellRing, Megaphone, Store } from 'lucide-react';
 
 const INSTALLED_KEY = 'pwa_installed';
 
@@ -12,6 +12,14 @@ function detectOS(): OS {
   if (/android/i.test(ua) && /mobile/i.test(ua)) return 'android';
   return 'unknown';
 }
+
+/** Avantages affichés sous « Installe VIBE » : pour ceux qui sortent et pour ceux qui publient */
+const PERKS = [
+  { icon: MapPin, strong: 'Les sorties', rest: 'autour de toi' },
+  { icon: BellRing, strong: 'Alertes', rest: 'près de chez toi' },
+  { icon: Megaphone, strong: 'Publie', rest: 'ton event en 2 min' },
+  { icon: Store, strong: 'Propose', rest: 'tes services' },
+];
 
 function isStandalone(): boolean {
   return (
@@ -411,6 +419,20 @@ const InstallGuide = () => {
               <p className="mt-1 text-[12.5px] text-stone-500">Gratuit · sans store · 3 gestes</p>
             </div>
           </div>
+
+          {/* Ce que VIBE apporte (modèle B : une ligne d'icônes) */}
+          <ul className="mt-4 grid grid-cols-4 gap-1.5 text-center text-[11px] leading-[1.2] text-stone-500">
+            {PERKS.map(({ icon: Icon, strong, rest }) => (
+              <li key={strong} className="flex flex-col items-center gap-1.5">
+                <span className="flex size-10 items-center justify-center rounded-full bg-parchment text-ink">
+                  <Icon size={18} strokeWidth={1.75} />
+                </span>
+                <span>
+                  <span className="font-semibold text-ink">{strong}</span> {rest}
+                </span>
+              </li>
+            ))}
+          </ul>
 
           {/* iPhone / Android */}
           <div role="tablist" className="relative mt-4 grid grid-cols-2 rounded-full bg-parchment p-1">
