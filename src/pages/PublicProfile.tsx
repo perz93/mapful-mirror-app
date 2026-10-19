@@ -51,7 +51,7 @@ const PublicProfile = () => {
   const fr = lang === 'fr';
 
   const { user } = useAuth();
-  // Mon propre profil : pas de « Contacter », on propose de gérer son compte
+  // Mon propre profil : pas de « Contacter », on propose de le modifier (Paramètres → Profil public)
   const isMe = !!user && user.id === id;
   const { data: profile, isLoading: loadingProfile } = usePublicProfile(id);
   const { data, isLoading } = useQuery({
@@ -274,9 +274,9 @@ const PublicProfile = () => {
           <div className="flex h-16 items-center justify-between gap-2 rounded-full bg-ink pl-6 pr-2 shadow-2xl">
             <p className="min-w-0 truncate font-display text-[18px] leading-none tracking-tight text-parchment">{name}</p>
             {isMe ? (
-              <Link to="/my-account" className="inline-flex h-12 flex-shrink-0 items-center gap-2 rounded-full bg-lime px-5 text-[15px] font-medium text-ink active:scale-[0.97] transition-transform">
+              <Link to="/settings" className="inline-flex h-12 flex-shrink-0 items-center gap-2 rounded-full bg-lime px-5 text-[15px] font-medium text-ink active:scale-[0.97] transition-transform">
                 <Pencil size={17} strokeWidth={1.75} />
-                {fr ? 'Mon compte' : 'My account'}
+                {fr ? 'Modifier le profil' : 'Edit profile'}
               </Link>
             ) : contact && (
             <ContactFab
