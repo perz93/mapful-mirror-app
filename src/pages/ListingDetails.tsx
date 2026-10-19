@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Tag, Share2 } from 'lucide-react';
+import { ArrowLeft, Tag, Share2, Pencil } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import ContactFab from '@/components/ContactFab';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from '@/components/PillToast';
@@ -24,6 +25,7 @@ const ListingDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t, lang } = useLanguage();
+  const { user } = useAuth();
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
   const { data: listing, isLoading, error } = useQuery({
@@ -196,7 +198,13 @@ const ListingDetails = () => {
             <p className="font-display truncate text-[20px] leading-none tracking-tight text-parchment tabular">{priceValue}</p>
             <p className="mt-1 truncate text-[11px] text-stone-400">{priceSub}</p>
           </div>
-          {hasContacts ? (
+          {user && user.id === listing.user_id ? (
+            // Ma propre annonce : on me propose de la modifier plutôt que de me contacter
+            <Link to={`/edit-listing/${listing.id}`} className="inline-flex h-12 flex-shrink-0 items-center gap-2 rounded-full bg-lime px-5 text-[15px] font-medium text-ink active:scale-[0.97] transition-transform">
+              <Pencil size={17} strokeWidth={1.75} />
+              {lang === 'fr' ? 'Modifier' : 'Edit'}
+            </Link>
+          ) : hasContacts ? (
             <ContactFab
               variant="pill"
               label={t('event.contact')}

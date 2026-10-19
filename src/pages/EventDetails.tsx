@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import OrganizerCard from '@/components/OrganizerCard';
-import { ArrowLeft, MapPin, Share2, Heart, Bell, BellRing, Users } from 'lucide-react';
+import { ArrowLeft, MapPin, Share2, Heart, Bell, BellRing, Users, Pencil } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
@@ -19,7 +19,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { getEventCategory } from '@/lib/eventCategories';
 import { useSearch } from '@/contexts/SearchContext';
 import { useNotifications } from '@/contexts/NotificationContext';
-import { eventStatus, dateRangeLabel, timeRangeLabel, isMultiDay } from '@/lib/eventStatus';
+import { eventStatus, dateRangeLabel, timeRangeLabel, isMultiDay, isUpcomingOrLive } from '@/lib/eventStatus';
 import { softCase } from '@/lib/softCase';
 
 
@@ -71,7 +71,12 @@ const EventDetails = () => {
   }, [id, user]);
 
   const toggleReminder = useCallback(async () => {
-    if (!id || !event || !user) return;
+    if (!id || !event) return;
+    if (!user) {
+      toast.info(t('auth.loginRequired'));
+      navigate('/auth');
+      return;
+    }
 
     if (reminderSet) {
       await supabase
@@ -106,7 +111,7 @@ const EventDetails = () => {
 
     setReminderSet(true);
     toast.success(t('reminder.set'));
-  }, [id, event, reminderSet, user, pushSupported, pushSubscribed, subscribePush, t]);
+  }, [id, event, reminderSet, user, pushSupported, pushSubscribed, subscribePush, t, navigate]);
 
   if (isLoading) {
     return <EventDetailsSkeleton />;
@@ -133,6 +138,17 @@ const EventDetails = () => {
   const keyPoints = event.key_points as string[] | null;
   const category = getEventCategory(event.category);
   const status = eventStatus(event);
+  // Ma propre publication : pas de favori ni de « Contacter » (on me propose de la modifier)
+  const isOwner = !!user && user.id === event.user_id;
+  const isOver = !isUpcomingOrLive(event);
+  const handleFavorite = () => {
+    if (!user) {
+      toast.info(t('auth.loginRequired'));
+      navigate('/auth');
+      return;
+    }
+    toggleFavorite();
+  };
   // Itinéraire tracé dans l'app, sur la carte (même fonction que le bouton des popups)
   const showRoute = () => {
     setRouteDestination({ lat: Number(event.latitude), lng: Number(event.longitude), label: event.title });
@@ -175,12 +191,17 @@ const EventDetails = () => {
           <ArrowLeft size={20} strokeWidth={1.75} />
         </button>
         <div className="flex gap-2">
-          <button onClick={toggleReminder} aria-label={t('reminder.set')} className={`${roundBtn} ${reminderSet ? 'bg-lime text-ink' : 'bg-white text-ink'}`}>
-            {reminderSet ? <BellRing size={18} strokeWidth={1.75} /> : <Bell size={18} strokeWidth={1.75} />}
-          </button>
-          <button onClick={toggleFavorite} disabled={favLoading} aria-label="Favori" className={`${roundBtn} disabled:opacity-50 ${isFavorite ? 'bg-ink text-lime' : 'bg-white text-ink'}`}>
-            <Heart size={18} strokeWidth={1.75} fill={isFavorite ? 'currentColor' : 'none'} />
-          </button>
+          {/* Pas de rappel pour un événement terminé */}
+          {!isOver && (
+            <button onClick={toggleReminder} aria-label={t('reminder.set')} className={`${roundBtn} ${reminderSet ? 'bg-lime text-ink' : 'bg-white text-ink'}`}>
+              {reminderSet ? <BellRing size={18} strokeWidth={1.75} /> : <Bell size={18} strokeWidth={1.75} />}
+            </button>
+          )}
+          {!isOwner && (
+            <button onClick={handleFavorite} disabled={favLoading} aria-label="Favori" className={`${roundBtn} disabled:opacity-50 ${isFavorite ? 'bg-ink text-lime' : 'bg-white text-ink'}`}>
+              <Heart size={18} strokeWidth={1.75} fill={isFavorite ? 'currentColor' : 'none'} />
+            </button>
+          )}
           <button onClick={share} aria-label={t('event.share')} className={`${roundBtn} bg-white text-ink`}>
             <Share2 size={18} strokeWidth={1.75} />
           </button>
@@ -285,7 +306,18 @@ const EventDetails = () => {
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)' }}
       >
         <div className="flex h-16 items-center justify-between gap-2 rounded-full bg-ink pl-2 pr-2 shadow-2xl">
-          {hasContacts ? (
+          {isOwner ? (
+            <>
+              <button type="button" onClick={showRoute} className="inline-flex h-12 items-center gap-2 rounded-full px-4 text-[15px] font-medium text-parchment active:scale-[0.97] transition-transform">
+                <MapPin size={18} strokeWidth={1.75} />
+                {t('event.directions')}
+              </button>
+              <Link to={`/edit-event/${event.id}`} className="inline-flex h-12 items-center gap-2 rounded-full bg-lime px-5 text-[15px] font-medium text-ink active:scale-[0.97] transition-transform">
+                <Pencil size={17} strokeWidth={1.75} />
+                {lang === 'fr' ? 'Modifier' : 'Edit'}
+              </Link>
+            </>
+          ) : hasContacts ? (
             <>
               <button type="button" onClick={showRoute} className="inline-flex h-12 items-center gap-2 rounded-full px-4 text-[15px] font-medium text-parchment active:scale-[0.97] transition-transform">
                 <MapPin size={18} strokeWidth={1.75} />

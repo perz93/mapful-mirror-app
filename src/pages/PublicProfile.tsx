@@ -1,7 +1,8 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { ArrowLeft, Share2 } from 'lucide-react';
+import { ArrowLeft, Share2, Pencil } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { usePublicProfile, profileDisplayName, initials } from '@/hooks/usePublicProfile';
 import { useDarkPageBackground } from '@/hooks/useDarkPageBackground';
@@ -49,6 +50,9 @@ const PublicProfile = () => {
   const { lang, t } = useLanguage();
   const fr = lang === 'fr';
 
+  const { user } = useAuth();
+  // Mon propre profil : pas de « Contacter », on propose de gérer son compte
+  const isMe = !!user && user.id === id;
   const { data: profile, isLoading: loadingProfile } = usePublicProfile(id);
   const { data, isLoading } = useQuery({
     queryKey: ['public-profile-content', id],
@@ -261,14 +265,20 @@ const PublicProfile = () => {
         </div>
       </div>
 
-      {/* Barre fixe : contacter la personne */}
-      {contact && (
+      {/* Barre fixe : contacter la personne (ou gérer mon compte si c'est mon profil) */}
+      {(contact || isMe) && (
         <div
           className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-md px-3"
           style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)' }}
         >
           <div className="flex h-16 items-center justify-between gap-2 rounded-full bg-ink pl-6 pr-2 shadow-2xl">
             <p className="min-w-0 truncate font-display text-[18px] leading-none tracking-tight text-parchment">{name}</p>
+            {isMe ? (
+              <Link to="/my-account" className="inline-flex h-12 flex-shrink-0 items-center gap-2 rounded-full bg-lime px-5 text-[15px] font-medium text-ink active:scale-[0.97] transition-transform">
+                <Pencil size={17} strokeWidth={1.75} />
+                {fr ? 'Mon compte' : 'My account'}
+              </Link>
+            ) : contact && (
             <ContactFab
               variant="pill"
               label={t('event.contact')}
@@ -282,6 +292,7 @@ const PublicProfile = () => {
               contactEmail={contact.contact_email}
               emailSubject={name}
             />
+            )}
           </div>
         </div>
       )}

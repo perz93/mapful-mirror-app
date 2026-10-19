@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { usePublicProfile, profileDisplayName, initials } from '@/hooks/usePublicProfile';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface OrganizerCardProps {
   userId?: string | null;
@@ -14,6 +15,7 @@ interface OrganizerCardProps {
 /** Carte « Organisé / publié par » ou « Proposé par » qui ouvre le profil public. */
 const OrganizerCard = ({ userId, kind }: OrganizerCardProps) => {
   const { lang } = useLanguage();
+  const { user } = useAuth();
   const { data: profile } = usePublicProfile(userId);
   const { data: counts } = useQuery({
     queryKey: ['public-profile-counts', userId],
@@ -49,7 +51,10 @@ const OrganizerCard = ({ userId, kind }: OrganizerCardProps) => {
       </span>
       <span className="min-w-0 flex-1">
         <span className="eyebrow block text-stone-500">{label}</span>
-        <span className="mt-0.5 block truncate font-medium text-ink dark:text-white">{name}</span>
+        <span className="mt-0.5 block truncate font-medium text-ink dark:text-white">
+          {name}
+          {user?.id === userId && <span className="font-normal text-stone-500">{fr ? ' (toi)' : ' (you)'}</span>}
+        </span>
         {(sub || since) && (
           <span className="block truncate text-xs text-stone-500">
             {[sub, since && (fr ? `membre depuis ${since}` : `member since ${since}`)].filter(Boolean).join(' · ')}
