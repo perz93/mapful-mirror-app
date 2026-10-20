@@ -211,6 +211,97 @@ function isServiceRole(req: Request): boolean {
   }
 }
 
+// ---- Textes des notifications (une seule source pour toutes les notifications d'événement) ----
+// Titre court sur une ligne, pas d'emoji (sur iPhone, seul le logo de l'app s'affiche),
+// et une icône de l'app (catégorie, calendrier, horloge…) montrée par Android.
+
+const CATEGORY_NEW: Record<string, string> = {
+  music: "Nouveau concert", nightlife: "Nouvelle soirée", festivals: "Nouveau festival",
+  shows: "Nouveau spectacle", brunch: "Nouveau brunch", exhibitions: "Nouvelle expo",
+  conferences: "Nouvelle conférence", workshops: "Nouvel atelier", sports: "Nouvel événement sportif",
+  family: "Nouvelle sortie en famille", religious: "Nouvel événement", other: "Nouvel événement",
+};
+const LEGACY_CATEGORY: Record<string, string> = { meetups: "conferences", food: "brunch", arts: "exhibitions" };
+
+const softCase = (text: string) => {
+  const out = (text || "").replace(/\p{L}[\p{L}'’-]*/gu, (w) =>
+    w.length > 1 && w === w.toLocaleUpperCase("fr") && w !== w.toLocaleLowerCase("fr") ? w.toLocaleLowerCase("fr") : w);
+  return out.charAt(0).toLocaleUpperCase("fr") + out.slice(1);
+};
+const oneLine = (text: string, max = 30) => (text.length > max ? text.slice(0, max - 1).trimEnd() + "…" : text);
+const frDate = (iso: string) =>
+  new Intl.DateTimeFormat("fr-FR", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" })
+    .format(new Date(`${iso}T00:00:00Z`))
+    .replace(/^./, (c) => c.toUpperCase());
+const frTime = (t?: string | null) => {
+  if (!t) return "";
+  const [h, m] = t.split(":");
+  return `${Number(h)}h${m && m !== "00" ? m : ""}`;
+};
+const fcfa = (n: number) => `${Math.round(n).toLocaleString("fr-FR")} FCFA`;
+
+type EventRow = {
+  id: string; title: string; category: string | null; venue: string | null; date: string; time: string | null;
+  price: number | null; is_paid: boolean | null; ticket_types: unknown; image_url: string | null;
+};
+
+function priceText(e: EventRow): string {
+  const types = Array.isArray(e.ticket_types)
+    ? (e.ticket_types as { name?: string; price?: number }[]).filter((t) => t?.name).map((t) => Math.max(0, Number(t.price) || 0))
+    : [];
+  if (types.length > 1) {
+    const paid = types.filter((p) => p > 0);
+    if (!paid.length) return "Entrée gratuite";
+    const min = Math.min(...types);
+    return min === 0 ? `Gratuit à ${fcfa(Math.max(...paid))}` : `Dès ${fcfa(min)}`;
+  }
+  const p = types.length === 1 ? types[0] : e.is_paid && e.price ? Number(e.price) : 0;
+  return p > 0 ? fcfa(p) : "Entrée gratuite";
+}
+
+// deno-lint-ignore no-explicit-any
+async function formatEventNotification(supabase: any, type: string, eventId: string) {
+  const { data: e } = await supabase
+    .from("events")
+    .select("id, title, category, venue, date, time, price, is_paid, ticket_types, image_url")
+    .eq("id", eventId)
+    .maybeSingle();
+  if (!e) return null;
+  const ev = e as EventRow;
+  const name = softCase(ev.title);
+  const venue = softCase(ev.venue || "");
+  const when = `${frDate(ev.date)}${ev.time ? ` à ${frTime(ev.time)}` : ""}`;
+  const category = LEGACY_CATEGORY[ev.category || ""] || ev.category || "other";
+  const price = priceText(ev);
+
+  switch (type) {
+    case "new_event":
+      return {
+        title: oneLine(name),
+        body: `${CATEGORY_NEW[category] || "Nouvel événement"} · ${when}${venue ? ` · ${venue}` : ""}. ${price}${price === "Entrée gratuite" ? " — ne le rate pas !" : " — réserve ta place !"}`,
+        icon: `/notif/${CATEGORY_NEW[category] ? category : "other"}.png`,
+        image: ev.image_url,
+      };
+    case "event_tomorrow":
+      return {
+        title: "C'est demain !",
+        body: `${name}${ev.time ? ` · ${frTime(ev.time)}` : ""}${venue ? ` · ${venue}` : ""}. Prépare-toi !`,
+        icon: "/notif/calendar.png",
+        image: ev.image_url,
+      };
+    case "event_starting":
+    case "event_reminder":
+      return {
+        title: "Ça commence dans 1 h",
+        body: `${name}${venue ? ` · ${venue}` : ""}. Il est temps de te mettre en route !`,
+        icon: type === "event_reminder" ? "/notif/bell.png" : "/notif/clock.png",
+        image: ev.image_url,
+      };
+    default:
+      return null;
+  }
+}
+
 // ---- Main handler ----
 
 serve(async (req) => {
@@ -235,7 +326,23 @@ serve(async (req) => {
   }
 
   try {
-    const { title, body, url, image, tag, user_ids, send_to_all, exclude_user_id, check_duplicates, notification_type, event_id } = await req.json();
+    const input = await req.json();
+    const { url, tag, user_ids, send_to_all, exclude_user_id, check_duplicates, notification_type, event_id } = input;
+    let { title, body, image } = input;
+    let icon: string | undefined = input.icon;
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    // Notification d'événement : textes et icône construits ici, au même format partout
+    if (event_id && notification_type) {
+      const formatted = await formatEventNotification(supabase, notification_type, event_id);
+      if (formatted) {
+        title = formatted.title;
+        body = formatted.body;
+        icon = formatted.icon;
+        image = image || formatted.image;
+      }
+    }
 
     if (!title || !body) {
       return new Response(JSON.stringify({ error: "title and body required" }), {
@@ -243,8 +350,6 @@ serve(async (req) => {
         headers: { "Content-Type": "application/json" },
       });
     }
-
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     // 1. Destinataires (personnes, pas appareils)
     // Sans destinataires explicites et sans send_to_all : on n'envoie à
@@ -330,6 +435,7 @@ serve(async (req) => {
       body,
       url: url || "/",
       image: image || undefined,
+      icon: icon || undefined,
       tag: tag || "event-notification",
     });
 

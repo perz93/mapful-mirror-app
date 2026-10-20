@@ -117,7 +117,7 @@ registerRoute(
 self.addEventListener('push', (event) => {
   // Toujours afficher quelque chose : sur iPhone, un push sans notification
   // visible finit par faire révoquer l'abonnement par le système.
-  let data: { title?: string; body?: string; image?: string; tag?: string; url?: string; actions?: unknown[] } = {};
+  let data: { title?: string; body?: string; image?: string; icon?: string; tag?: string; url?: string; actions?: unknown[] } = {};
   try {
     data = event.data?.json() ?? {};
   } catch {
@@ -126,8 +126,10 @@ self.addEventListener('push', (event) => {
 
   const options: NotificationOptions & { image?: string; vibrate?: number[]; renotify?: boolean; actions?: unknown[] } = {
     body: data.body || '',
-    icon: '/icon-192.png',
-    badge: '/icon-192.png',
+    // Icône de l'app (catégorie, calendrier, horloge…) ; Android l'affiche, iPhone montre le logo
+    icon: data.icon || '/icon-192.png',
+    // Pastille de la barre d'état Android : silhouette blanche (une icône en couleur y devient un carré)
+    badge: '/badge-96.png',
     image: data.image || undefined,
     vibrate: [200, 100, 200],
     tag: data.tag || 'default',

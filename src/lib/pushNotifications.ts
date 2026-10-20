@@ -123,7 +123,7 @@ export async function getCurrentSubscription(): Promise<PushSubscription | null>
 }
 
 // Send a local notification (for in-app testing / fallback)
-export async function sendLocalNotification(title: string, body: string, url?: string) {
+export async function sendLocalNotification(title: string, body: string, url?: string, icon?: string) {
   if (Notification.permission !== 'granted') return;
 
   const registration = await navigator.serviceWorker.getRegistration('/');
@@ -131,8 +131,8 @@ export async function sendLocalNotification(title: string, body: string, url?: s
 
   registration.showNotification(title, {
     body,
-    icon: '/icon-192.png',
-    badge: '/icon-192.png',
+    icon: icon || '/icon-192.png',
+    badge: '/badge-96.png',
     tag: 'local-' + Date.now(),
     data: { url: url || '/' },
   } as NotificationOptions);
