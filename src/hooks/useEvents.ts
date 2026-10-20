@@ -17,6 +17,7 @@ export interface Event {
   /** Heure de fin facultative */
   end_time?: string | null;
   price: number | null;
+  ticket_types?: unknown;
   capacity: number | null;
   image_url: string | null;
   latitude: number;

@@ -13,6 +13,7 @@ import ShimmerImage from './ShimmerImage';
 import { getEventCategory } from '@/lib/eventCategories';
 import EventCategoryChips from './EventCategoryChips';
 import { softCase } from '@/lib/softCase';
+import { eventPriceText } from '@/lib/ticketTypes';
 interface CategoryPageProps {
   category: string;
   /** Facultatifs : déduits de la liste des catégories */
@@ -24,7 +25,7 @@ const CategoryPage = ({
   title,
   iconSrc
 }: CategoryPageProps) => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   // Changement via les puces : pas d'animation d'ouverture (seule la liste change)
   const fromChip = (useLocation().state as { chip?: boolean } | null)?.chip;
   const enter = fromChip ? '' : 'page-enter';
@@ -101,7 +102,7 @@ const CategoryPage = ({
                           </span>
                         )}
                         <span className="absolute right-2.5 top-2.5 inline-flex h-7 items-center rounded-full bg-lime px-3 text-xs font-medium text-ink tabular">
-                          {event.is_paid && event.price ? `${Number(event.price).toLocaleString('fr-FR')} FCFA` : t('event.free')}
+                          {eventPriceText(event, lang)}
                         </span>
                       </div>
                       <div className="flex items-center gap-3.5 px-2 pb-1.5 pt-3">

@@ -4,9 +4,12 @@ import { useState, useEffect, useRef } from 'react';
 import SectionTitle from '@/components/SectionTitle';
 import ContactFields, { readContacts, writeContacts } from '@/components/ContactFields';
 import EventScheduleFields from '@/components/EventScheduleFields';
-import { ArrowLeft, Upload, Loader2, Image as ImageIcon, Phone, MessageCircle, Instagram, Facebook, Mail, Type, CalendarDays, Ticket, ContactRound } from 'lucide-react';
+import { ArrowLeft, Upload, Loader2, Image as ImageIcon, Phone, MessageCircle, Instagram, Facebook, Mail, Type, CalendarDays, Ticket, ContactRound, Crop } from 'lucide-react';
 import TikTokIcon from '@/components/icons/TikTokIcon';
 import { retryWithoutNewColumns } from '@/lib/retryWithoutNewColumns';
+import TicketFields from '@/components/TicketFields';
+import ImageCropDialog from '@/components/ImageCropDialog';
+import { ticketPayload, ticketTypesOf, draftsFrom, type TicketDraft } from '@/lib/ticketTypes';
 import { emailProviderLabel } from '@/lib/emailProvider';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -31,6 +34,11 @@ const EditEvent = () => {
   const [submitting, setSubmitting] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
+  // Recadrage : photo de départ (nouvelle photo choisie, ou l'affiche déjà publiée)
+  const [cropSource, setCropSource] = useState<{ url: string; name: string } | null>(null);
+  const [cropOpen, setCropOpen] = useState(false);
+  // Plusieurs types de places (null = un seul prix)
+  const [tiers, setTiers] = useState<TicketDraft[] | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
@@ -87,7 +95,7 @@ const EditEvent = () => {
         endDate: data.end_date || '',
         endTime: data.end_time?.slice(0, 5) ?? '',
         multiDay: !!data.end_date && data.end_date > data.date,
-        price: data.price?.toString() || '',
+        price: data.price ? String(Math.round(Number(data.price))) : '',
         capacity: data.capacity?.toString() || '',
         is_paid: data.is_paid,
         contact_phone: data.contact_phone || '',
@@ -98,6 +106,8 @@ const EditEvent = () => {
         contact_twitter: data.contact_twitter || '',
         contact_email: data.contact_email || '',
       });
+      const types = ticketTypesOf(data as { ticket_types?: unknown });
+      setTiers(types.length > 0 ? draftsFrom(types) : null);
 
       if (data.image_url) setImagePreview(data.image_url);
     } catch (error: any) {
@@ -113,11 +123,10 @@ const EditEvent = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) { toast.error(t('form.selectImage')); return; }
-    if (file.size > 5 * 1024 * 1024) { toast.error(t('form.max5mb')); return; }
-    setImageFile(file);
-    const reader = new FileReader();
-    reader.onloadend = () => setImagePreview(reader.result as string);
-    reader.readAsDataURL(file);
+    if (file.size > 15 * 1024 * 1024) { toast.error(t('form.max5mb')); return; }
+    e.target.value = '';
+    setCropSource({ url: URL.createObjectURL(file), name: file.name });
+    setCropOpen(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -157,9 +166,8 @@ const EditEvent = () => {
           time: formData.time,
           end_date: formData.multiDay && formData.endDate > formData.date ? formData.endDate : null,
           end_time: formData.endTime || null,
-          price: formData.price ? parseFloat(formData.price) : null,
+          ...ticketPayload(formData.price, tiers),
           capacity: formData.capacity ? parseInt(formData.capacity) : null,
-          is_paid: formData.is_paid,
           image_url: imageUrl,
           latitude: currentEvent?.latitude ?? 5.3600,
           longitude: currentEvent?.longitude ?? -4.0083,
@@ -170,7 +178,7 @@ const EditEvent = () => {
           contact_tiktok: formData.contact_tiktok || null,
           contact_twitter: formData.contact_twitter || null,
           contact_email: formData.contact_email || null,
-        }, ['contact_email', 'end_date', 'end_time'], (p) => supabase.from('events').update(p).eq('id', id!));
+        }, ['contact_email', 'end_date', 'end_time', 'ticket_types'], (p) => supabase.from('events').update(p).eq('id', id!));
 
       if (error) throw error;
       await queryClient.invalidateQueries();
@@ -219,12 +227,36 @@ const EditEvent = () => {
             {/* Image */}
             <div className={cardClass}>
               <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+              <ImageCropDialog
+                src={cropOpen ? cropSource?.url ?? null : null}
+                fileName={cropSource?.name}
+                onCancel={() => setCropOpen(false)}
+                onDone={(file, url) => {
+                  setImageFile(file);
+                  setImagePreview(url);
+                  setCropOpen(false);
+                }}
+              />
               <div
                 onClick={() => fileInputRef.current?.click()}
                 className="border border-dashed border-stone-300/50 rounded-2xl p-6 hover:border-stone-400/60 transition-colors cursor-pointer bg-white/30"
               >
                 {imagePreview ? (
-                  <img src={imagePreview} alt="Preview" className="w-full h-48 object-cover rounded-xl" />
+                  <div className="relative">
+                    <img src={imagePreview} alt="Preview" className="w-full max-h-72 object-contain rounded-xl bg-parchment" />
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // Sans nouvelle photo, on recadre l'affiche déjà publiée
+                        if (!cropSource) setCropSource({ url: imagePreview, name: 'affiche.jpg' });
+                        setCropOpen(true);
+                      }}
+                      className="absolute bottom-2 right-2 inline-flex h-9 items-center gap-1.5 rounded-full bg-ink px-3.5 text-[13px] font-medium text-parchment active:scale-95"
+                    >
+                      <Crop size={15} strokeWidth={1.75} /> Recadrer
+                    </button>
+                  </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-center py-4">
                     <span className="flex size-14 items-center justify-center rounded-2xl bg-lime mb-3">
@@ -285,20 +317,17 @@ const EditEvent = () => {
             <div className={cardClass}>
               <SectionTitle icon={Ticket}>{t('form.priceCapacity')}</SectionTitle>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <label className={labelClass}>{t('form.priceFCFA')}</label>
-                  <input type="number" step="0.01" min="0" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className={inputClass} />
-                </div>
-                <div className="space-y-2">
-                  <label className={labelClass}>{t('form.capacityLabel')}</label>
-                  <input type="number" min="1" value={formData.capacity} onChange={e => setFormData({...formData, capacity: e.target.value})} className={inputClass} />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 pt-1">
-                <input type="checkbox" id="is_paid" checked={formData.is_paid} onChange={e => setFormData({...formData, is_paid: e.target.checked})} className="w-4 h-4 accent-[#14140f]" />
-                <label htmlFor="is_paid" className="text-sm text-stone-600">{t('form.isPaid')}</label>
+              <TicketFields
+                price={formData.price}
+                onPriceChange={(v) => setFormData((f) => ({ ...f, price: v }))}
+                tiers={tiers}
+                onTiersChange={setTiers}
+                inputClass={inputClass}
+                labelClass={labelClass}
+              />
+              <div className="space-y-2">
+                <label className={labelClass}>{t('form.capacityLabel')}</label>
+                <input type="number" min="1" value={formData.capacity} onChange={e => setFormData({...formData, capacity: e.target.value})} className={inputClass} />
               </div>
             </div>
 

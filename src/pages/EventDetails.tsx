@@ -21,6 +21,7 @@ import { useSearch } from '@/contexts/SearchContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { eventStatus, dateRangeLabel, timeRangeLabel, isMultiDay, isUpcomingOrLive } from '@/lib/eventStatus';
 import { softCase } from '@/lib/softCase';
+import { eventPriceText, ticketTypesOf } from '@/lib/ticketTypes';
 
 
 const EventDetails = () => {
@@ -156,9 +157,11 @@ const EventDetails = () => {
   };
   const contactTiktok = event.contact_tiktok;
   const hasContacts = !!(event.contact_phone || event.contact_whatsapp || event.contact_instagram || event.contact_facebook || contactTiktok || event.contact_twitter || event.contact_email);
-  const priceLabel = event.is_paid && event.price
-    ? <>{Number(event.price).toLocaleString('fr-FR')} <span className="text-lime text-base tracking-tight">FCFA</span></>
-    : t('event.free');
+  const tickets = ticketTypesOf(event as { ticket_types?: unknown });
+  const priceText = eventPriceText(event, lang);
+  const priceLabel = priceText.endsWith(' FCFA')
+    ? <>{priceText.slice(0, -5)} <span className="text-lime text-base tracking-tight">FCFA</span></>
+    : priceText;
 
   const share = () => {
     if (navigator.share) {
@@ -171,7 +174,6 @@ const EventDetails = () => {
 
   const roundBtn = 'flex size-12 btn-float items-center justify-center rounded-full transition-colors active:scale-95';
 
-  const priceText = event.is_paid && event.price ? `${Number(event.price).toLocaleString('fr-FR')} FCFA` : t('event.free');
   const categoryLabel = category ? t(category.tKey) : event.category;
   const ticketCells = [
     { icon: CalendarDays, label: t('event.dateLabel'), value: dateRangeLabel(event, lang) },
@@ -277,6 +279,26 @@ const EventDetails = () => {
         </article>
 
         <div className="mt-6 space-y-6">
+          {/* Types de places (Standard, VIP, Table…) */}
+          {tickets.length > 0 && (
+            <section>
+              <h2 className="eyebrow text-stone-500 mb-3">{lang === 'fr' ? 'Places' : 'Tickets'}</h2>
+              <ul className="overflow-hidden rounded-[20px] bg-white dark:bg-stone-900">
+                {tickets.map((tk, i) => (
+                  <li key={i} className={`flex items-center gap-3 px-4 py-3.5 ${i ? 'border-t border-dashed border-stone-200' : ''}`}>
+                    <span className="flex size-8 flex-shrink-0 items-center justify-center rounded-full bg-parchment text-ink">
+                      <Ticket size={15} strokeWidth={1.75} />
+                    </span>
+                    <span className="min-w-0 flex-1 truncate text-[16px] font-medium text-ink dark:text-white">{tk.name}</span>
+                    <span className="text-[16px] font-semibold tracking-tight text-ink dark:text-white tabular">
+                      {tk.price > 0 ? `${tk.price.toLocaleString('fr-FR')} FCFA` : t('event.free')}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
           {/* Points clés */}
           {keyPoints && keyPoints.length > 0 && (
             <section>
