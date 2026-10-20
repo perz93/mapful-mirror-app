@@ -215,11 +215,11 @@ function isServiceRole(req: Request): boolean {
 // Titre court sur une ligne, pas d'emoji (sur iPhone, seul le logo de l'app s'affiche),
 // et une icône de l'app (catégorie, calendrier, horloge…) montrée par Android.
 
-const CATEGORY_NEW: Record<string, string> = {
-  music: "Nouveau concert", nightlife: "Nouvelle soirée", festivals: "Nouveau festival",
-  shows: "Nouveau spectacle", brunch: "Nouveau brunch", exhibitions: "Nouvelle expo",
-  conferences: "Nouvelle conférence", workshops: "Nouvel atelier", sports: "Nouvel événement sportif",
-  family: "Nouvelle sortie en famille", religious: "Nouvel événement", other: "Nouvel événement",
+const CATEGORY_LABEL: Record<string, string> = {
+  nightlife: "Soirées & clubbing", music: "Concerts & live", festivals: "Festivals", shows: "Spectacles & humour",
+  brunch: "Food & brunch", exhibitions: "Art & culture", conferences: "Business & networking",
+  workshops: "Ateliers & formations", sports: "Sport & bien-être", family: "Famille & enfants",
+  religious: "Religieux & spirituel", other: "Événement",
 };
 const LEGACY_CATEGORY: Record<string, string> = { meetups: "conferences", food: "brunch", arts: "exhibitions" };
 
@@ -238,26 +238,11 @@ const frTime = (t?: string | null) => {
   const [h, m] = t.split(":");
   return `${Number(h)}h${m && m !== "00" ? m : ""}`;
 };
-const fcfa = (n: number) => `${Math.round(n).toLocaleString("fr-FR")} FCFA`;
 
 type EventRow = {
   id: string; title: string; category: string | null; venue: string | null; date: string; time: string | null;
   price: number | null; is_paid: boolean | null; ticket_types: unknown; image_url: string | null;
 };
-
-function priceText(e: EventRow): string {
-  const types = Array.isArray(e.ticket_types)
-    ? (e.ticket_types as { name?: string; price?: number }[]).filter((t) => t?.name).map((t) => Math.max(0, Number(t.price) || 0))
-    : [];
-  if (types.length > 1) {
-    const paid = types.filter((p) => p > 0);
-    if (!paid.length) return "Entrée gratuite";
-    const min = Math.min(...types);
-    return min === 0 ? `Gratuit à ${fcfa(Math.max(...paid))}` : `Dès ${fcfa(min)}`;
-  }
-  const p = types.length === 1 ? types[0] : e.is_paid && e.price ? Number(e.price) : 0;
-  return p > 0 ? fcfa(p) : "Entrée gratuite";
-}
 
 // deno-lint-ignore no-explicit-any
 async function formatEventNotification(supabase: any, type: string, eventId: string) {
@@ -269,17 +254,18 @@ async function formatEventNotification(supabase: any, type: string, eventId: str
   if (!e) return null;
   const ev = e as EventRow;
   const name = softCase(ev.title);
-  const venue = softCase(ev.venue || "");
+  // Lieu court : « Parc des Expositions d'Abidjan, Port-Bouët, Abidjan » → « Parc des Expositions d'Abidjan »
+  const venue = softCase((ev.venue || "").split(",")[0].trim());
   const when = `${frDate(ev.date)}${ev.time ? ` à ${frTime(ev.time)}` : ""}`;
   const category = LEGACY_CATEGORY[ev.category || ""] || ev.category || "other";
-  const price = priceText(ev);
 
   switch (type) {
     case "new_event":
       return {
         title: oneLine(name),
-        body: `${CATEGORY_NEW[category] || "Nouvel événement"} · ${when}${venue ? ` · ${venue}` : ""}. ${price}${price === "Entrée gratuite" ? " — ne le rate pas !" : " — réserve ta place !"}`,
-        icon: `/notif/${CATEGORY_NEW[category] ? category : "other"}.png`,
+        // N1 · sobre : catégorie, date et heure, puis le lieu
+        body: `${CATEGORY_LABEL[category] || "Événement"} · ${when}${venue ? `\n${venue}` : ""}`,
+        icon: `/notif/${CATEGORY_LABEL[category] ? category : "other"}.png`,
         image: ev.image_url,
       };
     case "event_tomorrow":
