@@ -18,6 +18,8 @@ export interface Event {
   end_time?: string | null;
   price: number | null;
   ticket_types?: unknown;
+  /** Partie de l'affiche montrée dans les cadres (object-position) */
+  image_focus?: string | null;
   capacity: number | null;
   image_url: string | null;
   latitude: number;

@@ -22,6 +22,7 @@ import { eventCity } from '@/lib/cities';
 import { happensBetween, isMultiDay, lastDay } from '@/lib/eventStatus';
 import { supabase } from '@/integrations/supabase/client';
 import { softCase } from '@/lib/softCase';
+import { focusPosition } from '@/lib/imageFocus';
 
 const MapView = () => {
   const mapRef = useRef<HTMLDivElement>(null);
@@ -408,7 +409,7 @@ const MapView = () => {
 
       const popupContent = `
         <div class="event-popup-card">
-          <div class="popup-card-image" style="background-image: url('${safeUrl(event.image_url, defaultImage)}')">
+          <div class="popup-card-image" style="background-image: url('${safeUrl(event.image_url, defaultImage)}'); background-position: ${focusPosition(event.image_focus)}">
             <div class="popup-card-gradient">
               <div class="popup-card-row">
                 <div class="popup-date-box">

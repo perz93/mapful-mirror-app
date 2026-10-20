@@ -6,6 +6,8 @@ interface ShimmerImageProps {
   className?: string;
   onClick?: () => void;
   loading?: 'lazy' | 'eager';
+  /** object-position : partie de l'affiche à montrer quand elle est rognée */
+  position?: string;
 }
 
 /**
@@ -15,7 +17,7 @@ interface ShimmerImageProps {
  * l'événement `load` : sur iOS, `load` arrive avant que l'image soit peinte, ce qui
  * laissait apparaître le fond blanc de la carte. Il disparaît ensuite en fondu.
  */
-const ShimmerImage = ({ src, alt, className = '', onClick, loading = 'lazy' }: ShimmerImageProps) => {
+const ShimmerImage = ({ src, alt, className = '', onClick, loading = 'lazy', position }: ShimmerImageProps) => {
   const imgRef = useRef<HTMLImageElement>(null);
   const [ready, setReady] = useState(false);
 
@@ -43,6 +45,7 @@ const ShimmerImage = ({ src, alt, className = '', onClick, loading = 'lazy' }: S
         decoding="async"
         onLoad={markReady}
         onError={() => setReady(true)}
+        style={position ? { objectPosition: position } : undefined}
         className={`w-full h-full object-cover transition-opacity duration-500 ${ready ? 'opacity-100' : 'opacity-0'}`}
       />
       <div

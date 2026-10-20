@@ -14,6 +14,7 @@ import { getEventCategory } from '@/lib/eventCategories';
 import EventCategoryChips from './EventCategoryChips';
 import { softCase } from '@/lib/softCase';
 import { eventPriceText } from '@/lib/ticketTypes';
+import { focusPosition } from '@/lib/imageFocus';
 interface CategoryPageProps {
   category: string;
   /** Facultatifs : déduits de la liste des catégories */
@@ -92,6 +93,7 @@ const CategoryPage = ({
                       <div className="relative h-44 overflow-hidden rounded-[20px]">
                         <ShimmerImage
                           src={event.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&q=75&fm=webp'}
+                position={focusPosition(event.image_focus)}
                           alt={event.title}
                           className="h-full w-full"
                         />

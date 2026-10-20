@@ -9,6 +9,7 @@ import EventCardSkeleton from './EventCardSkeleton';
 import { eventStatus, isMultiDay, lastDay, timeRangeLabel } from '@/lib/eventStatus';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { softCase } from '@/lib/softCase';
+import { useImageFocus } from '@/lib/imageFocus';
 const OUT_MS = 320;
 const IN_MS = 520;
 const AUTOPLAY_MS = 5000;
@@ -102,6 +103,10 @@ const EventCard = () => {
     };
   }, [events]);
 
+  // Partie de l'affiche montrée dans le bandeau : choisie par l'organisateur, sinon détectée automatiquement
+  const shown = events?.length ? events[Math.min(currentIndex, events.length - 1)] : null;
+  const focus = useImageFocus(shown?.image_url, shown?.image_focus);
+
   if (isLoading) {
     return <EventCardSkeleton />;
   }
@@ -131,6 +136,7 @@ const EventCard = () => {
               <ShimmerImage
                 key={currentEvent.id}
                 src={currentEvent.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=640&q=75&fm=webp'}
+                position={focus}
                 alt=""
                 loading="eager"
                 className="absolute inset-0 h-full w-full"

@@ -6,6 +6,7 @@ import { useTonightEvents } from '@/hooks/useTonightEvents';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import HypeBadge from './HypeBadge';
+import { focusPosition } from '@/lib/imageFocus';
 
 const TonightSection = () => {
   const { data: events, isLoading } = useTonightEvents();
@@ -63,6 +64,7 @@ const TonightSection = () => {
             >
               <ShimmerImage
                 src={event.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=300&h=200&fit=crop'}
+                position={focusPosition(event.image_focus)}
                 alt=""
                 className="h-[80px] w-full"
               />

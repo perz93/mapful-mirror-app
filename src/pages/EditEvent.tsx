@@ -4,11 +4,11 @@ import { useState, useEffect, useRef } from 'react';
 import SectionTitle from '@/components/SectionTitle';
 import ContactFields, { readContacts, writeContacts } from '@/components/ContactFields';
 import EventScheduleFields from '@/components/EventScheduleFields';
-import { ArrowLeft, Upload, Loader2, Image as ImageIcon, Phone, MessageCircle, Instagram, Facebook, Mail, Type, CalendarDays, Ticket, ContactRound, Crop } from 'lucide-react';
+import { ArrowLeft, Upload, Loader2, Image as ImageIcon, Phone, MessageCircle, Instagram, Facebook, Mail, Type, CalendarDays, Ticket, ContactRound } from 'lucide-react';
 import TikTokIcon from '@/components/icons/TikTokIcon';
 import { retryWithoutNewColumns } from '@/lib/retryWithoutNewColumns';
 import TicketFields from '@/components/TicketFields';
-import ImageCropDialog from '@/components/ImageCropDialog';
+import ImageFocusField from '@/components/ImageFocusField';
 import { ticketPayload, ticketTypesOf, draftsFrom, type TicketDraft } from '@/lib/ticketTypes';
 import { emailProviderLabel } from '@/lib/emailProvider';
 import { Link, useParams, useNavigate } from 'react-router-dom';
@@ -34,9 +34,8 @@ const EditEvent = () => {
   const [submitting, setSubmitting] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
-  // Recadrage : photo de départ (nouvelle photo choisie, ou l'affiche déjà publiée)
-  const [cropSource, setCropSource] = useState<{ url: string; name: string } | null>(null);
-  const [cropOpen, setCropOpen] = useState(false);
+  // Partie de l'affiche montrée dans le cadre de la carte (object-position)
+  const [imageFocus, setImageFocus] = useState<string | null>(null);
   // Plusieurs types de places (null = un seul prix)
   const [tiers, setTiers] = useState<TicketDraft[] | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -106,6 +105,7 @@ const EditEvent = () => {
         contact_twitter: data.contact_twitter || '',
         contact_email: data.contact_email || '',
       });
+      setImageFocus((data as { image_focus?: string | null }).image_focus ?? null);
       const types = ticketTypesOf(data as { ticket_types?: unknown });
       setTiers(types.length > 0 ? draftsFrom(types) : null);
 
@@ -125,8 +125,9 @@ const EditEvent = () => {
     if (!file.type.startsWith('image/')) { toast.error(t('form.selectImage')); return; }
     if (file.size > 15 * 1024 * 1024) { toast.error(t('form.max5mb')); return; }
     e.target.value = '';
-    setCropSource({ url: URL.createObjectURL(file), name: file.name });
-    setCropOpen(true);
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+    setImageFocus(null); // nouvelle affiche : cadrage automatique
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -169,6 +170,7 @@ const EditEvent = () => {
           ...ticketPayload(formData.price, tiers),
           capacity: formData.capacity ? parseInt(formData.capacity) : null,
           image_url: imageUrl,
+          image_focus: imageUrl ? imageFocus : null,
           latitude: currentEvent?.latitude ?? 5.3600,
           longitude: currentEvent?.longitude ?? -4.0083,
           contact_phone: formData.contact_phone || null,
@@ -178,7 +180,7 @@ const EditEvent = () => {
           contact_tiktok: formData.contact_tiktok || null,
           contact_twitter: formData.contact_twitter || null,
           contact_email: formData.contact_email || null,
-        }, ['contact_email', 'end_date', 'end_time', 'ticket_types'], (p) => supabase.from('events').update(p).eq('id', id!));
+        }, ['contact_email', 'end_date', 'end_time', 'ticket_types', 'image_focus'], (p) => supabase.from('events').update(p).eq('id', id!));
 
       if (error) throw error;
       await queryClient.invalidateQueries();
@@ -227,16 +229,6 @@ const EditEvent = () => {
             {/* Image */}
             <div className={cardClass}>
               <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
-              <ImageCropDialog
-                src={cropOpen ? cropSource?.url ?? null : null}
-                fileName={cropSource?.name}
-                onCancel={() => setCropOpen(false)}
-                onDone={(file, url) => {
-                  setImageFile(file);
-                  setImagePreview(url);
-                  setCropOpen(false);
-                }}
-              />
               <div
                 onClick={() => fileInputRef.current?.click()}
                 className="border border-dashed border-stone-300/50 rounded-2xl p-6 hover:border-stone-400/60 transition-colors cursor-pointer bg-white/30"
@@ -244,18 +236,6 @@ const EditEvent = () => {
                 {imagePreview ? (
                   <div className="relative">
                     <img src={imagePreview} alt="Preview" className="w-full max-h-72 object-contain rounded-xl bg-parchment" />
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        // Sans nouvelle photo, on recadre l'affiche déjà publiée
-                        if (!cropSource) setCropSource({ url: imagePreview, name: 'affiche.jpg' });
-                        setCropOpen(true);
-                      }}
-                      className="absolute bottom-2 right-2 inline-flex h-9 items-center gap-1.5 rounded-full bg-ink px-3.5 text-[13px] font-medium text-parchment active:scale-95"
-                    >
-                      <Crop size={15} strokeWidth={1.75} /> Recadrer
-                    </button>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-center py-4">
@@ -266,6 +246,7 @@ const EditEvent = () => {
                   </div>
                 )}
               </div>
+              {imagePreview && <ImageFocusField src={imagePreview} focus={imageFocus} onFocusChange={setImageFocus} />}
             </div>
 
             {/* Basic Info */}

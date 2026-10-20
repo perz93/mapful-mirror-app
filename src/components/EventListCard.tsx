@@ -3,6 +3,7 @@ import { Event } from '@/hooks/useEvents';
 import { softCase } from '@/lib/softCase';
 import { dateRangeLabel, timeRangeLabel } from '@/lib/eventStatus';
 import ShimmerImage from './ShimmerImage';
+import { focusPosition } from '@/lib/imageFocus';
 
 interface EventListCardProps {
   event: Event;
@@ -35,6 +36,7 @@ const EventListCard = ({ event }: EventListCardProps) => {
         </div>
         <ShimmerImage
           src={event.image_url || 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&h=400&fit=crop'}
+                position={focusPosition(event.image_focus)}
           alt={softCase(event.title)}
           className="w-20 h-20 flex-shrink-0 rounded"
         />

@@ -181,6 +181,8 @@ const EventDetails = () => {
     { icon: MapPin, label: lang === 'fr' ? 'Lieu' : 'Venue', value: softCase(event.venue) },
     { icon: Ticket, label: t('event.price'), value: priceText },
   ];
+  // Plusieurs places : toutes les places et leurs prix dans la case Prix (sur toute la largeur)
+  const multiTickets = tickets.length > 1;
 
   return (
     <div className="min-h-screen bg-parchment dark:bg-background-dark page-enter">
@@ -263,41 +265,39 @@ const EventDetails = () => {
           </div>
 
           <dl className="grid grid-cols-2 gap-x-4 gap-y-4 px-5 pb-5 pt-4">
-            {ticketCells.map((cell) => (
-              <div key={cell.label} className="min-w-0 border-l border-stone-300 dark:border-stone-600 pl-3">
+            {ticketCells.map((cell) => {
+              const isPrice = cell.icon === Ticket;
+              return (
+              <div key={cell.label} className={`min-w-0 border-l border-stone-300 dark:border-stone-600 pl-3 ${isPrice && multiTickets ? 'col-span-2' : ''}`}>
                 <dt className="eyebrow flex items-center gap-2 text-stone-500">
                   <span className="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-parchment text-ink dark:bg-stone-800 dark:text-white">
                     <cell.icon size={13} strokeWidth={1.75} />
                   </span>
                   {cell.label}
                 </dt>
+                {isPrice && multiTickets ? (
+                  <dd className="mt-1.5 space-y-1">
+                    {tickets.map((tk, i) => (
+                      <div key={i} className="flex items-baseline gap-2 text-[16px] leading-tight">
+                        <span className="min-w-0 truncate font-medium text-stone-600 dark:text-stone-300">{tk.name}</span>
+                        <span className="min-w-[12px] flex-1 translate-y-[-3px] border-b border-dotted border-stone-300" />
+                        <span className="font-semibold tracking-tight text-ink dark:text-white tabular">
+                          {tk.price > 0 ? `${tk.price.toLocaleString('fr-FR')} FCFA` : t('event.free')}
+                        </span>
+                      </div>
+                    ))}
+                  </dd>
+                ) : (
                 <dd className="mt-1 line-clamp-2 text-[16px] leading-tight font-semibold tracking-tight text-ink dark:text-white tabular first-letter:uppercase">{cell.value}</dd>
+                )}
               </div>
-            ))}
+              );
+            })}
           </dl>
           {showAddress && <p className="-mt-2 truncate px-5 pb-5 text-sm text-stone-500">{event.address}</p>}
         </article>
 
         <div className="mt-6 space-y-6">
-          {/* Types de places (Standard, VIP, Table…) */}
-          {tickets.length > 0 && (
-            <section>
-              <h2 className="eyebrow text-stone-500 mb-3">{lang === 'fr' ? 'Places' : 'Tickets'}</h2>
-              <ul className="overflow-hidden rounded-[20px] bg-white dark:bg-stone-900">
-                {tickets.map((tk, i) => (
-                  <li key={i} className={`flex items-center gap-3 px-4 py-3.5 ${i ? 'border-t border-dashed border-stone-200' : ''}`}>
-                    <span className="flex size-8 flex-shrink-0 items-center justify-center rounded-full bg-parchment text-ink">
-                      <Ticket size={15} strokeWidth={1.75} />
-                    </span>
-                    <span className="min-w-0 flex-1 truncate text-[16px] font-medium text-ink dark:text-white">{tk.name}</span>
-                    <span className="text-[16px] font-semibold tracking-tight text-ink dark:text-white tabular">
-                      {tk.price > 0 ? `${tk.price.toLocaleString('fr-FR')} FCFA` : t('event.free')}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
 
           {/* Points clés */}
           {keyPoints && keyPoints.length > 0 && (
