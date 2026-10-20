@@ -27,6 +27,7 @@ import Shows from "./pages/Shows";
 import Exhibitions from "./pages/Exhibitions";
 import Brunch from "./pages/Brunch";
 import Religious from "./pages/Religious";
+import Other from "./pages/Other";
 import EventDetails from "./pages/EventDetails";
 import MyAccount from "./pages/MyAccount";
 import CreateEvent from "./pages/CreateEvent";
@@ -68,6 +69,7 @@ const AppContent = () => {
         <Route path="/exhibitions" element={<Exhibitions />} />
         <Route path="/brunch" element={<Brunch />} />
         <Route path="/religious" element={<Religious />} />
+        <Route path="/autres" element={<Other />} />
         <Route path="/event/:id" element={<EventDetails />} />
         <Route path="/my-account" element={<MyAccount />} />
         <Route path="/create-event" element={<CreateEvent />} />

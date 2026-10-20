@@ -9,6 +9,7 @@ import meetupIcon from '@/assets/icons/meetup.png';
 import religieuxIcon from '@/assets/icons/religieux.png';
 import spectacleIcon from '@/assets/icons/spectacle.png';
 import sportIcon from '@/assets/icons/sport.png';
+import autreIcon from '@/assets/icons/autre.png';
 
 /**
  * Catégories d'événements — source unique (barre du bas, recherche,
@@ -34,6 +35,8 @@ export const EVENT_CATEGORIES: EventCategory[] = [
   { value: 'sports', tKey: 'cat.sports', path: '/sports', icon: sportIcon },
   { value: 'family', tKey: 'cat.family', path: '/famille', icon: meetupIcon },
   { value: 'religious', tKey: 'cat.religious', path: '/religious', icon: religieuxIcon },
+  // Tout ce qui n'entre dans aucune autre catégorie (toujours en dernier)
+  { value: 'other', tKey: 'cat.other', path: '/autres', icon: autreIcon },
 ];
 
 /** Anciennes clés regroupées dans une catégorie plus large. */

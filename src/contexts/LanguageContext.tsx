@@ -217,6 +217,7 @@ const translations: Record<string, Record<Lang, string>> = {
   'cat.sports': { fr: 'Sport & bien-être', en: 'Sport & wellness' },
   'cat.family': { fr: 'Famille & enfants', en: 'Family & kids' },
   'cat.religious': { fr: 'Religieux & spirituel', en: 'Faith & spirituality' },
+  'cat.other': { fr: 'Autre', en: 'Other' },
   'cat.meetups': { fr: 'Business & networking', en: 'Business & networking' },
   'category.allTitle': { fr: 'Tous les événements', en: 'All events' },
   'catShort.nightlife': { fr: 'Soirées', en: 'Nightlife' },
