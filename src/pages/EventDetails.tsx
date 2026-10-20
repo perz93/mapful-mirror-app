@@ -181,7 +181,7 @@ const EventDetails = () => {
     { icon: MapPin, label: lang === 'fr' ? 'Lieu' : 'Venue', value: softCase(event.venue) },
     { icon: Ticket, label: t('event.price'), value: priceText },
   ];
-  // Plusieurs places : toutes les places et leurs prix dans la case Prix (sur toute la largeur)
+  // Plusieurs places : toutes les places et leurs prix dans la case Prix, en plus petit
   const multiTickets = tickets.length > 1;
 
   return (
@@ -268,7 +268,7 @@ const EventDetails = () => {
             {ticketCells.map((cell) => {
               const isPrice = cell.icon === Ticket;
               return (
-              <div key={cell.label} className={`min-w-0 border-l border-stone-300 dark:border-stone-600 pl-3 ${isPrice && multiTickets ? 'col-span-2' : ''}`}>
+              <div key={cell.label} className="min-w-0 border-l border-stone-300 dark:border-stone-600 pl-3">
                 <dt className="eyebrow flex items-center gap-2 text-stone-500">
                   <span className="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-parchment text-ink dark:bg-stone-800 dark:text-white">
                     <cell.icon size={13} strokeWidth={1.75} />
@@ -278,10 +278,9 @@ const EventDetails = () => {
                 {isPrice && multiTickets ? (
                   <dd className="mt-1.5 space-y-1">
                     {tickets.map((tk, i) => (
-                      <div key={i} className="flex items-baseline gap-2 text-[16px] leading-tight">
-                        <span className="min-w-0 truncate font-medium text-stone-600 dark:text-stone-300">{tk.name}</span>
-                        <span className="min-w-[12px] flex-1 translate-y-[-3px] border-b border-dotted border-stone-300" />
-                        <span className="font-semibold tracking-tight text-ink dark:text-white tabular">
+                      <div key={i} className="flex items-baseline justify-between gap-2 text-[13px] leading-tight">
+                        <span className="min-w-0 truncate text-stone-500 dark:text-stone-400">{tk.name}</span>
+                        <span className="flex-shrink-0 font-semibold tracking-tight text-ink dark:text-white tabular">
                           {tk.price > 0 ? `${tk.price.toLocaleString('fr-FR')} FCFA` : t('event.free')}
                         </span>
                       </div>
