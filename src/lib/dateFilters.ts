@@ -5,10 +5,8 @@ export type DateFilter = 'all' | 'today' | 'tomorrow' | 'weekend' | 'week' | 'ne
 
 export const DATE_FILTERS: { id: DateFilter; tKey: string }[] = [
   { id: 'all', tKey: 'when.all' },
-  { id: 'today', tKey: 'when.today' },
-  { id: 'tomorrow', tKey: 'when.tomorrow' },
-  { id: 'weekend', tKey: 'when.weekend' },
   { id: 'week', tKey: 'when.week' },
+  { id: 'weekend', tKey: 'when.weekend' },
   { id: 'next_week', tKey: 'when.nextWeek' },
   { id: 'month', tKey: 'when.month' },
 ];
