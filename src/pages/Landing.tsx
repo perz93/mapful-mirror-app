@@ -95,10 +95,8 @@ const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) =
   history.replaceState(null, '', href);
 };
 
-const Logo = ({ className = '' }: { className?: string }) => (
-  <span className={`font-display text-[24px] !font-[800] tracking-[-0.05em] text-parchment ${className}`}>
-    <span className="text-lime">up</span>vibe<span className="text-lime">.</span>
-  </span>
+const Logo = ({ className = 'h-8' }: { className?: string }) => (
+  <img src="/landing/logo.png" alt="Upvibe" width={278} height={96} className={`w-auto ${className}`} />
 );
 
 /** Vraie capture de l'app dans un cadre de téléphone (net sur tous les écrans) */
@@ -348,7 +346,7 @@ const Landing = () => {
 
       <footer className="bg-black px-5 pb-36 pt-8 text-[13px] leading-7 text-stone-400 lg:pb-10">
         <div className="mx-auto max-w-6xl">
-          <Logo className="text-[22px]" />
+          <Logo className="h-7" />
           <p>Toutes les sorties d'Abidjan sur une carte.</p>
           <p><a href="mailto:contact@upvibe.app" className="hover:text-parchment">contact@upvibe.app</a> · Abidjan, Côte d'Ivoire</p>
         </div>
