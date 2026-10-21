@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Share, SquarePlus, EllipsisVertical, Download, Copy, Check, AlertCircle, MapPin, BellRing, Megaphone, Store } from 'lucide-react';
+import { Share, SquarePlus, EllipsisVertical, Download, Copy, Check, AlertCircle, MapPin, BellRing, Megaphone, Store, X } from 'lucide-react';
 
 const INSTALLED_KEY = 'pwa_installed';
 const OPEN_EVENT = 'upvibe:install';
@@ -421,7 +421,7 @@ const InstallGuide = () => {
   return (
     <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-labelledby="install-title">
       {/* Fond */}
-      <div className={`absolute inset-0 bg-ink/60 backdrop-blur-sm transition-opacity duration-300 ${shown ? 'opacity-100' : 'opacity-0'}`} />
+      <div onClick={close} className={`absolute inset-0 bg-ink/60 backdrop-blur-sm transition-opacity duration-300 ${shown ? 'opacity-100' : 'opacity-0'}`} />
 
       {/* Feuille */}
       <div
@@ -438,6 +438,9 @@ const InstallGuide = () => {
               <h2 id="install-title" className="text-[22px] leading-none tracking-tighter text-ink">Installe Upvibe</h2>
               <p className="mt-1 text-[12.5px] text-stone-500">Gratuit · sans store · 3 gestes</p>
             </div>
+            <button type="button" onClick={close} aria-label="Fermer" className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-parchment text-ink active:scale-95">
+              <X size={18} strokeWidth={2} />
+            </button>
           </div>
 
           {/* Ce que Upvibe apporte (modèle B : une ligne d'icônes) */}
