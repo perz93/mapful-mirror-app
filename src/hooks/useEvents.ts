@@ -35,23 +35,21 @@ export const useEvents = () => {
   return useQuery({
     queryKey: ['events'],
     queryFn: async () => {
-      // Carte et recherche : événements à venir + ceux terminés depuis moins de 60 jours.
-      // Sans cette fenêtre, l'app téléchargerait TOUT l'historique à chaque ouverture.
-      const since = new Date(Date.now() - 60 * 864e5).toISOString().slice(0, 10);
+      // Tous les événements publiés (passés compris), plafonnés aux 1 500 plus récents
+      // pour que l'app reste légère quand il y en aura des milliers.
       const { data, error } = await supabase
         .from('events')
         .select('*')
         .eq('is_published', true)
-        .or(`date.gte.${since},end_date.gte.${since}`)
-        .order('date', { ascending: true })
-        .limit(2000);
+        .order('date', { ascending: false })
+        .limit(1500);
 
       if (error) {
         console.error('Error fetching events:', error);
         throw error;
       }
 
-      return data as Event[];
+      return (data as Event[]).reverse(); // du plus ancien au plus récent, comme avant
     },
     staleTime: 3 * 60 * 1000, // Fresh for 3 minutes
   });
