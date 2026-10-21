@@ -34,66 +34,29 @@ function concat(...arrays: Uint8Array[]): Uint8Array {
   return result;
 }
 
-function encodeLength(len: number): Uint8Array {
-  const buf = new Uint8Array(2);
-  buf[0] = (len >> 8) & 0xff;
-  buf[1] = len & 0xff;
-  return buf;
+async function hmac(key: Uint8Array, data: Uint8Array): Promise<Uint8Array> {
+  const k = await crypto.subtle.importKey("raw", key, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  return new Uint8Array(await crypto.subtle.sign("HMAC", k, data));
 }
 
-async function createInfo(
-  type: string,
-  clientPublicKey: Uint8Array,
-  serverPublicKey: Uint8Array
-): Promise<Uint8Array> {
-  const encoder = new TextEncoder();
-  const info = encoder.encode(`Content-Encoding: ${type}\0`);
-  return concat(
-    info,
-    new Uint8Array([0]),
-    encodeLength(clientPublicKey.length),
-    clientPublicKey,
-    encodeLength(serverPublicKey.length),
-    serverPublicKey
-  );
-}
-
-async function hkdf(
-  salt: Uint8Array,
-  ikm: Uint8Array,
-  info: Uint8Array,
-  length: number
-): Promise<Uint8Array> {
-  const key = await crypto.subtle.importKey("raw", ikm, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  const prk = new Uint8Array(await crypto.subtle.sign("HMAC", key, salt));
-
-  const infoKey = await crypto.subtle.importKey("raw", prk, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  const infoWithCounter = concat(info, new Uint8Array([1]));
-  const result = new Uint8Array(await crypto.subtle.sign("HMAC", infoKey, infoWithCounter));
-
-  return result.slice(0, length);
-}
-
+// Chiffrement « aes128gcm » (RFC 8291 + RFC 8188) — seul format accepté
+// par Safari/iOS ; l'ancien « aesgcm » est accepté par Apple mais jamais affiché.
 async function encryptPayload(
   clientPublicKeyStr: string,
   clientAuthStr: string,
   payload: string
-): Promise<{ encrypted: Uint8Array; serverPublicKey: Uint8Array; salt: Uint8Array }> {
+): Promise<Uint8Array> {
   const clientPublicKey = base64UrlDecode(clientPublicKeyStr);
   const clientAuth = base64UrlDecode(clientAuthStr);
+  const encoder = new TextEncoder();
 
-  // Generate server ECDH key pair
   const serverKeys = await crypto.subtle.generateKey(
     { name: "ECDH", namedCurve: "P-256" },
     true,
     ["deriveBits"]
   );
+  const serverPublicKey = new Uint8Array(await crypto.subtle.exportKey("raw", serverKeys.publicKey));
 
-  const serverPublicKeyRaw = new Uint8Array(
-    await crypto.subtle.exportKey("raw", serverKeys.publicKey)
-  );
-
-  // Import client public key
   const clientKey = await crypto.subtle.importKey(
     "raw",
     clientPublicKey,
@@ -101,53 +64,34 @@ async function encryptPayload(
     false,
     []
   );
-
-  // ECDH shared secret
-  const sharedSecret = new Uint8Array(
-    await crypto.subtle.deriveBits(
-      { name: "ECDH", public: clientKey },
-      serverKeys.privateKey,
-      256
-    )
+  const ecdhSecret = new Uint8Array(
+    await crypto.subtle.deriveBits({ name: "ECDH", public: clientKey }, serverKeys.privateKey, 256)
   );
 
-  // Generate salt
+  // IKM = HKDF(auth, ecdh, "WebPush: info" || 0 || ua_public || as_public, 32)
+  const prkKey = await hmac(clientAuth, ecdhSecret);
+  const keyInfo = concat(encoder.encode("WebPush: info\0"), clientPublicKey, serverPublicKey);
+  const ikm = await hmac(prkKey, concat(keyInfo, new Uint8Array([1])));
+
   const salt = crypto.getRandomValues(new Uint8Array(16));
+  const prk = await hmac(salt, ikm);
+  const cek = (await hmac(prk, concat(encoder.encode("Content-Encoding: aes128gcm\0"), new Uint8Array([1])))).slice(0, 16);
+  const nonce = (await hmac(prk, concat(encoder.encode("Content-Encoding: nonce\0"), new Uint8Array([1])))).slice(0, 12);
 
-  // HKDF for auth info
-  const encoder = new TextEncoder();
-  const authInfo = encoder.encode("Content-Encoding: auth\0");
-  const prk = await hkdf(clientAuth, sharedSecret, authInfo, 32);
+  // Un seul enregistrement : contenu + délimiteur 0x02
+  const plaintext = concat(encoder.encode(payload), new Uint8Array([2]));
+  const aesKey = await crypto.subtle.importKey("raw", cek, { name: "AES-GCM" }, false, ["encrypt"]);
+  const ciphertext = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv: nonce }, aesKey, plaintext));
 
-  // Derive content encryption key and nonce
-  const cekInfo = await createInfo("aesgcm", clientPublicKey, serverPublicKeyRaw);
-  const nonceInfo = await createInfo("nonce", clientPublicKey, serverPublicKeyRaw);
-
-  const contentEncryptionKey = await hkdf(salt, prk, cekInfo, 16);
-  const nonce = await hkdf(salt, prk, nonceInfo, 12);
-
-  // Pad and encrypt payload
-  const payloadBytes = encoder.encode(payload);
-  const padding = new Uint8Array(2); // 2 bytes padding length = 0
-  const paddedPayload = concat(padding, payloadBytes);
-
-  const aesKey = await crypto.subtle.importKey(
-    "raw",
-    contentEncryptionKey,
-    { name: "AES-GCM" },
-    false,
-    ["encrypt"]
+  // En-tête : salt(16) || rs(4) || idlen(1) || keyid(65)
+  const rs = 4096;
+  const header = concat(
+    salt,
+    new Uint8Array([(rs >>> 24) & 0xff, (rs >>> 16) & 0xff, (rs >>> 8) & 0xff, rs & 0xff]),
+    new Uint8Array([serverPublicKey.length]),
+    serverPublicKey
   );
-
-  const encrypted = new Uint8Array(
-    await crypto.subtle.encrypt(
-      { name: "AES-GCM", iv: nonce },
-      aesKey,
-      paddedPayload
-    )
-  );
-
-  return { encrypted, serverPublicKey: serverPublicKeyRaw, salt };
+  return concat(header, ciphertext);
 }
 
 async function createVapidAuthHeader(
@@ -162,7 +106,7 @@ async function createVapidAuthHeader(
   const now = Math.floor(Date.now() / 1000);
   const payload = {
     aud: audience,
-    exp: now + 86400,
+    exp: now + 12 * 3600, // Apple refuse les jetons de plus de 24 h
     sub: VAPID_SUBJECT,
   };
 
@@ -228,11 +172,7 @@ async function sendWebPush(
   sub: { endpoint: string; p256dh: string; auth: string },
   payload: string
 ): Promise<Response> {
-  const { encrypted, serverPublicKey, salt } = await encryptPayload(
-    sub.p256dh,
-    sub.auth,
-    payload
-  );
+  const body = await encryptPayload(sub.p256dh, sub.auth, payload);
 
   const vapidToken = await createVapidAuthHeader(
     sub.endpoint,
@@ -240,21 +180,125 @@ async function sendWebPush(
     VAPID_PRIVATE_KEY
   );
 
-  const response = await fetch(sub.endpoint, {
+  return await fetch(sub.endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/octet-stream",
-      "Content-Encoding": "aesgcm",
-      "Content-Length": String(encrypted.length),
+      "Content-Encoding": "aes128gcm",
       "TTL": "86400",
-      "Crypto-Key": `dh=${base64UrlEncode(serverPublicKey)};p256ecdsa=${VAPID_PUBLIC_KEY}`,
-      "Encryption": `salt=${base64UrlEncode(salt)}`,
-      "Authorization": `WebPush ${vapidToken}`,
+      "Urgency": "high",
+      "Authorization": `vapid t=${vapidToken}, k=${VAPID_PUBLIC_KEY}`,
     },
-    body: encrypted,
+    body,
   });
+}
 
-  return response;
+// Appels serveur uniquement : le jeton doit être une clé « service_role ».
+// La passerelle Supabase (verify_jwt) a déjà vérifié la signature du JWT ;
+// on contrôle ici son rôle (plusieurs clés service_role valides peuvent
+// coexister : celle du déclencheur SQL et celle de l'environnement).
+function isServiceRole(req: Request): boolean {
+  const token = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+  if (!token) return false;
+  if (SUPABASE_SERVICE_ROLE_KEY && token === SUPABASE_SERVICE_ROLE_KEY) return true;
+  const parts = token.split(".");
+  if (parts.length !== 3) return false;
+  try {
+    const json = atob(parts[1].replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(parts[1].length / 4) * 4, "="));
+    return JSON.parse(json).role === "service_role";
+  } catch {
+    return false;
+  }
+}
+
+// ---- Textes des notifications (une seule source pour toutes les notifications d'événement) ----
+// Titre court sur une ligne, pas d'emoji (sur iPhone, seul le logo de l'app s'affiche),
+// et une icône de l'app (catégorie, calendrier, horloge…) montrée par Android.
+
+const CATEGORY_LABEL: Record<string, string> = {
+  nightlife: "Soirées & clubbing", music: "Concerts & live", festivals: "Festivals", shows: "Spectacles & humour",
+  brunch: "Food & brunch", exhibitions: "Art & culture", conferences: "Business & networking",
+  workshops: "Ateliers & formations", sports: "Sport & bien-être", family: "Famille & enfants",
+  religious: "Religieux & spirituel", other: "Événement",
+};
+const LEGACY_CATEGORY: Record<string, string> = { meetups: "conferences", food: "brunch", arts: "exhibitions" };
+
+const softCase = (text: string) => {
+  const out = (text || "").replace(/\p{L}[\p{L}'’-]*/gu, (w) =>
+    w.length > 1 && w === w.toLocaleUpperCase("fr") && w !== w.toLocaleLowerCase("fr") ? w.toLocaleLowerCase("fr") : w);
+  return out.charAt(0).toLocaleUpperCase("fr") + out.slice(1);
+};
+const oneLine = (text: string, max = 30) => (text.length > max ? text.slice(0, max - 1).trimEnd() + "…" : text);
+const frDate = (iso: string) =>
+  new Intl.DateTimeFormat("fr-FR", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" })
+    .format(new Date(`${iso}T00:00:00Z`))
+    .replace(/^./, (c) => c.toUpperCase());
+const frTime = (t?: string | null) => {
+  if (!t) return "";
+  const [h, m] = t.split(":");
+  return `${Number(h)}h${m && m !== "00" ? m : ""}`;
+};
+
+type EventRow = {
+  id: string; title: string; category: string | null; venue: string | null; date: string; time: string | null;
+  price: number | null; is_paid: boolean | null; ticket_types: unknown; image_url: string | null;
+};
+
+// deno-lint-ignore no-explicit-any
+async function formatEventNotification(supabase: any, type: string, eventId: string) {
+  const { data: e } = await supabase
+    .from("events")
+    .select("id, title, category, venue, date, time, price, is_paid, ticket_types, image_url")
+    .eq("id", eventId)
+    .maybeSingle();
+  if (!e) return null;
+  const ev = e as EventRow;
+  const name = softCase(ev.title);
+  // Lieu court : « Parc des Expositions d'Abidjan, Port-Bouët, Abidjan » → « Parc des Expositions d'Abidjan »
+  const venue = softCase((ev.venue || "").split(",")[0].trim());
+  const when = `${frDate(ev.date)}${ev.time ? ` à ${frTime(ev.time)}` : ""}`;
+  const category = LEGACY_CATEGORY[ev.category || ""] || ev.category || "other";
+
+  switch (type) {
+    case "new_event":
+      return {
+        title: oneLine(name),
+        // N1 · sobre : catégorie, date et heure, puis le lieu
+        body: `${CATEGORY_LABEL[category] || "Événement"} · ${when}${venue ? `\n${venue}` : ""}`,
+        icon: `/notif/${CATEGORY_LABEL[category] ? category : "other"}.png`,
+        image: ev.image_url,
+      };
+    case "event_tomorrow":
+      return {
+        title: "C'est demain !",
+        body: `${name}${ev.time ? ` · ${frTime(ev.time)}` : ""}${venue ? ` · ${venue}` : ""}. Prépare-toi !`,
+        icon: "/notif/calendar.png",
+        image: ev.image_url,
+      };
+    case "event_starting":
+    case "event_reminder":
+      return {
+        title: "Ça commence dans 1 h",
+        body: `${name}${venue ? ` · ${venue}` : ""}. Il est temps de te mettre en route !`,
+        icon: type === "event_reminder" ? "/notif/bell.png" : "/notif/clock.png",
+        image: ev.image_url,
+      };
+    default:
+      return null;
+  }
+}
+
+// ---- Lecture complète (l'API renvoie 1 000 lignes max par requête) ----
+// deno-lint-ignore no-explicit-any
+async function fetchAllRows<T>(build: (from: number, to: number) => any, pageSize = 1000): Promise<T[]> {
+  const rows: T[] = [];
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await build(from, from + pageSize - 1);
+    if (error) throw new Error(error.message);
+    rows.push(...((data ?? []) as T[]));
+    if (!data || data.length < pageSize) break;
+  }
+  return rows;
 }
 
 // ---- Main handler ----
@@ -270,8 +314,34 @@ serve(async (req) => {
     });
   }
 
+  // Seuls les appels serveur (cron, trigger, notify-events) avec la clé
+  // service_role peuvent déclencher des envois — sinon n'importe qui
+  // pourrait spammer tous les abonnés.
+  if (!isServiceRole(req)) {
+    return new Response(JSON.stringify({ error: "unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   try {
-    const { title, body, url, image, tag, user_ids, send_to_all, check_duplicates, notification_type, event_id } = await req.json();
+    const input = await req.json();
+    const { url, tag, user_ids, send_to_all, exclude_user_id, check_duplicates, notification_type, event_id } = input;
+    let { title, body, image } = input;
+    let icon: string | undefined = input.icon;
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    // Notification d'événement : textes et icône construits ici, au même format partout
+    if (event_id && notification_type) {
+      const formatted = await formatEventNotification(supabase, notification_type, event_id);
+      if (formatted) {
+        title = formatted.title;
+        body = formatted.body;
+        icon = formatted.icon;
+        image = image || formatted.image;
+      }
+    }
 
     if (!title || !body) {
       return new Response(JSON.stringify({ error: "title and body required" }), {
@@ -280,42 +350,82 @@ serve(async (req) => {
       });
     }
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    // 1. Destinataires (personnes, pas appareils)
+    // Sans destinataires explicites et sans send_to_all : on n'envoie à
+    // personne (avant, cela partait à TOUS les abonnés).
+    let audience: string[] = [];
+    if (send_to_all) {
+      try {
+        const profiles = await fetchAllRows<{ id: string }>((a, b) => supabase.from("profiles").select("id").order("id").range(a, b));
+        audience = profiles.map((p) => p.id);
+      } catch (error) {
+        return new Response(JSON.stringify({ error: String(error) }), {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+    } else if (Array.isArray(user_ids)) {
+      audience = user_ids.filter((id: unknown): id is string => typeof id === "string");
+    }
+    // L'organisateur n'est pas notifié de son propre événement
+    if (exclude_user_id) audience = audience.filter((id) => id !== exclude_user_id);
+    audience = [...new Set(audience)];
 
-    // Get subscriptions
-    let query = supabase.from("push_subscriptions").select("*");
-    if (!send_to_all && user_ids && user_ids.length > 0) {
-      query = query.in("user_id", user_ids);
+    // 2. Anti-doublon : on retire ceux qui ont déjà reçu cette notification
+    let skipped = 0;
+    if (check_duplicates && notification_type && event_id && audience.length > 0) {
+      const logs = await fetchAllRows<{ user_id: string }>((a, b) =>
+        supabase.from("notification_log").select("user_id").eq("event_id", event_id).eq("notification_type", notification_type).order("user_id").range(a, b)
+      ).catch(() => []);
+      const already = new Set(logs.map((l) => l.user_id));
+      const before = audience.length;
+      audience = audience.filter((id) => !already.has(id));
+      skipped = before - audience.length;
     }
 
-    const { data: subscriptions, error } = await query;
-
-    if (error) {
-      return new Response(JSON.stringify({ error: error.message }), {
-        status: 500,
+    if (audience.length === 0) {
+      return new Response(JSON.stringify({ sent: 0, skipped, reason: "no recipients" }), {
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    if (!subscriptions || subscriptions.length === 0) {
-      return new Response(JSON.stringify({ sent: 0, message: "No subscriptions found" }), {
-        headers: { "Content-Type": "application/json" },
-      });
+    // 3. Boîte de réception de l'app : une ligne par personne, AVANT l'envoi.
+    // Elle apparaît même sans notifications activées, et marque la personne
+    // comme notifiée (le cron et le déclencheur ne la renverront pas).
+    if (notification_type) {
+      const rows = audience.map((user_id) => ({
+        user_id,
+        event_id: event_id ?? null,
+        notification_type,
+        title,
+        body,
+        url: url || "/",
+        image_url: image || null,
+      }));
+      for (let i = 0; i < rows.length; i += 500) {
+        const { error } = await supabase
+          .from("notification_log")
+          .upsert(rows.slice(i, i + 500), { onConflict: "user_id,event_id,notification_type", ignoreDuplicates: true });
+        if (error) console.error(`notification_log: ${error.message}`);
+      }
     }
 
-    // Check duplicates if requested
-    let alreadyNotified: Set<string> = new Set();
-    if (check_duplicates && notification_type && event_id) {
-      const { data: logs } = await supabase
-        .from("notification_log")
-        .select("user_id")
-        .eq("event_id", event_id)
-        .eq("notification_type", notification_type);
-
-      if (logs) {
-        for (const log of logs) {
-          alreadyNotified.add(log.user_id);
-        }
+    // 4. Appareils abonnés de ces personnes
+    const audienceSet = new Set(audience);
+    const subscriptions: { endpoint: string; p256dh: string; auth: string; user_id: string }[] = [];
+    if (send_to_all) {
+      const all = await fetchAllRows<{ endpoint: string; p256dh: string; auth: string; user_id: string }>((a, b) =>
+        supabase.from("push_subscriptions").select("endpoint, p256dh, auth, user_id").order("endpoint").range(a, b)
+      ).catch((e) => { console.error(`push_subscriptions: ${e}`); return []; });
+      for (const s of all) if (audienceSet.has(s.user_id)) subscriptions.push(s);
+    } else {
+      for (let i = 0; i < audience.length; i += 100) {
+        const { data, error } = await supabase
+          .from("push_subscriptions")
+          .select("endpoint, p256dh, auth, user_id")
+          .in("user_id", audience.slice(i, i + 100));
+        if (error) console.error(`push_subscriptions: ${error.message}`);
+        subscriptions.push(...(data ?? []));
       }
     }
 
@@ -324,58 +434,48 @@ serve(async (req) => {
       body,
       url: url || "/",
       image: image || undefined,
+      icon: icon || undefined,
       tag: tag || "event-notification",
     });
 
     let sent = 0;
     let failed = 0;
-    let skipped = 0;
     const failedEndpoints: string[] = [];
-    const notifiedUsers: { user_id: string; event_id: string; notification_type: string }[] = [];
 
-    for (const sub of subscriptions) {
-      // Skip if already notified
-      if (check_duplicates && sub.user_id && alreadyNotified.has(sub.user_id)) {
-        skipped++;
-        continue;
-      }
-
-      try {
-        const response = await sendWebPush(
-          { endpoint: sub.endpoint, p256dh: sub.p256dh, auth: sub.auth },
-          payload
-        );
-
+    // Envoi en parallèle par paquets (un par un, des milliers d'appareils dépasseraient le temps limite)
+    const BATCH = 50;
+    for (let i = 0; i < subscriptions.length; i += BATCH) {
+      const batch = subscriptions.slice(i, i + BATCH);
+      const results = await Promise.allSettled(
+        batch.map((sub) => sendWebPush({ endpoint: sub.endpoint, p256dh: sub.p256dh, auth: sub.auth }, payload))
+      );
+      for (let j = 0; j < results.length; j++) {
+        const r = results[j];
+        if (r.status === "rejected") {
+          console.error(`Push error: ${r.reason}`);
+          failed++;
+          continue;
+        }
+        const response = r.value;
         if (response.status === 201 || response.status === 200) {
           sent++;
-          if (notification_type && event_id && sub.user_id) {
-            notifiedUsers.push({ user_id: sub.user_id, event_id, notification_type });
-          }
         } else if (response.status === 404 || response.status === 410) {
-          failedEndpoints.push(sub.endpoint);
+          failedEndpoints.push(batch[j].endpoint);
           failed++;
         } else {
           console.error(`Push failed: ${response.status} ${await response.text()}`);
           failed++;
         }
-      } catch (err) {
-        console.error(`Push error: ${err}`);
-        failed++;
       }
     }
 
     // Clean up expired subscriptions
-    if (failedEndpoints.length > 0) {
-      await supabase.from("push_subscriptions").delete().in("endpoint", failedEndpoints);
-    }
-
-    // Log notifications to prevent duplicates
-    if (notifiedUsers.length > 0) {
-      await supabase.from("notification_log").upsert(notifiedUsers, { onConflict: "user_id,event_id,notification_type" });
+    for (let i = 0; i < failedEndpoints.length; i += 100) {
+      await supabase.from("push_subscriptions").delete().in("endpoint", failedEndpoints.slice(i, i + 100));
     }
 
     return new Response(
-      JSON.stringify({ sent, failed, skipped, total: subscriptions.length }),
+      JSON.stringify({ sent, failed, skipped, recipients: audience.length, total: subscriptions.length }),
       {
         headers: {
           "Content-Type": "application/json",

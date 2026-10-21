@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getDistanceKm } from '@/hooks/useNearbyEvents';
 import { sendLocalNotification } from '@/lib/pushNotifications';
+import { softCase } from '@/lib/softCase';
 
 const PROXIMITY_RADIUS_KM = 5; // 5 km radius
 const CHECK_INTERVAL_MS = 15 * 60 * 1000; // Check every 15 minutes
@@ -58,13 +59,14 @@ export function useProximityNotifications() {
         const position = await getUserPosition();
         if (!position) return;
 
-        // Get today's and future published events
+        // Événements du jour uniquement
         const today = new Date().toISOString().split('T')[0];
         const { data: events } = await supabase
           .from('events')
-          .select('id, title, venue, date, time, latitude, longitude, image_url')
+          .select('id, title, venue, date, time, end_date, latitude, longitude, image_url')
           .eq('is_published', true)
-          .gte('date', today);
+          .lte('date', today)
+          .or(`date.eq.${today},end_date.gte.${today}`); // « près de toi » : seulement ce qui a lieu aujourd'hui
 
         if (!events || events.length === 0) return;
 
@@ -79,17 +81,17 @@ export function useProximityNotifications() {
 
           if (distance <= PROXIMITY_RADIUS_KM) {
             const distText = distance < 1
-              ? `${Math.round(distance * 1000)}m`
-              : `${distance.toFixed(1)}km`;
+              ? `${Math.round(distance * 1000)} m`
+              : `${distance.toFixed(1).replace('.', ',')} km`;
 
-            const notifTitle = lang === 'fr'
-              ? `${event.title} est près de toi !`
-              : `${event.title} is near you!`;
+            // Même format que les autres notifications : le moment/lieu d'abord, sans emoji
+            const hour = event.time ? ` à ${Number(event.time.slice(0, 2))}h${event.time.slice(3, 5) !== '00' ? event.time.slice(3, 5) : ''}` : '';
+            const notifTitle = lang === 'fr' ? `À ${distText} de toi` : `${distText} from you`;
             const notifBody = lang === 'fr'
-              ? `À ${distText} — ${event.venue}`
-              : `${distText} away — ${event.venue}`;
+              ? `${softCase(event.title)} · ${softCase(event.venue)} · aujourd'hui${hour}. Ça te tente ?`
+              : `${softCase(event.title)} · ${softCase(event.venue)} · today. Fancy it?`;
 
-            await sendLocalNotification(notifTitle, notifBody, `/event/${event.id}`);
+            await sendLocalNotification(notifTitle, notifBody, `/event/${event.id}`, '/notif/pin.png');
 
             markNotified(event.id);
 
@@ -99,6 +101,10 @@ export function useProximityNotifications() {
                 user_id: user.id,
                 event_id: event.id,
                 notification_type: 'proximity',
+                title: notifTitle,
+                body: notifBody,
+                url: `/event/${event.id}`,
+                image_url: event.image_url ?? null,
               },
               { onConflict: 'user_id,event_id,notification_type' }
             );

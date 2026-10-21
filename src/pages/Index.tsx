@@ -7,7 +7,7 @@ const Index = () => {
   return (
     <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-background">
       <div className="relative flex-1 overflow-hidden">
-        <div className="h-full w-full animate-fade-in animate-zoom-smooth">
+        <div className="h-full w-full page-enter">
           <MapView />
         </div>
         <TopMenu />

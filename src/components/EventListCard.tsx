@@ -1,8 +1,9 @@
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
 import { Link } from 'react-router-dom';
 import { Event } from '@/hooks/useEvents';
+import { softCase } from '@/lib/softCase';
+import { dateRangeLabel, timeRangeLabel } from '@/lib/eventStatus';
 import ShimmerImage from './ShimmerImage';
+import { focusPosition } from '@/lib/imageFocus';
 
 interface EventListCardProps {
   event: Event;
@@ -10,25 +11,20 @@ interface EventListCardProps {
 
 const EventListCard = ({ event }: EventListCardProps) => {
   if (!event) return null;
-  const formatEventDate = (date: string, time: string) => {
-    const eventDate = new Date(date);
-    const [hours] = time.split(':');
-    return `${format(eventDate, 'EEE, d MMM', { locale: fr })} • ${hours}h00`;
-  };
 
   return (
     <div className="w-full pointer-events-auto touch-auto">
-      <div className="flex items-stretch justify-between gap-3 rounded-2xl backdrop-blur-xl bg-white/80 dark:bg-stone-900/80 p-4 shadow-2xl border border-white/50 dark:border-stone-700/50">
+      <div className="flex items-stretch justify-between gap-3 rounded-3xl bg-white dark:bg-stone-900/80 p-4 shadow-2xl">
         <div className="flex flex-col justify-between gap-1.5 flex-[2_2_0px]">
           <div className="flex flex-col gap-0.5">
             <p className="text-stone-500 dark:text-stone-400 text-xs font-normal leading-normal">
-              {event.venue}
+              {softCase(event.venue)}
             </p>
             <p className="text-stone-900 dark:text-white text-sm font-bold leading-tight">
-              {event.title}
+              {softCase(event.title)}
             </p>
             <p className="text-stone-500 dark:text-stone-400 text-xs font-normal leading-normal">
-              {formatEventDate(event.date, event.time)}
+              {dateRangeLabel(event)} • {timeRangeLabel(event)}
             </p>
           </div>
           <Link 
@@ -40,7 +36,8 @@ const EventListCard = ({ event }: EventListCardProps) => {
         </div>
         <ShimmerImage
           src={event.image_url || 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&h=400&fit=crop'}
-          alt={event.title}
+                position={focusPosition(event.image_focus)}
+          alt={softCase(event.title)}
           className="w-20 h-20 flex-shrink-0 rounded"
         />
       </div>

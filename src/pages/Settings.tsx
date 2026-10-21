@@ -1,14 +1,17 @@
+import LargeTitle from '@/components/LargeTitle';
 import { useState, useEffect } from 'react';
+import SectionTitle from '@/components/SectionTitle';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Mail, Lock, Bell, Smartphone, Globe, Shield, ChevronRight, ExternalLink } from 'lucide-react';
+import { ArrowLeft, UserRound, Mail, Lock, Bell, Smartphone, Globe, Shield, ChevronRight, ChevronDown, Check, ExternalLink } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { useLanguage, Lang } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import mapBackground from '@/assets/map-background.jpg';
+import { toast } from '@/components/PillToast';
 import { SettingsSkeleton } from '@/components/PageSkeleton';
+import { MAP_CREDITS } from '@/lib/mapTiles';
 
 const Settings = () => {
   const { user, loading } = useAuth();
@@ -18,8 +21,18 @@ const Settings = () => {
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
 
+  // Profil public (nom affiché + bio, visibles sur /u/:id)
+  const [publicName, setPublicName] = useState('');
+  const [bio, setBio] = useState('');
+  const [savingProfile, setSavingProfile] = useState(false);
+
   // Email form
   const [newEmail, setNewEmail] = useState('');
+  // Code reçu par e-mail (pas de lien : il ouvrirait Safari hors de l'app).
+  // Si Supabase exige une double confirmation, un 2e code arrive sur l'ancienne adresse.
+  const [codeTo, setCodeTo] = useState<string | null>(null);
+  const [pendingEmail, setPendingEmail] = useState('');
+  const [emailCode, setEmailCode] = useState('');
 
   // Password form
   const [newPassword, setNewPassword] = useState('');
@@ -33,7 +46,7 @@ const Settings = () => {
   // Redirect if not authenticated
   useEffect(() => {
     if (!loading && !user) {
-      toast.error(lang === 'fr' ? 'Vous devez être connecté pour accéder aux paramètres' : 'You must be logged in to access settings');
+      toast.info(lang === 'fr' ? 'Connecte-toi pour accéder aux paramètres' : 'You must be logged in to access settings');
       navigate('/auth');
     }
   }, [user, loading, navigate, lang]);
@@ -45,7 +58,7 @@ const Settings = () => {
       try {
         const { data, error } = await supabase
           .from('profiles')
-          .select('notification_email, notification_events')
+          .select('notification_email, notification_events, full_name, bio')
           .eq('id', user.id)
           .single();
 
@@ -65,6 +78,8 @@ const Settings = () => {
         } else if (data) {
           setNotificationEmail(data.notification_email ?? true);
           setNotificationEvents(data.notification_events ?? true);
+          setPublicName(data.full_name ?? '');
+          setBio(data.bio ?? '');
         }
       } catch (error: any) {
         console.error('Error loading preferences:', error);
@@ -75,17 +90,62 @@ const Settings = () => {
     loadPreferences();
   }, [user]);
 
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    setSavingProfile(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ full_name: publicName.trim() || null, bio: bio.trim() || null })
+        .eq('id', user.id);
+      if (error) throw error;
+      toast.success(lang === 'fr' ? 'Profil mis à jour' : 'Profile updated');
+    } catch {
+      toast.error(t('common.error'));
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
   const handleUpdateEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newEmail || !user) return;
     setUpdating(true);
     try {
-      const { error } = await supabase.auth.updateUser({ email: newEmail });
+      const address = newEmail.trim();
+      const { error } = await supabase.auth.updateUser({ email: address });
       if (error) throw error;
-      toast.success(lang === 'fr' ? 'Un email de confirmation a été envoyé à votre nouvelle adresse' : 'A confirmation email has been sent to your new address');
+      setPendingEmail(address);
+      setCodeTo(address);
+      setEmailCode('');
       setNewEmail('');
     } catch (error: any) {
       toast.error(error.message || t('common.error'));
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleVerifyEmailCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!codeTo || emailCode.length < 6) return;
+    setUpdating(true);
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({ email: codeTo, token: emailCode, type: 'email_change' });
+      if (error) throw error;
+      if (data.user?.email?.toLowerCase() === pendingEmail.toLowerCase()) {
+        toast.success(t('settings.emailChanged'));
+        setCodeTo(null);
+      } else {
+        // Double confirmation : il manque le code envoyé à l'autre adresse
+        const other = codeTo.toLowerCase() === pendingEmail.toLowerCase() ? user?.email ?? '' : pendingEmail;
+        setCodeTo(other);
+        setEmailCode('');
+        toast.info(t('settings.emailSecondCode'));
+      }
+    } catch {
+      toast.error(t('auth.errCode'));
     } finally {
       setUpdating(false);
     }
@@ -129,11 +189,7 @@ const Settings = () => {
 
   if (loading || loadingPreferences) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-stone-200">
-        <div className="fixed inset-0 pointer-events-none">
-          <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
-        </div>
-        <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
+      <div className="min-h-screen relative overflow-hidden bg-parchment">
         <div className="relative z-10">
           <SettingsSkeleton />
         </div>
@@ -144,41 +200,117 @@ const Settings = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen relative overflow-hidden pb-32 animate-fade-in animate-zoom-smooth bg-stone-200">
-      {/* Map Background */}
-      <div className="fixed inset-0 pointer-events-none">
-        <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
-      </div>
-      <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
+    <div className="min-h-screen relative overflow-hidden pb-32 page-enter bg-parchment">
 
       {/* Content */}
-      <div className="relative z-10 mx-auto max-w-md px-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 24px)' }}>
+      <div className="relative z-10 mx-auto max-w-md px-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         {/* Header */}
         <div className="mb-8">
           <Link
             to="/"
-            className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white/70 backdrop-blur-md shadow-sm border border-white/60 hover:scale-105 active:scale-95 transition-all mb-4"
+            className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform mb-6"
           >
-            <ArrowLeft className="w-5 h-5 text-stone-700" />
+            <ArrowLeft size={20} strokeWidth={1.75} className="text-ink" />
           </Link>
-          <h1 className="text-3xl font-bold  text-stone-800">
+          <LargeTitle className="text-[40px] leading-[0.95] tracking-tighter text-ink" backTo="/">
             {t('settings.title')}
-          </h1>
+          </LargeTitle>
           <p className="mt-2 text-stone-500">{t('settings.subtitle')}</p>
         </div>
 
         <div className="space-y-6">
+          {/* Profil public */}
+          <div className="rounded-3xl bg-white p-5">
+            <div className="mb-1 -mt-1">
+              <SectionTitle icon={UserRound}>{lang === 'fr' ? 'Profil public' : 'Public profile'}</SectionTitle>
+            </div>
+            <p className="text-sm text-stone-500 mb-4">
+              {lang === 'fr'
+                ? 'Visible par tous sur vos événements et annonces. Votre e-mail reste privé.'
+                : 'Shown to everyone on your events and listings. Your email stays private.'}
+            </p>
+            <form onSubmit={handleSaveProfile} className="space-y-4">
+              <div>
+                <label htmlFor="public-name" className="block text-sm font-medium text-stone-600 mb-1.5">
+                  {lang === 'fr' ? 'Nom affiché' : 'Display name'}
+                </label>
+                <input
+                  id="public-name"
+                  value={publicName}
+                  maxLength={60}
+                  onChange={e => setPublicName(e.target.value)}
+                  placeholder={lang === 'fr' ? 'Ex. Kofi Events' : 'e.g. Kofi Events'}
+                  className="w-full h-12 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 focus:outline-none focus:ring-0 focus:border-ink"
+                />
+              </div>
+              <div>
+                <label htmlFor="public-bio" className="block text-sm font-medium text-stone-600 mb-1.5">Bio</label>
+                <textarea
+                  id="public-bio"
+                  value={bio}
+                  maxLength={160}
+                  rows={3}
+                  onChange={e => setBio(e.target.value)}
+                  placeholder={lang === 'fr' ? 'Soirées, brunchs et pool parties à Cocody…' : 'Parties, brunches and pool parties in Abidjan…'}
+                  className="w-full rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 py-3 resize-none focus:outline-none focus:ring-0 focus:border-ink"
+                />
+                <p className="mt-1 text-right text-xs text-stone-400 tabular">{bio.length}/160</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  type="submit"
+                  disabled={savingProfile}
+                  className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-lime text-ink text-sm font-medium hover:bg-lime-deep transition-colors active:scale-95 disabled:opacity-50"
+                >
+                  {lang === 'fr' ? 'Enregistrer' : 'Save'}
+                </button>
+                <Link to={`/u/${user.id}`} className="text-sm font-medium text-ink link-underline">
+                  {lang === 'fr' ? 'Voir mon profil' : 'View my profile'}
+                </Link>
+              </div>
+            </form>
+          </div>
+
           {/* Email Section */}
-          <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
-            <div className="flex items-center gap-2 mb-1">
-              <Mail className="h-5 w-5 text-[#ee9d2b]" />
-              <h2 className="text-lg font-semibold  text-stone-800">
-                {t('settings.email')}
-              </h2>
+          <div className="rounded-3xl bg-white p-5">
+            <div className="mb-1 -mt-1">
+              <SectionTitle icon={Mail}>{t('settings.email')}</SectionTitle>
             </div>
             <p className="text-sm text-stone-500 mb-4">
               {t('settings.emailCurrent')}: {user.email}
             </p>
+            {codeTo ? (
+            <form onSubmit={handleVerifyEmailCode} className="space-y-4">
+              <p className="text-sm text-stone-600">
+                {t('auth.codeSentTo')} <span className="font-medium text-ink">{codeTo}</span>. {t('auth.codeHint')}
+              </p>
+              <input
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                pattern="[0-9]*"
+                maxLength={8}
+                autoFocus
+                aria-label={t('auth.codePlaceholder')}
+                placeholder={t('auth.codePlaceholder')}
+                value={emailCode}
+                onChange={e => setEmailCode(e.target.value.replace(/\D/g, '').slice(0, 8))}
+                className="w-full h-14 rounded-xl bg-white border border-stone-300 text-ink text-center text-2xl font-semibold tracking-[0.4em] placeholder:text-base placeholder:font-normal placeholder:tracking-normal placeholder:text-stone-400 px-4 focus:outline-none focus:ring-0 focus:border-ink"
+              />
+              <div className="flex items-center gap-3">
+                <button
+                  type="submit"
+                  disabled={updating || emailCode.length < 6}
+                  className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-lime text-ink text-sm font-medium hover:bg-lime-deep transition-colors active:scale-95 disabled:opacity-50"
+                >
+                  {t('settings.emailConfirm')}
+                </button>
+                <button type="button" onClick={() => setCodeTo(null)} className="h-10 px-3 text-sm font-medium text-stone-500 hover:text-ink">
+                  {t('settings.emailCancel')}
+                </button>
+              </div>
+            </form>
+            ) : (
             <form onSubmit={handleUpdateEmail} className="space-y-4">
               <div>
                 <label htmlFor="new-email" className="block text-sm font-medium text-stone-600 mb-1.5">
@@ -190,26 +322,24 @@ const Settings = () => {
                   value={newEmail}
                   onChange={e => setNewEmail(e.target.value)}
                   placeholder="nouvelle@email.com"
-                  className="w-full h-11 rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm px-3 focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50"
+                  className="w-full h-12 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 focus:outline-none focus:ring-0 focus:border-ink"
                 />
               </div>
               <button
                 type="submit"
                 disabled={updating || !newEmail}
-                className="bg-[#ee9d2b] text-white rounded-full px-5 py-2.5 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-lime text-ink text-sm font-medium hover:bg-lime-deep transition-colors active:scale-95 disabled:opacity-50"
               >
                 {updating ? t('settings.emailUpdating') : t('settings.emailUpdate')}
               </button>
             </form>
+            )}
           </div>
 
           {/* Password Section */}
-          <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
-            <div className="flex items-center gap-2 mb-1">
-              <Lock className="h-5 w-5 text-[#ee9d2b]" />
-              <h2 className="text-lg font-semibold  text-stone-800">
-                {t('settings.password')}
-              </h2>
+          <div className="rounded-3xl bg-white p-5">
+            <div className="mb-1 -mt-1">
+              <SectionTitle icon={Lock}>{t('settings.password')}</SectionTitle>
             </div>
             <p className="text-sm text-stone-500 mb-4">
               {t('settings.passwordChange')}
@@ -225,7 +355,7 @@ const Settings = () => {
                   value={newPassword}
                   onChange={e => setNewPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full h-11 rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm px-3 focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50"
+                  className="w-full h-12 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 focus:outline-none focus:ring-0 focus:border-ink"
                 />
               </div>
               <div>
@@ -238,13 +368,13 @@ const Settings = () => {
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full h-11 rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm px-3 focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50"
+                  className="w-full h-12 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 focus:outline-none focus:ring-0 focus:border-ink"
                 />
               </div>
               <button
                 type="submit"
                 disabled={updating || !newPassword || !confirmPassword}
-                className="bg-[#ee9d2b] text-white rounded-full px-5 py-2.5 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-lime text-ink text-sm font-medium hover:bg-lime-deep transition-colors active:scale-95 disabled:opacity-50"
               >
                 {updating ? t('settings.emailUpdating') : t('settings.passwordUpdate')}
               </button>
@@ -255,12 +385,9 @@ const Settings = () => {
           <PushNotificationSection />
 
           {/* Notification Preferences Section */}
-          <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
-            <div className="flex items-center gap-2 mb-1">
-              <Bell className="h-5 w-5 text-[#ee9d2b]" />
-              <h2 className="text-lg font-semibold  text-stone-800">
-                {t('settings.notifPrefs')}
-              </h2>
+          <div className="rounded-3xl bg-white p-5">
+            <div className="mb-1 -mt-1">
+              <SectionTitle icon={Bell}>{t('settings.notifPrefs')}</SectionTitle>
             </div>
             <p className="text-sm text-stone-500 mb-5">
               {t('settings.notifPrefsDesc')}
@@ -306,49 +433,54 @@ const Settings = () => {
             </div>
           </div>
 
-          {/* Language Section */}
-          <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
-            <div className="flex items-center gap-2 mb-1">
-              <Globe className="h-5 w-5 text-[#ee9d2b]" />
-              <h2 className="text-lg font-semibold  text-stone-800">
-                {t('settings.language')}
-              </h2>
-            </div>
-            <p className="text-sm text-stone-500 mb-4">
-              {t('settings.languageDesc')}
-            </p>
-            <div className="flex gap-3">
-              {([
-                { id: 'fr' as Lang, label: 'Français', flag: '🇫🇷' },
-                { id: 'en' as Lang, label: 'English', flag: '🇬🇧' },
-              ]).map((option) => (
-                <button
-                  key={option.id}
-                  onClick={() => {
-                    setLang(option.id);
-                    toast.success(option.id === 'fr' ? 'Langue changée en français' : 'Language changed to English');
-                  }}
-                  className={`flex-1 flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-sm font-medium transition-all ${
-                    lang === option.id
-                      ? 'bg-[#ee9d2b] text-white shadow-lg shadow-[#ee9d2b]/20 scale-[1.02]'
-                      : 'bg-white/60 text-stone-600 border border-stone-200/50 hover:bg-white/80 hover:scale-[1.02]'
-                  }`}
-                >
-                  <span className="text-lg">{option.flag}</span>
-                  {option.label}
-                </button>
-              ))}
+          {/* Langue : une ligne, la langue actuelle en pastille (L3) */}
+          <div className="rounded-3xl bg-white px-5 py-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="-my-1">
+                <SectionTitle icon={Globe}>{t('settings.language')}</SectionTitle>
+              </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label={t('settings.languageDesc')}
+                    className="inline-flex h-9 flex-shrink-0 items-center gap-1.5 rounded-full bg-parchment px-3.5 text-sm font-semibold text-ink active:scale-95 transition-transform"
+                  >
+                    <span>{lang === 'fr' ? '🇫🇷' : '🇬🇧'}</span>
+                    {lang === 'fr' ? 'Français' : 'English'}
+                    <ChevronDown size={15} strokeWidth={2} className="text-stone-400" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-48 rounded-2xl border-stone-200 p-1.5">
+                  {([
+                    { id: 'fr' as Lang, label: 'Français', flag: '🇫🇷' },
+                    { id: 'en' as Lang, label: 'English', flag: '🇬🇧' },
+                  ]).map((option) => (
+                    <button
+                      key={option.id}
+                      type="button"
+                      onClick={() => {
+                        if (lang === option.id) return;
+                        setLang(option.id);
+                        toast.success(option.id === 'fr' ? 'Langue changée en français' : 'Language changed to English');
+                      }}
+                      className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-ink transition-colors ${lang === option.id ? 'bg-parchment' : 'hover:bg-parchment/60'}`}
+                    >
+                      <span className="text-base">{option.flag}</span>
+                      <span className="flex-1 text-left">{option.label}</span>
+                      {lang === option.id && <Check size={16} strokeWidth={2.2} />}
+                    </button>
+                  ))}
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
 
           {/* Legal Section */}
-          <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm overflow-hidden">
+          <div className="rounded-3xl bg-white overflow-hidden">
             <div className="p-5 pb-3">
-              <div className="flex items-center gap-2 mb-1">
-                <Shield className="h-5 w-5 text-[#ee9d2b]" />
-                <h2 className="text-lg font-semibold  text-stone-800">
-                  {t('settings.legal')}
-                </h2>
+              <div className="mb-1 -mt-1">
+                <SectionTitle icon={Shield}>{t('settings.legal')}</SectionTitle>
               </div>
               <p className="text-sm text-stone-500">
                 {t('settings.legalDesc')}
@@ -380,9 +512,18 @@ const Settings = () => {
             </div>
           </div>
 
-          {/* App version */}
-          <div className="text-center py-4">
-            <p className="text-xs text-stone-400">VIBE v1.0 — Abidjan, Côte d'Ivoire</p>
+          {/* App version + crédits cartographiques (licence ODbL) */}
+          <div className="text-center py-4 space-y-1.5">
+            <p className="text-xs text-stone-400">Upvibe v1.0 — Abidjan, Côte d'Ivoire</p>
+            <p className="text-[11px] text-stone-400">
+              {lang === 'fr' ? 'Carte' : 'Map'} ©{' '}
+              {MAP_CREDITS.map((c, i) => (
+                <span key={c.label}>
+                  {i > 0 && ' · '}
+                  <a href={c.href} target="_blank" rel="noopener noreferrer" className="link-underline hover:text-stone-600">{c.label}</a>
+                </span>
+              ))}
+            </p>
           </div>
         </div>
       </div>
@@ -411,12 +552,9 @@ const PushNotificationSection = () => {
   };
 
   return (
-    <div className="rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-sm p-5">
-      <div className="flex items-center gap-2 mb-1">
-        <Smartphone className="h-5 w-5 text-[#ee9d2b]" />
-        <h2 className="text-lg font-semibold  text-stone-800">
-          {t('settings.push')}
-        </h2>
+    <div className="rounded-3xl bg-white p-5">
+      <div className="mb-1 -mt-1">
+        <SectionTitle icon={Smartphone}>{t('settings.push')}</SectionTitle>
       </div>
       <p className="text-sm text-stone-500 mb-5">
         {t('settings.pushDesc')}
@@ -452,11 +590,11 @@ const PrivacyPolicy = ({ lang }: { lang: Lang }) => (
     <div className="prose prose-sm prose-stone max-w-none text-xs leading-relaxed text-stone-600 space-y-3">
       {lang === 'fr' ? (
         <>
-          <p className="font-semibold text-stone-800 text-sm">Politique de confidentialité — VIBE</p>
+          <p className="font-semibold text-stone-800 text-sm">Politique de confidentialité — Upvibe</p>
           <p><strong>Dernière mise à jour :</strong> 8 mai 2026</p>
 
           <p><strong>1. Responsable du traitement</strong><br />
-          VIBE est une application éditée et opérée depuis Abidjan, Côte d'Ivoire. Le traitement des données personnelles est effectué conformément à la <strong>Loi n°2013-450 du 19 juin 2013</strong> relative à la protection des données à caractère personnel en Côte d'Ivoire et aux recommandations de l'<strong>ARTCI</strong> (Autorité de Régulation des Télécommunications/TIC de Côte d'Ivoire).</p>
+          Upvibe est une application éditée et opérée depuis Abidjan, Côte d'Ivoire. Le traitement des données personnelles est effectué conformément à la <strong>Loi n°2013-450 du 19 juin 2013</strong> relative à la protection des données à caractère personnel en Côte d'Ivoire et aux recommandations de l'<strong>ARTCI</strong> (Autorité de Régulation des Télécommunications/TIC de Côte d'Ivoire).</p>
 
           <p><strong>2. Données collectées</strong><br />
           Nous collectons uniquement les données nécessaires au fonctionnement du service :</p>
@@ -508,11 +646,11 @@ const PrivacyPolicy = ({ lang }: { lang: Lang }) => (
         </>
       ) : (
         <>
-          <p className="font-semibold text-stone-800 text-sm">Privacy Policy — VIBE</p>
+          <p className="font-semibold text-stone-800 text-sm">Privacy Policy — Upvibe</p>
           <p><strong>Last updated:</strong> May 8, 2026</p>
 
           <p><strong>1. Data Controller</strong><br />
-          VIBE is an application published and operated from Abidjan, Côte d'Ivoire. Personal data processing complies with <strong>Law No. 2013-450 of June 19, 2013</strong> on the protection of personal data in Côte d'Ivoire and the guidelines of <strong>ARTCI</strong> (Telecommunications/ICT Regulatory Authority of Côte d'Ivoire).</p>
+          Upvibe is an application published and operated from Abidjan, Côte d'Ivoire. Personal data processing complies with <strong>Law No. 2013-450 of June 19, 2013</strong> on the protection of personal data in Côte d'Ivoire and the guidelines of <strong>ARTCI</strong> (Telecommunications/ICT Regulatory Authority of Côte d'Ivoire).</p>
 
           <p><strong>2. Data Collected</strong><br />
           We only collect data necessary for the service:</p>
@@ -575,11 +713,11 @@ const TermsOfService = ({ lang }: { lang: Lang }) => (
     <div className="prose prose-sm prose-stone max-w-none text-xs leading-relaxed text-stone-600 space-y-3">
       {lang === 'fr' ? (
         <>
-          <p className="font-semibold text-stone-800 text-sm">Conditions Générales d'Utilisation — VIBE</p>
+          <p className="font-semibold text-stone-800 text-sm">Conditions Générales d'Utilisation — Upvibe</p>
           <p><strong>Dernière mise à jour :</strong> 8 mai 2026</p>
 
           <p><strong>1. Objet</strong><br />
-          Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de l'application VIBE, plateforme de découverte et de publication d'événements à Abidjan, Côte d'Ivoire.</p>
+          Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de l'application Upvibe, plateforme de découverte et de publication d'événements à Abidjan, Côte d'Ivoire.</p>
 
           <p><strong>2. Accès au service</strong><br />
           L'application est accessible gratuitement. La création d'un compte est nécessaire pour publier des événements, des annonces ou interagir avec le contenu (favoris, participation).</p>
@@ -595,13 +733,13 @@ const TermsOfService = ({ lang }: { lang: Lang }) => (
             <li>Faux ou trompeur</li>
             <li>Contraire à l'ordre public et aux bonnes mœurs</li>
           </ul>
-          <p>VIBE se réserve le droit de supprimer tout contenu non conforme sans préavis.</p>
+          <p>Upvibe se réserve le droit de supprimer tout contenu non conforme sans préavis.</p>
 
           <p><strong>5. Propriété intellectuelle</strong><br />
-          L'application VIBE, son design, son code source et ses contenus originaux sont protégés par le droit de la propriété intellectuelle applicable en Côte d'Ivoire (Accord de Bangui révisé, OAPI). Toute reproduction non autorisée est interdite.</p>
+          L'application Upvibe, son design, son code source et ses contenus originaux sont protégés par le droit de la propriété intellectuelle applicable en Côte d'Ivoire (Accord de Bangui révisé, OAPI). Toute reproduction non autorisée est interdite.</p>
 
           <p><strong>6. Responsabilité</strong><br />
-          VIBE ne peut être tenu responsable :</p>
+          Upvibe ne peut être tenu responsable :</p>
           <ul className="list-disc pl-4 space-y-1">
             <li>De la véracité des informations publiées par les utilisateurs</li>
             <li>Des dommages résultant de l'utilisation ou de l'impossibilité d'utiliser le service</li>
@@ -612,21 +750,21 @@ const TermsOfService = ({ lang }: { lang: Lang }) => (
           L'utilisation de la géolocalisation est facultative et soumise à votre consentement. Vous pouvez désactiver cette fonctionnalité à tout moment dans les paramètres de votre appareil.</p>
 
           <p><strong>8. Modification des CGU</strong><br />
-          VIBE se réserve le droit de modifier les présentes CGU. Les utilisateurs seront informés de toute modification substantielle. La poursuite de l'utilisation du service vaut acceptation des nouvelles conditions.</p>
+          Upvibe se réserve le droit de modifier les présentes CGU. Les utilisateurs seront informés de toute modification substantielle. La poursuite de l'utilisation du service vaut acceptation des nouvelles conditions.</p>
 
           <p><strong>9. Résiliation</strong><br />
-          L'utilisateur peut supprimer son compte à tout moment. VIBE se réserve le droit de suspendre ou supprimer tout compte en cas de violation des présentes CGU.</p>
+          L'utilisateur peut supprimer son compte à tout moment. Upvibe se réserve le droit de suspendre ou supprimer tout compte en cas de violation des présentes CGU.</p>
 
           <p><strong>10. Droit applicable</strong><br />
           Les présentes CGU sont régies par le droit ivoirien. Tout litige sera soumis aux juridictions compétentes d'Abidjan, Côte d'Ivoire.</p>
         </>
       ) : (
         <>
-          <p className="font-semibold text-stone-800 text-sm">Terms of Service — VIBE</p>
+          <p className="font-semibold text-stone-800 text-sm">Terms of Service — Upvibe</p>
           <p><strong>Last updated:</strong> May 8, 2026</p>
 
           <p><strong>1. Purpose</strong><br />
-          These Terms of Service govern access to and use of the VIBE application, a platform for discovering and publishing events in Abidjan, Côte d'Ivoire.</p>
+          These Terms of Service govern access to and use of the Upvibe application, a platform for discovering and publishing events in Abidjan, Côte d'Ivoire.</p>
 
           <p><strong>2. Access</strong><br />
           The application is free to access. Account creation is required to publish events, listings, or interact with content (favorites, attendance).</p>
@@ -642,13 +780,13 @@ const TermsOfService = ({ lang }: { lang: Lang }) => (
             <li>False or misleading content</li>
             <li>Content contrary to public order and decency</li>
           </ul>
-          <p>VIBE reserves the right to remove non-compliant content without notice.</p>
+          <p>Upvibe reserves the right to remove non-compliant content without notice.</p>
 
           <p><strong>5. Intellectual Property</strong><br />
-          The VIBE application, its design, source code, and original content are protected by intellectual property law applicable in Côte d'Ivoire (revised Bangui Agreement, OAPI). Unauthorized reproduction is prohibited.</p>
+          The Upvibe application, its design, source code, and original content are protected by intellectual property law applicable in Côte d'Ivoire (revised Bangui Agreement, OAPI). Unauthorized reproduction is prohibited.</p>
 
           <p><strong>6. Liability</strong><br />
-          VIBE cannot be held responsible for:</p>
+          Upvibe cannot be held responsible for:</p>
           <ul className="list-disc pl-4 space-y-1">
             <li>The accuracy of information published by users</li>
             <li>Damages resulting from the use or inability to use the service</li>
@@ -659,10 +797,10 @@ const TermsOfService = ({ lang }: { lang: Lang }) => (
           Geolocation is optional and subject to your consent. You can disable this feature at any time in your device settings.</p>
 
           <p><strong>8. Amendments</strong><br />
-          VIBE reserves the right to amend these Terms. Users will be notified of any substantial changes. Continued use of the service constitutes acceptance of the updated terms.</p>
+          Upvibe reserves the right to amend these Terms. Users will be notified of any substantial changes. Continued use of the service constitutes acceptance of the updated terms.</p>
 
           <p><strong>9. Termination</strong><br />
-          Users may delete their account at any time. VIBE reserves the right to suspend or delete any account that violates these Terms.</p>
+          Users may delete their account at any time. Upvibe reserves the right to suspend or delete any account that violates these Terms.</p>
 
           <p><strong>10. Governing Law</strong><br />
           These Terms are governed by Ivorian law. Any dispute shall be submitted to the competent courts of Abidjan, Côte d'Ivoire.</p>

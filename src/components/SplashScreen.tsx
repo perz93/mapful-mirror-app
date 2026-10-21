@@ -7,7 +7,9 @@ const SplashScreenWrapper = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const splash = document.getElementById('instant-splash');
-    if (!splash) { setReady(true); return; }
+    // Fond noir le temps du splash (barre d'état comprise), puis fond normal
+    const endSplash = () => document.documentElement.classList.remove('splashing');
+    if (!splash) { endSplash(); setReady(true); return; }
 
     const isStandalone =
       window.matchMedia('(display-mode: standalone)').matches ||
@@ -21,12 +23,14 @@ const SplashScreenWrapper = ({ children }: { children: React.ReactNode }) => {
         splash.style.transform = 'translateY(-100%)';
         setTimeout(() => {
           splash.remove();
+          endSplash();
           setReady(true);
         }, 700);
       }, 3000);
     } else {
       // No splash — remove immediately
       splash.remove();
+      endSplash();
       setReady(true);
     }
   }, []);

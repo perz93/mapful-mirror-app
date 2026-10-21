@@ -6,11 +6,20 @@ export interface Event {
   title: string;
   description: string | null;
   venue: string;
+  /** Ville / localité (géocodage inverse à la création) */
+  city?: string | null;
   address: string | null;
   category: string;
   date: string;
   time: string;
+  /** Dernier jour si l'événement dure plusieurs jours */
+  end_date?: string | null;
+  /** Heure de fin facultative */
+  end_time?: string | null;
   price: number | null;
+  ticket_types?: unknown;
+  /** Partie de l'affiche montrée dans les cadres (object-position) */
+  image_focus?: string | null;
   capacity: number | null;
   image_url: string | null;
   latitude: number;
@@ -26,18 +35,21 @@ export const useEvents = () => {
   return useQuery({
     queryKey: ['events'],
     queryFn: async () => {
+      // Tous les événements publiés (passés compris), plafonnés aux 1 500 plus récents
+      // pour que l'app reste légère quand il y en aura des milliers.
       const { data, error } = await supabase
         .from('events')
         .select('*')
         .eq('is_published', true)
-        .order('date', { ascending: true });
+        .order('date', { ascending: false })
+        .limit(1500);
 
       if (error) {
         console.error('Error fetching events:', error);
         throw error;
       }
 
-      return data as Event[];
+      return (data as Event[]).reverse(); // du plus ancien au plus récent, comme avant
     },
     staleTime: 3 * 60 * 1000, // Fresh for 3 minutes
   });

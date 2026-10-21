@@ -1,19 +1,28 @@
+import LargeTitle from '@/components/LargeTitle';
+import { EVENT_CATEGORIES, normalizeEventCategory } from '@/lib/eventCategories';
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Upload, Loader2, Image as ImageIcon, Phone, MessageCircle, Instagram, Facebook } from 'lucide-react';
+import SectionTitle from '@/components/SectionTitle';
+import ContactFields, { readContacts, writeContacts } from '@/components/ContactFields';
+import EventScheduleFields from '@/components/EventScheduleFields';
+import { ArrowLeft, Upload, Loader2, Image as ImageIcon, Phone, MessageCircle, Instagram, Facebook, Mail, Type, CalendarDays, Ticket, ContactRound } from 'lucide-react';
 import TikTokIcon from '@/components/icons/TikTokIcon';
+import { retryWithoutNewColumns } from '@/lib/retryWithoutNewColumns';
+import TicketFields from '@/components/TicketFields';
+import ImageFocusField from '@/components/ImageFocusField';
+import { ticketPayload, ticketTypesOf, draftsFrom, type TicketDraft } from '@/lib/ticketTypes';
+import { emailProviderLabel } from '@/lib/emailProvider';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { compressImage, IMMUTABLE_CACHE } from '@/lib/compressImage';
+import { toast } from '@/components/PillToast';
 import { useQueryClient } from '@tanstack/react-query';
-import mapBackground from '@/assets/map-background.jpg';
 import { EditEventSkeleton } from '@/components/PageSkeleton';
 
-const inputClass = "h-9 rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50 w-full px-3";
+const inputClass = "h-12 px-4 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] focus:outline-none focus:ring-0 focus:border-ink w-full";
 const labelClass = "text-sm text-stone-600 font-normal";
-const cardClass = "rounded-2xl backdrop-blur-2xl bg-white/50 border border-white/60 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.08)] p-4 space-y-3";
-const sectionTitleClass = "text-lg  text-stone-800 mb-4 flex items-center gap-2";
+const cardClass = "rounded-3xl bg-white p-5 space-y-3";
 
 const EditEvent = () => {
   const { id } = useParams();
@@ -25,6 +34,10 @@ const EditEvent = () => {
   const [submitting, setSubmitting] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
+  // Partie de l'affiche montrée dans le cadre de la carte (object-position)
+  const [imageFocus, setImageFocus] = useState<string | null>(null);
+  // Plusieurs types de places (null = un seul prix)
+  const [tiers, setTiers] = useState<TicketDraft[] | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
@@ -35,6 +48,9 @@ const EditEvent = () => {
     category: '',
     date: '',
     time: '',
+    endDate: '',
+    endTime: '',
+    multiDay: false,
     price: '',
     capacity: '',
     is_paid: false,
@@ -44,6 +60,7 @@ const EditEvent = () => {
     contact_facebook: '',
     contact_tiktok: '',
     contact_twitter: '',
+    contact_email: '',
   });
 
   useEffect(() => {
@@ -71,19 +88,26 @@ const EditEvent = () => {
         description: data.description || '',
         venue: data.venue,
         address: data.address || '',
-        category: data.category,
+        category: normalizeEventCategory(data.category),
         date: data.date,
-        time: data.time,
-        price: data.price?.toString() || '',
+        time: data.time?.slice(0, 5) ?? '',
+        endDate: data.end_date || '',
+        endTime: data.end_time?.slice(0, 5) ?? '',
+        multiDay: !!data.end_date && data.end_date > data.date,
+        price: data.price ? String(Math.round(Number(data.price))) : '',
         capacity: data.capacity?.toString() || '',
         is_paid: data.is_paid,
         contact_phone: data.contact_phone || '',
         contact_whatsapp: data.contact_whatsapp || '',
         contact_instagram: data.contact_instagram || '',
         contact_facebook: data.contact_facebook || '',
-        contact_tiktok: (data as any).contact_tiktok || '',
+        contact_tiktok: data.contact_tiktok || '',
         contact_twitter: data.contact_twitter || '',
+        contact_email: data.contact_email || '',
       });
+      setImageFocus((data as { image_focus?: string | null }).image_focus ?? null);
+      const types = ticketTypesOf(data as { ticket_types?: unknown });
+      setTiers(types.length > 0 ? draftsFrom(types) : null);
 
       if (data.image_url) setImagePreview(data.image_url);
     } catch (error: any) {
@@ -99,16 +123,16 @@ const EditEvent = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) { toast.error(t('form.selectImage')); return; }
-    if (file.size > 5 * 1024 * 1024) { toast.error(t('form.max5mb')); return; }
+    if (file.size > 15 * 1024 * 1024) { toast.error(t('form.max5mb')); return; }
+    e.target.value = '';
     setImageFile(file);
-    const reader = new FileReader();
-    reader.onloadend = () => setImagePreview(reader.result as string);
-    reader.readAsDataURL(file);
+    setImagePreview(URL.createObjectURL(file));
+    setImageFocus(null); // nouvelle affiche : cadrage automatique
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) { toast.error(t('auth.loginRequired')); return; }
+    if (!user) { toast.info(t('auth.loginRequired')); return; }
 
     setSubmitting(true);
     try {
@@ -125,17 +149,15 @@ const EditEvent = () => {
           const oldPath = currentEvent.image_url.split('/').slice(-2).join('/');
           await supabase.storage.from('event-images').remove([oldPath]);
         }
-        const fileExt = imageFile.name.split('.').pop();
-        const filePath = `${user.id}/${Math.random()}.${fileExt}`;
-        const { error: uploadError } = await supabase.storage.from('event-images').upload(filePath, imageFile);
+        const image = await compressImage(imageFile);
+        const filePath = `${user.id}/${Date.now()}.${image.ext}`;
+        const { error: uploadError } = await supabase.storage.from('event-images').upload(filePath, image.blob, { contentType: image.contentType, cacheControl: IMMUTABLE_CACHE });
         if (uploadError) throw uploadError;
         const { data: { publicUrl } } = supabase.storage.from('event-images').getPublicUrl(filePath);
         imageUrl = publicUrl;
       }
 
-      const { error } = await supabase
-        .from('events')
-        .update({
+      const { error } = await retryWithoutNewColumns({
           title: formData.title,
           description: formData.description || null,
           venue: formData.venue,
@@ -143,10 +165,12 @@ const EditEvent = () => {
           category: formData.category,
           date: formData.date,
           time: formData.time,
-          price: formData.price ? parseFloat(formData.price) : null,
+          end_date: formData.multiDay && formData.endDate > formData.date ? formData.endDate : null,
+          end_time: formData.endTime || null,
+          ...ticketPayload(formData.price, tiers),
           capacity: formData.capacity ? parseInt(formData.capacity) : null,
-          is_paid: formData.is_paid,
           image_url: imageUrl,
+          image_focus: imageUrl ? imageFocus : null,
           latitude: currentEvent?.latitude ?? 5.3600,
           longitude: currentEvent?.longitude ?? -4.0083,
           contact_phone: formData.contact_phone || null,
@@ -155,11 +179,11 @@ const EditEvent = () => {
           contact_facebook: formData.contact_facebook || null,
           contact_tiktok: formData.contact_tiktok || null,
           contact_twitter: formData.contact_twitter || null,
-        })
-        .eq('id', id);
+          contact_email: formData.contact_email || null,
+        }, ['contact_email', 'end_date', 'end_time', 'ticket_types', 'image_focus'], (p) => supabase.from('events').update(p).eq('id', id!));
 
       if (error) throw error;
-      await queryClient.invalidateQueries({ queryKey: ['events'] });
+      await queryClient.invalidateQueries();
       toast.success(t('event.updated'));
       navigate('/manage-events');
     } catch (error: any) {
@@ -172,11 +196,7 @@ const EditEvent = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-stone-200">
-        <div className="fixed inset-0 pointer-events-none">
-          <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
-        </div>
-        <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
+      <div className="min-h-screen relative overflow-hidden bg-parchment">
         <div className="relative z-10">
           <EditEventSkeleton />
         </div>
@@ -185,12 +205,7 @@ const EditEvent = () => {
   }
 
   return (
-    <div className="relative min-h-screen pb-32 animate-fade-in animate-zoom-smooth overflow-hidden overscroll-none bg-stone-200">
-      {/* Map Background */}
-      <div className="fixed inset-0 pointer-events-none">
-        <img src={mapBackground} alt="" className="w-full h-full object-cover opacity-60" />
-      </div>
-      <div className="fixed inset-0 bg-white/30 backdrop-blur-xl pointer-events-none" />
+    <div className="relative min-h-screen pb-32 page-enter overflow-hidden overscroll-none bg-parchment">
 
       {/* Content */}
       <div className="relative mx-auto max-w-md">
@@ -198,14 +213,14 @@ const EditEvent = () => {
         <div className="px-4 pb-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
           <Link
             to="/manage-events"
-            className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-white/70 backdrop-blur-md shadow-sm border border-white/60 hover:scale-105 active:scale-95 transition-all mb-6"
+            className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform mb-6"
           >
-            <ArrowLeft className="w-5 h-5 text-stone-700" />
+            <ArrowLeft size={20} strokeWidth={1.75} className="text-ink" />
           </Link>
-          <h1 className="text-3xl  text-stone-800 mb-2 text-center">
+          <LargeTitle className="text-[40px] leading-[0.95] tracking-tighter text-ink" backTo="/manage-events">
             {t('event.edit')}
-          </h1>
-          <p className="text-stone-500 font-light text-center text-sm">{t('form.updateInfo')}</p>
+          </LargeTitle>
+          <p className="mt-2 text-stone-500">{t('form.updateInfo')}</p>
         </div>
 
         {/* Form */}
@@ -219,19 +234,24 @@ const EditEvent = () => {
                 className="border border-dashed border-stone-300/50 rounded-2xl p-6 hover:border-stone-400/60 transition-colors cursor-pointer bg-white/30"
               >
                 {imagePreview ? (
-                  <img src={imagePreview} alt="Preview" className="w-full h-48 object-cover rounded-xl" />
+                  <div className="relative">
+                    <img src={imagePreview} alt="Preview" className="w-full max-h-72 object-contain rounded-xl bg-parchment" />
+                  </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-center py-4">
-                    <ImageIcon className="h-10 w-10 text-[#ee9d2b] mb-3" strokeWidth={1.5} />
+                    <span className="flex size-14 items-center justify-center rounded-2xl bg-lime mb-3">
+                      <ImageIcon size={24} strokeWidth={1.75} className="text-ink" />
+                    </span>
                     <p className="text-stone-600 text-sm">{t('form.clickToChangeImage')}</p>
                   </div>
                 )}
               </div>
+              {imagePreview && <ImageFocusField src={imagePreview} focus={imageFocus} onFocusChange={setImageFocus} />}
             </div>
 
             {/* Basic Info */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>{t('form.info')}</h2>
+              <SectionTitle icon={Type}>{t('form.info')}</SectionTitle>
 
               <div className="space-y-2">
                 <label className={labelClass}>{t('form.titleShort')}</label>
@@ -240,7 +260,7 @@ const EditEvent = () => {
 
               <div className="space-y-2">
                 <label className={labelClass}>{t('form.description')}</label>
-                <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} rows={4} className="rounded-xl bg-white/50 border border-stone-300/40 text-stone-900 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-0 focus:border-[#ee9d2b]/50 w-full px-3 py-2 resize-none" />
+                <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} rows={4} className="rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 py-3 focus:outline-none focus:ring-0 focus:border-ink w-full px-3 py-2 resize-none" />
               </div>
 
               <div className="space-y-2">
@@ -257,103 +277,49 @@ const EditEvent = () => {
                 <label className={labelClass}>{t('form.category')}</label>
                 <select required value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className={inputClass}>
                   <option value="">{t('form.select')}</option>
-                  <option value="music">{t('cat.music')}</option>
-                  <option value="sports">{t('cat.sports')}</option>
-                  <option value="brunch">{t('cat.brunch')}</option>
-                  <option value="meetups">{t('cat.meetups')}</option>
-                  <option value="conferences">{t('cat.conferences')}</option>
-                  <option value="workshops">{t('cat.workshops')}</option>
-                  <option value="festivals">{t('cat.festivals')}</option>
-                  <option value="shows">{t('cat.shows')}</option>
-                  <option value="exhibitions">{t('cat.exhibitions')}</option>
-                  <option value="religious">{t('cat.religious')}</option>
+                  {EVENT_CATEGORIES.map((c) => <option key={c.value} value={c.value}>{t(c.tKey)}</option>)}
                 </select>
               </div>
             </div>
 
-            {/* Date & Time — stacked */}
+            {/* Date & Time */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>{t('form.dateTime')}</h2>
+              <SectionTitle icon={CalendarDays}>{t('form.dateTime')}</SectionTitle>
 
-              <div className="space-y-2">
-                <label className={labelClass}>{t('form.date')}</label>
-                <input type="date" required value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} className={inputClass} />
-              </div>
-              <div className="space-y-2">
-                <label className={labelClass}>{t('form.time')}</label>
-                <input type="time" required value={formData.time} onChange={e => setFormData({...formData, time: e.target.value})} className={inputClass} />
-              </div>
+              <EventScheduleFields
+                value={{ date: formData.date, time: formData.time, endDate: formData.endDate, endTime: formData.endTime, multiDay: formData.multiDay }}
+                onChange={(v) => setFormData({ ...formData, ...v })}
+                inputClass={inputClass}
+                labelClass={labelClass}
+              />
             </div>
 
             {/* Price & Capacity */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>{t('form.priceCapacity')}</h2>
+              <SectionTitle icon={Ticket}>{t('form.priceCapacity')}</SectionTitle>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <label className={labelClass}>{t('form.priceFCFA')}</label>
-                  <input type="number" step="0.01" min="0" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className={inputClass} />
-                </div>
-                <div className="space-y-2">
-                  <label className={labelClass}>{t('form.capacityLabel')}</label>
-                  <input type="number" min="1" value={formData.capacity} onChange={e => setFormData({...formData, capacity: e.target.value})} className={inputClass} />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 pt-1">
-                <input type="checkbox" id="is_paid" checked={formData.is_paid} onChange={e => setFormData({...formData, is_paid: e.target.checked})} className="w-4 h-4 accent-[#ee9d2b]" />
-                <label htmlFor="is_paid" className="text-sm text-stone-600">{t('form.isPaid')}</label>
+              <TicketFields
+                price={formData.price}
+                onPriceChange={(v) => setFormData((f) => ({ ...f, price: v }))}
+                tiers={tiers}
+                onTiersChange={setTiers}
+                inputClass={inputClass}
+                labelClass={labelClass}
+              />
+              <div className="space-y-2">
+                <label className={labelClass}>{t('form.capacityLabel')}</label>
+                <input type="number" min="1" value={formData.capacity} onChange={e => setFormData({...formData, capacity: e.target.value})} className={inputClass} />
               </div>
             </div>
 
-            {/* Contact / Réseaux sociaux */}
+            {/* Contact (C3) : numéro + WhatsApp, puis réseaux à la demande */}
             <div className={cardClass}>
-              <h2 className={sectionTitleClass}>
-                <Phone className="h-5 w-5 text-[#ee9d2b]" strokeWidth={1.5} />
-                {t('form.contactNetworks')}
-              </h2>
-
-              <div className="space-y-2">
-                <label className={`${labelClass} flex items-center gap-2`}>
-                  <Phone className="w-4 h-4 text-[#ee9d2b]" /> {t('form.phoneShort')}
-                </label>
-                <input type="tel" placeholder="+225 XX XX XX XX" value={formData.contact_phone} onChange={e => setFormData({...formData, contact_phone: e.target.value})} className={inputClass} />
-              </div>
-
-              <div className="space-y-2">
-                <label className={`${labelClass} flex items-center gap-2`}>
-                  <MessageCircle className="w-4 h-4 text-[#ee9d2b]" /> {t('form.whatsapp')}
-                </label>
-                <input type="tel" placeholder="+225 XX XX XX XX" value={formData.contact_whatsapp} onChange={e => setFormData({...formData, contact_whatsapp: e.target.value})} className={inputClass} />
-              </div>
-
-              <div className="space-y-2">
-                <label className={`${labelClass} flex items-center gap-2`}>
-                  <Instagram className="w-4 h-4 text-[#ee9d2b]" /> {t('form.instagram')}
-                </label>
-                <input type="text" placeholder="@votre_compte" value={formData.contact_instagram} onChange={e => setFormData({...formData, contact_instagram: e.target.value})} className={inputClass} />
-              </div>
-
-              <div className="space-y-2">
-                <label className={`${labelClass} flex items-center gap-2`}>
-                  <Facebook className="w-4 h-4 text-[#ee9d2b]" /> {t('form.facebook')}
-                </label>
-                <input type="text" placeholder="Nom de page" value={formData.contact_facebook} onChange={e => setFormData({...formData, contact_facebook: e.target.value})} className={inputClass} />
-              </div>
-
-              <div className="space-y-2">
-                <label className={`${labelClass} flex items-center gap-2`}>
-                  <TikTokIcon className="w-4 h-4 text-[#ee9d2b]" /> {t('form.tiktok')}
-                </label>
-                <input type="text" placeholder="@votre_compte" value={formData.contact_tiktok} onChange={e => setFormData({...formData, contact_tiktok: e.target.value})} className={inputClass} />
-              </div>
-
-              <div className="space-y-2">
-                <label className={`${labelClass} flex items-center gap-2`}>
-                  <span className="text-[#ee9d2b] font-bold text-sm">𝕏</span> X (Twitter)
-                </label>
-                <input type="text" placeholder="@votre_compte" value={formData.contact_twitter} onChange={e => setFormData({...formData, contact_twitter: e.target.value})} className={inputClass} />
-              </div>
+              <SectionTitle icon={ContactRound}>{t('form.contact')}</SectionTitle>
+              <ContactFields
+                value={readContacts(formData, 'snake')}
+                onChange={(patch) => setFormData((f) => ({ ...f, ...writeContacts(patch, 'snake') }))}
+                inputClass={inputClass}
+              />
             </div>
 
             {/* Submit */}
@@ -361,7 +327,7 @@ const EditEvent = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full h-12 rounded-full bg-[#ee9d2b] text-white font-semibold text-base hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full h-12 rounded-full bg-lime text-ink text-[15px] font-medium hover:bg-lime-deep transition-colors active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {submitting ? (
                   <>
