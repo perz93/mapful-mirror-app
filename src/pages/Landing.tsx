@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { BellRing, ChevronDown, MapPin, Moon, Music, PhoneCall, Route, Smartphone, Store, Ticket, type LucideIcon } from 'lucide-react';
+import { BellRing, ChevronDown, MapPin, Phone, Route, ShoppingCart, Smartphone, Ticket, type LucideIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { openInstallGuide } from '@/components/InstallGuide';
 import ShimmerImage from '@/components/ShimmerImage';
 import { focusPosition } from '@/lib/imageFocus';
 import { softCase } from '@/lib/softCase';
-import { MARKETPLACE_CATEGORIES } from '@/lib/marketplaceCategories';
+import concertIcon from '@/assets/icons/concert.png';
+import soireeIcon from '@/assets/icons/soiree.png';
 
 /**
  * Page vitrine (« / » dans un navigateur). Elle s'adresse aux trois publics
@@ -23,10 +24,9 @@ const AUDIENCES = [
 const STEPS = ['Ouvre la carte', 'Choisis ton event', "Vas-y avec l'itinéraire"];
 
 const ORGANIZER_PERKS = [
-  'Publie ton événement en 2 minutes : il apparaît tout de suite sur la carte.',
-  'Les personnes autour reçoivent une alerte, et un rappel avant le début.',
-  'Plusieurs types de places (Standard, VIP, VVIP…) avec leurs prix.',
-  'Ton WhatsApp, ton Instagram et ton numéro sur ta fiche : on te contacte direct.',
+  'Publié en 2 minutes, visible tout de suite sur la carte.',
+  'Une alerte aux personnes autour.',
+  'Places Standard, VIP, VVIP avec leurs prix.',
 ];
 
 const PROVIDER_PERKS = [
@@ -112,7 +112,8 @@ const TiltPhone = ({ src, alt, rotate, delay = 0, className = '' }: { src: strin
 
 /** Petit badge flottant posé sur les téléphones */
 const Badge = ({ icon: Icon, title, sub, dark = false, delay = 0, className = '' }: {
-  icon: LucideIcon; title: string; sub: string; dark?: boolean; delay?: number; className?: string;
+  /** Icône lucide, ou image d'icône de l'app (catégories) */
+  icon: LucideIcon | string; title: string; sub: string; dark?: boolean; delay?: number; className?: string;
 }) => (
   <div className={`absolute z-10 ${className}`}>
     <Reveal effect="pop" delay={delay}>
@@ -120,7 +121,9 @@ const Badge = ({ icon: Icon, title, sub, dark = false, delay = 0, className = ''
         className={`landing-float flex items-center gap-2.5 whitespace-nowrap rounded-2xl py-2 pl-2 pr-3.5 shadow-[0_16px_30px_-14px_rgba(20,20,15,0.45)] ${dark ? 'bg-ink text-parchment' : 'bg-white text-ink'}`}
         style={{ '--float-delay': `${delay / 1000}s` } as React.CSSProperties}
       >
-        <span className="flex size-8 flex-shrink-0 items-center justify-center rounded-[10px] bg-lime text-ink"><Icon size={16} strokeWidth={2} /></span>
+        <span className="flex size-8 flex-shrink-0 items-center justify-center rounded-[10px] bg-lime text-ink">
+          {typeof Icon === 'string' ? <img src={Icon} alt="" className="size-[18px]" /> : <Icon size={16} strokeWidth={2} />}
+        </span>
         <span className="leading-tight">
           <span className="block text-[13px] font-semibold">{title}</span>
           <span className={`block text-[11.5px] ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{sub}</span>
@@ -247,29 +250,29 @@ const Landing = () => {
           <div className="relative mx-auto mt-8 w-full h-[400px] max-w-[420px] lg:mt-0 lg:h-[520px] lg:max-w-[520px]">
             <div className="absolute bottom-[40px] left-0 right-[54px] top-0 rounded-r-[34px] bg-white lg:rounded-[40px]" />
             <TiltPhone src="/landing/ecran-evenements.webp" alt="Tous les événements d'Abidjan dans Upvibe" rotate={4} className="right-[24px] top-[-10px] w-[190px] lg:right-[60px] lg:w-[240px]" />
-            <Badge icon={Music} title="Concerts & live" sub="Showcases, grandes scènes" delay={500} className="left-[18px] top-[70px]" />
-            <Badge icon={Moon} title="Soirées" sub="Clubs et lounges du week-end" delay={800} className="left-[30px] top-[150px]" />
+            <Badge icon={concertIcon} title="Concerts & live" sub="Showcases, grandes scènes" delay={500} className="left-[18px] top-[70px]" />
+            <Badge icon={soireeIcon} title="Soirées" sub="Clubs et lounges du week-end" delay={800} className="left-[30px] top-[150px]" />
             <Badge icon={Route} title="Itinéraire" sub="Jusqu'au lieu, en un geste" dark delay={1100} className="left-[14px] top-[230px]" />
           </div>
         </section>
 
         {/* 3. Pour les organisateurs : bloc noir arrondi, téléphone qui déborde à droite */}
         <section id="organiser" className="mx-2.5 mt-14 scroll-mt-16 overflow-hidden rounded-[34px] bg-ink text-parchment lg:mx-auto lg:max-w-6xl lg:rounded-[44px]">
-          <div className="px-5 pt-8 lg:grid lg:grid-cols-2 lg:items-center lg:gap-10 lg:px-14 lg:pt-14">
+          <div className="px-5 pt-7 lg:grid lg:grid-cols-2 lg:items-center lg:gap-10 lg:px-14 lg:pt-14">
             <Reveal>
               <Eyebrow className="text-lime">02 · Pour les organisateurs</Eyebrow>
               <h2 className="mt-2.5 text-[38px] !font-[800] leading-[0.95] tracking-[-0.045em] text-parchment lg:text-[64px]">
                 Tu organises ?<br /><span className="text-lime">Fais-toi voir.</span>
               </h2>
               <p className="mt-3 max-w-[480px] text-[15px] leading-[1.45] text-stone-300 lg:text-[18px]">
-                Promoteurs, bars, lounges, artistes : ton événement sur la carte, devant ceux qui cherchent quoi faire ce soir.
+                Ton événement sur la carte, devant ceux qui cherchent quoi faire ce soir.
               </p>
               <Checks items={ORGANIZER_PERKS} dark />
             </Reveal>
-            <div className="relative mt-6 h-[360px] lg:mt-0 lg:h-[500px]">
+            <div className="relative mt-5 h-[290px] lg:mt-0 lg:h-[500px]">
               <TiltPhone src="/landing/ecran-organisateur.webp" alt="Fiche d'un concert avec ses places Standard, VIP et VVIP" rotate={-4} className="right-[-30px] top-0 w-[200px] lg:right-[30px] lg:w-[250px]" />
               <Badge icon={Ticket} title="VIP · 20 000 FCFA" sub="Standard, VIP, VVIP" delay={500} className="left-0 top-[40px]" />
-              <Badge icon={BellRing} title="Alerte envoyée" sub="aux personnes autour" delay={850} className="left-[16px] top-[120px]" />
+              <Badge icon={BellRing} title="Alerte envoyée" sub="aux personnes autour" delay={850} className="left-[16px] top-[112px]" />
             </div>
           </div>
         </section>
@@ -284,18 +287,13 @@ const Landing = () => {
             <p className="mt-3 max-w-[480px] text-[15px] leading-[1.45] text-stone-500 lg:text-[18px]">
               DJ, traiteur, déco, photo, location : les organisateurs te trouvent par catégorie et te contactent direct.
             </p>
-            <ul className="mt-4 flex max-w-[520px] flex-wrap gap-1.5">
-              {MARKETPLACE_CATEGORIES.filter((c) => c.value !== 'autre').map((c, i) => (
-                <Reveal as="li" key={c.value} effect="pop" delay={i * 110} className="rounded-full border border-ink/10 bg-white px-3 py-1.5 text-[12.5px] font-semibold">{c.fr}</Reveal>
-              ))}
-            </ul>
             <Checks items={PROVIDER_PERKS} />
           </Reveal>
           <div className="relative mx-auto mt-8 w-full h-[400px] max-w-[420px] lg:order-1 lg:mt-0 lg:h-[520px] lg:max-w-[520px]">
             <div className="absolute bottom-[40px] left-[54px] right-0 top-0 rounded-l-[34px] bg-lime lg:rounded-[40px]" />
             <TiltPhone src="/landing/ecran-marketplace.webp" alt="Le Marketplace Upvibe : lieux, traiteurs, matériel" rotate={-4} className="left-[22px] top-[-6px] w-[190px] lg:left-[40px] lg:w-[240px]" />
-            <Badge icon={PhoneCall} title="Appeler" sub="ou écrire sur WhatsApp" dark delay={500} className="right-[12px] top-[80px]" />
-            <Badge icon={Store} title="Ton annonce" sub="Photos, prix, quartier" delay={850} className="right-[24px] top-[160px]" />
+            <Badge icon={Phone} title="Appeler" sub="ou écrire sur WhatsApp" dark delay={500} className="right-[12px] top-[80px]" />
+            <Badge icon={ShoppingCart} title="Ton annonce" sub="Sur le Marketplace" delay={850} className="right-[24px] top-[160px]" />
           </div>
         </section>
 
