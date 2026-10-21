@@ -13,6 +13,7 @@ import { marketplaceCategoryLabel } from '@/lib/marketplaceCategories';
 import { useDarkPageBackground } from '@/hooks/useDarkPageBackground';
 import OrganizerCard from '@/components/OrganizerCard';
 import { softCase } from '@/lib/softCase';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const priceTypeLabels: Record<string, Record<string, string>> = {
   fixed: { fr: 'Prix fixe', en: 'Fixed price' },
@@ -43,6 +44,7 @@ const ListingDetails = () => {
     enabled: !!id,
   });
   useDarkPageBackground(!!listing);
+  usePageMeta(listing ? softCase(listing.title) : null, listing?.description);
 
   const handleShare = () => {
     if (navigator.share) {
