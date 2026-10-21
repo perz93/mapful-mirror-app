@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { BellRing, ChevronDown, Lock, MapPin, Route, Sparkles } from 'lucide-react';
+import { BellRing, ChevronDown, MapPin, Route, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { openInstallGuide } from '@/components/InstallGuide';
 import ShimmerImage from '@/components/ShimmerImage';
@@ -46,25 +46,13 @@ const Logo = ({ className = '' }: { className?: string }) => (
   </span>
 );
 
-const InstallButton = ({ children = 'Installer Upvibe', tone = 'ink', className = '' }: { children?: React.ReactNode; tone?: 'ink' | 'lime'; className?: string }) => (
-  <button
-    type="button"
-    onClick={openInstallGuide}
-    className={`flex h-14 w-full items-center justify-center rounded-full text-[16.5px] font-semibold transition active:scale-[0.98] lg:hidden ${
-      tone === 'lime' ? 'bg-lime text-ink hover:bg-lime-deep' : 'bg-ink text-parchment'
-    } ${className}`}
-  >
-    {children}
-  </button>
-);
-
 /** Sur ordinateur : on installe depuis son téléphone en scannant le QR code */
-const QrCard = ({ dark = false }: { dark?: boolean }) => (
-  <div className={`hidden items-center gap-4 rounded-[24px] p-4 lg:flex ${dark ? 'bg-white/10' : 'bg-white'}`}>
+const QrCard = () => (
+  <div className="hidden items-center gap-4 rounded-[24px] bg-white p-4 lg:flex">
     <img src="/landing/qr.svg" alt="QR code vers upvibe.app" className="size-[104px] rounded-xl bg-white p-1.5" />
     <div>
-      <p className={`font-display text-[20px] leading-tight tracking-[-0.03em] ${dark ? 'text-parchment' : 'text-ink'}`}>Scanne avec ton téléphone</p>
-      <p className={`mt-1 text-[14px] ${dark ? 'text-stone-300' : 'text-stone-500'}`}>Upvibe s'installe en 3 gestes, gratuitement.</p>
+      <p className="font-display text-[20px] leading-tight tracking-[-0.03em] text-ink">Scanne avec ton téléphone</p>
+      <p className="mt-1 text-[14px] text-stone-500">Upvibe s'installe en 3 gestes, gratuitement.</p>
     </div>
   </div>
 );
@@ -128,7 +116,6 @@ const Landing = () => {
             <p className="mx-auto mt-4 max-w-[340px] text-[17px] leading-snug text-stone-500 lg:mx-0 lg:max-w-[440px] lg:text-[20px]">
               La réponse est sur la carte. Toutes les sorties d'Abidjan, autour de toi.
             </p>
-            <InstallButton className="mt-6">Installer Upvibe, c'est gratuit</InstallButton>
             <Trust className="justify-center lg:hidden" />
             <div className="mt-8"><QrCard /></div>
           </div>
@@ -155,7 +142,6 @@ const Landing = () => {
                   </li>
                 ))}
               </ol>
-              <InstallButton className="mt-7" />
             </div>
             <img
               src="/landing/telephones.webp"
@@ -210,11 +196,6 @@ const Landing = () => {
                 );
               })}
             </div>
-            <div className="mx-5 mt-4 flex items-center gap-2.5 rounded-[18px] bg-white px-4 py-3 text-[14px] font-semibold">
-              <Lock size={18} strokeWidth={2} className="flex-shrink-0" />
-              Les détails, les prix et l'itinéraire sont dans l'app.
-            </div>
-            <div className="px-5"><InstallButton className="mt-4">Voir tous les événements dans l'app</InstallButton></div>
           </section>
         )}
 
@@ -235,8 +216,6 @@ const Landing = () => {
                 </li>
               ))}
             </ul>
-            <InstallButton tone="lime" className="mt-7">Installer et publier</InstallButton>
-            <div className="mt-8 max-w-md"><QrCard dark /></div>
           </div>
         </section>
 
@@ -254,7 +233,6 @@ const Landing = () => {
               </details>
             ))}
           </div>
-          <InstallButton className="mt-6" />
         </section>
       </main>
 
