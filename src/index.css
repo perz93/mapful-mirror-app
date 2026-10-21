@@ -1221,7 +1221,8 @@ vercel-live-feedback,
 /* Page vitrine : apparitions au défilement (voir Reveal dans Landing.tsx) */
 .reveal {
   opacity: 0;
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Lent et posé : 1,2 s de fondu, 1,4 s de mouvement, courbe douce */
+  transition: opacity 1.2s cubic-bezier(0.25, 0.8, 0.3, 1), transform 1.4s cubic-bezier(0.25, 0.8, 0.3, 1);
   transition-delay: var(--reveal-delay, 0ms);
   will-change: opacity, transform;
 }
@@ -1237,7 +1238,7 @@ vercel-live-feedback,
   0%, 100% { translate: 0 0; }
   50% { translate: 0 -7px; }
 }
-.landing-float { animation: landing-float 4.5s ease-in-out infinite; animation-delay: var(--float-delay, 0s); }
+.landing-float { animation: landing-float 6s ease-in-out infinite; animation-delay: var(--float-delay, 0s); }
 
 @media (prefers-reduced-motion: reduce) {
   .reveal, .reveal.is-visible { opacity: 1; transform: none; transition: none; }
