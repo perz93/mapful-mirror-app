@@ -3,6 +3,7 @@ import { BellRing, BellOff } from 'lucide-react';
 import { Pill } from '@/components/PillToast';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { useSearch } from '@/contexts/SearchContext';
+import { useIsLanding } from '@/hooks/useIsLanding';
 
 const DISMISS_KEY = 'notif_prompt_dismissed';
 const DENIED_DISMISS_KEY = 'notif_denied_prompt_dismissed';
@@ -21,6 +22,7 @@ const NotificationPrompt = () => {
   const [animating, setAnimating] = useState(false);
   const [showSteps, setShowSteps] = useState(false);
   const { routeDestination } = useSearch();
+  const isLanding = useIsLanding();
   const denied = permission === 'denied';
   const key = denied ? DENIED_DISMISS_KEY : DISMISS_KEY;
 
@@ -50,7 +52,8 @@ const NotificationPrompt = () => {
   };
 
   // Les toasts passent sous ce bandeau tant qu'il est affiché
-  const shown = visible && !routeDestination;
+  // Ni sur la page vitrine : elle pousse déjà à installer l'app
+  const shown = visible && !routeDestination && !isLanding;
   useEffect(() => {
     if (!shown) return;
     const root = document.documentElement;

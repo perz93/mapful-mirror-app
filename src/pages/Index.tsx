@@ -3,7 +3,14 @@ import MapControls from "@/components/MapControls";
 import EventCard from "@/components/EventCard";
 import BottomNavigation from "@/components/BottomNavigation";
 import TopMenu from "@/components/TopMenu";
+import Landing from "@/pages/Landing";
+import { useIsLanding } from "@/hooks/useIsLanding";
+
+// Navigateur : page vitrine qui pousse à installer. App installée : la carte.
 const Index = () => {
+  const isLanding = useIsLanding();
+  if (isLanding) return <Landing />;
+
   return (
     <div className="relative mx-auto flex h-screen max-w-md flex-col overflow-hidden bg-background">
       <div className="relative flex-1 overflow-hidden">

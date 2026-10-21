@@ -2,6 +2,10 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Share, SquarePlus, EllipsisVertical, Download, Copy, Check, AlertCircle, MapPin, BellRing, Megaphone, Store } from 'lucide-react';
 
 const INSTALLED_KEY = 'pwa_installed';
+const OPEN_EVENT = 'upvibe:install';
+
+/** Ouvre le guide d'installation (depuis n'importe quel bouton « Installer ») */
+const openInstallGuide = () => window.dispatchEvent(new Event(OPEN_EVENT));
 
 type OS = 'ios' | 'android' | 'unknown';
 
@@ -323,19 +327,35 @@ const InstallGuide = () => {
     };
   }, []);
 
+  const open = useCallback((os: OS) => {
+    setDeviceOS(os);
+    setTab(os === 'android' ? 'android' : 'ios');
+    setStep(0);
+    setVisible(true);
+    requestAnimationFrame(() => requestAnimationFrame(() => setShown(true)));
+  }, []);
+
+  // Ouverture automatique sur téléphone, sauf sur la page vitrine (« / »)
+  // qui a ses propres boutons d'installation
   useEffect(() => {
-    if (isStandalone()) return;
+    if (isStandalone() || window.location.pathname === '/') return;
     try {
       if (localStorage.getItem(INSTALLED_KEY)) return;
     } catch { /* stockage indisponible : on affiche */ }
 
     const os = detectOS();
     if (os === 'unknown') return;
-    setDeviceOS(os);
-    setTab(os);
-    setVisible(true);
-    requestAnimationFrame(() => requestAnimationFrame(() => setShown(true)));
-  }, []);
+    open(os);
+  }, [open]);
+
+  // Ouverture à la demande (boutons « Installer » de la page vitrine)
+  useEffect(() => {
+    const onRequest = () => {
+      if (!isStandalone()) open(detectOS());
+    };
+    window.addEventListener(OPEN_EVENT, onRequest);
+    return () => window.removeEventListener(OPEN_EVENT, onRequest);
+  }, [open]);
 
   const close = () => {
     setShown(false);
@@ -567,4 +587,4 @@ const InstallGuide = () => {
 
 export default InstallGuide;
 // eslint-disable-next-line react-refresh/only-export-components
-export { isStandalone, detectOS };
+export { isStandalone, detectOS, openInstallGuide };
