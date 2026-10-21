@@ -122,7 +122,7 @@ const Eyebrow = ({ children, className = '' }: { children: React.ReactNode; clas
 const Checks = ({ items, dark = false }: { items: string[]; dark?: boolean }) => (
   <ul className="mt-6 grid max-w-[560px] gap-3">
     {items.map((item, i) => (
-      <Reveal as="li" key={item} delay={i * 90} className={`flex gap-3 text-[15.5px] leading-snug ${dark ? 'text-parchment' : 'text-ink'}`}>
+      <Reveal as="li" key={item} delay={i * 160} className={`flex gap-3 text-[15.5px] leading-snug ${dark ? 'text-parchment' : 'text-ink'}`}>
         <span className={`mt-0.5 flex size-5 flex-shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${dark ? 'bg-lime text-ink' : 'bg-ink text-lime'}`}>✓</span>
         {item}
       </Reveal>
@@ -201,12 +201,12 @@ const Landing = () => {
             <Reveal><h1 className="text-[52px] !font-[800] leading-[0.95] tracking-[-0.045em] lg:text-[84px]">
               Ce soir,<br />tu fais <span className="inline-block rounded-2xl bg-lime px-2.5 pb-1">quoi&nbsp;?</span>
             </h1></Reveal>
-            <Reveal delay={120}><p className="mx-auto mt-4 max-w-[360px] text-[17px] leading-snug text-stone-500 lg:mx-0 lg:max-w-[460px] lg:text-[20px]">
+            <Reveal delay={220}><p className="mx-auto mt-4 max-w-[360px] text-[17px] leading-snug text-stone-500 lg:mx-0 lg:max-w-[460px] lg:text-[20px]">
               Sortir, organiser, proposer tes services : tout Abidjan se retrouve sur une seule carte.
             </p></Reveal>
             <nav aria-label="Pour qui ?" className="mt-5 flex flex-wrap justify-center gap-2 lg:justify-start">
               {AUDIENCES.map(({ href, label }, i) => (
-                <Reveal as="span" key={href} effect="pop" delay={240 + i * 80}>
+                <Reveal as="span" key={href} effect="pop" delay={400 + i * 140}>
                 <a href={href} onClick={(e) => scrollToSection(e, href)} className="rounded-full border border-ink/15 bg-white px-4 py-2 text-[14px] font-semibold text-ink active:scale-95">
                   {label}
                 </a>
@@ -216,10 +216,10 @@ const Landing = () => {
             <div className="mt-8"><QrCard /></div>
           </div>
           <div className="relative mx-auto w-[260px] lg:w-[300px]">
-            <Reveal effect="rise" delay={150}><Phone src="/landing/ecran-carte.webp" alt="La carte Upvibe avec les événements d'Abidjan" /></Reveal>
-            <Pin label="Pool party" time="21h" delay={650} className="-left-14 top-[26%]" />
-            <Pin label="Brunch des débout" time="13h" dot="ink" delay={850} className="-right-16 top-[48%]" />
-            <Pin label="Créative Meet'Up" time="11h" delay={1050} className="-left-12 top-[70%]" />
+            <Reveal effect="rise" delay={300}><Phone src="/landing/ecran-carte.webp" alt="La carte Upvibe avec les événements d'Abidjan" /></Reveal>
+            <Pin label="Pool party" time="21h" delay={1100} className="-left-14 top-[26%]" />
+            <Pin label="Brunch des débout" time="13h" dot="ink" delay={1450} className="-right-16 top-[48%]" />
+            <Pin label="Créative Meet'Up" time="11h" delay={1800} className="-left-12 top-[70%]" />
           </div>
         </section>
 
@@ -232,7 +232,7 @@ const Landing = () => {
               <p className="mt-4 max-w-[340px] text-[17px] leading-snug lg:text-[20px]">Concerts, soirées, festivals, brunchs, expos : tout ce qui se passe autour de toi, en un coup d'œil.</p>
               <ol className="mt-6 grid gap-3">
                 {STEPS.map((step, i) => (
-                  <Reveal as="li" key={step} effect="left" delay={200 + i * 120} className="flex items-center gap-3.5 font-display text-[22px] tracking-[-0.03em]">
+                  <Reveal as="li" key={step} effect="left" delay={300 + i * 220} className="flex items-center gap-3.5 font-display text-[22px] tracking-[-0.03em]">
                     <span className="flex size-11 flex-shrink-0 items-center justify-center rounded-full bg-ink text-[18px] text-parchment">{i + 1}</span>
                     {step}
                   </Reveal>
@@ -275,7 +275,7 @@ const Landing = () => {
               </p>
               <ul className="mt-5 flex max-w-[560px] flex-wrap gap-2">
                 {MARKETPLACE_CATEGORIES.filter((c) => c.value !== 'autre').map((c, i) => (
-                  <Reveal as="li" key={c.value} effect="pop" delay={i * 60} className="rounded-full bg-parchment px-3.5 py-1.5 text-[13.5px] font-semibold">{c.fr}</Reveal>
+                  <Reveal as="li" key={c.value} effect="pop" delay={i * 110} className="rounded-full bg-parchment px-3.5 py-1.5 text-[13.5px] font-semibold">{c.fr}</Reveal>
                 ))}
               </ul>
               <Checks items={PROVIDER_PERKS} />
@@ -291,7 +291,7 @@ const Landing = () => {
           </h2></Reveal>
           <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {REASONS.map(({ icon: Icon, title, text }, i) => (
-              <Reveal key={title} delay={i * 90} className="rounded-[24px] bg-white p-5">
+              <Reveal key={title} delay={i * 160} className="rounded-[24px] bg-white p-5">
                 <span className="flex size-12 items-center justify-center rounded-full bg-parchment"><Icon size={22} strokeWidth={1.75} /></span>
                 <h3 className="mt-4 text-[20px] tracking-[-0.03em]">{title}</h3>
                 <p className="mt-1.5 text-[14.5px] leading-snug text-stone-500">{text}</p>
@@ -304,7 +304,7 @@ const Landing = () => {
         {events && events.length > 0 && (
           <section className="mx-auto max-w-6xl pb-12 lg:pb-20">
             <Reveal><h2 className="px-5 text-[34px] !font-[700] tracking-[-0.04em] lg:text-[52px]">Bientôt à Abidjan</h2></Reveal>
-            <Reveal effect="right" delay={120} className="scrollbar-hide mt-5 flex gap-3 overflow-x-auto px-5 pb-1">
+            <Reveal effect="right" delay={250} className="scrollbar-hide mt-5 flex gap-3 overflow-x-auto px-5 pb-1">
               {events.map((e) => {
                 const d = new Date(`${e.date}T12:00:00`);
                 return (
