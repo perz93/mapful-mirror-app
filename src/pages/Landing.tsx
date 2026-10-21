@@ -214,7 +214,7 @@ const Landing = () => {
             <div className="mt-8"><QrCard /></div>
           </div>
           <div className="relative mx-auto w-[260px] lg:w-[300px]">
-            <Reveal effect="rise" delay={300}><Phone src="/landing/ecran-carte.webp" alt="La carte Upvibe avec les événements d'Abidjan" /></Reveal>
+            <Reveal effect="rise" delay={300}><Phone src="/landing/ecran-carte-2026-10.webp" alt="La carte Upvibe avec les événements d'Abidjan" /></Reveal>
             <Pin label="Brunch des débout" time="13h" delay={1100} className="-left-14 top-[31%]" />
             <Pin label="Fifa tournoi" time="10h30" dot="ink" delay={1450} className="-right-12 top-[54%]" />
             <Pin label="Créative Meet'Up" time="11h" delay={1800} className="-left-12 top-[68%]" />
