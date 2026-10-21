@@ -514,7 +514,7 @@ const Settings = () => {
 
           {/* App version + crédits cartographiques (licence ODbL) */}
           <div className="text-center py-4 space-y-1.5">
-            <p className="text-xs text-stone-400">VIBE v1.0 — Abidjan, Côte d'Ivoire</p>
+            <p className="text-xs text-stone-400">Upvibe v1.0 — Abidjan, Côte d'Ivoire</p>
             <p className="text-[11px] text-stone-400">
               {lang === 'fr' ? 'Carte' : 'Map'} ©{' '}
               {MAP_CREDITS.map((c, i) => (
@@ -590,11 +590,11 @@ const PrivacyPolicy = ({ lang }: { lang: Lang }) => (
     <div className="prose prose-sm prose-stone max-w-none text-xs leading-relaxed text-stone-600 space-y-3">
       {lang === 'fr' ? (
         <>
-          <p className="font-semibold text-stone-800 text-sm">Politique de confidentialité — VIBE</p>
+          <p className="font-semibold text-stone-800 text-sm">Politique de confidentialité — Upvibe</p>
           <p><strong>Dernière mise à jour :</strong> 8 mai 2026</p>
 
           <p><strong>1. Responsable du traitement</strong><br />
-          VIBE est une application éditée et opérée depuis Abidjan, Côte d'Ivoire. Le traitement des données personnelles est effectué conformément à la <strong>Loi n°2013-450 du 19 juin 2013</strong> relative à la protection des données à caractère personnel en Côte d'Ivoire et aux recommandations de l'<strong>ARTCI</strong> (Autorité de Régulation des Télécommunications/TIC de Côte d'Ivoire).</p>
+          Upvibe est une application éditée et opérée depuis Abidjan, Côte d'Ivoire. Le traitement des données personnelles est effectué conformément à la <strong>Loi n°2013-450 du 19 juin 2013</strong> relative à la protection des données à caractère personnel en Côte d'Ivoire et aux recommandations de l'<strong>ARTCI</strong> (Autorité de Régulation des Télécommunications/TIC de Côte d'Ivoire).</p>
 
           <p><strong>2. Données collectées</strong><br />
           Nous collectons uniquement les données nécessaires au fonctionnement du service :</p>
@@ -646,11 +646,11 @@ const PrivacyPolicy = ({ lang }: { lang: Lang }) => (
         </>
       ) : (
         <>
-          <p className="font-semibold text-stone-800 text-sm">Privacy Policy — VIBE</p>
+          <p className="font-semibold text-stone-800 text-sm">Privacy Policy — Upvibe</p>
           <p><strong>Last updated:</strong> May 8, 2026</p>
 
           <p><strong>1. Data Controller</strong><br />
-          VIBE is an application published and operated from Abidjan, Côte d'Ivoire. Personal data processing complies with <strong>Law No. 2013-450 of June 19, 2013</strong> on the protection of personal data in Côte d'Ivoire and the guidelines of <strong>ARTCI</strong> (Telecommunications/ICT Regulatory Authority of Côte d'Ivoire).</p>
+          Upvibe is an application published and operated from Abidjan, Côte d'Ivoire. Personal data processing complies with <strong>Law No. 2013-450 of June 19, 2013</strong> on the protection of personal data in Côte d'Ivoire and the guidelines of <strong>ARTCI</strong> (Telecommunications/ICT Regulatory Authority of Côte d'Ivoire).</p>
 
           <p><strong>2. Data Collected</strong><br />
           We only collect data necessary for the service:</p>
@@ -713,11 +713,11 @@ const TermsOfService = ({ lang }: { lang: Lang }) => (
     <div className="prose prose-sm prose-stone max-w-none text-xs leading-relaxed text-stone-600 space-y-3">
       {lang === 'fr' ? (
         <>
-          <p className="font-semibold text-stone-800 text-sm">Conditions Générales d'Utilisation — VIBE</p>
+          <p className="font-semibold text-stone-800 text-sm">Conditions Générales d'Utilisation — Upvibe</p>
           <p><strong>Dernière mise à jour :</strong> 8 mai 2026</p>
 
           <p><strong>1. Objet</strong><br />
-          Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de l'application VIBE, plateforme de découverte et de publication d'événements à Abidjan, Côte d'Ivoire.</p>
+          Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de l'application Upvibe, plateforme de découverte et de publication d'événements à Abidjan, Côte d'Ivoire.</p>
 
           <p><strong>2. Accès au service</strong><br />
           L'application est accessible gratuitement. La création d'un compte est nécessaire pour publier des événements, des annonces ou interagir avec le contenu (favoris, participation).</p>
@@ -733,13 +733,13 @@ const TermsOfService = ({ lang }: { lang: Lang }) => (
             <li>Faux ou trompeur</li>
             <li>Contraire à l'ordre public et aux bonnes mœurs</li>
           </ul>
-          <p>VIBE se réserve le droit de supprimer tout contenu non conforme sans préavis.</p>
+          <p>Upvibe se réserve le droit de supprimer tout contenu non conforme sans préavis.</p>
 
           <p><strong>5. Propriété intellectuelle</strong><br />
-          L'application VIBE, son design, son code source et ses contenus originaux sont protégés par le droit de la propriété intellectuelle applicable en Côte d'Ivoire (Accord de Bangui révisé, OAPI). Toute reproduction non autorisée est interdite.</p>
+          L'application Upvibe, son design, son code source et ses contenus originaux sont protégés par le droit de la propriété intellectuelle applicable en Côte d'Ivoire (Accord de Bangui révisé, OAPI). Toute reproduction non autorisée est interdite.</p>
 
           <p><strong>6. Responsabilité</strong><br />
-          VIBE ne peut être tenu responsable :</p>
+          Upvibe ne peut être tenu responsable :</p>
           <ul className="list-disc pl-4 space-y-1">
             <li>De la véracité des informations publiées par les utilisateurs</li>
             <li>Des dommages résultant de l'utilisation ou de l'impossibilité d'utiliser le service</li>
@@ -750,21 +750,21 @@ const TermsOfService = ({ lang }: { lang: Lang }) => (
           L'utilisation de la géolocalisation est facultative et soumise à votre consentement. Vous pouvez désactiver cette fonctionnalité à tout moment dans les paramètres de votre appareil.</p>
 
           <p><strong>8. Modification des CGU</strong><br />
-          VIBE se réserve le droit de modifier les présentes CGU. Les utilisateurs seront informés de toute modification substantielle. La poursuite de l'utilisation du service vaut acceptation des nouvelles conditions.</p>
+          Upvibe se réserve le droit de modifier les présentes CGU. Les utilisateurs seront informés de toute modification substantielle. La poursuite de l'utilisation du service vaut acceptation des nouvelles conditions.</p>
 
           <p><strong>9. Résiliation</strong><br />
-          L'utilisateur peut supprimer son compte à tout moment. VIBE se réserve le droit de suspendre ou supprimer tout compte en cas de violation des présentes CGU.</p>
+          L'utilisateur peut supprimer son compte à tout moment. Upvibe se réserve le droit de suspendre ou supprimer tout compte en cas de violation des présentes CGU.</p>
 
           <p><strong>10. Droit applicable</strong><br />
           Les présentes CGU sont régies par le droit ivoirien. Tout litige sera soumis aux juridictions compétentes d'Abidjan, Côte d'Ivoire.</p>
         </>
       ) : (
         <>
-          <p className="font-semibold text-stone-800 text-sm">Terms of Service — VIBE</p>
+          <p className="font-semibold text-stone-800 text-sm">Terms of Service — Upvibe</p>
           <p><strong>Last updated:</strong> May 8, 2026</p>
 
           <p><strong>1. Purpose</strong><br />
-          These Terms of Service govern access to and use of the VIBE application, a platform for discovering and publishing events in Abidjan, Côte d'Ivoire.</p>
+          These Terms of Service govern access to and use of the Upvibe application, a platform for discovering and publishing events in Abidjan, Côte d'Ivoire.</p>
 
           <p><strong>2. Access</strong><br />
           The application is free to access. Account creation is required to publish events, listings, or interact with content (favorites, attendance).</p>
@@ -780,13 +780,13 @@ const TermsOfService = ({ lang }: { lang: Lang }) => (
             <li>False or misleading content</li>
             <li>Content contrary to public order and decency</li>
           </ul>
-          <p>VIBE reserves the right to remove non-compliant content without notice.</p>
+          <p>Upvibe reserves the right to remove non-compliant content without notice.</p>
 
           <p><strong>5. Intellectual Property</strong><br />
-          The VIBE application, its design, source code, and original content are protected by intellectual property law applicable in Côte d'Ivoire (revised Bangui Agreement, OAPI). Unauthorized reproduction is prohibited.</p>
+          The Upvibe application, its design, source code, and original content are protected by intellectual property law applicable in Côte d'Ivoire (revised Bangui Agreement, OAPI). Unauthorized reproduction is prohibited.</p>
 
           <p><strong>6. Liability</strong><br />
-          VIBE cannot be held responsible for:</p>
+          Upvibe cannot be held responsible for:</p>
           <ul className="list-disc pl-4 space-y-1">
             <li>The accuracy of information published by users</li>
             <li>Damages resulting from the use or inability to use the service</li>
@@ -797,10 +797,10 @@ const TermsOfService = ({ lang }: { lang: Lang }) => (
           Geolocation is optional and subject to your consent. You can disable this feature at any time in your device settings.</p>
 
           <p><strong>8. Amendments</strong><br />
-          VIBE reserves the right to amend these Terms. Users will be notified of any substantial changes. Continued use of the service constitutes acceptance of the updated terms.</p>
+          Upvibe reserves the right to amend these Terms. Users will be notified of any substantial changes. Continued use of the service constitutes acceptance of the updated terms.</p>
 
           <p><strong>9. Termination</strong><br />
-          Users may delete their account at any time. VIBE reserves the right to suspend or delete any account that violates these Terms.</p>
+          Users may delete their account at any time. Upvibe reserves the right to suspend or delete any account that violates these Terms.</p>
 
           <p><strong>10. Governing Law</strong><br />
           These Terms are governed by Ivorian law. Any dispute shall be submitted to the competent courts of Abidjan, Côte d'Ivoire.</p>

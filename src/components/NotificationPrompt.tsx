@@ -12,8 +12,8 @@ const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent);
 
 // Étapes pour réautoriser les notifications : le téléphone ne laisse plus
 // l'app redemander une fois qu'elles ont été refusées.
-const STEPS_IOS = ['Ouvre Réglages', 'Notifications', 'VIBE', 'Active « Autoriser les notifications »'];
-const STEPS_ANDROID = ['Ouvre Paramètres', 'Applications', 'VIBE (ou ton navigateur)', 'Notifications → Activer'];
+const STEPS_IOS = ['Ouvre Réglages', 'Notifications', 'Upvibe', 'Active « Autoriser les notifications »'];
+const STEPS_ANDROID = ['Ouvre Paramètres', 'Applications', 'Upvibe (ou ton navigateur)', 'Notifications → Activer'];
 
 const NotificationPrompt = () => {
   const { isSupported, isSubscribed, permission, subscribe, loading } = useNotifications();

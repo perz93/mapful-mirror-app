@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       colors: {
-        /* VIBE — encre, parchemin et un seul accent lime (Perk × Notion) */
+        /* Upvibe — encre, parchemin et un seul accent lime (Perk × Notion) */
         ink: "#14140f",
         lime: {
           DEFAULT: "#a6e22e",

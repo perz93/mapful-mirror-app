@@ -27,7 +27,7 @@ export const usePublicProfile = (userId?: string | null) =>
   });
 
 export const profileDisplayName = (p: PublicProfile | null | undefined, lang: string) =>
-  p?.full_name?.trim() || (lang === 'fr' ? 'Membre VIBE' : 'VIBE member');
+  p?.full_name?.trim() || (lang === 'fr' ? 'Membre Upvibe' : 'Upvibe member');
 
 export const initials = (name: string) =>
   name

@@ -670,7 +670,7 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* VIBE — Encre & Parchemin, accent lime unique (Perk × Notion) */
+    /* Upvibe — Encre & Parchemin, accent lime unique (Perk × Notion) */
     --background: 60 33% 94%;         /* #f5f5eb parchemin */
     --foreground: 60 14% 7%;          /* #14140f encre */
 

@@ -131,7 +131,7 @@ const TopMenu = () => {
                 Déconnexion
               </button>
             ) : <span />}
-            <span>VIBE</span>
+            <span>Upvibe</span>
           </div>
         </nav>
       </div>

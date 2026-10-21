@@ -19,7 +19,7 @@ const TYPES: Record<string, { icon: LucideIcon; label: string }> = {
   event_starting: { icon: Clock, label: 'Bientôt' },
   event_published: { icon: CircleCheck, label: 'Publié' },
 };
-const typeOf = (type: string) => TYPES[type] ?? { icon: BellRing, label: 'VIBE' };
+const typeOf = (type: string) => TYPES[type] ?? { icon: BellRing, label: 'Upvibe' };
 
 // Les titres envoyés en push commencent souvent par un emoji : inutile ici
 const cleanTitle = (title: string | null) =>

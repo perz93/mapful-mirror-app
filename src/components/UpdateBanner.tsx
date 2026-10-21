@@ -47,7 +47,7 @@ const UpdateBanner = () => {
         {/* Logo à la même place que sur le splash (centré) : pas de saut au rechargement */}
         <img
           src="/splash-logo.png"
-          alt="VIBE"
+          alt="Upvibe"
           className="absolute left-1/2 top-1/2 h-[120px] w-[240px]"
           style={{ transform: 'translate(-50%, -55%)' }}
         />

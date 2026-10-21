@@ -13,7 +13,7 @@ function detectOS(): OS {
   return 'unknown';
 }
 
-/** Avantages affichés sous « Installe VIBE » : pour ceux qui sortent et pour ceux qui publient */
+/** Avantages affichés sous « Installe Upvibe » : pour ceux qui sortent et pour ceux qui publient */
 const PERKS = [
   { icon: MapPin, strong: 'Les sorties', rest: 'autour de toi' },
   { icon: BellRing, strong: 'Alertes', rest: 'près de chez toi' },
@@ -39,14 +39,14 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 // ------------------------------------------------------------------
-// Illustration « T2 » : vrai iPhone (format haut) avec une capture de VIBE,
+// Illustration « T2 » : vrai iPhone (format haut) avec une capture de Upvibe,
 // et une loupe qui grossit l'endroit exact à toucher.
 // ------------------------------------------------------------------
 
 const IOS_BLUE = '#0a84ff';
 const ANDROID_BLUE = '#0b57d0';
 
-/** Téléphone miniature avec une vraie page VIBE : iPhone (Dynamic Island) ou Android (caméra « poinçon ») */
+/** Téléphone miniature avec une vraie page Upvibe : iPhone (Dynamic Island) ou Android (caméra « poinçon ») */
 const MiniPhone = ({ children, android = false }: { children?: React.ReactNode; android?: boolean }) => (
   <div
     className={`relative h-[216px] w-[104px] flex-shrink-0 bg-ink shadow-[0_18px_36px_-16px_rgba(20,20,15,0.55)] ${
@@ -160,7 +160,7 @@ const IosAddScreen = () => (
     </div>
     <div className="mx-2 mt-3 flex items-center gap-1.5 rounded-md bg-white p-1.5">
       <img src="/icon-192.png" alt="" className="size-6 rounded-[6px]" />
-      <span className="text-[7px] font-medium">VIBE</span>
+      <span className="text-[7px] font-medium">Upvibe</span>
     </div>
   </div>
 );
@@ -226,7 +226,7 @@ const IOS_STEPS = [
   },
   {
     title: 'Touche « Ajouter »',
-    hint: "En haut à droite. L'icône VIBE apparaît sur ton écran d'accueil.",
+    hint: "En haut à droite. L'icône Upvibe apparaît sur ton écran d'accueil.",
     visual: (
       <Pair
         phone={<MiniPhone><IosAddScreen /></MiniPhone>}
@@ -278,7 +278,7 @@ const ANDROID_STEPS = [
   },
   {
     title: 'Confirme avec « Installer »',
-    hint: "VIBE rejoint tes applications et ton écran d'accueil.",
+    hint: "Upvibe rejoint tes applications et ton écran d'accueil.",
     visual: (
       <Pair
         phone={<MiniPhone android><ChromeDialog /></MiniPhone>}
@@ -415,12 +415,12 @@ const InstallGuide = () => {
           <div className="flex items-center gap-3">
             <img src="/icon-192.png" alt="" className="size-11 rounded-[13px] border border-stone-200 object-cover" />
             <div className="min-w-0 flex-1">
-              <h2 id="install-title" className="text-[22px] leading-none tracking-tighter text-ink">Installe VIBE</h2>
+              <h2 id="install-title" className="text-[22px] leading-none tracking-tighter text-ink">Installe Upvibe</h2>
               <p className="mt-1 text-[12.5px] text-stone-500">Gratuit · sans store · 3 gestes</p>
             </div>
           </div>
 
-          {/* Ce que VIBE apporte (modèle B : une ligne d'icônes) */}
+          {/* Ce que Upvibe apporte (modèle B : une ligne d'icônes) */}
           <ul className="mt-4 grid grid-cols-4 gap-1.5 text-center text-[11px] leading-[1.2] text-stone-500">
             {PERKS.map(({ icon: Icon, strong, rest }) => (
               <li key={strong} className="flex flex-col items-center gap-1.5">

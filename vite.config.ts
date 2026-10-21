@@ -34,8 +34,8 @@ export default defineConfig(({ mode }) => ({
       injectRegister: 'auto',
       includeAssets: ['favicon.ico', 'robots.txt'],
       manifest: {
-        name: 'VIBE — Explore. Réserve. Vibrez.',
-        short_name: 'VIBE',
+        name: 'Upvibe — Explore. Réserve. Vibrez.',
+        short_name: 'Upvibe',
         description: 'Tous les événements près de vous',
         theme_color: '#14140f',
         background_color: '#000000',

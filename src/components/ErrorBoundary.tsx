@@ -20,7 +20,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('[VIBE] Erreur non gérée', error, info.componentStack);
+    console.error('[Upvibe] Erreur non gérée', error, info.componentStack);
     const isChunkError = /Loading chunk|dynamically imported module|Importing a module script failed/i.test(error?.message ?? '');
     if (isChunkError) {
       try {
@@ -39,7 +39,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, State> {
     return (
       <div className="flex min-h-[100dvh] items-center justify-center bg-parchment px-4">
         <div className="w-full max-w-md rounded-3xl bg-white p-6">
-          <p className="eyebrow mb-3 text-stone-500">VIBE</p>
+          <p className="eyebrow mb-3 text-stone-500">Upvibe</p>
           <h1 className="text-[36px] leading-[0.95] tracking-tighter text-ink">Oups, un souci est survenu</h1>
           <p className="mt-3 text-[15px] text-stone-500">
             Rechargez la page. Si le problème continue, revenez à l'accueil.

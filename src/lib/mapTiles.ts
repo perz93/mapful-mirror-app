@@ -1,7 +1,7 @@
 import L from 'leaflet';
 
 /**
- * Fond de carte VIBE.
+ * Fond de carte Upvibe.
  *
  * Carte vectorielle OpenFreeMap (aucune clé API) rendue par MapLibre sous les
  * marqueurs Leaflet, et recolorée pour un rendu doux : fond presque blanc, routes
