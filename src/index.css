@@ -1217,3 +1217,29 @@ vercel-live-feedback,
 }
 .pin-label.pin-label { box-shadow: 0 3px 10px rgb(20 20 15 / 0.3) !important; }
 .custom-marker.is-selected .pin-label.pin-label { box-shadow: 0 4px 14px rgb(20 20 15 / 0.35) !important; }
+
+/* Page vitrine : apparitions au défilement (voir Reveal dans Landing.tsx) */
+.reveal {
+  opacity: 0;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+.reveal-up { transform: translate3d(0, 36px, 0); }
+.reveal-rise { transform: translate3d(0, 120px, 0); }
+.reveal-left { transform: translate3d(-48px, 0, 0); }
+.reveal-right { transform: translate3d(48px, 0, 0); }
+.reveal-pop { transform: scale(0.6); }
+.reveal.is-visible { opacity: 1; transform: none; }
+
+/* Pastilles de la carte : elles flottent doucement une fois apparues */
+@keyframes landing-float {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -7px; }
+}
+.landing-float { animation: landing-float 4.5s ease-in-out infinite; animation-delay: var(--float-delay, 0s); }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal.is-visible { opacity: 1; transform: none; transition: none; }
+  .landing-float { animation: none; }
+}

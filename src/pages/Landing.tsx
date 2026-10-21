@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { BellRing, ChevronDown, MapPin, Route, Smartphone } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -55,6 +56,45 @@ const FAQ_JSON_LD = JSON.stringify({
   mainEntity: FAQ.map(({ q, a }) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
 });
 
+
+type RevealEffect = 'up' | 'rise' | 'left' | 'right' | 'pop';
+
+/** Fait apparaître son contenu quand il entre à l'écran (une seule fois) */
+const Reveal = ({ children, effect = 'up', delay = 0, className = '', as: Tag = 'div' }: {
+  children: React.ReactNode; effect?: RevealEffect; delay?: number; className?: string; as?: 'div' | 'li' | 'span';
+}) => {
+  const ref = useRef<HTMLElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === 'undefined') { setVisible(true); return; }
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setVisible(true); io.disconnect(); }
+    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <Tag
+      ref={ref as React.Ref<never>}
+      className={`reveal reveal-${effect} ${visible ? 'is-visible' : ''} ${className}`}
+      style={{ '--reveal-delay': `${delay}ms` } as React.CSSProperties}
+    >
+      {children}
+    </Tag>
+  );
+};
+
+/** Défilement fluide vers une section (sous l'en-tête fixe) */
+const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  const target = document.querySelector(href);
+  if (!target) return;
+  e.preventDefault();
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  history.replaceState(null, '', href);
+};
+
 const Logo = ({ className = '' }: { className?: string }) => (
   <span className={`font-display text-[24px] !font-[800] tracking-[-0.05em] text-parchment ${className}`}>
     <span className="text-lime">up</span>vibe<span className="text-lime">.</span>
@@ -71,7 +111,7 @@ const Phone = ({ src, alt, className = '' }: { src: string; alt: string; classNa
 /** Téléphone qui « sort » du bas de la section */
 const RisingPhone = (props: { src: string; alt: string }) => (
   <div className="mx-auto h-[440px] w-[270px] overflow-hidden lg:h-[560px] lg:w-[330px]">
-    <Phone {...props} />
+    <Reveal effect="rise"><Phone {...props} /></Reveal>
   </div>
 );
 
@@ -81,11 +121,11 @@ const Eyebrow = ({ children, className = '' }: { children: React.ReactNode; clas
 
 const Checks = ({ items, dark = false }: { items: string[]; dark?: boolean }) => (
   <ul className="mt-6 grid max-w-[560px] gap-3">
-    {items.map((item) => (
-      <li key={item} className={`flex gap-3 text-[15.5px] leading-snug ${dark ? 'text-parchment' : 'text-ink'}`}>
+    {items.map((item, i) => (
+      <Reveal as="li" key={item} delay={i * 90} className={`flex gap-3 text-[15.5px] leading-snug ${dark ? 'text-parchment' : 'text-ink'}`}>
         <span className={`mt-0.5 flex size-5 flex-shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${dark ? 'bg-lime text-ink' : 'bg-ink text-lime'}`}>✓</span>
         {item}
-      </li>
+      </Reveal>
     ))}
   </ul>
 );
@@ -102,10 +142,14 @@ const QrCard = () => (
 );
 
 /** Pastille d'événement, comme sur la carte */
-const Pin = ({ label, time, dot = 'lime', className = '' }: { label: string; time: string; dot?: 'lime' | 'ink'; className?: string }) => (
-  <span className={`absolute flex items-center gap-2 whitespace-nowrap rounded-full bg-white py-1.5 pl-1.5 pr-4 text-[15px] font-bold shadow-[0_12px_28px_-12px_rgba(20,20,15,0.5)] ${className}`}>
-    <span className={`size-7 rounded-full ${dot === 'lime' ? 'bg-lime' : 'bg-ink'}`} />
-    {label}<span className="text-[#6fae12]">· {time}</span>
+const Pin = ({ label, time, dot = 'lime', delay = 0, className = '' }: { label: string; time: string; dot?: 'lime' | 'ink'; delay?: number; className?: string }) => (
+  <span className={`absolute ${className}`}>
+    <Reveal as="span" effect="pop" delay={delay} className="block">
+      <span className="landing-float flex items-center gap-2 whitespace-nowrap rounded-full bg-white py-1.5 pl-1.5 pr-4 text-[15px] font-bold shadow-[0_12px_28px_-12px_rgba(20,20,15,0.5)]" style={{ '--float-delay': `${delay / 1000}s` } as React.CSSProperties}>
+        <span className={`size-7 rounded-full ${dot === 'lime' ? 'bg-lime' : 'bg-ink'}`} />
+        {label}<span className="text-[#6fae12]">· {time}</span>
+      </span>
+    </Reveal>
   </span>
 );
 
@@ -154,45 +198,47 @@ const Landing = () => {
         {/* 1. Ce soir, tu fais quoi ? */}
         <section className="mx-auto grid max-w-6xl items-center gap-10 overflow-hidden px-5 pb-12 pt-8 lg:grid-cols-2 lg:pt-16">
           <div className="text-center lg:text-left">
-            <h1 className="text-[52px] !font-[800] leading-[0.95] tracking-[-0.045em] lg:text-[84px]">
+            <Reveal><h1 className="text-[52px] !font-[800] leading-[0.95] tracking-[-0.045em] lg:text-[84px]">
               Ce soir,<br />tu fais <span className="inline-block rounded-2xl bg-lime px-2.5 pb-1">quoi&nbsp;?</span>
-            </h1>
-            <p className="mx-auto mt-4 max-w-[360px] text-[17px] leading-snug text-stone-500 lg:mx-0 lg:max-w-[460px] lg:text-[20px]">
+            </h1></Reveal>
+            <Reveal delay={120}><p className="mx-auto mt-4 max-w-[360px] text-[17px] leading-snug text-stone-500 lg:mx-0 lg:max-w-[460px] lg:text-[20px]">
               Sortir, organiser, proposer tes services : tout Abidjan se retrouve sur une seule carte.
-            </p>
+            </p></Reveal>
             <nav aria-label="Pour qui ?" className="mt-5 flex flex-wrap justify-center gap-2 lg:justify-start">
-              {AUDIENCES.map(({ href, label }) => (
-                <a key={href} href={href} className="rounded-full border border-ink/15 bg-white px-4 py-2 text-[14px] font-semibold text-ink active:scale-95">
+              {AUDIENCES.map(({ href, label }, i) => (
+                <Reveal as="span" key={href} effect="pop" delay={240 + i * 80}>
+                <a href={href} onClick={(e) => scrollToSection(e, href)} className="rounded-full border border-ink/15 bg-white px-4 py-2 text-[14px] font-semibold text-ink active:scale-95">
                   {label}
                 </a>
+                </Reveal>
               ))}
             </nav>
             <div className="mt-8"><QrCard /></div>
           </div>
           <div className="relative mx-auto w-[260px] lg:w-[300px]">
-            <Phone src="/landing/ecran-carte.webp" alt="La carte Upvibe avec les événements d'Abidjan" />
-            <Pin label="Pool party" time="21h" className="-left-14 top-[26%]" />
-            <Pin label="Brunch des débout" time="13h" dot="ink" className="-right-16 top-[48%]" />
-            <Pin label="Créative Meet'Up" time="11h" className="-left-12 top-[70%]" />
+            <Reveal effect="rise" delay={150}><Phone src="/landing/ecran-carte.webp" alt="La carte Upvibe avec les événements d'Abidjan" /></Reveal>
+            <Pin label="Pool party" time="21h" delay={650} className="-left-14 top-[26%]" />
+            <Pin label="Brunch des débout" time="13h" dot="ink" delay={850} className="-right-16 top-[48%]" />
+            <Pin label="Créative Meet'Up" time="11h" delay={1050} className="-left-12 top-[70%]" />
           </div>
         </section>
 
         {/* 2. Pour ceux qui sortent */}
         <section id="sortir" className="scroll-mt-16 overflow-hidden bg-lime">
           <div className="mx-auto grid max-w-6xl items-end gap-10 px-5 pt-12 lg:grid-cols-2 lg:pt-20">
-            <div className="lg:pb-20">
+            <Reveal className="lg:pb-20">
               <Eyebrow className="bg-ink text-lime">Pour sortir</Eyebrow>
               <h2 className="mt-4 text-[64px] !font-[800] leading-[0.9] tracking-[-0.05em] lg:text-[96px]">Trouve.<br />Sors.<br />Vibe.</h2>
               <p className="mt-4 max-w-[340px] text-[17px] leading-snug lg:text-[20px]">Concerts, soirées, festivals, brunchs, expos : tout ce qui se passe autour de toi, en un coup d'œil.</p>
               <ol className="mt-6 grid gap-3">
                 {STEPS.map((step, i) => (
-                  <li key={step} className="flex items-center gap-3.5 font-display text-[22px] tracking-[-0.03em]">
+                  <Reveal as="li" key={step} effect="left" delay={200 + i * 120} className="flex items-center gap-3.5 font-display text-[22px] tracking-[-0.03em]">
                     <span className="flex size-11 flex-shrink-0 items-center justify-center rounded-full bg-ink text-[18px] text-parchment">{i + 1}</span>
                     {step}
-                  </li>
+                  </Reveal>
                 ))}
               </ol>
-            </div>
+            </Reveal>
             <RisingPhone src="/landing/ecran-evenements.webp" alt="La liste des événements dans Upvibe" />
           </div>
         </section>
@@ -200,7 +246,7 @@ const Landing = () => {
         {/* 3. Pour les organisateurs */}
         <section id="organiser" className="scroll-mt-16 overflow-hidden bg-ink text-parchment">
           <div className="mx-auto grid max-w-6xl items-end gap-10 px-5 pt-12 lg:grid-cols-2 lg:pt-20">
-            <div className="lg:order-2 lg:pb-20">
+            <Reveal className="lg:order-2 lg:pb-20">
               <Eyebrow className="bg-lime text-ink">Pour les organisateurs</Eyebrow>
               <h2 className="mt-4 text-[44px] !font-[800] leading-[0.95] tracking-[-0.045em] text-parchment lg:text-[68px]">
                 Tu organises ?<br /><span className="text-lime">Fais-toi voir.</span>
@@ -209,7 +255,7 @@ const Landing = () => {
                 Promoteurs, bars, lounges, artistes, associations : Upvibe met ton événement devant ceux qui sortent, au moment où ils cherchent quoi faire.
               </p>
               <Checks items={ORGANIZER_PERKS} dark />
-            </div>
+            </Reveal>
             <div className="lg:order-1">
               <RisingPhone src="/landing/ecran-organisateur.webp" alt="Fiche d'un concert avec ses places Standard, VIP et VVIP" />
             </div>
@@ -219,7 +265,7 @@ const Landing = () => {
         {/* 4. Pour les prestataires */}
         <section id="prestataires" className="scroll-mt-16 overflow-hidden bg-white">
           <div className="mx-auto grid max-w-6xl items-end gap-10 px-5 pt-12 lg:grid-cols-2 lg:pt-20">
-            <div className="lg:pb-20">
+            <Reveal className="lg:pb-20">
               <Eyebrow className="bg-parchment text-ink">Pour les prestataires</Eyebrow>
               <h2 className="mt-4 text-[44px] !font-[800] leading-[0.95] tracking-[-0.045em] lg:text-[68px]">
                 Tes services,<br /><span className="rounded-xl bg-lime px-2">devant les clients.</span>
@@ -228,28 +274,28 @@ const Landing = () => {
                 DJ, traiteur, déco, photographe, location de salle ou de matériel : le Marketplace Upvibe te met en relation avec ceux qui organisent.
               </p>
               <ul className="mt-5 flex max-w-[560px] flex-wrap gap-2">
-                {MARKETPLACE_CATEGORIES.filter((c) => c.value !== 'autre').map((c) => (
-                  <li key={c.value} className="rounded-full bg-parchment px-3.5 py-1.5 text-[13.5px] font-semibold">{c.fr}</li>
+                {MARKETPLACE_CATEGORIES.filter((c) => c.value !== 'autre').map((c, i) => (
+                  <Reveal as="li" key={c.value} effect="pop" delay={i * 60} className="rounded-full bg-parchment px-3.5 py-1.5 text-[13.5px] font-semibold">{c.fr}</Reveal>
                 ))}
               </ul>
               <Checks items={PROVIDER_PERKS} />
-            </div>
+            </Reveal>
             <RisingPhone src="/landing/ecran-marketplace.webp" alt="Le Marketplace Upvibe : lieux, traiteurs, matériel" />
           </div>
         </section>
 
         {/* 5. Pourquoi Upvibe */}
         <section className="mx-auto max-w-6xl px-5 py-12 lg:py-20">
-          <h2 className="max-w-[640px] text-[34px] !font-[700] leading-[0.98] tracking-[-0.04em] lg:text-[52px]">
+          <Reveal><h2 className="max-w-[640px] text-[34px] !font-[700] leading-[0.98] tracking-[-0.04em] lg:text-[52px]">
             Pourquoi tout Abidjan passe par <span className="rounded-xl bg-lime px-2">Upvibe</span>
-          </h2>
+          </h2></Reveal>
           <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {REASONS.map(({ icon: Icon, title, text }) => (
-              <div key={title} className="rounded-[24px] bg-white p-5">
+            {REASONS.map(({ icon: Icon, title, text }, i) => (
+              <Reveal key={title} delay={i * 90} className="rounded-[24px] bg-white p-5">
                 <span className="flex size-12 items-center justify-center rounded-full bg-parchment"><Icon size={22} strokeWidth={1.75} /></span>
                 <h3 className="mt-4 text-[20px] tracking-[-0.03em]">{title}</h3>
                 <p className="mt-1.5 text-[14.5px] leading-snug text-stone-500">{text}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </section>
@@ -257,8 +303,8 @@ const Landing = () => {
         {/* 6. Prochains événements (ouvrent l'installation) */}
         {events && events.length > 0 && (
           <section className="mx-auto max-w-6xl pb-12 lg:pb-20">
-            <h2 className="px-5 text-[34px] !font-[700] tracking-[-0.04em] lg:text-[52px]">Bientôt à Abidjan</h2>
-            <div className="scrollbar-hide mt-5 flex gap-3 overflow-x-auto px-5 pb-1">
+            <Reveal><h2 className="px-5 text-[34px] !font-[700] tracking-[-0.04em] lg:text-[52px]">Bientôt à Abidjan</h2></Reveal>
+            <Reveal effect="right" delay={120} className="scrollbar-hide mt-5 flex gap-3 overflow-x-auto px-5 pb-1">
               {events.map((e) => {
                 const d = new Date(`${e.date}T12:00:00`);
                 return (
@@ -279,13 +325,13 @@ const Landing = () => {
                   </button>
                 );
               })}
-            </div>
+            </Reveal>
           </section>
         )}
 
         {/* 7. FAQ */}
         <section className="mx-auto max-w-3xl px-5 pb-12 pt-4 lg:pb-20">
-          <h2 className="text-[34px] !font-[700] tracking-[-0.04em] lg:text-[52px]">Questions fréquentes</h2>
+          <Reveal><h2 className="text-[34px] !font-[700] tracking-[-0.04em] lg:text-[52px]">Questions fréquentes</h2></Reveal>
           <div className="mt-4">
             {FAQ.map(({ q, a }, i) => (
               <details key={q} open={i === 0} className="group border-b border-stone-200 py-4">
