@@ -1132,7 +1132,7 @@ vercel-live-feedback,
 }
 .animate-update-dot { animation: update-dot 1.1s ease-in-out infinite; }
 
-/* Marqueurs P4 · B1 : étiquette noire (mini photo + nom), verte quand sélectionnée */
+/* Marqueurs P4 · B1 : étiquette noire (mini photo + nom) ; sélectionnée : reste noire, + heure et anneau vert */
 .pin-label {
   position: absolute;
   left: 0;
@@ -1175,10 +1175,9 @@ vercel-live-feedback,
 .pin-label-title { font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
 .pin-label-time { display: none; font-style: normal; font-weight: 600; color: #a6e22e; }
 .custom-marker.is-selected { z-index: 1000 !important; }
-.custom-marker.is-selected .pin-label { background: #a6e22e; color: #14140f; box-shadow: 0 4px 14px rgb(20 20 15 / 0.35); }
-.custom-marker.is-selected .pin-label::after { border-top-color: #a6e22e; }
-.custom-marker.is-selected .pin-label-img { box-shadow: 0 0 0 2px #14140f; }
-.custom-marker.is-selected .pin-label-time { color: #14140f; }
+.custom-marker.is-selected .pin-label { background: #14140f; color: #f5f5eb; box-shadow: 0 4px 14px rgb(20 20 15 / 0.35); }
+.custom-marker.is-selected .pin-label::after { border-top-color: #14140f; }
+.custom-marker.is-selected .pin-label-img { box-shadow: 0 0 0 2px #a6e22e; }
 .custom-marker.is-selected .pin-label-time { display: inline; }
 /* Étiquettes ouvertes en étoile : centrées sur le bout de leur trait, sans pointe */
 .custom-marker.in-star .pin-label { transform: translate(-50%, -50%); animation: none; }
@@ -1208,7 +1207,7 @@ vercel-live-feedback,
 }
 .marker-image-container::after { filter: none !important; }
 /* Anneau vert de l'étiquette sélectionnée (pas une ombre) */
-.custom-marker.is-selected .pin-label-img { box-shadow: 0 0 0 2px #14140f !important; }
+.custom-marker.is-selected .pin-label-img { box-shadow: 0 0 0 2px #a6e22e !important; }
 .custom-marker.is-selected .marker-image-wrapper { box-shadow: 0 0 0 2.5px #a6e22e !important; }
 
 /* Exception : sur la carte, boutons flottants et étiquettes gardent leur ombre
