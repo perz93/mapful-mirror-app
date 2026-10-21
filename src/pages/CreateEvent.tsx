@@ -413,7 +413,9 @@ const CreateEvent = () => {
 
     } catch (error) {
       console.error('Error creating event:', error);
-      toast.error(t('event.createError'));
+      // Limite anti-abus (10 publications / 24 h) : on affiche le message du serveur
+      const message = (error as { message?: string })?.message ?? '';
+      toast.error(message.startsWith('Limite atteinte') ? message : t('event.createError'));
     } finally {
       setSubmitting(false);
     }

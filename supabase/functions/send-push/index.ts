@@ -288,6 +288,19 @@ async function formatEventNotification(supabase: any, type: string, eventId: str
   }
 }
 
+// ---- Lecture complète (l'API renvoie 1 000 lignes max par requête) ----
+// deno-lint-ignore no-explicit-any
+async function fetchAllRows<T>(build: (from: number, to: number) => any, pageSize = 1000): Promise<T[]> {
+  const rows: T[] = [];
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await build(from, from + pageSize - 1);
+    if (error) throw new Error(error.message);
+    rows.push(...((data ?? []) as T[]));
+    if (!data || data.length < pageSize) break;
+  }
+  return rows;
+}
+
 // ---- Main handler ----
 
 serve(async (req) => {
@@ -342,14 +355,15 @@ serve(async (req) => {
     // personne (avant, cela partait à TOUS les abonnés).
     let audience: string[] = [];
     if (send_to_all) {
-      const { data: profiles, error } = await supabase.from("profiles").select("id");
-      if (error) {
-        return new Response(JSON.stringify({ error: error.message }), {
+      try {
+        const profiles = await fetchAllRows<{ id: string }>((a, b) => supabase.from("profiles").select("id").order("id").range(a, b));
+        audience = profiles.map((p) => p.id);
+      } catch (error) {
+        return new Response(JSON.stringify({ error: String(error) }), {
           status: 500,
           headers: { "Content-Type": "application/json" },
         });
       }
-      audience = (profiles ?? []).map((p: { id: string }) => p.id);
     } else if (Array.isArray(user_ids)) {
       audience = user_ids.filter((id: unknown): id is string => typeof id === "string");
     }
@@ -360,12 +374,10 @@ serve(async (req) => {
     // 2. Anti-doublon : on retire ceux qui ont déjà reçu cette notification
     let skipped = 0;
     if (check_duplicates && notification_type && event_id && audience.length > 0) {
-      const { data: logs } = await supabase
-        .from("notification_log")
-        .select("user_id")
-        .eq("event_id", event_id)
-        .eq("notification_type", notification_type);
-      const already = new Set((logs ?? []).map((l: { user_id: string }) => l.user_id));
+      const logs = await fetchAllRows<{ user_id: string }>((a, b) =>
+        supabase.from("notification_log").select("user_id").eq("event_id", event_id).eq("notification_type", notification_type).order("user_id").range(a, b)
+      ).catch(() => []);
+      const already = new Set(logs.map((l) => l.user_id));
       const before = audience.length;
       audience = audience.filter((id) => !already.has(id));
       skipped = before - audience.length;
@@ -402,9 +414,10 @@ serve(async (req) => {
     const audienceSet = new Set(audience);
     const subscriptions: { endpoint: string; p256dh: string; auth: string; user_id: string }[] = [];
     if (send_to_all) {
-      const { data, error } = await supabase.from("push_subscriptions").select("endpoint, p256dh, auth, user_id");
-      if (error) console.error(`push_subscriptions: ${error.message}`);
-      for (const s of data ?? []) if (audienceSet.has(s.user_id)) subscriptions.push(s);
+      const all = await fetchAllRows<{ endpoint: string; p256dh: string; auth: string; user_id: string }>((a, b) =>
+        supabase.from("push_subscriptions").select("endpoint, p256dh, auth, user_id").order("endpoint").range(a, b)
+      ).catch((e) => { console.error(`push_subscriptions: ${e}`); return []; });
+      for (const s of all) if (audienceSet.has(s.user_id)) subscriptions.push(s);
     } else {
       for (let i = 0; i < audience.length; i += 100) {
         const { data, error } = await supabase
@@ -429,31 +442,36 @@ serve(async (req) => {
     let failed = 0;
     const failedEndpoints: string[] = [];
 
-    for (const sub of subscriptions) {
-      try {
-        const response = await sendWebPush(
-          { endpoint: sub.endpoint, p256dh: sub.p256dh, auth: sub.auth },
-          payload
-        );
-
+    // Envoi en parallèle par paquets (un par un, des milliers d'appareils dépasseraient le temps limite)
+    const BATCH = 50;
+    for (let i = 0; i < subscriptions.length; i += BATCH) {
+      const batch = subscriptions.slice(i, i + BATCH);
+      const results = await Promise.allSettled(
+        batch.map((sub) => sendWebPush({ endpoint: sub.endpoint, p256dh: sub.p256dh, auth: sub.auth }, payload))
+      );
+      for (let j = 0; j < results.length; j++) {
+        const r = results[j];
+        if (r.status === "rejected") {
+          console.error(`Push error: ${r.reason}`);
+          failed++;
+          continue;
+        }
+        const response = r.value;
         if (response.status === 201 || response.status === 200) {
           sent++;
         } else if (response.status === 404 || response.status === 410) {
-          failedEndpoints.push(sub.endpoint);
+          failedEndpoints.push(batch[j].endpoint);
           failed++;
         } else {
           console.error(`Push failed: ${response.status} ${await response.text()}`);
           failed++;
         }
-      } catch (err) {
-        console.error(`Push error: ${err}`);
-        failed++;
       }
     }
 
     // Clean up expired subscriptions
-    if (failedEndpoints.length > 0) {
-      await supabase.from("push_subscriptions").delete().in("endpoint", failedEndpoints);
+    for (let i = 0; i < failedEndpoints.length; i += 100) {
+      await supabase.from("push_subscriptions").delete().in("endpoint", failedEndpoints.slice(i, i + 100));
     }
 
     return new Response(

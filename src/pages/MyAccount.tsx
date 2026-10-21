@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Camera, Users, Calendar, Heart, ShoppingBag, Trash2, Edit } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { compressImage, IMMUTABLE_CACHE } from '@/lib/compressImage';
-import { useEvents, Event } from '@/hooks/useEvents';
+import type { Event } from '@/hooks/useEvents';
 import EventListCard from '@/components/EventListCard';
 import { toast } from '@/components/PillToast';
 import { Tables } from '@/integrations/supabase/types';
@@ -56,11 +56,39 @@ const MyAccount = () => {
     favorites: 0,
     friends: 0
   });
-  const { data: allEvents, isLoading: eventsLoading } = useEvents();
+  // Mes événements et mes favoris : chargés directement (pas toute la liste des événements de l'app)
+  const { data: userEvents = [], isLoading: eventsLoading } = useQuery({
+    queryKey: ['my-events', user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .eq('user_id', user!.id)
+        .order('created_at', { ascending: false }); // les plus récemment publiés en premier
+      if (error) throw error;
+      return (data ?? []) as Event[];
+    },
+  });
+  const { data: favoriteEvents = [], isSuccess: favoritesLoaded } = useQuery({
+    queryKey: ['my-favorites', user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data: favs, error } = await supabase
+        .from('event_favorites')
+        .select('event_id')
+        .eq('user_id', user!.id)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      const ids = (favs ?? []).map((f) => f.event_id);
+      if (ids.length === 0) return [] as Event[];
+      const { data: evs } = await supabase.from('events').select('*').in('id', ids);
+      // Dans l'ordre des favoris : le dernier ajouté en premier
+      const byId = new Map(((evs ?? []) as Event[]).map((e) => [e.id, e]));
+      return ids.map((id) => byId.get(id)).filter((e): e is Event => !!e);
+    },
+  });
   const [listingsLoaded, setListingsLoaded] = useState(false);
-  const [favoritesLoaded, setFavoritesLoaded] = useState(false);
-  const [userEvents, setUserEvents] = useState<Event[]>([]);
-  const [favoriteEvents, setFavoriteEvents] = useState<Event[]>([]);
   const [userListings, setUserListings] = useState<MarketplaceListing[]>([]);
   const [uploading, setUploading] = useState(false);
 
@@ -69,19 +97,8 @@ const MyAccount = () => {
       loadProfile();
       loadStats();
       loadUserListings();
-      loadFavorites();
     }
   }, [user]);
-
-  useEffect(() => {
-    if (user && allEvents) {
-      // Les plus récemment publiés en premier
-      const filtered = allEvents
-        .filter(event => event.user_id === user.id)
-        .sort((a, b) => b.created_at.localeCompare(a.created_at));
-      setUserEvents(filtered);
-    }
-  }, [user, allEvents]);
 
   const loadProfile = async () => {
     if (!user) return;
@@ -101,28 +118,6 @@ const MyAccount = () => {
     });
   };
 
-  const loadFavorites = async () => {
-    if (!user) return;
-    const { data: favs } = await supabase
-      .from('event_favorites')
-      .select('event_id')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
-
-    if (favs && favs.length > 0 && allEvents) {
-      const favIds = favs.map(f => f.event_id);
-      // Dans l'ordre des favoris : le dernier ajouté en premier
-      const byId = new Map(allEvents.map(e => [e.id, e]));
-      setFavoriteEvents(favIds.map(id => byId.get(id)).filter((e): e is NonNullable<typeof e> => !!e));
-    } else {
-      setFavoriteEvents([]);
-    }
-    if (allEvents) setFavoritesLoaded(true);
-  };
-
-  useEffect(() => {
-    if (allEvents && user) loadFavorites();
-  }, [allEvents, user]);
 
   const loadUserListings = async () => {
     if (!user) return;

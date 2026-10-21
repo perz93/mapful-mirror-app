@@ -149,7 +149,9 @@ const CreateListing = () => {
       navigate('/marketplace');
     } catch (error: any) {
       console.error('Error creating listing:', error);
-      toast.error(t('market.listingError'));
+      // Limite anti-abus (10 publications / 24 h) : on affiche le message du serveur
+      const message: string = error?.message ?? '';
+      toast.error(message.startsWith('Limite atteinte') ? message : t('market.listingError'));
     } finally {
       setIsSubmitting(false);
     }
