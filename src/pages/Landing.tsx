@@ -143,9 +143,9 @@ const QrCard = () => (
 const Pin = ({ label, time, dot = 'lime', delay = 0, className = '' }: { label: string; time: string; dot?: 'lime' | 'ink'; delay?: number; className?: string }) => (
   <span className={`absolute ${className}`}>
     <Reveal as="span" effect="pop" delay={delay} className="block">
-      <span className="landing-float flex items-center gap-2 whitespace-nowrap rounded-full bg-white py-1.5 pl-1.5 pr-4 text-[15px] font-bold shadow-[0_12px_28px_-12px_rgba(20,20,15,0.5)]" style={{ '--float-delay': `${delay / 1000}s` } as React.CSSProperties}>
-        <span className={`size-7 rounded-full ${dot === 'lime' ? 'bg-lime' : 'bg-ink'}`} />
-        {label}<span className="text-[#6fae12]">· {time}</span>
+      <span className="landing-float flex items-center gap-2 whitespace-nowrap rounded-full bg-ink py-1.5 pl-1.5 pr-4 text-[15px] font-bold text-parchment shadow-[0_12px_28px_-10px_rgba(20,20,15,0.6)]" style={{ '--float-delay': `${delay / 1000}s` } as React.CSSProperties}>
+        <span className={`size-7 rounded-full ${dot === 'lime' ? 'bg-lime' : 'bg-parchment'}`} />
+        {label}<span className="text-lime">· {time}</span>
       </span>
     </Reveal>
   </span>
@@ -215,9 +215,9 @@ const Landing = () => {
           </div>
           <div className="relative mx-auto w-[260px] lg:w-[300px]">
             <Reveal effect="rise" delay={300}><Phone src="/landing/ecran-carte.webp" alt="La carte Upvibe avec les événements d'Abidjan" /></Reveal>
-            <Pin label="Pool party" time="21h" delay={1100} className="-left-14 top-[26%]" />
-            <Pin label="Brunch des débout" time="13h" dot="ink" delay={1450} className="-right-16 top-[48%]" />
-            <Pin label="Créative Meet'Up" time="11h" delay={1800} className="-left-12 top-[70%]" />
+            <Pin label="Brunch des débout" time="13h" delay={1100} className="-left-14 top-[31%]" />
+            <Pin label="Fifa tournoi" time="10h30" dot="ink" delay={1450} className="-right-12 top-[54%]" />
+            <Pin label="Créative Meet'Up" time="11h" delay={1800} className="-left-12 top-[68%]" />
           </div>
         </section>
 
