@@ -1,37 +1,52 @@
 import { useQuery } from '@tanstack/react-query';
-import { BellRing, ChevronDown, MapPin, Route, Sparkles } from 'lucide-react';
+import { BellRing, ChevronDown, MapPin, Route, Smartphone } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { openInstallGuide } from '@/components/InstallGuide';
 import ShimmerImage from '@/components/ShimmerImage';
 import { focusPosition } from '@/lib/imageFocus';
 import { softCase } from '@/lib/softCase';
+import { MARKETPLACE_CATEGORIES } from '@/lib/marketplaceCategories';
 
 /**
- * Page vitrine (« / » dans un navigateur). Tous les boutons mènent à
- * l'installation : la carte n'est accessible que dans l'app installée.
+ * Page vitrine (« / » dans un navigateur). Elle s'adresse aux trois publics
+ * d'Upvibe (ceux qui sortent, les organisateurs, les prestataires) et ne
+ * propose qu'une action : installer l'app (en-tête et bandeau flottant).
  */
 
-const REASONS = [
-  { icon: BellRing, title: 'Alerte quand ça bouge près de toi', text: "Un événement à 800 m ? Ton téléphone te prévient. Et un rappel 1 h avant que ça commence." },
-  { icon: MapPin, title: 'Tout est sur la carte', text: 'Plus besoin de fouiller les statuts WhatsApp : lieu, date, heure et prix au même endroit.' },
-  { icon: Route, title: "L'itinéraire en un geste", text: "Tu choisis, tu touches « Itinéraire », tu y vas. Même dans les quartiers que tu ne connais pas." },
-  { icon: Sparkles, title: 'Gratuit, léger, sans store', text: "Installé en 3 gestes depuis ton navigateur. Elle prend presque pas de place sur ton téléphone." },
+const AUDIENCES = [
+  { href: '#sortir', label: 'Je sors' },
+  { href: '#organiser', label: "J'organise" },
+  { href: '#prestataires', label: 'Je propose mes services' },
 ];
 
 const STEPS = ['Ouvre la carte', 'Choisis ton event', "Vas-y avec l'itinéraire"];
 
 const ORGANIZER_PERKS = [
-  'Publie ton événement en 2 minutes, il apparaît tout de suite sur la carte.',
-  'Les personnes autour reçoivent une alerte.',
-  'Plusieurs types de places (Standard, VIP…) avec leurs prix.',
-  'DJ, traiteurs, photographes : propose tes services sur le Marketplace.',
+  'Publie ton événement en 2 minutes : il apparaît tout de suite sur la carte.',
+  'Les personnes autour reçoivent une alerte, et un rappel avant le début.',
+  'Plusieurs types de places (Standard, VIP, VVIP…) avec leurs prix.',
+  'Ton WhatsApp, ton Instagram et ton numéro sur ta fiche : on te contacte direct.',
+];
+
+const PROVIDER_PERKS = [
+  'Ton annonce avec photos, prix et quartier, visible par tous les organisateurs.',
+  'Les clients te contactent par appel, WhatsApp ou e-mail, sans intermédiaire.',
+  "Ton profil regroupe tes annonces : un seul lien à partager.",
+];
+
+const REASONS = [
+  { icon: BellRing, title: 'Alerte quand ça bouge près de toi', text: 'Un événement à 800 m ? Ton téléphone te prévient. Et un rappel 1 h avant que ça commence.' },
+  { icon: MapPin, title: 'Tout est sur la carte', text: 'Plus besoin de fouiller les statuts WhatsApp : lieu, date, heure et prix au même endroit.' },
+  { icon: Route, title: "L'itinéraire en un geste", text: 'Tu choisis, tu touches « Itinéraire », tu y vas. Même dans les quartiers que tu ne connais pas.' },
+  { icon: Smartphone, title: 'Gratuit, léger, sans store', text: "Installé en 3 gestes depuis ton navigateur. Elle prend presque pas de place sur ton téléphone." },
 ];
 
 const FAQ = [
-  { q: 'Upvibe est gratuit ?', a: 'Oui, totalement gratuit pour découvrir les sorties et pour publier tes événements.' },
+  { q: 'Upvibe est gratuit ?', a: 'Oui, totalement gratuit pour découvrir les sorties, publier tes événements et proposer tes services.' },
   { q: 'Je dois passer par le Play Store ?', a: "Non. Upvibe s'installe directement depuis ton navigateur (Chrome sur Android, Safari sur iPhone), en 3 gestes. Pas de store, pas de téléchargement lourd." },
   { q: 'Ça marche sur iPhone et Android ?', a: "Oui, sur tous les smartphones récents. Sur iPhone, ouvre upvibe.app dans Safari pour l'installer." },
-  { q: 'Comment publier mon événement ?', a: "Installe l'app, crée ton compte puis touche « Créer un événement » : titre, date, lieu, photo et prix. Il apparaît aussitôt sur la carte." },
+  { q: 'Comment publier mon événement ?', a: "Installe l'app, crée ton compte puis touche « Créer un événement » : titre, date, lieu, photo et prix des places. Il apparaît aussitôt sur la carte." },
+  { q: 'Je suis prestataire, comment être visible ?', a: "Crée ton compte puis publie une annonce sur le Marketplace : photos, prix, quartier et contacts. Les organisateurs te trouvent par catégorie (DJ, traiteur, déco, photo…)." },
 ];
 
 const FAQ_JSON_LD = JSON.stringify({
@@ -46,6 +61,35 @@ const Logo = ({ className = '' }: { className?: string }) => (
   </span>
 );
 
+/** Vraie capture de l'app dans un cadre de téléphone (net sur tous les écrans) */
+const Phone = ({ src, alt, className = '' }: { src: string; alt: string; className?: string }) => (
+  <div className={`rounded-[48px] bg-ink p-[9px] shadow-[0_30px_60px_-24px_rgba(20,20,15,0.55)] ${className}`}>
+    <img src={src} alt={alt} width={660} height={1431} loading="lazy" className="block w-full rounded-[40px]" />
+  </div>
+);
+
+/** Téléphone qui « sort » du bas de la section */
+const RisingPhone = (props: { src: string; alt: string }) => (
+  <div className="mx-auto h-[440px] w-[270px] overflow-hidden lg:h-[560px] lg:w-[330px]">
+    <Phone {...props} />
+  </div>
+);
+
+const Eyebrow = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
+  <p className={`inline-flex rounded-full px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.08em] ${className}`}>{children}</p>
+);
+
+const Checks = ({ items, dark = false }: { items: string[]; dark?: boolean }) => (
+  <ul className="mt-6 grid max-w-[560px] gap-3">
+    {items.map((item) => (
+      <li key={item} className={`flex gap-3 text-[15.5px] leading-snug ${dark ? 'text-parchment' : 'text-ink'}`}>
+        <span className={`mt-0.5 flex size-5 flex-shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${dark ? 'bg-lime text-ink' : 'bg-ink text-lime'}`}>✓</span>
+        {item}
+      </li>
+    ))}
+  </ul>
+);
+
 /** Sur ordinateur : on installe depuis son téléphone en scannant le QR code */
 const QrCard = () => (
   <div className="hidden items-center gap-4 rounded-[24px] bg-white p-4 lg:flex">
@@ -57,12 +101,12 @@ const QrCard = () => (
   </div>
 );
 
-const Trust = ({ className = '' }: { className?: string }) => (
-  <ul className={`mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[13px] font-semibold text-ink ${className}`}>
-    {['Gratuit', 'Sans Play Store', '3 gestes'].map((t) => (
-      <li key={t} className="flex items-center gap-1.5"><span className="size-1.5 rounded-full bg-ink" />{t}</li>
-    ))}
-  </ul>
+/** Pastille d'événement, comme sur la carte */
+const Pin = ({ label, time, dot = 'lime', className = '' }: { label: string; time: string; dot?: 'lime' | 'ink'; className?: string }) => (
+  <span className={`absolute flex items-center gap-2 whitespace-nowrap rounded-full bg-white py-1.5 pl-1.5 pr-4 text-[15px] font-bold shadow-[0_12px_28px_-12px_rgba(20,20,15,0.5)] ${className}`}>
+    <span className={`size-7 rounded-full ${dot === 'lime' ? 'bg-lime' : 'bg-ink'}`} />
+    {label}<span className="text-[#6fae12]">· {time}</span>
+  </span>
 );
 
 interface UpcomingEvent {
@@ -108,32 +152,38 @@ const Landing = () => {
 
       <main>
         {/* 1. Ce soir, tu fais quoi ? */}
-        <section className="mx-auto grid max-w-6xl items-center gap-6 px-5 pt-8 lg:grid-cols-2 lg:gap-12 lg:pt-16">
+        <section className="mx-auto grid max-w-6xl items-center gap-10 overflow-hidden px-5 pb-12 pt-8 lg:grid-cols-2 lg:pt-16">
           <div className="text-center lg:text-left">
             <h1 className="text-[52px] !font-[800] leading-[0.95] tracking-[-0.045em] lg:text-[84px]">
               Ce soir,<br />tu fais <span className="inline-block rounded-2xl bg-lime px-2.5 pb-1">quoi&nbsp;?</span>
             </h1>
-            <p className="mx-auto mt-4 max-w-[340px] text-[17px] leading-snug text-stone-500 lg:mx-0 lg:max-w-[440px] lg:text-[20px]">
-              La réponse est sur la carte. Toutes les sorties d'Abidjan, autour de toi.
+            <p className="mx-auto mt-4 max-w-[360px] text-[17px] leading-snug text-stone-500 lg:mx-0 lg:max-w-[460px] lg:text-[20px]">
+              Sortir, organiser, proposer tes services : tout Abidjan se retrouve sur une seule carte.
             </p>
-            <Trust className="justify-center lg:hidden" />
+            <nav aria-label="Pour qui ?" className="mt-5 flex flex-wrap justify-center gap-2 lg:justify-start">
+              {AUDIENCES.map(({ href, label }) => (
+                <a key={href} href={href} className="rounded-full border border-ink/15 bg-white px-4 py-2 text-[14px] font-semibold text-ink active:scale-95">
+                  {label}
+                </a>
+              ))}
+            </nav>
             <div className="mt-8"><QrCard /></div>
           </div>
-          <img
-            src="/landing/carte.webp"
-            alt="La carte Upvibe avec les événements d'Abidjan : Pool party, Brunch des débout, Créative Meet'Up"
-            width={1020}
-            height={760}
-            className="-mx-3 w-[calc(100%+24px)] max-w-none lg:mx-0 lg:w-full"
-          />
+          <div className="relative mx-auto w-[260px] lg:w-[300px]">
+            <Phone src="/landing/ecran-carte.webp" alt="La carte Upvibe avec les événements d'Abidjan" />
+            <Pin label="Pool party" time="21h" className="-left-14 top-[26%]" />
+            <Pin label="Brunch des débout" time="13h" dot="ink" className="-right-16 top-[48%]" />
+            <Pin label="Créative Meet'Up" time="11h" className="-left-12 top-[70%]" />
+          </div>
         </section>
 
-        {/* 2. Trouve. Sors. Vibe. */}
-        <section className="overflow-hidden bg-lime">
-          <div className="mx-auto grid max-w-6xl items-center gap-4 px-5 pt-10 lg:grid-cols-2 lg:gap-12 lg:py-16">
-            <div>
-              <h2 className="text-[64px] !font-[800] leading-[0.9] tracking-[-0.05em] lg:text-[96px]">Trouve.<br />Sors.<br />Vibe.</h2>
-              <p className="mt-4 max-w-[320px] text-[17px] leading-snug lg:text-[20px]">L'app qui met toute la vie d'Abidjan sur une carte.</p>
+        {/* 2. Pour ceux qui sortent */}
+        <section id="sortir" className="scroll-mt-16 overflow-hidden bg-lime">
+          <div className="mx-auto grid max-w-6xl items-end gap-10 px-5 pt-12 lg:grid-cols-2 lg:pt-20">
+            <div className="lg:pb-20">
+              <Eyebrow className="bg-ink text-lime">Pour sortir</Eyebrow>
+              <h2 className="mt-4 text-[64px] !font-[800] leading-[0.9] tracking-[-0.05em] lg:text-[96px]">Trouve.<br />Sors.<br />Vibe.</h2>
+              <p className="mt-4 max-w-[340px] text-[17px] leading-snug lg:text-[20px]">Concerts, soirées, festivals, brunchs, expos : tout ce qui se passe autour de toi, en un coup d'œil.</p>
               <ol className="mt-6 grid gap-3">
                 {STEPS.map((step, i) => (
                   <li key={step} className="flex items-center gap-3.5 font-display text-[22px] tracking-[-0.03em]">
@@ -143,18 +193,52 @@ const Landing = () => {
                 ))}
               </ol>
             </div>
-            <img
-              src="/landing/telephones.webp"
-              alt="Upvibe : la liste des événements et la fiche d'un événement sur la carte"
-              width={659}
-              height={830}
-              loading="lazy"
-              className="ml-[6%] w-[110%] max-w-none lg:ml-0 lg:w-full"
-            />
+            <RisingPhone src="/landing/ecran-evenements.webp" alt="La liste des événements dans Upvibe" />
           </div>
         </section>
 
-        {/* 3. Pourquoi Upvibe */}
+        {/* 3. Pour les organisateurs */}
+        <section id="organiser" className="scroll-mt-16 overflow-hidden bg-ink text-parchment">
+          <div className="mx-auto grid max-w-6xl items-end gap-10 px-5 pt-12 lg:grid-cols-2 lg:pt-20">
+            <div className="lg:order-2 lg:pb-20">
+              <Eyebrow className="bg-lime text-ink">Pour les organisateurs</Eyebrow>
+              <h2 className="mt-4 text-[44px] !font-[800] leading-[0.95] tracking-[-0.045em] text-parchment lg:text-[68px]">
+                Tu organises ?<br /><span className="text-lime">Fais-toi voir.</span>
+              </h2>
+              <p className="mt-4 max-w-[520px] text-[17px] leading-snug text-stone-300">
+                Promoteurs, bars, lounges, artistes, associations : Upvibe met ton événement devant ceux qui sortent, au moment où ils cherchent quoi faire.
+              </p>
+              <Checks items={ORGANIZER_PERKS} dark />
+            </div>
+            <div className="lg:order-1">
+              <RisingPhone src="/landing/ecran-organisateur.webp" alt="Fiche d'un concert avec ses places Standard, VIP et VVIP" />
+            </div>
+          </div>
+        </section>
+
+        {/* 4. Pour les prestataires */}
+        <section id="prestataires" className="scroll-mt-16 overflow-hidden bg-white">
+          <div className="mx-auto grid max-w-6xl items-end gap-10 px-5 pt-12 lg:grid-cols-2 lg:pt-20">
+            <div className="lg:pb-20">
+              <Eyebrow className="bg-parchment text-ink">Pour les prestataires</Eyebrow>
+              <h2 className="mt-4 text-[44px] !font-[800] leading-[0.95] tracking-[-0.045em] lg:text-[68px]">
+                Tes services,<br /><span className="rounded-xl bg-lime px-2">devant les clients.</span>
+              </h2>
+              <p className="mt-4 max-w-[520px] text-[17px] leading-snug text-stone-500">
+                DJ, traiteur, déco, photographe, location de salle ou de matériel : le Marketplace Upvibe te met en relation avec ceux qui organisent.
+              </p>
+              <ul className="mt-5 flex max-w-[560px] flex-wrap gap-2">
+                {MARKETPLACE_CATEGORIES.filter((c) => c.value !== 'autre').map((c) => (
+                  <li key={c.value} className="rounded-full bg-parchment px-3.5 py-1.5 text-[13.5px] font-semibold">{c.fr}</li>
+                ))}
+              </ul>
+              <Checks items={PROVIDER_PERKS} />
+            </div>
+            <RisingPhone src="/landing/ecran-marketplace.webp" alt="Le Marketplace Upvibe : lieux, traiteurs, matériel" />
+          </div>
+        </section>
+
+        {/* 5. Pourquoi Upvibe */}
         <section className="mx-auto max-w-6xl px-5 py-12 lg:py-20">
           <h2 className="max-w-[640px] text-[34px] !font-[700] leading-[0.98] tracking-[-0.04em] lg:text-[52px]">
             Pourquoi tout Abidjan passe par <span className="rounded-xl bg-lime px-2">Upvibe</span>
@@ -170,7 +254,7 @@ const Landing = () => {
           </div>
         </section>
 
-        {/* 4. Prochains événements : les détails sont dans l'app */}
+        {/* 6. Prochains événements (ouvrent l'installation) */}
         {events && events.length > 0 && (
           <section className="mx-auto max-w-6xl pb-12 lg:pb-20">
             <h2 className="px-5 text-[34px] !font-[700] tracking-[-0.04em] lg:text-[52px]">Bientôt à Abidjan</h2>
@@ -199,28 +283,8 @@ const Landing = () => {
           </section>
         )}
 
-        {/* 5. Organisateurs */}
-        <section className="bg-ink text-parchment">
-          <div className="mx-auto max-w-6xl px-5 py-12 lg:py-20">
-            <h2 className="text-[34px] !font-[700] leading-[0.98] tracking-[-0.04em] text-parchment lg:text-[52px]">
-              Tu organises ?<br /><span className="text-lime">Fais-toi voir.</span>
-            </h2>
-            <p className="mt-3 max-w-[520px] text-[16px] leading-snug text-stone-300">
-              Promoteurs, bars, lounges, artistes, prestataires : Upvibe met ton événement devant ceux qui sortent.
-            </p>
-            <ul className="mt-6 grid max-w-[620px] gap-3">
-              {ORGANIZER_PERKS.map((perk) => (
-                <li key={perk} className="flex gap-3 text-[15px] leading-snug">
-                  <span className="mt-0.5 flex size-5 flex-shrink-0 items-center justify-center rounded-full bg-lime text-[11px] font-bold text-ink">✓</span>
-                  {perk}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        {/* 6. FAQ */}
-        <section className="mx-auto max-w-3xl px-5 py-12 lg:py-20">
+        {/* 7. FAQ */}
+        <section className="mx-auto max-w-3xl px-5 pb-12 pt-4 lg:pb-20">
           <h2 className="text-[34px] !font-[700] tracking-[-0.04em] lg:text-[52px]">Questions fréquentes</h2>
           <div className="mt-4">
             {FAQ.map(({ q, a }, i) => (
