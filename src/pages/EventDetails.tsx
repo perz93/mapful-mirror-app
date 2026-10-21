@@ -22,6 +22,7 @@ import { useNotifications } from '@/contexts/NotificationContext';
 import { eventStatus, dateRangeLabel, timeRangeLabel, isMultiDay, isUpcomingOrLive } from '@/lib/eventStatus';
 import { softCase } from '@/lib/softCase';
 import { eventPriceText, ticketTypesOf } from '@/lib/ticketTypes';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 
 const EventDetails = () => {
@@ -53,6 +54,7 @@ const EventDetails = () => {
   });
 
   const { isFavorite, toggleFavorite, loading: favLoading } = useFavorite(id || '');
+  usePageMeta(event ? `${softCase(event.title)} · ${event.venue}` : null, event?.description);
   const { isSupported: pushSupported, isSubscribed: pushSubscribed, subscribe: subscribePush } = useNotifications();
 
 

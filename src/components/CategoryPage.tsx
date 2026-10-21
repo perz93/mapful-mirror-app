@@ -13,6 +13,7 @@ import ShimmerImage from './ShimmerImage';
 import { getEventCategory } from '@/lib/eventCategories';
 import EventCategoryChips from './EventCategoryChips';
 import { softCase } from '@/lib/softCase';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { eventPriceText } from '@/lib/ticketTypes';
 import { focusPosition } from '@/lib/imageFocus';
 interface CategoryPageProps {
@@ -39,6 +40,7 @@ const CategoryPage = ({
     error
   } = useEventsByCategory(category);
   const count = events?.length ?? 0;
+  usePageMeta(category === 'all' ? 'Tous les événements à Abidjan' : `${title} à Abidjan`, `${title} à Abidjan : dates, lieux, prix et itinéraire. Retrouve tous les événements sur la carte Upvibe.`);
   const header = <>
       <div className="px-4 pb-5" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         <div className="flex items-center justify-between">

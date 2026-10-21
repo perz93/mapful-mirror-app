@@ -11,6 +11,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import ShimmerImage from '@/components/ShimmerImage';
 import { ListCardSkeleton } from '@/components/PageSkeleton';
 import { softCase } from '@/lib/softCase';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 type CategoryKey = string;
 
@@ -19,6 +20,7 @@ const Marketplace = () => {
   const { user } = useAuth();
   const { t, lang } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState<CategoryKey | 'all'>('all');
+  usePageMeta('Prestataires et services à Abidjan', "DJ, traiteurs, photographes, matériel, location : trouve les prestataires pour tes événements à Abidjan sur Upvibe.");
 
   const { data: listings, isLoading } = useQuery({
     queryKey: ['marketplace-listings', selectedCategory],
