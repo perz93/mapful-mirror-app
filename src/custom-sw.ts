@@ -19,10 +19,11 @@ self.addEventListener('message', (event) => {
   if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
-// SPA navigation fallback — serve index.html for all navigation requests
+// SPA navigation fallback — serve index.html for all navigation requests,
+// sauf les fichiers (sitemap.xml, robots.txt…) servis tels quels par le serveur
 const handler = createHandlerBoundToURL('/index.html');
 const navigationRoute = new NavigationRoute(handler, {
-  denylist: [/^\/~oauth/],
+  denylist: [/^\/~oauth/, /\/[^/?#]+\.[a-z0-9]+$/i],
 });
 registerRoute(navigationRoute);
 
