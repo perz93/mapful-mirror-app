@@ -10,7 +10,7 @@ const siteOrigin = (() => {
   const e = process.env;
   if (e.VERCEL_ENV === 'production' && e.VERCEL_PROJECT_PRODUCTION_URL) return `https://${e.VERCEL_PROJECT_PRODUCTION_URL}`;
   if (e.VERCEL_BRANCH_URL) return `https://${e.VERCEL_BRANCH_URL}`;
-  return 'https://vibe-perz93s-projects.vercel.app';
+  return 'https://upvibe.app';
 })();
 
 // https://vitejs.dev/config/
