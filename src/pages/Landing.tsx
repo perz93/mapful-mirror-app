@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { BellRing, ChevronDown, MapPin, Route, Smartphone } from 'lucide-react';
+import { BellRing, ChevronDown, MapPin, Moon, Music, PhoneCall, Route, Smartphone, Store, Ticket, type LucideIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { openInstallGuide } from '@/components/InstallGuide';
 import ShimmerImage from '@/components/ShimmerImage';
@@ -36,10 +36,10 @@ const PROVIDER_PERKS = [
 ];
 
 const REASONS = [
-  { icon: BellRing, title: 'Alerte quand ça bouge près de toi', text: 'Un événement à 800 m ? Ton téléphone te prévient. Et un rappel 1 h avant que ça commence.' },
-  { icon: MapPin, title: 'Tout est sur la carte', text: 'Plus besoin de fouiller les statuts WhatsApp : lieu, date, heure et prix au même endroit.' },
-  { icon: Route, title: "L'itinéraire en un geste", text: 'Tu choisis, tu touches « Itinéraire », tu y vas. Même dans les quartiers que tu ne connais pas.' },
-  { icon: Smartphone, title: 'Gratuit, léger, sans store', text: "Installé en 3 gestes depuis ton navigateur. Elle prend presque pas de place sur ton téléphone." },
+  { icon: BellRing, title: 'Alertes près de toi', text: 'Un événement à 800 m ? Ton téléphone te prévient, et te rappelle 1 h avant.' },
+  { icon: MapPin, title: 'Tout sur la carte', text: 'Plus besoin de fouiller les statuts WhatsApp : lieu, heure et prix au même endroit.' },
+  { icon: Route, title: 'Itinéraire en un geste', text: 'Tu touches « Itinéraire », tu y vas. Même dans un quartier que tu ne connais pas.' },
+  { icon: Smartphone, title: 'Gratuit, sans store', text: 'Installé en 3 gestes depuis ton navigateur, presque sans place sur ton téléphone.' },
 ];
 
 const FAQ = [
@@ -99,29 +99,46 @@ const Logo = ({ className = 'h-8' }: { className?: string }) => (
   <img src="/landing/logo.png" alt="Upvibe" width={278} height={96} className={`w-auto ${className}`} />
 );
 
-/** Vraie capture de l'app dans un cadre de téléphone (net sur tous les écrans) */
-const Phone = ({ src, alt, className = '' }: { src: string; alt: string; className?: string }) => (
-  <div className={`rounded-[48px] bg-ink p-[9px] shadow-[0_30px_60px_-24px_rgba(20,20,15,0.55)] ${className}`}>
-    <img src={src} alt={alt} width={660} height={1431} loading="lazy" className="block w-full rounded-[40px]" />
+/** Vraie capture de l'app dans un cadre de téléphone incliné, posé sur une scène */
+const TiltPhone = ({ src, alt, rotate, delay = 0, className = '' }: { src: string; alt: string; rotate: number; delay?: number; className?: string }) => (
+  <div className={`absolute ${className}`}>
+    <Reveal effect="rise" delay={delay}>
+      <div className="rounded-[30px] bg-ink p-[6px] shadow-[0_26px_50px_-18px_rgba(20,20,15,0.55)] lg:rounded-[40px] lg:p-[8px]" style={{ rotate: `${rotate}deg` }}>
+        <img src={src} alt={alt} width={660} height={1431} loading="lazy" className="block w-full rounded-[25px] lg:rounded-[33px]" />
+      </div>
+    </Reveal>
   </div>
 );
 
-/** Téléphone qui « sort » du bas de la section */
-const RisingPhone = (props: { src: string; alt: string }) => (
-  <div className="mx-auto h-[440px] w-[270px] overflow-hidden lg:h-[560px] lg:w-[330px]">
-    <Reveal effect="rise"><Phone {...props} /></Reveal>
+/** Petit badge flottant posé sur les téléphones */
+const Badge = ({ icon: Icon, title, sub, dark = false, delay = 0, className = '' }: {
+  icon: LucideIcon; title: string; sub: string; dark?: boolean; delay?: number; className?: string;
+}) => (
+  <div className={`absolute z-10 ${className}`}>
+    <Reveal effect="pop" delay={delay}>
+      <div
+        className={`landing-float flex items-center gap-2.5 whitespace-nowrap rounded-2xl py-2 pl-2 pr-3.5 shadow-[0_16px_30px_-14px_rgba(20,20,15,0.45)] ${dark ? 'bg-ink text-parchment' : 'bg-white text-ink'}`}
+        style={{ '--float-delay': `${delay / 1000}s` } as React.CSSProperties}
+      >
+        <span className="flex size-8 flex-shrink-0 items-center justify-center rounded-[10px] bg-lime text-ink"><Icon size={16} strokeWidth={2} /></span>
+        <span className="leading-tight">
+          <span className="block text-[13px] font-semibold">{title}</span>
+          <span className={`block text-[11.5px] ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{sub}</span>
+        </span>
+      </div>
+    </Reveal>
   </div>
 );
 
-const Eyebrow = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <p className={`inline-flex rounded-full px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.08em] ${className}`}>{children}</p>
+const Eyebrow = ({ children, className = 'text-ink' }: { children: React.ReactNode; className?: string }) => (
+  <p className={`text-[11.5px] font-bold uppercase tracking-[0.12em] ${className}`}>{children}</p>
 );
 
 const Checks = ({ items, dark = false }: { items: string[]; dark?: boolean }) => (
-  <ul className="mt-6 grid max-w-[560px] gap-3">
+  <ul className="mt-5 grid max-w-[520px] gap-2.5">
     {items.map((item, i) => (
-      <Reveal as="li" key={item} delay={i * 160} className={`flex gap-3 text-[15.5px] leading-snug ${dark ? 'text-parchment' : 'text-ink'}`}>
-        <span className={`mt-0.5 flex size-5 flex-shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${dark ? 'bg-lime text-ink' : 'bg-ink text-lime'}`}>✓</span>
+      <Reveal as="li" key={item} delay={i * 160} className={`flex gap-2.5 text-[14.5px] leading-snug ${dark ? 'text-parchment' : 'text-ink'}`}>
+        <span className={`mt-0.5 flex size-[18px] flex-shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${dark ? 'bg-lime text-ink' : 'bg-ink text-lime'}`}>✓</span>
         {item}
       </Reveal>
     ))}
@@ -137,18 +154,6 @@ const QrCard = () => (
       <p className="mt-1 text-[14px] text-stone-500">Upvibe s'installe en 3 gestes, gratuitement.</p>
     </div>
   </div>
-);
-
-/** Pastille d'événement, comme sur la carte */
-const Pin = ({ label, time, dot = 'lime', delay = 0, className = '' }: { label: string; time: string; dot?: 'lime' | 'ink'; delay?: number; className?: string }) => (
-  <span className={`absolute ${className}`}>
-    <Reveal as="span" effect="pop" delay={delay} className="block">
-      <span className="landing-float flex items-center gap-2 whitespace-nowrap rounded-full bg-ink py-1.5 pl-1.5 pr-4 text-[15px] font-bold text-parchment shadow-[0_12px_28px_-10px_rgba(20,20,15,0.6)]" style={{ '--float-delay': `${delay / 1000}s` } as React.CSSProperties}>
-        <span className={`size-7 rounded-full ${dot === 'lime' ? 'bg-lime' : 'bg-parchment'}`} />
-        {label}<span className="text-lime">· {time}</span>
-      </span>
-    </Reveal>
-  </span>
 );
 
 interface UpcomingEvent {
@@ -178,7 +183,7 @@ const Landing = () => {
   const { data: events } = useUpcomingEvents();
 
   return (
-    <div className="min-h-[100dvh] bg-parchment text-ink">
+    <div className="min-h-[100dvh] overflow-x-clip bg-parchment text-ink">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: FAQ_JSON_LD }} />
 
       {/* En-tête fixe */}
@@ -193,106 +198,118 @@ const Landing = () => {
       </header>
 
       <main>
-        {/* 1. Ce soir, tu fais quoi ? */}
-        <section className="mx-auto grid max-w-6xl items-center gap-10 overflow-hidden px-5 pb-12 pt-8 lg:grid-cols-2 lg:pt-16">
-          <div className="text-center lg:text-left">
-            <Reveal><h1 className="text-[52px] !font-[800] leading-[0.95] tracking-[-0.045em] lg:text-[84px]">
-              Ce soir,<br />tu fais <span className="inline-block rounded-2xl bg-lime px-2.5 pb-1">quoi&nbsp;?</span>
+        {/* 1. Ce soir, tu fais quoi ? : titre à gauche, téléphones qui débordent d'un panneau vert */}
+        <section className="mx-auto max-w-6xl lg:grid lg:grid-cols-2 lg:items-center lg:gap-10 lg:px-5 lg:pt-14">
+          <div className="px-5 pt-7 lg:px-0 lg:pt-0">
+            <Reveal><h1 className="text-[50px] !font-[800] leading-[0.93] tracking-[-0.045em] lg:text-[84px]">
+              Ce soir,<br />tu fais <span className="inline-block rounded-xl bg-lime px-2 pb-0.5">quoi&nbsp;?</span>
             </h1></Reveal>
-            <Reveal delay={220}><p className="mx-auto mt-4 max-w-[360px] text-[17px] leading-snug text-stone-500 lg:mx-0 lg:max-w-[460px] lg:text-[20px]">
-              Sortir, organiser, proposer tes services : tout Abidjan se retrouve sur une seule carte.
+            <Reveal delay={220}><p className="mt-4 max-w-[310px] text-[16px] leading-snug text-stone-500 lg:max-w-[440px] lg:text-[20px]">
+              Sortir, organiser, proposer tes services : tout Abidjan sur une seule carte.
             </p></Reveal>
-            <nav aria-label="Pour qui ?" className="mt-5 flex flex-wrap justify-center gap-2 lg:justify-start">
+            <nav aria-label="Pour qui ?" className="mt-4 flex flex-wrap gap-2">
               {AUDIENCES.map(({ href, label }, i) => (
                 <Reveal as="span" key={href} effect="pop" delay={400 + i * 140}>
-                <a href={href} onClick={(e) => scrollToSection(e, href)} className="rounded-full border border-ink/15 bg-white px-4 py-2 text-[14px] font-semibold text-ink active:scale-95">
-                  {label}
-                </a>
+                  <a href={href} onClick={(e) => scrollToSection(e, href)} className="block rounded-full border border-ink/15 bg-white px-3.5 py-2 text-[13.5px] font-semibold text-ink active:scale-95">
+                    {label}
+                  </a>
                 </Reveal>
               ))}
             </nav>
             <div className="mt-8"><QrCard /></div>
           </div>
-          <div className="relative mx-auto w-[260px] lg:w-[300px]">
-            <Reveal effect="rise" delay={300}><Phone src="/landing/ecran-carte-2026-10.webp" alt="La carte Upvibe avec les événements d'Abidjan" /></Reveal>
-            <Pin label="Brunch des débout" time="13h" delay={1100} className="-left-14 top-[31%]" />
-            <Pin label="Fifa tournoi" time="10h30" dot="ink" delay={1450} className="-right-12 top-[54%]" />
-            <Pin label="Créative Meet'Up" time="11h" delay={1800} className="-left-12 top-[68%]" />
+          <div className="relative mx-auto mt-8 w-full h-[440px] max-w-[420px] lg:mt-0 lg:h-[560px] lg:max-w-[520px]">
+            <div className="absolute bottom-0 left-[54px] right-0 top-[60px] overflow-hidden rounded-l-[34px] bg-lime lg:rounded-[40px]">
+              <div className="absolute -right-16 top-5 size-[260px] rounded-full border-[38px] border-white/30" />
+            </div>
+            <TiltPhone src="/landing/ecran-evenements.webp" alt="La liste des événements dans Upvibe" rotate={7} delay={250} className="left-[150px] top-0 w-[168px] lg:left-[230px] lg:w-[210px]" />
+            <TiltPhone src="/landing/ecran-carte-2026-10.webp" alt="La carte Upvibe avec les événements d'Abidjan" rotate={-5} delay={100} className="left-[22px] top-[26px] z-[2] w-[188px] lg:left-[40px] lg:w-[240px]" />
+            <Badge icon={MapPin} title="Events près de toi" sub="Soirées, concerts, brunchs" delay={1100} className="right-[10px] top-[96px]" />
+            <Badge icon={BellRing} title="Rappel" sub="1 h avant le début" dark delay={1450} className="bottom-[34px] right-[18px]" />
           </div>
         </section>
 
-        {/* 2. Pour ceux qui sortent */}
-        <section id="sortir" className="scroll-mt-16 overflow-hidden bg-lime">
-          <div className="mx-auto grid max-w-6xl items-end gap-10 px-5 pt-12 lg:grid-cols-2 lg:pt-20">
-            <Reveal className="lg:pb-20">
-              <Eyebrow className="bg-ink text-lime">Pour sortir</Eyebrow>
-              <h2 className="mt-4 text-[64px] !font-[800] leading-[0.9] tracking-[-0.05em] lg:text-[96px]">Trouve.<br />Sors.<br />Vibe.</h2>
-              <p className="mt-4 max-w-[340px] text-[17px] leading-snug lg:text-[20px]">Concerts, soirées, festivals, brunchs, expos : tout ce qui se passe autour de toi, en un coup d'œil.</p>
-              <ol className="mt-6 grid gap-3">
-                {STEPS.map((step, i) => (
-                  <Reveal as="li" key={step} effect="left" delay={300 + i * 220} className="flex items-center gap-3.5 font-display text-[22px] tracking-[-0.03em]">
-                    <span className="flex size-11 flex-shrink-0 items-center justify-center rounded-full bg-ink text-[18px] text-parchment">{i + 1}</span>
-                    {step}
-                  </Reveal>
-                ))}
-              </ol>
-            </Reveal>
-            <RisingPhone src="/landing/ecran-evenements.webp" alt="La liste des événements dans Upvibe" />
+        {/* 2. Pour sortir : panneau blanc à gauche, téléphone à droite */}
+        <section id="sortir" className="mx-auto max-w-6xl scroll-mt-16 pt-14 lg:grid lg:grid-cols-2 lg:items-center lg:gap-10 lg:px-5 lg:pt-24">
+          <Reveal className="px-5 lg:px-0">
+            <Eyebrow>01 · Pour sortir</Eyebrow>
+            <h2 className="mt-2.5 text-[38px] !font-[800] leading-[0.95] tracking-[-0.045em] lg:text-[64px]">Trouve.<br />Sors. Vibe.</h2>
+            <p className="mt-3 max-w-[460px] text-[15px] leading-[1.45] text-stone-500 lg:text-[18px]">Concerts, soirées, festivals, brunchs : tout ce qui se passe autour de toi, en un coup d'œil.</p>
+            <ol className="mt-5 grid gap-2.5">
+              {STEPS.map((step, i) => (
+                <Reveal as="li" key={step} effect="left" delay={300 + i * 220} className="flex items-center gap-3 font-display text-[18px] tracking-[-0.03em] lg:text-[22px]">
+                  <span className="flex size-7 flex-shrink-0 items-center justify-center rounded-full border-[1.5px] border-ink font-sans text-[12px] font-semibold">{i + 1}</span>
+                  {step}
+                </Reveal>
+              ))}
+            </ol>
+          </Reveal>
+          <div className="relative mx-auto mt-8 w-full h-[400px] max-w-[420px] lg:mt-0 lg:h-[520px] lg:max-w-[520px]">
+            <div className="absolute bottom-[40px] left-0 right-[54px] top-0 rounded-r-[34px] bg-white lg:rounded-[40px]" />
+            <TiltPhone src="/landing/ecran-evenements.webp" alt="Tous les événements d'Abidjan dans Upvibe" rotate={4} className="right-[24px] top-[-10px] w-[190px] lg:right-[60px] lg:w-[240px]" />
+            <Badge icon={Music} title="Concerts & live" sub="Showcases, grandes scènes" delay={500} className="left-[18px] top-[70px]" />
+            <Badge icon={Moon} title="Soirées" sub="Clubs et lounges du week-end" delay={800} className="left-[30px] top-[150px]" />
+            <Badge icon={Route} title="Itinéraire" sub="Jusqu'au lieu, en un geste" dark delay={1100} className="left-[14px] top-[230px]" />
           </div>
         </section>
 
-        {/* 3. Pour les organisateurs */}
-        <section id="organiser" className="scroll-mt-16 overflow-hidden bg-ink text-parchment">
-          <div className="mx-auto grid max-w-6xl items-end gap-10 px-5 pt-12 lg:grid-cols-2 lg:pt-20">
-            <Reveal className="lg:order-2 lg:pb-20">
-              <Eyebrow className="bg-lime text-ink">Pour les organisateurs</Eyebrow>
-              <h2 className="mt-4 text-[44px] !font-[800] leading-[0.95] tracking-[-0.045em] text-parchment lg:text-[68px]">
+        {/* 3. Pour les organisateurs : bloc noir arrondi, téléphone qui déborde à droite */}
+        <section id="organiser" className="mx-2.5 mt-14 scroll-mt-16 overflow-hidden rounded-[34px] bg-ink text-parchment lg:mx-auto lg:max-w-6xl lg:rounded-[44px]">
+          <div className="px-5 pt-8 lg:grid lg:grid-cols-2 lg:items-center lg:gap-10 lg:px-14 lg:pt-14">
+            <Reveal>
+              <Eyebrow className="text-lime">02 · Pour les organisateurs</Eyebrow>
+              <h2 className="mt-2.5 text-[38px] !font-[800] leading-[0.95] tracking-[-0.045em] text-parchment lg:text-[64px]">
                 Tu organises ?<br /><span className="text-lime">Fais-toi voir.</span>
               </h2>
-              <p className="mt-4 max-w-[520px] text-[17px] leading-snug text-stone-300">
-                Promoteurs, bars, lounges, artistes, associations : Upvibe met ton événement devant ceux qui sortent, au moment où ils cherchent quoi faire.
+              <p className="mt-3 max-w-[480px] text-[15px] leading-[1.45] text-stone-300 lg:text-[18px]">
+                Promoteurs, bars, lounges, artistes : ton événement sur la carte, devant ceux qui cherchent quoi faire ce soir.
               </p>
               <Checks items={ORGANIZER_PERKS} dark />
             </Reveal>
-            <div className="lg:order-1">
-              <RisingPhone src="/landing/ecran-organisateur.webp" alt="Fiche d'un concert avec ses places Standard, VIP et VVIP" />
+            <div className="relative mt-6 h-[360px] lg:mt-0 lg:h-[500px]">
+              <TiltPhone src="/landing/ecran-organisateur.webp" alt="Fiche d'un concert avec ses places Standard, VIP et VVIP" rotate={-4} className="right-[-30px] top-0 w-[200px] lg:right-[30px] lg:w-[250px]" />
+              <Badge icon={Ticket} title="VIP · 20 000 FCFA" sub="Standard, VIP, VVIP" delay={500} className="left-0 top-[40px]" />
+              <Badge icon={BellRing} title="Alerte envoyée" sub="aux personnes autour" delay={850} className="left-[16px] top-[120px]" />
             </div>
           </div>
         </section>
 
-        {/* 4. Pour les prestataires */}
-        <section id="prestataires" className="scroll-mt-16 overflow-hidden bg-white">
-          <div className="mx-auto grid max-w-6xl items-end gap-10 px-5 pt-12 lg:grid-cols-2 lg:pt-20">
-            <Reveal className="lg:pb-20">
-              <Eyebrow className="bg-parchment text-ink">Pour les prestataires</Eyebrow>
-              <h2 className="mt-4 text-[44px] !font-[800] leading-[0.95] tracking-[-0.045em] lg:text-[68px]">
-                Tes services,<br /><span className="rounded-xl bg-lime px-2">devant les clients.</span>
-              </h2>
-              <p className="mt-4 max-w-[520px] text-[17px] leading-snug text-stone-500">
-                DJ, traiteur, déco, photographe, location de salle ou de matériel : le Marketplace Upvibe te met en relation avec ceux qui organisent.
-              </p>
-              <ul className="mt-5 flex max-w-[560px] flex-wrap gap-2">
-                {MARKETPLACE_CATEGORIES.filter((c) => c.value !== 'autre').map((c, i) => (
-                  <Reveal as="li" key={c.value} effect="pop" delay={i * 110} className="rounded-full bg-parchment px-3.5 py-1.5 text-[13.5px] font-semibold">{c.fr}</Reveal>
-                ))}
-              </ul>
-              <Checks items={PROVIDER_PERKS} />
-            </Reveal>
-            <RisingPhone src="/landing/ecran-marketplace.webp" alt="Le Marketplace Upvibe : lieux, traiteurs, matériel" />
+        {/* 4. Pour les prestataires : panneau vert à droite, téléphone à gauche */}
+        <section id="prestataires" className="mx-auto max-w-6xl scroll-mt-16 pt-14 lg:grid lg:grid-cols-2 lg:items-center lg:gap-10 lg:px-5 lg:pt-24">
+          <Reveal className="px-5 lg:order-2 lg:px-0">
+            <Eyebrow>03 · Pour les prestataires</Eyebrow>
+            <h2 className="mt-2.5 text-[38px] !font-[800] leading-[0.95] tracking-[-0.045em] lg:text-[64px]">
+              Tes services,<br /><span className="rounded-xl bg-lime px-1.5 [box-decoration-break:clone]">devant les clients.</span>
+            </h2>
+            <p className="mt-3 max-w-[480px] text-[15px] leading-[1.45] text-stone-500 lg:text-[18px]">
+              DJ, traiteur, déco, photo, location : les organisateurs te trouvent par catégorie et te contactent direct.
+            </p>
+            <ul className="mt-4 flex max-w-[520px] flex-wrap gap-1.5">
+              {MARKETPLACE_CATEGORIES.filter((c) => c.value !== 'autre').map((c, i) => (
+                <Reveal as="li" key={c.value} effect="pop" delay={i * 110} className="rounded-full border border-ink/10 bg-white px-3 py-1.5 text-[12.5px] font-semibold">{c.fr}</Reveal>
+              ))}
+            </ul>
+            <Checks items={PROVIDER_PERKS} />
+          </Reveal>
+          <div className="relative mx-auto mt-8 w-full h-[400px] max-w-[420px] lg:order-1 lg:mt-0 lg:h-[520px] lg:max-w-[520px]">
+            <div className="absolute bottom-[40px] left-[54px] right-0 top-0 rounded-l-[34px] bg-lime lg:rounded-[40px]" />
+            <TiltPhone src="/landing/ecran-marketplace.webp" alt="Le Marketplace Upvibe : lieux, traiteurs, matériel" rotate={-4} className="left-[22px] top-[-6px] w-[190px] lg:left-[40px] lg:w-[240px]" />
+            <Badge icon={PhoneCall} title="Appeler" sub="ou écrire sur WhatsApp" dark delay={500} className="right-[12px] top-[80px]" />
+            <Badge icon={Store} title="Ton annonce" sub="Photos, prix, quartier" delay={850} className="right-[24px] top-[160px]" />
           </div>
         </section>
 
-        {/* 5. Pourquoi Upvibe */}
-        <section className="mx-auto max-w-6xl px-5 py-12 lg:py-20">
-          <Reveal><h2 className="max-w-[640px] text-[34px] !font-[700] leading-[0.98] tracking-[-0.04em] lg:text-[52px]">
-            Pourquoi tout Abidjan passe par <span className="rounded-xl bg-lime px-2">Upvibe</span>
+        {/* 5. Pourquoi Upvibe : petites cartes en quinconce */}
+        <section className="mx-auto max-w-6xl px-5 pb-14 pt-14 lg:py-24">
+          <Reveal><h2 className="max-w-[640px] text-[32px] !font-[800] leading-[0.98] tracking-[-0.04em] lg:text-[52px]">
+            Pourquoi tout Abidjan passe par <span className="rounded-xl bg-lime px-1.5">Upvibe</span>
           </h2></Reveal>
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-6 grid grid-cols-2 items-start gap-2.5 lg:grid-cols-4 lg:gap-4">
             {REASONS.map(({ icon: Icon, title, text }, i) => (
-              <Reveal key={title} delay={i * 160} className="rounded-[24px] bg-white p-5">
-                <span className="flex size-12 items-center justify-center rounded-full bg-parchment"><Icon size={22} strokeWidth={1.75} /></span>
-                <h3 className="mt-4 text-[20px] tracking-[-0.03em]">{title}</h3>
-                <p className="mt-1.5 text-[14.5px] leading-snug text-stone-500">{text}</p>
+              <Reveal key={title} delay={i * 160} className={`rounded-[22px] bg-white p-4 lg:p-5 ${i % 2 ? 'mt-7 lg:mt-0' : ''}`}>
+                <span className="flex size-9 items-center justify-center rounded-full bg-parchment"><Icon size={18} strokeWidth={1.75} /></span>
+                <h3 className="mt-3 text-[16px] leading-[1.05] tracking-[-0.02em] lg:text-[20px]">{title}</h3>
+                <p className="mt-1.5 text-[12.5px] leading-snug text-stone-500 lg:text-[14px]">{text}</p>
               </Reveal>
             ))}
           </div>
