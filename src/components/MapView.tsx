@@ -19,7 +19,8 @@ import RouteInfoPanel from './RouteInfoPanel';
 import { fuzzyMatch } from '@/lib/fuzzyMatch';
 import { getDistanceKm } from '@/hooks/useNearbyEvents';
 import { eventCity } from '@/lib/cities';
-import { happensBetween, isMultiDay, lastDay } from '@/lib/eventStatus';
+import { isMultiDay, lastDay } from '@/lib/eventStatus';
+import { matchesDateFilter } from '@/lib/dateFilters';
 import { supabase } from '@/integrations/supabase/client';
 import { softCase } from '@/lib/softCase';
 import { focusPosition } from '@/lib/imageFocus';
@@ -633,14 +634,7 @@ const MapView = () => {
 
     clusterGroup.clearLayers();
 
-    // Date filter boundaries
     const now = new Date();
-    const todayStr = now.toISOString().split('T')[0];
-    const weekEnd = new Date(now);
-    weekEnd.setDate(weekEnd.getDate() + 7);
-    const weekEndStr = weekEnd.toISOString().split('T')[0];
-    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    const monthEndStr = monthEnd.toISOString().split('T')[0];
 
     markersRef.current.forEach((marker) => {
       const eventData = (marker as any).eventData;
@@ -666,14 +660,7 @@ const MapView = () => {
       const matchesCity = !cityFilter || eventCity(eventData) === cityFilter;
 
       // Date filter
-      let matchesDate = true;
-      if (dateFilter === 'today') {
-        matchesDate = happensBetween(eventData, todayStr, todayStr);
-      } else if (dateFilter === 'week') {
-        matchesDate = happensBetween(eventData, todayStr, weekEndStr);
-      } else if (dateFilter === 'month') {
-        matchesDate = happensBetween(eventData, todayStr, monthEndStr);
-      }
+      const matchesDate = matchesDateFilter(eventData, dateFilter, now);
 
       // Price filter
       let matchesPrice = true;

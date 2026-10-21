@@ -6,7 +6,8 @@ export interface RouteDestination {
   label: string;
 }
 
-export type DateFilter = 'all' | 'today' | 'week' | 'month';
+import type { DateFilter } from '@/lib/dateFilters';
+export type { DateFilter };
 export type PriceFilter = 'all' | 'free' | 'paid';
 
 interface SearchContextType {

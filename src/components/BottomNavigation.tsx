@@ -13,6 +13,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { EVENT_CATEGORIES } from '@/lib/eventCategories';
 import { useEvents } from '@/hooks/useEvents';
 import { CITIES, eventCity, findCity, normalizeName } from '@/lib/cities';
+import { DATE_FILTERS, matchesDateFilter } from '@/lib/dateFilters';
 
 
 interface BottomNavigationProps {
@@ -26,6 +27,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
   const {
     searchQuery, setSearchQuery, selectedCategories, setSelectedCategories, toggleCategory,
     distanceFilter, setDistanceFilter, cityFilter, setCityFilter, activeFilterCount, clearFilters, searchOpen, setSearchOpen,
+    dateFilter, setDateFilter,
   } = useSearch();
   const { t } = useLanguage();
   const { data: events } = useEvents();
@@ -209,6 +211,29 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
               </div>
             </div>
 
+
+            {/* Quand : aujourd'hui, demain, ce week-end… (avec le nombre d'événements) */}
+            <div className="px-5 py-2.5 space-y-2">
+              <p className="eyebrow text-stone-500">{t('nav.when')}</p>
+              <div className="-mx-5 flex gap-1.5 overflow-x-auto px-5 scrollbar-hide">
+                {DATE_FILTERS.map((opt) => {
+                  const count = opt.id === 'all' ? 0 : (events ?? []).filter((e) => matchesDateFilter(e, opt.id)).length;
+                  const active = dateFilter === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      onClick={() => setDateFilter(active && opt.id !== 'all' ? 'all' : opt.id)}
+                      className={`h-8 px-3.5 flex-shrink-0 whitespace-nowrap rounded-full border text-[13px] font-medium transition-all active:scale-95 inline-flex items-center gap-1.5 ${
+                        active ? 'bg-ink text-parchment border-ink' : 'bg-white text-stone-700 border-stone-200 hover:border-ink'
+                      }`}
+                    >
+                      {t(opt.tKey)}
+                      {count > 0 && <span className={active ? 'text-parchment/60' : 'text-stone-400'}>{count}</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
             {/* Ville */}
             <div className="px-5 py-2.5 space-y-2">
