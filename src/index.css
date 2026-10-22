@@ -1261,3 +1261,11 @@ vercel-live-feedback,
   .reveal, .reveal.is-visible { opacity: 1; transform: none; clip-path: none; transition: none; }
   .landing-float { animation: none; }
 }
+
+/* Surligneur lime posé sous le bas des lettres (page vitrine) */
+.marker {
+  background: linear-gradient(to top, transparent 0.06em, #a6e22e 0.06em, #a6e22e 0.4em, transparent 0.4em);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  padding: 0 0.06em;
+}
