@@ -365,6 +365,16 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                 ref={scrollRef}
                 className="flex items-center h-full overflow-x-auto overflow-y-hidden scrollbar-hide px-2 pb-1.5 gap-1.5 whitespace-nowrap"
               >
+                {/* « Tout » en premier : la liste de tous les événements */}
+                <Link
+                  to="/evenements"
+                  aria-label={t('category.allTitle')}
+                  className={`no-press flex-shrink-0 flex size-[60px] items-center justify-center rounded-full text-[13px] font-bold tracking-[-0.01em] transition-colors duration-300 active:scale-95 ${
+                    location.pathname === '/evenements' ? 'bg-ink text-parchment' : 'bg-parchment text-ink dark:bg-stone-800 dark:text-stone-200'
+                  }`}
+                >
+                  {t('nav.allShort')}
+                </Link>
                 {navItems.map((item, index) => {
                   const isActive = location.pathname === item.path;
                   // N1 : chaque catégorie dans un cercle crème, icône + nom court écrit dedans ;

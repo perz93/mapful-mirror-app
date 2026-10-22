@@ -220,6 +220,7 @@ const translations: Record<string, Record<Lang, string>> = {
   'cat.other': { fr: 'Autre', en: 'Other' },
   'cat.meetups': { fr: 'Business & networking', en: 'Business & networking' },
   'category.allTitle': { fr: 'Tous les événements', en: 'All events' },
+  'nav.allShort': { fr: 'Tout', en: 'All' },
   'catShort.nightlife': { fr: 'Soirées', en: 'Nightlife' },
   'catShort.music': { fr: 'Concerts', en: 'Concerts' },
   'catShort.festivals': { fr: 'Festivals', en: 'Festivals' },

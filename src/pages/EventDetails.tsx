@@ -306,8 +306,8 @@ const EventDetails = () => {
               <h2 className="eyebrow text-stone-500 mb-3">{t('event.keyPoints')}</h2>
               <ol className="card-shadow rounded-3xl bg-white dark:bg-stone-900 px-5 divide-y divide-stone-200 dark:divide-stone-800">
                 {keyPoints.map((point, index) => (
-                  <li key={index} className="flex items-baseline gap-4 py-4">
-                    <span className="tabular w-6 flex-shrink-0 text-xs font-medium text-stone-400">{String(index + 1).padStart(2, '0')}</span>
+                  <li key={index} className="flex items-center gap-4 py-4">
+                    <span className="tabular flex size-8 flex-shrink-0 items-center justify-center rounded-full bg-parchment text-[13px] font-semibold text-ink dark:bg-stone-800 dark:text-stone-200">{index + 1}</span>
                     <p className="text-[15px] leading-relaxed text-ink dark:text-stone-200">{point}</p>
                   </li>
                 ))}
