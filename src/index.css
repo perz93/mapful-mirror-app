@@ -1089,6 +1089,10 @@ h1.eyebrow, h2.eyebrow, h3.eyebrow {
 .cluster-zooming .leaflet-cluster-anim .leaflet-marker-icon[style*="opacity: 0"] > * {
   scale: 0;
 }
+/* Un groupe qui s'efface disparaît tout de suite : jamais deux chiffres à la fois */
+.cluster-zooming .leaflet-cluster-anim .marker-cluster[style*="opacity: 0"] > * {
+  transition: scale 0.18s ease-out;
+}
 /* L'étiquette rétrécit vers sa pointe (le point d'ancrage du marqueur) */
 .custom-marker > .pin-label { transform-origin: 0 0; }
 
