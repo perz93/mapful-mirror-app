@@ -39,7 +39,7 @@ const RouteInfoPanel = ({ distanceKm, durationMin, loading, error, needsLocation
   if (!routeDestination) return null;
 
   const ready = !loading && !error && distanceKm !== null && durationMin !== null;
-  const pill = 'btn-float flex h-11 items-center gap-2 rounded-full bg-white px-4 text-[15px] text-ink';
+  const pill = 'btn-float flex h-11 items-center gap-2 rounded-full bg-parchment px-4 text-[15px] text-ink';
 
   return (
     <div
