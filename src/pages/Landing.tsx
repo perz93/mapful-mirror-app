@@ -21,10 +21,11 @@ const AUDIENCES = [
 
 const STEPS = ['Ouvre la carte', 'Choisis ton event', "Vas-y avec l'itinéraire"];
 
+/** Pastilles crème, comme les catégories de l'app : [avant, accent, après] */
 const ORGANIZER_PERKS = [
-  'Publié en 2 minutes, visible tout de suite sur la carte.',
-  'Une alerte aux personnes autour.',
-  'Places Standard, VIP, VVIP avec leurs prix.',
+  ['Publié en ', '2 min', ''],
+  ['Alerte ', 'autour', ''],
+  ['Standard · ', 'VIP', ' · VVIP'],
 ];
 
 const PROVIDER_PERKS = [
@@ -127,17 +128,6 @@ const Badge = ({ title, accent, dot = 'lime', light = false, delay = 0, classNam
 
 const Eyebrow = ({ children, className = 'text-ink' }: { children: React.ReactNode; className?: string }) => (
   <p className={`text-[13px] font-bold uppercase tracking-[0.12em] ${className}`}>{children}</p>
-);
-
-const Checks = ({ items, dark = false }: { items: string[]; dark?: boolean }) => (
-  <ul className="mt-5 grid max-w-[520px] gap-2.5">
-    {items.map((item, i) => (
-      <Reveal as="li" key={item} delay={i * 160} className={`flex gap-3 text-[16.5px] leading-snug ${dark ? 'text-parchment' : 'text-ink'}`}>
-        <span className={`mt-0.5 flex size-[20px] flex-shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${dark ? 'bg-lime text-ink' : 'bg-ink text-lime'}`}>✓</span>
-        {item}
-      </Reveal>
-    ))}
-  </ul>
 );
 
 /** Sur ordinateur : on installe depuis son téléphone en scannant le QR code */
@@ -249,23 +239,31 @@ const Landing = () => {
           </div>
         </section>
 
-        {/* 3. Pour les organisateurs : bloc noir arrondi, téléphone qui déborde à droite */}
-        <section id="organiser" className="mx-2.5 mt-14 scroll-mt-16 overflow-hidden rounded-[34px] bg-ink text-parchment lg:mx-auto lg:max-w-6xl lg:rounded-[44px]">
-          <div className="px-5 pt-7 lg:grid lg:grid-cols-2 lg:items-center lg:gap-10 lg:px-14 lg:pt-14">
+        {/* 3. Pour les organisateurs : bloc bleu « eau de la carte » avec des terres crème */}
+        <section id="organiser" className="relative mx-2.5 mt-14 scroll-mt-16 overflow-hidden rounded-[34px] bg-[#b5d8f0] lg:mx-auto lg:max-w-6xl lg:rounded-[44px]">
+          <div aria-hidden className="absolute -bottom-24 -right-16 size-[300px] rounded-full bg-[#eef0e4] lg:-right-10 lg:size-[440px]" />
+          <div aria-hidden className="absolute -bottom-20 -left-20 size-[200px] rounded-full bg-[#eef0e4] lg:size-[260px]" />
+          <div className="relative px-5 pt-7 lg:grid lg:grid-cols-2 lg:items-center lg:gap-10 lg:px-14 lg:pt-14">
             <Reveal>
-              <Eyebrow className="text-lime">02 · Pour les organisateurs</Eyebrow>
-              <h2 className="mt-2.5 text-[46px] !font-[800] leading-[0.93] tracking-[-0.045em] text-parchment lg:text-[64px]">
-                Tu organises ?<br /><span className="text-lime">Fais-toi voir.</span>
+              <Eyebrow>02 · Pour les organisateurs</Eyebrow>
+              <h2 className="mt-2.5 text-[46px] !font-[800] leading-[0.93] tracking-[-0.045em] lg:text-[64px]">
+                Tu organises ?<br /><span className="marker">Fais-toi voir.</span>
               </h2>
-              <p className="mt-3 max-w-[480px] text-[17px] leading-[1.45] text-stone-300 lg:text-[18px]">
+              <p className="mt-3 max-w-[480px] text-[17px] leading-[1.45] text-ink/80 lg:text-[18px]">
                 Ton événement sur la carte, devant ceux qui cherchent quoi faire ce soir.
               </p>
-              <Checks items={ORGANIZER_PERKS} dark />
+              <ul className="mt-5 flex max-w-[480px] flex-wrap gap-2">
+                {ORGANIZER_PERKS.map(([before, accent, after], i) => (
+                  <Reveal as="li" key={accent} effect="pop" delay={200 + i * 160} className="rounded-full bg-parchment px-4 py-2.5 text-[15.5px] font-semibold">
+                    {before}<span className="text-[#6fae12]">{accent}</span>{after}
+                  </Reveal>
+                ))}
+              </ul>
             </Reveal>
-            <div className="relative mt-5 h-[290px] lg:mt-0 lg:h-[500px]">
-              <TiltPhone src="/landing/ecran-organisateur.webp" alt="Fiche d'un concert avec ses places Standard, VIP et VVIP" rotate={-4} className="right-[-30px] top-0 w-[200px] lg:right-[30px] lg:w-[250px]" />
-              <Badge title="VIP" accent="20 000 F" light delay={500} className="left-0 top-[36px]" />
-              <Badge title="Alerte" accent="envoyée" light delay={850} className="left-[14px] top-[112px]" />
+            <div className="relative mt-5 h-[300px] lg:mt-0 lg:h-[500px]">
+              <TiltPhone src="/landing/ecran-organisateur.webp" alt="Fiche d'un concert avec ses places Standard, VIP et VVIP" rotate={-4} className="right-[-24px] top-[10px] w-[200px] lg:right-[30px] lg:w-[250px]" />
+              <Badge title="VIP" accent="20 000 F" delay={500} className="left-0 top-[46px]" />
+              <Badge title="Alerte" accent="envoyée" dot="cream" delay={850} className="left-[14px] top-[122px]" />
             </div>
           </div>
         </section>
