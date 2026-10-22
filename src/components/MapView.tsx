@@ -146,7 +146,8 @@ const MapView = () => {
       // Déploiement animé, ralenti et sans fondu : voir slowClusterAnimation
       animate: true,
       animateAddingMarkers: false,
-      maxClusterRadius: 80,
+      // Vue d'ensemble (zoom ≤ 10) : rayon plus large pour regrouper les événements de la ville
+      maxClusterRadius: (zoom: number) => (zoom <= 10 ? 130 : 80),
       iconCreateFunction: function(cluster) {
         const count = cluster.getChildCount();
         let sizeClass = 'small';
