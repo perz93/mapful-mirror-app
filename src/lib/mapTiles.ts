@@ -122,8 +122,7 @@ const supportsWebGL = () => {
 
 /**
  * Ajoute le fond de carte stylé. Renvoie une fonction de nettoyage.
- * Pendant le chargement, le conteneur affiche le fond clair avec le reflet
- * de chargement du site (classe .map-loading), retiré dès que les tuiles sont là.
+ * Pas de voile de chargement : la carte s'affiche directement, sans fondu.
  * En cas d'échec du vectoriel, tuiles OSM.
  *
  * Pas de contrôle d'attribution sur la carte (choix produit) : les crédits
@@ -132,16 +131,10 @@ const supportsWebGL = () => {
 export function addBaseMap(map: L.Map): () => void {
   let disposed = false;
   let current: L.Layer | null = null;
-  const container = map.getContainer();
-  container.classList.add('map-loading');
-  const doneLoading = () => container.classList.remove('map-loading');
-  // Filet de sécurité : jamais de reflet infini si un événement manque.
-  const safety = window.setTimeout(doneLoading, 8000);
 
   const showRaster = () => {
     if (disposed || current) return;
     const raster = L.tileLayer(MAP_TILE_URL, MAP_TILE_OPTIONS);
-    raster.once('load', doneLoading);
     current = raster.addTo(map);
   };
 
@@ -165,7 +158,6 @@ export function addBaseMap(map: L.Map): () => void {
           attributionControl: false,
         });
         current = vector.addTo(map);
-        vector.getMaplibreMap().once('idle', doneLoading);
       } catch (err) {
         console.warn('[map] fond vectoriel indisponible, tuiles OSM utilisées', err);
         current = null;
@@ -176,8 +168,6 @@ export function addBaseMap(map: L.Map): () => void {
 
   return () => {
     disposed = true;
-    window.clearTimeout(safety);
-    doneLoading();
     if (current && map.hasLayer(current)) map.removeLayer(current);
   };
 }

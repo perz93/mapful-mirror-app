@@ -81,7 +81,8 @@ const MapView = () => {
       attributionControl: false,
       maxZoom: 19,
       preferCanvas: true,
-      fadeAnimation: true,
+      // Pas de fondu sur les tuiles : la carte apparaît net
+      fadeAnimation: false,
       zoomAnimation: true,
       markerZoomAnimation: true,
     });
@@ -107,8 +108,9 @@ const MapView = () => {
       spiderfyDistanceMultiplier: 2.6,
       spiderLegPolylineOptions: { weight: 1.5, color: '#14140f', opacity: 0.3 },
       removeOutsideVisibleBounds: true,
-      animate: true,
-      animateAddingMarkers: true,
+      // Pas de fondu au regroupement : les groupes apparaissent avec un petit rebond (index.css)
+      animate: false,
+      animateAddingMarkers: false,
       maxClusterRadius: 80,
       iconCreateFunction: function(cluster) {
         const count = cluster.getChildCount();
