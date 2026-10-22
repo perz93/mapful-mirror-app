@@ -63,12 +63,12 @@ const REASONS = [
   { icon: BellRing, title: 'Alertes près de toi', text: 'Un événement à 800 m ? Ton téléphone te prévient, et te rappelle 1 h avant.' },
   { icon: MapPin, title: 'Tout sur la carte', text: 'Plus besoin de fouiller les statuts WhatsApp : lieu, heure et prix au même endroit.' },
   { icon: Route, title: 'Itinéraire en un geste', text: 'Tu touches « Itinéraire », tu y vas. Même dans un quartier que tu ne connais pas.' },
-  { icon: Smartphone, title: 'Gratuit, sans store', text: 'Installé en 3 gestes depuis ton navigateur, presque sans place sur ton téléphone.' },
+  { icon: Smartphone, title: 'Gratuit, sans store', text: 'Installé en une minute depuis ton navigateur, presque sans place sur ton téléphone.' },
 ];
 
 const FAQ = [
   { q: 'Upvibe est gratuit ?', a: 'Oui, totalement gratuit pour découvrir les événements, publier tes événements et proposer tes services.' },
-  { q: 'Je dois passer par le Play Store ?', a: "Non. Upvibe s'installe directement depuis ton navigateur (Chrome sur Android, Safari sur iPhone), en 3 gestes. Pas de store, pas de téléchargement lourd." },
+  { q: 'Je dois passer par le Play Store ?', a: "Non. Upvibe s'installe directement depuis ton navigateur (Chrome sur Android, Safari sur iPhone), en une minute. Pas de store, pas de téléchargement lourd." },
   { q: 'Ça marche sur iPhone et Android ?', a: "Oui, sur tous les smartphones récents. Sur iPhone, ouvre upvibe.app dans Safari pour l'installer." },
   { q: 'Comment publier mon événement ?', a: "Installe l'app, crée ton compte puis touche « Créer un événement » : titre, date, lieu, photo et prix des places. Il apparaît aussitôt sur la carte." },
   { q: 'Je suis prestataire, comment être visible ?', a: "Crée ton compte puis publie une annonce sur le Marketplace : photos, prix, quartier et contacts. Les organisateurs te trouvent par catégorie (DJ, traiteur, déco, photo…)." },
@@ -161,7 +161,7 @@ const QrCard = () => (
     <img src="/landing/qr.svg" alt="QR code vers upvibe.app" className="size-[104px] rounded-xl bg-white p-1.5" />
     <div>
       <p className="font-display text-[20px] leading-tight tracking-[-0.03em] text-ink">Scanne avec ton téléphone</p>
-      <p className="mt-1 text-[14px] text-stone-500">Upvibe s'installe en 3 gestes, gratuitement.</p>
+      <p className="mt-1 text-[14px] text-stone-500">Upvibe s'installe en une minute, gratuitement.</p>
     </div>
   </div>
 );
