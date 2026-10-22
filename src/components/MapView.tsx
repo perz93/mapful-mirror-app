@@ -154,7 +154,9 @@ const MapView = () => {
       spiderfyOnMaxZoom: false,
       spiderfyDistanceMultiplier: 2.6,
       spiderLegPolylineOptions: { weight: 1.5, color: '#14140f', opacity: 0.3 },
-      removeOutsideVisibleBounds: true,
+      // Garder aussi les pastilles hors de l'écran : celles qui rejoignent un groupe en dézoomant
+      // arrivent en glissant depuis le bord au lieu d'apparaître d'un coup dans le chiffre
+      removeOutsideVisibleBounds: false,
       // Déploiement animé, ralenti et sans fondu : voir slowClusterAnimation
       animate: true,
       animateAddingMarkers: false,
