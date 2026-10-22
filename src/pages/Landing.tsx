@@ -157,7 +157,7 @@ const Eyebrow = ({ children, className = 'text-ink' }: { children: React.ReactNo
 
 /** Sur ordinateur : on installe depuis son téléphone en scannant le QR code */
 const QrCard = () => (
-  <div className="hidden items-center gap-4 rounded-[24px] bg-white p-4 lg:flex">
+  <div className="hidden items-center gap-4 rounded-[24px] bg-parchment p-4 lg:flex">
     <img src="/landing/qr.svg" alt="QR code vers upvibe.app" className="size-[104px] rounded-xl bg-white p-1.5" />
     <div>
       <p className="font-display text-[20px] leading-tight tracking-[-0.03em] text-ink">Scanne avec ton téléphone</p>
@@ -193,7 +193,7 @@ const Landing = () => {
   const { data: events } = useUpcomingEvents();
 
   return (
-    <div className="min-h-[100dvh] overflow-x-clip bg-parchment text-ink">
+    <div className="min-h-[100dvh] overflow-x-clip bg-white text-ink">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: FAQ_JSON_LD }} />
 
       {/* En-tête fixe */}
@@ -220,7 +220,7 @@ const Landing = () => {
             <nav aria-label="Pour qui ?" className="mt-4 flex flex-wrap gap-2">
               {AUDIENCES.map(({ href, label }, i) => (
                 <Reveal as="span" key={href} effect="pop" delay={400 + i * 140}>
-                  <a href={href} onClick={(e) => scrollToSection(e, href)} className="block rounded-full border border-ink/15 bg-white px-4 py-2.5 text-[15px] font-semibold text-ink active:scale-95">
+                  <a href={href} onClick={(e) => scrollToSection(e, href)} className="block rounded-full border border-ink/15 bg-parchment px-4 py-2.5 text-[15px] font-semibold text-ink active:scale-95">
                     {label}
                   </a>
                 </Reveal>
@@ -256,7 +256,7 @@ const Landing = () => {
             </ol>
           </Reveal>
           <div className="relative mx-auto mt-8 w-full h-[400px] max-w-[420px] lg:mt-0 lg:h-[520px] lg:max-w-[520px]">
-            <div className="absolute bottom-[40px] left-0 right-[54px] top-0 rounded-r-[34px] bg-white lg:rounded-[40px]" />
+            <div className="absolute bottom-[40px] left-0 right-[54px] top-0 rounded-r-[34px] bg-parchment lg:rounded-[40px]" />
             <TiltPhone src="/landing/ecran-itineraire.webp" alt="L'itinéraire jusqu'à une soirée sur la carte Upvibe" rotate={4} className="right-[24px] top-[-10px] w-[190px] lg:right-[60px] lg:w-[240px]" />
             <Badge title="Concerts" accent="live" delay={500} className="left-[12px] top-[70px]" />
             <Badge title="Soirées" accent="ce week-end" dot="cream" delay={800} className="left-[22px] top-[150px]" />
@@ -330,8 +330,8 @@ const Landing = () => {
           </h2></Reveal>
           <div className="mt-6 grid grid-cols-2 items-start gap-2.5 lg:grid-cols-4 lg:gap-4">
             {REASONS.map(({ icon: Icon, title, text }, i) => (
-              <Reveal key={title} delay={i * 160} className={`rounded-[22px] bg-white p-4 lg:p-5 ${i % 2 ? 'mt-7 lg:mt-0' : ''}`}>
-                <span className="flex size-9 items-center justify-center rounded-full bg-parchment"><Icon size={18} strokeWidth={1.75} /></span>
+              <Reveal key={title} delay={i * 160} className={`rounded-[22px] bg-parchment p-4 lg:p-5 ${i % 2 ? 'mt-7 lg:mt-0' : ''}`}>
+                <span className="flex size-9 items-center justify-center rounded-full bg-white"><Icon size={18} strokeWidth={1.75} /></span>
                 <h3 className="mt-3 text-[18px] leading-[1.05] tracking-[-0.02em] lg:text-[21px]">{title}</h3>
                 <p className="mt-1.5 text-[14px] leading-snug text-stone-500 lg:text-[15px]">{text}</p>
               </Reveal>
@@ -347,7 +347,7 @@ const Landing = () => {
               {events.map((e) => {
                 const d = new Date(`${e.date}T12:00:00`);
                 return (
-                  <button key={e.id} type="button" onClick={openInstallGuide} className="w-[240px] flex-shrink-0 rounded-[24px] bg-white p-[7px] text-left active:scale-[0.98]">
+                  <button key={e.id} type="button" onClick={openInstallGuide} className="w-[240px] flex-shrink-0 rounded-[24px] bg-parchment p-[7px] text-left active:scale-[0.98]">
                     {e.image_url
                       ? <ShimmerImage src={e.image_url} alt={softCase(e.title)} position={focusPosition(e.image_focus)} className="h-[124px] w-full rounded-[18px]" />
                       : <div className="h-[124px] rounded-[18px] bg-stone-200" />}
@@ -385,7 +385,7 @@ const Landing = () => {
         </section>
       </main>
 
-      <footer className="bg-black px-5 pb-36 pt-8 text-[14.5px] leading-7 text-stone-400 lg:pb-10">
+      <footer className="bg-black px-5 pb-10 pt-8 text-[14.5px] leading-7 text-stone-400">
         <div className="mx-auto max-w-6xl">
           <Logo className="h-7" />
           <p>Tous les événements d'Abidjan sur une carte.</p>
@@ -401,20 +401,6 @@ const Landing = () => {
           </ul>
         </div>
       </footer>
-
-      {/* Bandeau fixe en bas (téléphone) */}
-      <div className="fixed inset-x-2 z-40 lg:hidden" style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 8px)' }}>
-        <div className="mx-auto flex max-w-md items-center gap-3 rounded-[30px] bg-ink py-3 pl-3 pr-3 text-parchment shadow-[0_14px_30px_-10px_rgba(0,0,0,0.55)]">
-          <img src="/icon-192.png" alt="" className="size-11 flex-shrink-0 rounded-[12px] border border-white/10" />
-          <div className="min-w-0 flex-1 leading-tight">
-            <p className="text-[16px] font-semibold">Ce soir, tu fais quoi ?</p>
-            <p className="text-[13px] text-stone-400">Gratuit · installé en 3 gestes</p>
-          </div>
-          <button type="button" onClick={openInstallGuide} className="flex-shrink-0 rounded-full bg-lime px-4 py-2.5 text-[15px] font-bold text-ink active:scale-95">
-            Installer
-          </button>
-        </div>
-      </div>
     </div>
   );
 };
