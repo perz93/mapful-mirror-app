@@ -25,6 +25,42 @@ import { supabase } from '@/integrations/supabase/client';
 import { softCase } from '@/lib/softCase';
 import { focusPosition } from '@/lib/imageFocus';
 
+/** Durée du déploiement / regroupement des pastilles (0,3 s en dur dans leaflet.markercluster) */
+const CLUSTER_ANIM_MS = 650;
+
+type ClusterAnimInternals = {
+  _queue: Array<() => void>;
+  _queueTimeout: ReturnType<typeof setTimeout> | null;
+  _processQueue: () => void;
+  _enqueue: (fn: () => void) => void;
+  _animationZoomIn: (previousZoom: number, newZoom: number) => void;
+  _animationZoomOut: (previousZoom: number, newZoom: number) => void;
+};
+
+/**
+ * Les pastilles sortent du groupe (et y rentrent) plus lentement et sans fondu :
+ * on allonge l'attente interne de la librairie et on pose .cluster-zooming sur
+ * la carte le temps du mouvement (styles dans index.css).
+ */
+const slowClusterAnimation = (group: L.MarkerClusterGroup, map: L.Map) => {
+  const g = group as unknown as ClusterAnimInternals;
+  g._enqueue = function (fn) {
+    this._queue.push(fn);
+    if (!this._queueTimeout) this._queueTimeout = setTimeout(() => this._processQueue(), CLUSTER_ANIM_MS);
+  };
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const flag = () => {
+    const container = map.getContainer();
+    container.classList.add('cluster-zooming');
+    clearTimeout(timer);
+    timer = setTimeout(() => container.classList.remove('cluster-zooming'), CLUSTER_ANIM_MS + 50);
+  };
+  const zoomIn = g._animationZoomIn;
+  const zoomOut = g._animationZoomOut;
+  g._animationZoomIn = function (previousZoom, newZoom) { flag(); zoomIn.call(this, previousZoom, newZoom); };
+  g._animationZoomOut = function (previousZoom, newZoom) { flag(); zoomOut.call(this, previousZoom, newZoom); };
+};
+
 const MapView = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -108,8 +144,8 @@ const MapView = () => {
       spiderfyDistanceMultiplier: 2.6,
       spiderLegPolylineOptions: { weight: 1.5, color: '#14140f', opacity: 0.3 },
       removeOutsideVisibleBounds: true,
-      // Pas de fondu au regroupement : les groupes apparaissent avec un petit rebond (index.css)
-      animate: false,
+      // Déploiement animé, ralenti et sans fondu : voir slowClusterAnimation
+      animate: true,
       animateAddingMarkers: false,
       maxClusterRadius: 80,
       iconCreateFunction: function(cluster) {
@@ -191,6 +227,7 @@ const MapView = () => {
       (e as L.LeafletEvent & { markers: L.Marker[] }).markers.forEach((m) => m.getElement()?.classList.remove('in-star'));
     });
 
+    slowClusterAnimation(markerClusterGroup, map);
     markerClusterGroupRef.current = markerClusterGroup;
     map.addLayer(markerClusterGroup);
     mapInstanceRef.current = map;
