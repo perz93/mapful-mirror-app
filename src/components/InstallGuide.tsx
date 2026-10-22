@@ -177,11 +177,15 @@ const ChromeBar = ({ mark = false }: { mark?: boolean }) => (
   </div>
 );
 
+/** Menu Chrome (version 150 et +) : rangée d'icônes en haut, puis la liste */
 const ChromeMenu = () => (
-  <div className="absolute right-1 top-[18px] w-[80px] overflow-hidden rounded-md bg-white py-0.5 text-[6px] text-[#3c4043] shadow-[0_6px_16px_rgba(20,20,15,0.25)]">
+  <div className="absolute right-1 top-[18px] w-[84px] overflow-hidden rounded-md bg-white py-0.5 text-[6px] text-[#3c4043] shadow-[0_6px_16px_rgba(20,20,15,0.25)]">
+    <div className="flex items-center justify-between border-b border-[#e8eaed] px-1.5 pb-[3px] pt-[2px] text-[7px] leading-none">
+      <span>←</span><span className="opacity-40">→</span><span>☆</span><span>⤓</span><span>⋯</span>
+    </div>
     <div className="px-1.5 py-[3px]">Nouvel onglet</div>
-    <div className="px-1.5 py-[3px]">Favoris</div>
-    <div className={`bg-[#e8f0fe] px-1.5 py-[3px] font-semibold text-black ${MARK}`}>Installer l'application</div>
+    <div className="px-1.5 py-[3px]">Historique</div>
+    <div className={`bg-[#e8f0fe] px-1.5 py-[3px] font-semibold leading-tight text-black ${MARK}`}>Installer et créer un raccourci</div>
     <div className="px-1.5 py-[3px]">Paramètres</div>
   </div>
 );
@@ -248,7 +252,7 @@ const IOS_STEPS = [
 const ANDROID_STEPS = [
   {
     title: 'Ouvre le menu de Chrome',
-    hint: 'Touche les trois points en haut à droite.',
+    hint: "Touche les trois points ⋮ à droite de la barre d'adresse.",
     visual: (
       <Pair
         phone={<MiniPhone android><ChromeBar mark /></MiniPhone>}
@@ -264,16 +268,16 @@ const ANDROID_STEPS = [
     ),
   },
   {
-    title: "Choisis « Installer l'application »",
-    hint: "Selon ton téléphone, l'option s'appelle aussi « Ajouter à l'écran d'accueil ».",
+    title: "Choisis « Installer et créer un raccourci »",
+    hint: "Fais défiler le menu si besoin. Sur un Chrome plus ancien : « Installer l'application » ou « Ajouter à l'écran d'accueil ».",
     visual: (
       <Pair
         phone={<MiniPhone android><ChromeBar /><ChromeMenu /></MiniPhone>}
         loupe={
           <div className="w-[128px] overflow-hidden rounded-xl bg-white text-[11px] text-[#3c4043]">
-            <div className="px-2.5 py-2">Favoris</div>
+            <div className="px-2.5 py-2">Historique</div>
             <div className="flex items-center justify-between gap-1 bg-[#e8f0fe] px-2.5 py-2 font-semibold leading-tight text-black">
-              Installer l'appli <Download size={13} strokeWidth={2} />
+              Installer et créer un raccourci <Download size={13} strokeWidth={2} className="flex-shrink-0" />
             </div>
           </div>
         }
@@ -282,7 +286,7 @@ const ANDROID_STEPS = [
   },
   {
     title: 'Confirme avec « Installer »',
-    hint: "Upvibe rejoint tes applications et ton écran d'accueil.",
+    hint: "Ou « Ajouter », selon ton téléphone. Upvibe rejoint tes applications et ton écran d'accueil.",
     visual: (
       <Pair
         phone={<MiniPhone android><ChromeDialog /></MiniPhone>}
