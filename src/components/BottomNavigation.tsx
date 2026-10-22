@@ -369,11 +369,18 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                 <Link
                   to="/evenements"
                   aria-label={t('category.allTitle')}
-                  className={`no-press flex-shrink-0 flex size-[60px] items-center justify-center rounded-full text-[13px] font-bold tracking-[-0.01em] transition-colors duration-300 active:scale-95 ${
+                  className={`no-press flex-shrink-0 flex size-[60px] flex-col items-center justify-center gap-[3px] rounded-full transition-colors duration-300 active:scale-95 ${
                     location.pathname === '/evenements' ? 'bg-ink text-parchment' : 'bg-parchment text-ink dark:bg-stone-800 dark:text-stone-200'
                   }`}
                 >
-                  {t('nav.allShort')}
+                  {/* Grille : même trait que les icônes de catégories */}
+                  <svg viewBox="0 0 24 24" className="size-[22px] flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinejoin="round" aria-hidden>
+                    <rect x="3.5" y="3.5" width="7" height="7" rx="1.6" />
+                    <rect x="13.5" y="3.5" width="7" height="7" rx="1.6" />
+                    <rect x="3.5" y="13.5" width="7" height="7" rx="1.6" />
+                    <rect x="13.5" y="13.5" width="7" height="7" rx="1.6" />
+                  </svg>
+                  <span className={`text-[9px] leading-none tracking-[-0.01em] ${location.pathname === '/evenements' ? 'font-bold' : 'font-semibold'}`}>{t('nav.allShort')}</span>
                 </Link>
                 {navItems.map((item, index) => {
                   const isActive = location.pathname === item.path;
