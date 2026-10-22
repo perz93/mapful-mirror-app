@@ -331,6 +331,7 @@ const translations: Record<string, Record<Lang, string>> = {
 
   // ==================== MAP ====================
   'map.yourPosition': { fr: 'Votre position', en: 'Your position' },
+  'map.noEventsNearby': { fr: 'Pas encore d’événement près de toi', en: 'No events near you yet' },
   'map.enableLocation': { fr: 'Activez la localisation dans les paramètres du navigateur', en: 'Enable location in browser settings' },
   'map.gpsNotFound': { fr: 'Position GPS introuvable, réessayez', en: 'GPS position not found, try again' },
   'map.enableForRoute': { fr: 'Activez la localisation pour calculer un itinéraire', en: 'Enable location to calculate a route' },

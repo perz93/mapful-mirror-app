@@ -61,6 +61,14 @@ const slowClusterAnimation = (group: L.MarkerClusterGroup, map: L.Map) => {
   g._animationZoomOut = function (previousZoom, newZoom) { flag(); zoomOut.call(this, previousZoom, newZoom); };
 };
 
+/** Vue d'ensemble à l'ouverture : Abidjan entier, ou la ville de l'utilisateur s'il est ailleurs */
+const ABIDJAN_CENTER: [number, number] = [5.3600, -4.0083];
+const OVERVIEW_ZOOM = 10;
+/** Au-delà de cette distance d'Abidjan, on ouvre la carte sur la ville de l'utilisateur */
+const OTHER_CITY_KM = 40;
+/** Rayon utilisé pour dire « pas encore d'événement près de toi » */
+const NEARBY_EVENTS_KM = 30;
+
 const MapView = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -77,6 +85,10 @@ const MapView = () => {
   const markersRef = useRef<L.Marker[]>([]);
   const markerClusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   const didAutoRecenterRef = useRef(false);
+  // Ouverture « à froid » (pas de position de carte mémorisée dans la session)
+  const freshOpenRef = useRef(!sessionStorage.getItem('mapPosition'));
+  const didCityCenterRef = useRef(false);
+  const [otherCityPosition, setOtherCityPosition] = useState<{ lat: number; lng: number } | null>(null);
   const routeLayerRef = useRef<L.Polyline | null>(null);
   const destinationMarkerRef = useRef<L.Marker | null>(null);
   const heatLayerRef = useRef<any>(null);
@@ -98,9 +110,9 @@ const MapView = () => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
     const savedPosition = sessionStorage.getItem('mapPosition');
-    const DEFAULT_INITIAL_ZOOM = 10;
+    const DEFAULT_INITIAL_ZOOM = OVERVIEW_ZOOM;
 
-    let initialCenter: [number, number] = [5.3600, -4.0083];
+    let initialCenter: [number, number] = ABIDJAN_CENTER;
     let initialZoom = DEFAULT_INITIAL_ZOOM;
 
     if (savedPosition) {
@@ -293,9 +305,33 @@ const MapView = () => {
       userMarkerRef.current.setLatLng([lat, lng]);
     }
 
-    // Pas de zoom automatique sur la position : à l'ouverture on garde la vue
-    // d'ensemble d'Abidjan ; le bouton « ma position » sert à se recentrer.
+    // Pas de zoom sur la rue : à l'ouverture on garde une vue d'ensemble.
+    // À Abidjan (ou tout près) la vue d'Abidjan reste ; ailleurs, la carte se
+    // centre sur la ville de l'utilisateur, au même zoom.
+    if (!didCityCenterRef.current) {
+      didCityCenterRef.current = true;
+      const farFromAbidjan = map.distance([lat, lng], ABIDJAN_CENTER) > OTHER_CITY_KM * 1000;
+      if (freshOpenRef.current && farFromAbidjan && !routeActiveRef.current) {
+        didAutoRecenterRef.current = true; // ne pas repartir vers les événements d'Abidjan
+        map.setView([lat, lng], OVERVIEW_ZOOM, { animate: true });
+        setOtherCityPosition({ lat, lng });
+      }
+    }
   }, [geo.position]);
+
+  // Ville sans événement autour : on le dit, pour que la carte vide ne surprenne pas
+  const didNearbyCheckRef = useRef(false);
+  useEffect(() => {
+    if (!otherCityPosition || isLoading || !events || didNearbyCheckRef.current) return;
+    didNearbyCheckRef.current = true;
+    const here = L.latLng(otherCityPosition.lat, otherCityPosition.lng);
+    const hasNearby = events.some((e) => {
+      const lat = Number(e.latitude);
+      const lng = Number(e.longitude);
+      return Number.isFinite(lat) && Number.isFinite(lng) && here.distanceTo([lat, lng]) <= NEARBY_EVENTS_KM * 1000;
+    });
+    if (!hasNearby) toast.info(t('map.noEventsNearby'));
+  }, [otherCityPosition, events, isLoading, t]);
 
   // Listen for recenter → direct getCurrentPosition (must stay in user gesture stack)
   useEffect(() => {
