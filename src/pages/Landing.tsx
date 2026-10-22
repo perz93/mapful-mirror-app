@@ -1,13 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { BellRing, ChevronDown, MapPin, Phone, Route, ShoppingCart, Smartphone, Ticket, type LucideIcon } from 'lucide-react';
+import { BellRing, ChevronDown, MapPin, Route, Smartphone } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { openInstallGuide } from '@/components/InstallGuide';
 import ShimmerImage from '@/components/ShimmerImage';
 import { focusPosition } from '@/lib/imageFocus';
 import { softCase } from '@/lib/softCase';
-import concertIcon from '@/assets/icons/concert.png';
-import soireeIcon from '@/assets/icons/soiree.png';
 
 /**
  * Page vitrine (« / » dans un navigateur). Elle s'adresse aux trois publics
@@ -70,7 +68,7 @@ const Reveal = ({ children, effect = 'up', delay = 0, className = '', as: Tag = 
     if (!el || typeof IntersectionObserver === 'undefined') { setVisible(true); return; }
     const io = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) { setVisible(true); io.disconnect(); }
-    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+    }, { threshold: 0, rootMargin: '0px 0px -12% 0px' });
     io.observe(el);
     return () => io.disconnect();
   }, []);
@@ -110,38 +108,32 @@ const TiltPhone = ({ src, alt, rotate, delay = 0, className = '' }: { src: strin
   </div>
 );
 
-/** Petit badge flottant posé sur les téléphones */
-const Badge = ({ icon: Icon, title, sub, dark = false, delay = 0, className = '' }: {
-  /** Icône lucide, ou image d'icône de l'app (catégories) */
-  icon: LucideIcon | string; title: string; sub: string; dark?: boolean; delay?: number; className?: string;
+/** Pastille flottante posée sur les téléphones, comme les marqueurs de la carte */
+const Badge = ({ title, accent, dot = 'lime', light = false, delay = 0, className = '' }: {
+  title: string; accent: string; dot?: 'lime' | 'cream'; light?: boolean; delay?: number; className?: string;
 }) => (
   <div className={`absolute z-10 ${className}`}>
     <Reveal effect="pop" delay={delay}>
       <div
-        className={`landing-float flex items-center gap-2.5 whitespace-nowrap rounded-2xl py-2 pl-2 pr-3.5 shadow-[0_16px_30px_-14px_rgba(20,20,15,0.45)] ${dark ? 'bg-ink text-parchment' : 'bg-white text-ink'}`}
+        className={`landing-float flex items-center gap-2.5 whitespace-nowrap rounded-full py-2 pl-2 pr-5 text-[17px] font-bold shadow-[0_14px_30px_-12px_rgba(20,20,15,0.55)] lg:text-[19px] ${light ? 'bg-parchment text-ink' : 'bg-ink text-parchment'}`}
         style={{ '--float-delay': `${delay / 1000}s` } as React.CSSProperties}
       >
-        <span className="flex size-8 flex-shrink-0 items-center justify-center rounded-[10px] bg-lime text-ink">
-          {typeof Icon === 'string' ? <img src={Icon} alt="" className="size-[18px]" /> : <Icon size={16} strokeWidth={2} />}
-        </span>
-        <span className="leading-tight">
-          <span className="block text-[13px] font-semibold">{title}</span>
-          <span className={`block text-[11.5px] ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{sub}</span>
-        </span>
+        <span className={`size-8 flex-shrink-0 rounded-full ${dot === 'lime' ? 'bg-lime' : light ? 'bg-ink' : 'bg-parchment'}`} />
+        {title}<span className={light ? 'text-[#6fae12]' : 'text-lime'}>· {accent}</span>
       </div>
     </Reveal>
   </div>
 );
 
 const Eyebrow = ({ children, className = 'text-ink' }: { children: React.ReactNode; className?: string }) => (
-  <p className={`text-[11.5px] font-bold uppercase tracking-[0.12em] ${className}`}>{children}</p>
+  <p className={`text-[13px] font-bold uppercase tracking-[0.12em] ${className}`}>{children}</p>
 );
 
 const Checks = ({ items, dark = false }: { items: string[]; dark?: boolean }) => (
   <ul className="mt-5 grid max-w-[520px] gap-2.5">
     {items.map((item, i) => (
-      <Reveal as="li" key={item} delay={i * 160} className={`flex gap-2.5 text-[14.5px] leading-snug ${dark ? 'text-parchment' : 'text-ink'}`}>
-        <span className={`mt-0.5 flex size-[18px] flex-shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${dark ? 'bg-lime text-ink' : 'bg-ink text-lime'}`}>✓</span>
+      <Reveal as="li" key={item} delay={i * 160} className={`flex gap-3 text-[16.5px] leading-snug ${dark ? 'text-parchment' : 'text-ink'}`}>
+        <span className={`mt-0.5 flex size-[20px] flex-shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${dark ? 'bg-lime text-ink' : 'bg-ink text-lime'}`}>✓</span>
         {item}
       </Reveal>
     ))}
@@ -193,7 +185,7 @@ const Landing = () => {
       <header className="sticky top-0 z-40 bg-ink" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
           <Logo />
-          <button type="button" onClick={openInstallGuide} className="rounded-full bg-lime px-4 py-2.5 text-[14px] font-semibold text-ink active:scale-95 lg:hidden">
+          <button type="button" onClick={openInstallGuide} className="rounded-full bg-lime px-4 py-2.5 text-[15px] font-semibold text-ink active:scale-95 lg:hidden">
             Installer l'appli
           </button>
           <span className="hidden text-[14px] text-stone-300 lg:block">Toutes les sorties d'Abidjan sur une carte</span>
@@ -204,16 +196,16 @@ const Landing = () => {
         {/* 1. Ce soir, tu fais quoi ? : titre à gauche, téléphones qui débordent d'un panneau vert */}
         <section className="mx-auto max-w-6xl lg:grid lg:grid-cols-2 lg:items-center lg:gap-10 lg:px-5 lg:pt-14">
           <div className="px-5 pt-7 lg:px-0 lg:pt-0">
-            <Reveal><h1 className="text-[50px] !font-[800] leading-[0.93] tracking-[-0.045em] lg:text-[84px]">
+            <Reveal><h1 className="text-[58px] !font-[800] leading-[0.93] tracking-[-0.045em] lg:text-[84px]">
               Ce soir,<br />tu fais <span className="inline-block rounded-xl bg-lime px-2 pb-0.5">quoi&nbsp;?</span>
             </h1></Reveal>
-            <Reveal delay={220}><p className="mt-4 max-w-[310px] text-[16px] leading-snug text-stone-500 lg:max-w-[440px] lg:text-[20px]">
+            <Reveal delay={220}><p className="mt-4 max-w-[330px] text-[18px] leading-snug text-stone-500 lg:max-w-[440px] lg:text-[20px]">
               Sortir, organiser, proposer tes services : tout Abidjan sur une seule carte.
             </p></Reveal>
             <nav aria-label="Pour qui ?" className="mt-4 flex flex-wrap gap-2">
               {AUDIENCES.map(({ href, label }, i) => (
                 <Reveal as="span" key={href} effect="pop" delay={400 + i * 140}>
-                  <a href={href} onClick={(e) => scrollToSection(e, href)} className="block rounded-full border border-ink/15 bg-white px-3.5 py-2 text-[13.5px] font-semibold text-ink active:scale-95">
+                  <a href={href} onClick={(e) => scrollToSection(e, href)} className="block rounded-full border border-ink/15 bg-white px-4 py-2.5 text-[15px] font-semibold text-ink active:scale-95">
                     {label}
                   </a>
                 </Reveal>
@@ -227,8 +219,9 @@ const Landing = () => {
             </div>
             <TiltPhone src="/landing/ecran-evenements.webp" alt="La liste des événements dans Upvibe" rotate={7} delay={250} className="left-[150px] top-0 w-[168px] lg:left-[230px] lg:w-[210px]" />
             <TiltPhone src="/landing/ecran-carte-2026-10.webp" alt="La carte Upvibe avec les événements d'Abidjan" rotate={-5} delay={100} className="left-[22px] top-[26px] z-[2] w-[188px] lg:left-[40px] lg:w-[240px]" />
-            <Badge icon={MapPin} title="Events près de toi" sub="Soirées, concerts, brunchs" delay={1100} className="right-[10px] top-[96px]" />
-            <Badge icon={BellRing} title="Rappel" sub="1 h avant le début" dark delay={1450} className="bottom-[34px] right-[18px]" />
+            <Badge title="Brunch des débout" accent="13h" delay={1100} className="-left-1 top-[118px]" />
+            <Badge title="Fifa tournoi" accent="10h30" dot="cream" delay={1450} className="right-[6px] top-[236px]" />
+            <Badge title="Créative Meet'Up" accent="11h" delay={1800} className="bottom-[30px] left-[4px]" />
           </div>
         </section>
 
@@ -236,12 +229,12 @@ const Landing = () => {
         <section id="sortir" className="mx-auto max-w-6xl scroll-mt-16 pt-14 lg:grid lg:grid-cols-2 lg:items-center lg:gap-10 lg:px-5 lg:pt-24">
           <Reveal className="px-5 lg:px-0">
             <Eyebrow>01 · Pour sortir</Eyebrow>
-            <h2 className="mt-2.5 text-[38px] !font-[800] leading-[0.95] tracking-[-0.045em] lg:text-[64px]">Trouve.<br />Sors. Vibe.</h2>
-            <p className="mt-3 max-w-[460px] text-[15px] leading-[1.45] text-stone-500 lg:text-[18px]">Concerts, soirées, festivals, brunchs : tout ce qui se passe autour de toi, en un coup d'œil.</p>
+            <h2 className="mt-2.5 text-[46px] !font-[800] leading-[0.93] tracking-[-0.045em] lg:text-[64px]">Trouve.<br />Sors. Vibe.</h2>
+            <p className="mt-3 max-w-[460px] text-[17px] leading-[1.45] text-stone-500 lg:text-[18px]">Concerts, soirées, festivals, brunchs : tout ce qui se passe autour de toi, en un coup d'œil.</p>
             <ol className="mt-5 grid gap-2.5">
               {STEPS.map((step, i) => (
-                <Reveal as="li" key={step} effect="left" delay={300 + i * 220} className="flex items-center gap-3 font-display text-[18px] tracking-[-0.03em] lg:text-[22px]">
-                  <span className="flex size-7 flex-shrink-0 items-center justify-center rounded-full border-[1.5px] border-ink font-sans text-[12px] font-semibold">{i + 1}</span>
+                <Reveal as="li" key={step} delay={300 + i * 220} className="flex items-center gap-3 font-display text-[21px] tracking-[-0.03em] lg:text-[24px]">
+                  <span className="flex size-8 flex-shrink-0 items-center justify-center rounded-full border-[1.5px] border-ink font-sans text-[13px] font-semibold">{i + 1}</span>
                   {step}
                 </Reveal>
               ))}
@@ -250,9 +243,9 @@ const Landing = () => {
           <div className="relative mx-auto mt-8 w-full h-[400px] max-w-[420px] lg:mt-0 lg:h-[520px] lg:max-w-[520px]">
             <div className="absolute bottom-[40px] left-0 right-[54px] top-0 rounded-r-[34px] bg-white lg:rounded-[40px]" />
             <TiltPhone src="/landing/ecran-evenements.webp" alt="Tous les événements d'Abidjan dans Upvibe" rotate={4} className="right-[24px] top-[-10px] w-[190px] lg:right-[60px] lg:w-[240px]" />
-            <Badge icon={concertIcon} title="Concerts & live" sub="Showcases, grandes scènes" delay={500} className="left-[18px] top-[70px]" />
-            <Badge icon={soireeIcon} title="Soirées" sub="Clubs et lounges du week-end" delay={800} className="left-[30px] top-[150px]" />
-            <Badge icon={Route} title="Itinéraire" sub="Jusqu'au lieu, en un geste" dark delay={1100} className="left-[14px] top-[230px]" />
+            <Badge title="Concerts" accent="live" delay={500} className="left-[12px] top-[70px]" />
+            <Badge title="Soirées" accent="ce week-end" dot="cream" delay={800} className="left-[22px] top-[150px]" />
+            <Badge title="Itinéraire" accent="en 1 geste" delay={1100} className="left-[10px] top-[230px]" />
           </div>
         </section>
 
@@ -261,18 +254,18 @@ const Landing = () => {
           <div className="px-5 pt-7 lg:grid lg:grid-cols-2 lg:items-center lg:gap-10 lg:px-14 lg:pt-14">
             <Reveal>
               <Eyebrow className="text-lime">02 · Pour les organisateurs</Eyebrow>
-              <h2 className="mt-2.5 text-[38px] !font-[800] leading-[0.95] tracking-[-0.045em] text-parchment lg:text-[64px]">
+              <h2 className="mt-2.5 text-[46px] !font-[800] leading-[0.93] tracking-[-0.045em] text-parchment lg:text-[64px]">
                 Tu organises ?<br /><span className="text-lime">Fais-toi voir.</span>
               </h2>
-              <p className="mt-3 max-w-[480px] text-[15px] leading-[1.45] text-stone-300 lg:text-[18px]">
+              <p className="mt-3 max-w-[480px] text-[17px] leading-[1.45] text-stone-300 lg:text-[18px]">
                 Ton événement sur la carte, devant ceux qui cherchent quoi faire ce soir.
               </p>
               <Checks items={ORGANIZER_PERKS} dark />
             </Reveal>
             <div className="relative mt-5 h-[290px] lg:mt-0 lg:h-[500px]">
               <TiltPhone src="/landing/ecran-organisateur.webp" alt="Fiche d'un concert avec ses places Standard, VIP et VVIP" rotate={-4} className="right-[-30px] top-0 w-[200px] lg:right-[30px] lg:w-[250px]" />
-              <Badge icon={Ticket} title="VIP · 20 000 FCFA" sub="Standard, VIP, VVIP" delay={500} className="left-0 top-[40px]" />
-              <Badge icon={BellRing} title="Alerte envoyée" sub="aux personnes autour" delay={850} className="left-[16px] top-[112px]" />
+              <Badge title="VIP" accent="20 000 F" light delay={500} className="left-0 top-[36px]" />
+              <Badge title="Alerte" accent="envoyée" light delay={850} className="left-[14px] top-[112px]" />
             </div>
           </div>
         </section>
@@ -281,10 +274,10 @@ const Landing = () => {
         <section id="prestataires" className="mx-auto max-w-6xl scroll-mt-16 pt-14 lg:grid lg:grid-cols-2 lg:items-center lg:gap-10 lg:px-5 lg:pt-24">
           <Reveal className="px-5 lg:order-2 lg:px-0">
             <Eyebrow>03 · Pour les prestataires</Eyebrow>
-            <h2 className="mt-2.5 text-[38px] !font-[800] leading-[0.95] tracking-[-0.045em] lg:text-[64px]">
+            <h2 className="mt-2.5 text-[46px] !font-[800] leading-[0.93] tracking-[-0.045em] lg:text-[64px]">
               Tes services,<br /><span className="rounded-xl bg-lime px-1.5 [box-decoration-break:clone]">devant les clients.</span>
             </h2>
-            <p className="mt-3 max-w-[480px] text-[15px] leading-[1.45] text-stone-500 lg:text-[18px]">
+            <p className="mt-3 max-w-[480px] text-[17px] leading-[1.45] text-stone-500 lg:text-[18px]">
               DJ, traiteur, déco, photo, location : les organisateurs te trouvent par catégorie et te contactent direct.
             </p>
             <Checks items={PROVIDER_PERKS} />
@@ -292,22 +285,22 @@ const Landing = () => {
           <div className="relative mx-auto mt-8 w-full h-[400px] max-w-[420px] lg:order-1 lg:mt-0 lg:h-[520px] lg:max-w-[520px]">
             <div className="absolute bottom-[40px] left-[54px] right-0 top-0 rounded-l-[34px] bg-lime lg:rounded-[40px]" />
             <TiltPhone src="/landing/ecran-marketplace.webp" alt="Le Marketplace Upvibe : lieux, traiteurs, matériel" rotate={-4} className="left-[22px] top-[-6px] w-[190px] lg:left-[40px] lg:w-[240px]" />
-            <Badge icon={Phone} title="Appeler" sub="ou écrire sur WhatsApp" dark delay={500} className="right-[12px] top-[80px]" />
-            <Badge icon={ShoppingCart} title="Ton annonce" sub="Sur le Marketplace" delay={850} className="right-[24px] top-[160px]" />
+            <Badge title="Appeler" accent="WhatsApp" delay={500} className="right-[10px] top-[80px]" />
+            <Badge title="Ton annonce" accent="en ligne" dot="cream" delay={850} className="right-[18px] top-[160px]" />
           </div>
         </section>
 
         {/* 5. Pourquoi Upvibe : petites cartes en quinconce */}
         <section className="mx-auto max-w-6xl px-5 pb-14 pt-14 lg:py-24">
-          <Reveal><h2 className="max-w-[640px] text-[32px] !font-[800] leading-[0.98] tracking-[-0.04em] lg:text-[52px]">
+          <Reveal><h2 className="max-w-[640px] text-[38px] !font-[800] leading-[0.98] tracking-[-0.04em] lg:text-[52px]">
             Pourquoi tout Abidjan passe par <span className="rounded-xl bg-lime px-1.5">Upvibe</span>
           </h2></Reveal>
           <div className="mt-6 grid grid-cols-2 items-start gap-2.5 lg:grid-cols-4 lg:gap-4">
             {REASONS.map(({ icon: Icon, title, text }, i) => (
               <Reveal key={title} delay={i * 160} className={`rounded-[22px] bg-white p-4 lg:p-5 ${i % 2 ? 'mt-7 lg:mt-0' : ''}`}>
                 <span className="flex size-9 items-center justify-center rounded-full bg-parchment"><Icon size={18} strokeWidth={1.75} /></span>
-                <h3 className="mt-3 text-[16px] leading-[1.05] tracking-[-0.02em] lg:text-[20px]">{title}</h3>
-                <p className="mt-1.5 text-[12.5px] leading-snug text-stone-500 lg:text-[14px]">{text}</p>
+                <h3 className="mt-3 text-[18px] leading-[1.05] tracking-[-0.02em] lg:text-[21px]">{title}</h3>
+                <p className="mt-1.5 text-[14px] leading-snug text-stone-500 lg:text-[15px]">{text}</p>
               </Reveal>
             ))}
           </div>
@@ -316,7 +309,7 @@ const Landing = () => {
         {/* 6. Prochains événements (ouvrent l'installation) */}
         {events && events.length > 0 && (
           <section className="mx-auto max-w-6xl pb-12 lg:pb-20">
-            <Reveal><h2 className="px-5 text-[34px] !font-[700] tracking-[-0.04em] lg:text-[52px]">Bientôt à Abidjan</h2></Reveal>
+            <Reveal><h2 className="px-5 text-[40px] !font-[800] tracking-[-0.04em] lg:text-[52px]">Bientôt à Abidjan</h2></Reveal>
             <Reveal effect="right" delay={250} className="scrollbar-hide mt-5 flex gap-3 overflow-x-auto px-5 pb-1">
               {events.map((e) => {
                 const d = new Date(`${e.date}T12:00:00`);
@@ -331,8 +324,8 @@ const Landing = () => {
                         <p className="mt-0.5 font-display text-[24px]">{d.getDate()}</p>
                       </div>
                       <div className="min-w-0">
-                        <p className="truncate font-display text-[16px] tracking-[-0.02em]">{softCase(e.title)}</p>
-                        <p className="truncate text-[12px] text-stone-500">{[e.venue?.split(',')[0], e.time?.slice(0, 5).replace(':', 'h')].filter(Boolean).join(' · ')}</p>
+                        <p className="truncate font-display text-[18px] tracking-[-0.02em]">{softCase(e.title)}</p>
+                        <p className="truncate text-[13.5px] text-stone-500">{[e.venue?.split(',')[0], e.time?.slice(0, 5).replace(':', 'h')].filter(Boolean).join(' · ')}</p>
                       </div>
                     </div>
                   </button>
@@ -344,22 +337,22 @@ const Landing = () => {
 
         {/* 7. FAQ */}
         <section className="mx-auto max-w-3xl px-5 pb-12 pt-4 lg:pb-20">
-          <Reveal><h2 className="text-[34px] !font-[700] tracking-[-0.04em] lg:text-[52px]">Questions fréquentes</h2></Reveal>
+          <Reveal><h2 className="text-[40px] !font-[800] tracking-[-0.04em] lg:text-[52px]">Questions fréquentes</h2></Reveal>
           <div className="mt-4">
             {FAQ.map(({ q, a }, i) => (
               <details key={q} open={i === 0} className="group border-b border-stone-200 py-4">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[16px] font-semibold">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[17.5px] font-semibold">
                   {q}
                   <ChevronDown size={18} className="flex-shrink-0 transition-transform group-open:rotate-180" />
                 </summary>
-                <p className="mt-2 text-[14.5px] leading-snug text-stone-500">{a}</p>
+                <p className="mt-2 text-[16px] leading-snug text-stone-500">{a}</p>
               </details>
             ))}
           </div>
         </section>
       </main>
 
-      <footer className="bg-black px-5 pb-36 pt-8 text-[13px] leading-7 text-stone-400 lg:pb-10">
+      <footer className="bg-black px-5 pb-36 pt-8 text-[14.5px] leading-7 text-stone-400 lg:pb-10">
         <div className="mx-auto max-w-6xl">
           <Logo className="h-7" />
           <p>Toutes les sorties d'Abidjan sur une carte.</p>
@@ -372,10 +365,10 @@ const Landing = () => {
         <div className="mx-auto flex max-w-md items-center gap-3 rounded-[30px] bg-ink py-3 pl-3 pr-3 text-parchment shadow-[0_14px_30px_-10px_rgba(0,0,0,0.55)]">
           <img src="/icon-192.png" alt="" className="size-11 flex-shrink-0 rounded-[12px] border border-white/10" />
           <div className="min-w-0 flex-1 leading-tight">
-            <p className="text-[15px] font-semibold">Ce soir, tu fais quoi ?</p>
-            <p className="text-[12px] text-stone-400">Gratuit · installé en 3 gestes</p>
+            <p className="text-[16px] font-semibold">Ce soir, tu fais quoi ?</p>
+            <p className="text-[13px] text-stone-400">Gratuit · installé en 3 gestes</p>
           </div>
-          <button type="button" onClick={openInstallGuide} className="flex-shrink-0 rounded-full bg-lime px-4 py-2.5 text-[14px] font-bold text-ink active:scale-95">
+          <button type="button" onClick={openInstallGuide} className="flex-shrink-0 rounded-full bg-lime px-4 py-2.5 text-[15px] font-bold text-ink active:scale-95">
             Installer
           </button>
         </div>
