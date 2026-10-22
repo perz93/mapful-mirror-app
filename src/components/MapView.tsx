@@ -80,7 +80,6 @@ const MapView = () => {
   const routeLayerRef = useRef<L.Polyline | null>(null);
   const destinationMarkerRef = useRef<L.Marker | null>(null);
   const heatLayerRef = useRef<any>(null);
-  const didFlyToUserRef = useRef(false);
 
   // Expose map instance and route coords to RouteInfoPanel via state
   const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
@@ -99,7 +98,7 @@ const MapView = () => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
     const savedPosition = sessionStorage.getItem('mapPosition');
-    const DEFAULT_INITIAL_ZOOM = 9;
+    const DEFAULT_INITIAL_ZOOM = 10;
 
     let initialCenter: [number, number] = [5.3600, -4.0083];
     let initialZoom = DEFAULT_INITIAL_ZOOM;
@@ -293,11 +292,8 @@ const MapView = () => {
       userMarkerRef.current.setLatLng([lat, lng]);
     }
 
-    // Fly to user position on first fix (only if no saved map position)
-    if (!didFlyToUserRef.current && !sessionStorage.getItem('mapPosition')) {
-      didFlyToUserRef.current = true;
-      if (!routeActiveRef.current) map.flyTo([lat, lng], 15, { duration: 1.5 });
-    }
+    // Pas de zoom automatique sur la position : à l'ouverture on garde la vue
+    // d'ensemble d'Abidjan ; le bouton « ma position » sert à se recentrer.
   }, [geo.position]);
 
   // Listen for recenter → direct getCurrentPosition (must stay in user gesture stack)
