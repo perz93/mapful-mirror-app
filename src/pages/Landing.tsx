@@ -67,7 +67,7 @@ const REASONS = [
 ];
 
 const FAQ = [
-  { q: 'Upvibe est gratuit ?', a: 'Oui, totalement gratuit pour découvrir les sorties, publier tes événements et proposer tes services.' },
+  { q: 'Upvibe est gratuit ?', a: 'Oui, totalement gratuit pour découvrir les événements, publier tes événements et proposer tes services.' },
   { q: 'Je dois passer par le Play Store ?', a: "Non. Upvibe s'installe directement depuis ton navigateur (Chrome sur Android, Safari sur iPhone), en 3 gestes. Pas de store, pas de téléchargement lourd." },
   { q: 'Ça marche sur iPhone et Android ?', a: "Oui, sur tous les smartphones récents. Sur iPhone, ouvre upvibe.app dans Safari pour l'installer." },
   { q: 'Comment publier mon événement ?', a: "Installe l'app, crée ton compte puis touche « Créer un événement » : titre, date, lieu, photo et prix des places. Il apparaît aussitôt sur la carte." },
@@ -141,10 +141,10 @@ const Badge = ({ title, accent, dot = 'lime', light = false, delay = 0, classNam
   <div className={`absolute z-10 ${className}`}>
     <Reveal effect="pop" delay={delay}>
       <div
-        className={`landing-float flex items-center gap-2.5 whitespace-nowrap rounded-full py-2 pl-2 pr-5 text-[17px] font-bold shadow-[0_14px_30px_-12px_rgba(20,20,15,0.55)] lg:text-[19px] ${light ? 'bg-parchment text-ink' : 'bg-ink text-parchment'}`}
+        className={`landing-float flex items-center gap-2.5 whitespace-nowrap rounded-full py-1.5 pl-1.5 pr-4 text-[14.5px] font-bold shadow-[0_14px_30px_-12px_rgba(20,20,15,0.55)] lg:py-2 lg:pl-2 lg:pr-5 lg:text-[17px] ${light ? 'bg-parchment text-ink' : 'bg-ink text-parchment'}`}
         style={{ '--float-delay': `${delay / 1000}s` } as React.CSSProperties}
       >
-        <span className={`size-8 flex-shrink-0 rounded-full ${dot === 'lime' ? 'bg-lime' : light ? 'bg-ink' : 'bg-parchment'}`} />
+        <span className={`size-6 flex-shrink-0 rounded-full lg:size-7 ${dot === 'lime' ? 'bg-lime' : light ? 'bg-ink' : 'bg-parchment'}`} />
         {title}<span className={light ? 'text-[#6fae12]' : 'text-lime'}>· {accent}</span>
       </div>
     </Reveal>
@@ -203,19 +203,19 @@ const Landing = () => {
           <button type="button" onClick={openInstallGuide} className="rounded-full bg-lime px-4 py-2.5 text-[15px] font-semibold text-ink active:scale-95 lg:hidden">
             Installer l'appli
           </button>
-          <span className="hidden text-[14px] text-stone-300 lg:block">Toutes les sorties d'Abidjan sur une carte</span>
+          <span className="hidden text-[14px] text-stone-300 lg:block">Tous les événements d'Abidjan sur une carte</span>
         </div>
       </header>
 
       <main>
-        {/* 1. Ce soir, tu fais quoi ? : titre à gauche, téléphones qui débordent d'un panneau vert */}
+        {/* 1. On fait quoi à Abidjan ? : titre à gauche, téléphones qui débordent d'un panneau vert */}
         <section className="mx-auto max-w-6xl lg:grid lg:grid-cols-2 lg:items-center lg:gap-10 lg:px-5 lg:pt-14">
           <div className="px-5 pt-7 lg:px-0 lg:pt-0">
             <Reveal><h1 className="text-[58px] !font-[800] leading-[0.93] tracking-[-0.045em] lg:text-[84px]">
-              Ce soir,<br />tu fais <span className="inline-block rounded-xl bg-lime px-2 pb-0.5">quoi&nbsp;?</span>
+              On fait quoi<br />à <span className="inline-block rounded-xl bg-lime px-2 pb-0.5">Abidjan&nbsp;?</span>
             </h1></Reveal>
             <Reveal delay={220}><p className="mt-4 max-w-[330px] text-[18px] leading-snug text-stone-500 lg:max-w-[440px] lg:text-[20px]">
-              Sortir, organiser, proposer tes services : tout Abidjan sur une seule carte.
+              Brunchs, concerts, meetups, ateliers, cultes, soirées : tous les événements de la ville, sur une seule carte.
             </p></Reveal>
             <nav aria-label="Pour qui ?" className="mt-4 flex flex-wrap gap-2">
               {AUDIENCES.map(({ href, label }, i) => (
@@ -245,7 +245,7 @@ const Landing = () => {
           <Reveal className="px-5 lg:px-0">
             <Eyebrow>01 · Pour sortir</Eyebrow>
             <h2 className="mt-2.5 text-[46px] !font-[800] leading-[0.93] tracking-[-0.045em] lg:text-[64px]">Trouve.<br />Sors. Vibe.</h2>
-            <p className="mt-3 max-w-[460px] text-[17px] leading-[1.45] text-stone-500 lg:text-[18px]">Concerts, soirées, festivals, brunchs : tout ce qui se passe autour de toi, en un coup d'œil.</p>
+            <p className="mt-3 max-w-[460px] text-[17px] leading-[1.45] text-stone-500 lg:text-[18px]">Tout ce qui se passe autour de toi, en un coup d'œil : le lieu, l'heure et le prix.</p>
             <ol className="mt-5 grid gap-2.5">
               {STEPS.map((step, i) => (
                 <Reveal as="li" key={step} delay={300 + i * 220} className="flex items-center gap-3 font-display text-[21px] tracking-[-0.03em] lg:text-[24px]">
@@ -259,7 +259,7 @@ const Landing = () => {
             <div className="absolute bottom-[40px] left-0 right-[54px] top-0 rounded-r-[34px] bg-parchment lg:rounded-[40px]" />
             <TiltPhone src="/landing/ecran-itineraire.webp" alt="L'itinéraire jusqu'à une soirée sur la carte Upvibe" rotate={4} className="right-[24px] top-[-10px] w-[190px] lg:right-[60px] lg:w-[240px]" />
             <Badge title="Concerts" accent="live" delay={500} className="left-[12px] top-[70px]" />
-            <Badge title="Soirées" accent="ce week-end" dot="cream" delay={800} className="left-[22px] top-[150px]" />
+            <Badge title="Ateliers" accent="ce week-end" dot="cream" delay={800} className="left-[22px] top-[150px]" />
             <Badge title="Itinéraire" accent="en 1 geste" delay={1100} className="left-[10px] top-[230px]" />
           </div>
         </section>
@@ -275,7 +275,7 @@ const Landing = () => {
                 Tu organises ?<br /><span className="marker">Fais-toi voir.</span>
               </h2>
               <p className="mt-3 max-w-[480px] text-[17px] leading-[1.45] text-ink/80 lg:text-[18px]">
-                Ton événement sur la carte, devant ceux qui cherchent quoi faire ce soir.
+                Ton événement sur la carte, devant ceux qui cherchent où aller.
               </p>
               <ul className="mt-5 flex max-w-[480px] flex-wrap gap-2">
                 {ORGANIZER_PERKS.map(([before, accent, after], i) => (
