@@ -107,53 +107,78 @@ const Pair = ({ phone, loupe }: { phone: React.ReactNode; loupe: React.ReactNode
 
 const ShareIcon = ({ size = 14 }: { size?: number }) => <Share size={size} strokeWidth={2} />;
 
-/** Barre Safari (bas) */
+/** Icône « ≡ » du menu de la page, à gauche de l'adresse dans Safari (iOS 26) */
+const PageMenuIcon = ({ size = 10 }: { size?: number }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" aria-hidden>
+    <path d="M5 7h14M5 12h14M5 17h9" />
+  </svg>
+);
+
+/** Barre Safari d'iOS 26 (bas) : ‹  [≡ upvibe.app ⟳]  ⧉ */
 const SafariBar = ({ big = false, mark = false }: { big?: boolean; mark?: boolean }) =>
   big ? (
-    <div className="flex w-full items-center justify-around px-3" style={{ color: IOS_BLUE }}>
-      <span className="text-[22px] leading-none">‹</span>
-      <span className="flex size-[52px] items-center justify-center rounded-[14px] bg-lime text-ink">
-        <ShareIcon size={26} />
+    <div className="flex w-full items-center gap-1.5 px-2 text-black">
+      <span className="flex h-10 flex-1 items-center gap-1.5 rounded-full bg-white pl-1 pr-2.5 text-[12px] font-medium">
+        <span className="flex size-8 flex-shrink-0 items-center justify-center rounded-full bg-lime text-ink"><PageMenuIcon size={17} /></span>
+        upvibe.app
       </span>
-      <Copy size={20} strokeWidth={1.8} />
     </div>
   ) : (
-    <div className="absolute inset-x-0 bottom-0 flex h-[30px] items-start justify-around bg-[#f5f5f0]/95 pt-[6px] text-[9px]" style={{ color: IOS_BLUE }}>
-      <span>‹</span>
-      <span className="opacity-40">›</span>
-      <span className={`-mt-[2px] p-[2px] ${mark ? MARK : ''}`}><ShareIcon size={11} /></span>
-      <span>▢</span>
-      <span>⧉</span>
+    <div className="absolute inset-x-0 bottom-[3px] flex items-center gap-[3px] px-[4px] text-[7px] text-black">
+      <span className="flex size-[16px] flex-shrink-0 items-center justify-center rounded-full bg-white/95 shadow-sm">‹</span>
+      <span className="flex h-[16px] flex-1 items-center gap-[3px] rounded-full bg-white/95 px-[4px] text-[5.5px] font-medium shadow-sm">
+        <span className={`flex-shrink-0 rounded-full p-[1px] ${mark ? MARK : ''}`}><PageMenuIcon size={7} /></span>
+        upvibe.app
+      </span>
+      <span className="flex size-[16px] flex-shrink-0 items-center justify-center rounded-full bg-white/95 shadow-sm"><Copy size={7} strokeWidth={2} /></span>
     </div>
   );
 
+/** Ligne de menu iOS (icône à gauche, comme dans Safari 26) */
 const IosRow = ({ label, icon, active = false, big = false }: { label: string; icon: React.ReactNode; active?: boolean; big?: boolean }) => (
   <div
-    className={`flex items-center justify-between ${big ? 'gap-1.5 px-2 py-2 text-[10.5px]' : 'px-1.5 py-[3px] text-[6px]'} ${
-      active ? 'bg-[#eaf7cf] font-semibold text-black' : 'text-[#8e8e93]'
+    className={`flex items-center ${big ? 'gap-2 px-2.5 py-2 text-[11px]' : 'gap-1 px-1.5 py-[3px] text-[6px]'} ${
+      active ? 'bg-[#eaf7cf] font-semibold text-black' : 'text-[#3c3c43]'
     }`}
   >
+    <span className="flex-shrink-0">{icon}</span>
     <span className="whitespace-nowrap">{label}</span>
-    <span className={active ? 'text-black' : ''}>{icon}</span>
   </div>
 );
 
+/** Menu ≡ de Safari : Traduire, Partager, Signets… */
+const PageMenu = () => (
+  <div className="absolute inset-x-[6px] bottom-[24px] overflow-hidden rounded-[10px] bg-white/95 py-[2px] shadow-[0_6px_16px_rgba(20,20,15,0.25)]">
+    <IosRow label="Traduire" icon="文" />
+    <div className={MARK}><IosRow label="Partager" icon={<Share size={6} strokeWidth={2} />} active /></div>
+    <IosRow label="Ajouter à Signets" icon="▯" />
+    <IosRow label="Rechercher" icon="⌕" />
+  </div>
+);
+
+/** Feuille Partager ouverte (« En voir plus » déplié) */
 const ShareSheet = () => (
   <div className="absolute inset-x-0 bottom-0 rounded-t-[10px] bg-[#f2f2f7] pb-2 pt-1.5">
-    <div className="mb-1.5 flex gap-1 px-1.5">
-      {/* Icônes d'apps en crème (effet chargement), plus épuré */}
+    <div className="mb-1.5 flex justify-between px-1.5">
       {[0, 1, 2, 3].map((i) => (
-        <span key={i} className="size-[14px] rounded-[4px] bg-[#e6e3d3]" />
+        <span key={i} className={`size-[16px] rounded-full ${i === 3 ? `flex items-center justify-center bg-white text-[7px] ${MARK}` : 'bg-[#e6e3d3]'}`}>{i === 3 ? '⌄' : ''}</span>
       ))}
     </div>
     <div className="mx-1 overflow-hidden rounded-[6px] bg-white">
-      <IosRow label="Copier" icon="⧉" />
       <IosRow label="Ajouter aux favoris" icon="☆" />
+      <IosRow label="Rechercher" icon="⌕" />
     </div>
     <div className={`mx-1 mt-1 overflow-hidden bg-white ${MARK}`}>
       <IosRow label="Sur l'écran d'accueil" icon={<SquarePlus size={7} strokeWidth={2} />} active />
     </div>
   </div>
+);
+
+/** Interrupteur iOS */
+const IosToggle = ({ big = false }: { big?: boolean }) => (
+  <span className={`relative inline-block flex-shrink-0 rounded-full bg-[#34c759] ${big ? 'h-[22px] w-[38px]' : 'h-[8px] w-[14px]'}`}>
+    <span className={`absolute top-1/2 -translate-y-1/2 rounded-full bg-white shadow ${big ? 'right-[2px] size-[18px]' : 'right-[1px] size-[6px]'}`} />
+  </span>
 );
 
 const IosAddScreen = () => (
@@ -165,6 +190,9 @@ const IosAddScreen = () => (
     <div className="mx-2 mt-3 flex items-center gap-1.5 rounded-md bg-white p-1.5">
       <img src="/icon-192.png" alt="" className="size-6 rounded-[6px]" />
       <span className="text-[7px] font-medium">Upvibe</span>
+    </div>
+    <div className={`mx-2 mt-1.5 flex items-center justify-between rounded-md bg-white px-1.5 py-1 text-[5.5px] font-medium ${MARK}`}>
+      Ouvrir comme app web <IosToggle />
     </div>
   </div>
 );
@@ -208,8 +236,8 @@ const ChromeDialog = () => (
 
 const IOS_STEPS = [
   {
-    title: 'Touche Partager',
-    hint: "L'icône carrée avec une flèche, dans la barre de Safari (ou « ⋯ » puis Partager).",
+    title: 'Touche ≡ dans la barre d\'adresse',
+    hint: "En bas de Safari, à gauche de « upvibe.app ». Sur un iPhone plus ancien, touche directement Partager.",
     visual: (
       <Pair
         phone={<MiniPhone><SafariBar mark /></MiniPhone>}
@@ -218,30 +246,49 @@ const IOS_STEPS = [
     ),
   },
   {
-    title: "Choisis « Sur l'écran d'accueil »",
-    hint: "Fais défiler la liste du menu Partager jusqu'à cette option.",
+    title: 'Touche « Partager »',
+    hint: 'Dans le menu qui s\'ouvre, juste sous « Traduire ».',
     visual: (
       <Pair
-        phone={<MiniPhone><ShareSheet /></MiniPhone>}
+        phone={<MiniPhone><PageMenu /></MiniPhone>}
         loupe={
-          <div className="w-[118px] overflow-hidden rounded-xl bg-white">
-            <IosRow big label="Favoris" icon="☆" />
-            <IosRow big active label="Écran d'accueil" icon={<SquarePlus size={13} strokeWidth={2} />} />
+          <div className="w-[122px] overflow-hidden rounded-xl bg-white">
+            <IosRow big label="Traduire" icon="文" />
+            <IosRow big active label="Partager" icon={<Share size={13} strokeWidth={2} />} />
           </div>
         }
       />
     ),
   },
   {
-    title: 'Touche « Ajouter »',
-    hint: "En haut à droite. L'icône Upvibe apparaît sur ton écran d'accueil.",
+    title: "« En voir plus », puis « Sur l'écran d'accueil »",
+    hint: "Touche le rond « En voir plus » (flèche vers le bas) pour déplier la liste.",
+    visual: (
+      <Pair
+        phone={<MiniPhone><ShareSheet /></MiniPhone>}
+        loupe={
+          <div className="flex w-[124px] flex-col items-center gap-2">
+            <span className="flex size-9 items-center justify-center rounded-full bg-white text-[16px] ring-2 ring-lime">⌄</span>
+            <div className="w-full overflow-hidden rounded-xl bg-white">
+              <IosRow big active label="Écran d'accueil" icon={<SquarePlus size={13} strokeWidth={2} />} />
+            </div>
+          </div>
+        }
+      />
+    ),
+  },
+  {
+    title: 'Laisse « Ouvrir comme app web », puis « Ajouter »',
+    hint: "L'interrupteur doit rester vert. L'icône Upvibe apparaît sur ton écran d'accueil.",
     visual: (
       <Pair
         phone={<MiniPhone><IosAddScreen /></MiniPhone>}
         loupe={
-          <div className="flex items-center gap-3 text-[14px]">
-            <span style={{ color: IOS_BLUE }} className="opacity-60">Annuler</span>
-            <span className="rounded-lg bg-lime px-2.5 py-1 font-bold" style={{ color: IOS_BLUE }}>Ajouter</span>
+          <div className="flex w-[124px] flex-col items-center gap-2.5">
+            <div className="flex w-full items-center justify-between rounded-xl bg-white px-2 py-2 text-[10px] font-medium leading-tight">
+              App web <IosToggle big />
+            </div>
+            <span className="rounded-lg bg-lime px-2.5 py-1 text-[14px] font-bold" style={{ color: IOS_BLUE }}>Ajouter</span>
           </div>
         }
       />
@@ -440,7 +487,7 @@ const InstallGuide = () => {
             <img src="/icon-192.png" alt="" className="size-11 rounded-[13px] border border-stone-200 object-cover" />
             <div className="min-w-0 flex-1">
               <h2 id="install-title" className="text-[22px] leading-none tracking-tighter text-ink">Installe Upvibe</h2>
-              <p className="mt-1 text-[12.5px] text-stone-500">Gratuit · sans store · 3 gestes</p>
+              <p className="mt-1 text-[12.5px] text-stone-500">Gratuit · sans store · 1 minute</p>
             </div>
             <button type="button" onClick={close} aria-label="Fermer" className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-parchment text-ink active:scale-95">
               <X size={18} strokeWidth={2} />
