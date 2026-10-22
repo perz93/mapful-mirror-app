@@ -34,6 +34,31 @@ const PROVIDER_PERKS = [
   { title: 'Un seul lien', text: 'Ton profil regroupe toutes tes annonces, prêt à partager.' },
 ];
 
+/** Réseaux sociaux d'Upvibe (pied de page) */
+const SOCIALS = [
+  {
+    name: 'Instagram',
+    href: 'https://www.instagram.com/upvibe.app',
+    icon: (
+      <g fill="none" stroke="currentColor" strokeWidth="2">
+        <rect x="3" y="3" width="18" height="18" rx="5" />
+        <circle cx="12" cy="12" r="4" />
+        <circle cx="17.3" cy="6.7" r="0.6" fill="currentColor" />
+      </g>
+    ),
+  },
+  {
+    name: 'TikTok',
+    href: 'https://www.tiktok.com/@upvibe.app',
+    icon: <path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.1v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.7a5.7 5.7 0 1 0 4.9 5.7V9a7.3 7.3 0 0 0 4.3 1.4V7.3a4.3 4.3 0 0 1-3.2-1.5z" />,
+  },
+  {
+    name: 'Facebook',
+    href: 'https://www.facebook.com/share/1EAbxCtUiG/',
+    icon: <path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.3v7A10 10 0 0 0 22 12z" />,
+  },
+];
+
 const REASONS = [
   { icon: BellRing, title: 'Alertes près de toi', text: 'Un événement à 800 m ? Ton téléphone te prévient, et te rappelle 1 h avant.' },
   { icon: MapPin, title: 'Tout sur la carte', text: 'Plus besoin de fouiller les statuts WhatsApp : lieu, heure et prix au même endroit.' },
@@ -363,8 +388,17 @@ const Landing = () => {
       <footer className="bg-black px-5 pb-36 pt-8 text-[14.5px] leading-7 text-stone-400 lg:pb-10">
         <div className="mx-auto max-w-6xl">
           <Logo className="h-7" />
-          <p>Toutes les sorties d'Abidjan sur une carte.</p>
+          <p>Tous les événements d'Abidjan sur une carte.</p>
           <p><a href="mailto:contact@upvibe.app" className="hover:text-parchment">contact@upvibe.app</a> · Abidjan, Côte d'Ivoire</p>
+          <ul className="mt-4 flex gap-2.5">
+            {SOCIALS.map(({ name, href, icon }) => (
+              <li key={name}>
+                <a href={href} target="_blank" rel="noopener noreferrer" aria-label={`Upvibe sur ${name}`} className="flex size-11 items-center justify-center rounded-full bg-white/10 text-parchment transition-colors hover:bg-lime hover:text-ink active:scale-95">
+                  <svg viewBox="0 0 24 24" className="size-5" fill="currentColor" aria-hidden>{icon}</svg>
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
       </footer>
 
