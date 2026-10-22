@@ -7,6 +7,9 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 const UPDATED_KEY = 'vibe-just-updated';
 
+/** Bords des lettres de splash-logo.png affiché en 240 × 120 : u, p, v, i (avec l'épingle), b, e, point */
+const LOGO_SLICES: Array<[number, number]> = [[0, 60], [60, 94], [94, 124], [124, 138], [138, 172], [172, 202], [202, 240]];
+
 /** Bandeau « Nouvelle version » : l'utilisateur met à jour quand il veut. */
 const UpdateBanner = () => {
   const { t } = useLanguage();
@@ -45,12 +48,28 @@ const UpdateBanner = () => {
     return createPortal(
       <div className="fixed inset-0 z-[10000] overflow-hidden bg-black animate-fade-in" role="status" aria-live="polite">
         {/* Logo à la même place que sur le splash (centré) : pas de saut au rechargement */}
-        <img
-          src="/splash-logo.png"
-          alt="Upvibe"
+        <div
+          role="img"
+          aria-label="Upvibe"
           className="absolute left-1/2 top-1/2 h-[120px] w-[240px]"
           style={{ transform: 'translate(-50%, -55%)' }}
-        />
+        >
+          {/* Le logo découpé lettre par lettre : chaque tranche saute à son tour (vague) */}
+          {LOGO_SLICES.map(([from, to], i) => (
+            <span
+              key={from}
+              className="logo-wave absolute top-0 h-full"
+              style={{
+                left: from,
+                width: to - from,
+                background: 'url(/splash-logo.png) no-repeat',
+                backgroundSize: '240px 120px',
+                backgroundPosition: `-${from}px 0`,
+                animationDelay: `${i * 0.08}s`,
+              }}
+            />
+          ))}
+        </div>
         <div className="absolute inset-x-0 top-1/2 mt-16 flex flex-col items-center">
           <p className="text-[15px] font-semibold text-[#f5f5eb]">{t('update.installing')}</p>
           <div className="mt-3.5 flex gap-1.5" aria-hidden>
