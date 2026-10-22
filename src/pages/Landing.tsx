@@ -28,9 +28,9 @@ const ORGANIZER_PERKS = [
 ];
 
 const PROVIDER_PERKS = [
-  'Ton annonce avec photos, prix et quartier, visible par tous les organisateurs.',
-  'Les clients te contactent par appel, WhatsApp ou e-mail, sans intermédiaire.',
-  "Ton profil regroupe tes annonces : un seul lien à partager.",
+  { title: 'Ta vitrine', text: 'Photos, prix et quartier : ton annonce est vue par tous les organisateurs.' },
+  { title: 'Contact direct', text: 'Appel, WhatsApp ou e-mail. Pas d’intermédiaire, pas de commission.' },
+  { title: 'Un seul lien', text: 'Ton profil regroupe toutes tes annonces, prêt à partager.' },
 ];
 
 const REASONS = [
@@ -242,7 +242,7 @@ const Landing = () => {
           </Reveal>
           <div className="relative mx-auto mt-8 w-full h-[400px] max-w-[420px] lg:mt-0 lg:h-[520px] lg:max-w-[520px]">
             <div className="absolute bottom-[40px] left-0 right-[54px] top-0 rounded-r-[34px] bg-white lg:rounded-[40px]" />
-            <TiltPhone src="/landing/ecran-evenements.webp" alt="Tous les événements d'Abidjan dans Upvibe" rotate={4} className="right-[24px] top-[-10px] w-[190px] lg:right-[60px] lg:w-[240px]" />
+            <TiltPhone src="/landing/ecran-itineraire.webp" alt="L'itinéraire jusqu'à une soirée sur la carte Upvibe" rotate={4} className="right-[24px] top-[-10px] w-[190px] lg:right-[60px] lg:w-[240px]" />
             <Badge title="Concerts" accent="live" delay={500} className="left-[12px] top-[70px]" />
             <Badge title="Soirées" accent="ce week-end" dot="cream" delay={800} className="left-[22px] top-[150px]" />
             <Badge title="Itinéraire" accent="en 1 geste" delay={1100} className="left-[10px] top-[230px]" />
@@ -275,16 +275,26 @@ const Landing = () => {
           <Reveal className="px-5 lg:order-2 lg:px-0">
             <Eyebrow>03 · Pour les prestataires</Eyebrow>
             <h2 className="mt-2.5 text-[46px] !font-[800] leading-[0.93] tracking-[-0.045em] lg:text-[64px]">
-              Tes services,<br /><span className="rounded-xl bg-lime px-1.5 [box-decoration-break:clone]">devant les clients.</span>
+              Abidjan fait la fête.<br /><span className="marker">Fais-en ton business.</span>
             </h2>
             <p className="mt-3 max-w-[480px] text-[17px] leading-[1.45] text-stone-500 lg:text-[18px]">
               DJ, traiteur, déco, photo, location : les organisateurs te trouvent par catégorie et te contactent direct.
             </p>
-            <Checks items={PROVIDER_PERKS} />
+            <ol className="mt-6 max-w-[520px] border-t-[1.5px] border-ink">
+              {PROVIDER_PERKS.map(({ title, text }, i) => (
+                <Reveal as="li" key={title} delay={i * 180} className="flex gap-4 border-b border-ink/15 py-4">
+                  <span className="w-7 flex-shrink-0 pt-1 font-display text-[15px] font-bold tabular-nums text-stone-400">0{i + 1}</span>
+                  <div>
+                    <p className="font-display text-[24px] font-bold leading-none tracking-[-0.03em]"><span className="marker">{title}</span></p>
+                    <p className="mt-1.5 text-[16.5px] leading-snug text-stone-500">{text}</p>
+                  </div>
+                </Reveal>
+              ))}
+            </ol>
           </Reveal>
           <div className="relative mx-auto mt-8 w-full h-[400px] max-w-[420px] lg:order-1 lg:mt-0 lg:h-[520px] lg:max-w-[520px]">
             <div className="absolute bottom-[40px] left-[54px] right-0 top-0 rounded-l-[34px] bg-lime lg:rounded-[40px]" />
-            <TiltPhone src="/landing/ecran-marketplace.webp" alt="Le Marketplace Upvibe : lieux, traiteurs, matériel" rotate={-4} className="left-[22px] top-[-6px] w-[190px] lg:left-[40px] lg:w-[240px]" />
+            <TiltPhone src="/landing/ecran-marketplace-2026-10.webp" alt="Le Marketplace Upvibe : lieux, traiteurs, matériel" rotate={-4} className="left-[22px] top-[-6px] w-[190px] lg:left-[40px] lg:w-[240px]" />
             <Badge title="Appeler" accent="WhatsApp" delay={500} className="right-[10px] top-[80px]" />
             <Badge title="Ton annonce" accent="en ligne" dot="cream" delay={850} className="right-[18px] top-[160px]" />
           </div>
