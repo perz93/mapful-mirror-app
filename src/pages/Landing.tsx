@@ -121,7 +121,8 @@ const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) =
 };
 
 const Eyebrow = ({ children, className = 'text-ink' }: { children: React.ReactNode; className?: string }) => (
-  <p className={`text-[13px] font-bold uppercase tracking-[0.12em] ${className}`}>{children}</p>
+  // Souligné lime épais, décalé sous les lettres
+  <p className={`text-[13px] font-bold uppercase tracking-[0.12em] underline decoration-lime decoration-[3px] underline-offset-[6px] ${className}`}>{children}</p>
 );
 
 /** Sur ordinateur : on installe depuis son téléphone en scannant le QR code */
