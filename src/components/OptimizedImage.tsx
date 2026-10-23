@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import { markShown, wasShown } from '@/lib/imageMemory';
 
 interface OptimizedImageProps {
   src: string;
@@ -29,10 +28,8 @@ const OptimizedImage = ({
   onClick,
   style,
 }: OptimizedImageProps) => {
-  // Déjà vue pendant la session : affichée directement, sans reflet ni fondu
-  const [instant] = useState(() => wasShown(src));
-  const [loaded, setLoaded] = useState(instant);
-  const [inView, setInView] = useState(instant);
+  const [loaded, setLoaded] = useState(false);
+  const [inView, setInView] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   // IntersectionObserver for true lazy loading (works for bg images too)
@@ -67,14 +64,14 @@ const OptimizedImage = ({
     let cancelled = false;
     const img = new Image();
     img.src = src;
-    const done = () => { markShown(src); if (!cancelled) setLoaded(true); };
+    const done = () => { if (!cancelled) setLoaded(true); };
     img.decode().then(done, done);
     return () => { cancelled = true; };
   }, [asBackground, inView, src]);
 
   // Mode <img> : attendre le décodage (sur iOS `load` arrive avant la peinture).
   const handleImgLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const done = () => { markShown(src); setLoaded(true); };
+    const done = () => setLoaded(true);
     e.currentTarget.decode().then(done, done);
   };
 
@@ -92,12 +89,7 @@ const OptimizedImage = ({
         }}
         onClick={onClick}
       >
-        {!instant && (
-          <div
-            aria-hidden
-            className={`absolute inset-0 skeleton pointer-events-none ${loaded ? 'opacity-0' : 'opacity-100'}`}
-          />
-        )}
+        {!loaded && <div aria-hidden className="absolute inset-0 skeleton pointer-events-none" />}
         {children}
       </div>
     );
@@ -107,6 +99,8 @@ const OptimizedImage = ({
 
   return (
     <div ref={ref} className={`relative overflow-hidden ${className}`} style={style} onClick={onClick}>
+      {/* Bloc crème SOUS l'image : jamais de blanc, et l'image le recouvre d'un coup, sans fondu */}
+      {!loaded && <div aria-hidden className="absolute inset-0 skeleton pointer-events-none" />}
       {inView && (
         <img
           src={optimizedSrc}
@@ -117,13 +111,7 @@ const OptimizedImage = ({
           decoding="async"
           onLoad={handleImgLoad}
           onError={() => setLoaded(true)}
-          className={`w-full h-full object-cover ${loaded ? 'opacity-100' : 'opacity-0'}`}
-        />
-      )}
-      {!instant && (
-        <div
-          aria-hidden
-          className={`absolute inset-0 skeleton pointer-events-none ${loaded ? 'opacity-0' : 'opacity-100'}`}
+          className="relative w-full h-full object-cover"
         />
       )}
       {children}
