@@ -16,7 +16,7 @@ interface ShimmerImageProps {
  *
  * Le bloc crème reste affiché jusqu'au DÉCODAGE de l'image, pas seulement jusqu'à
  * l'événement `load` : sur iOS, `load` arrive avant que l'image soit peinte, ce qui
- * laissait apparaître le fond blanc de la carte. Il disparaît ensuite en fondu.
+ * laissait apparaître le fond blanc de la carte. L'image apparaît ensuite d'un coup, sans fondu.
  */
 const ShimmerImage = ({ src, alt, className = '', onClick, loading = 'lazy', position }: ShimmerImageProps) => {
   const imgRef = useRef<HTMLImageElement>(null);
@@ -52,12 +52,12 @@ const ShimmerImage = ({ src, alt, className = '', onClick, loading = 'lazy', pos
         onLoad={markReady}
         onError={() => setReady(true)}
         style={position ? { objectPosition: position } : undefined}
-        className={`w-full h-full object-cover ${instant ? '' : 'transition-opacity duration-500'} ${ready ? 'opacity-100' : 'opacity-0'}`}
+        className={`w-full h-full object-cover ${ready ? 'opacity-100' : 'opacity-0'}`}
       />
       {!instant && (
         <div
           aria-hidden
-          className={`absolute inset-0 skeleton pointer-events-none transition-opacity duration-500 ${ready ? 'opacity-0' : 'opacity-100'}`}
+          className={`absolute inset-0 skeleton pointer-events-none ${ready ? 'opacity-0' : 'opacity-100'}`}
         />
       )}
     </div>

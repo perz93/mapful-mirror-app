@@ -89,7 +89,7 @@ const CategoryPage = ({
                   const showStatus = status && (status.live || ['status.soon', 'status.inHours', 'status.tomorrow'].includes(status.key));
                   return (
                     <article
-                      className="card-shadow overflow-hidden rounded-[26px] bg-white p-2 text-ink animate-fade-in"
+                      className="card-shadow overflow-hidden rounded-[26px] bg-white p-2 text-ink"
                       style={{ animationDelay: `${i * 0.06}s` }}
                     >
                       <div className="relative h-44 overflow-hidden rounded-[20px]">

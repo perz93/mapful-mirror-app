@@ -43,7 +43,7 @@ export const ListCardSkeleton = () => (
 
 /** Skeleton for EventDetails page */
 export const EventDetailsSkeleton = () => (
-  <div className="min-h-screen bg-parchment dark:bg-background-dark animate-fade-in">
+  <div className="min-h-screen bg-parchment dark:bg-background-dark">
     <div className="mx-auto max-w-md">
       <TopBar right={3} />
       {/* Billet : photo, pastilles, titre, pointillés, grille date / heure / lieu / prix */}

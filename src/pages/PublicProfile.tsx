@@ -117,7 +117,7 @@ const PublicProfile = () => {
 
   if (!loaded) {
     return (
-      <div className="min-h-screen bg-parchment animate-fade-in">
+      <div className="min-h-screen bg-parchment">
         <div className="mx-auto max-w-md">
           <div className="skeleton h-[230px]" />
           <div className="px-4">

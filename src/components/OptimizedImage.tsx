@@ -16,7 +16,7 @@ interface OptimizedImageProps {
 
 /**
  * Adds srcset for Unsplash/Supabase images, lazy loading,
- * fade-in on load, and a lightweight blur placeholder.
+ * a cream placeholder until decoded, then the image appears at once (no fade).
  */
 const OptimizedImage = ({
   src,
@@ -95,7 +95,7 @@ const OptimizedImage = ({
         {!instant && (
           <div
             aria-hidden
-            className={`absolute inset-0 skeleton pointer-events-none transition-opacity duration-500 ${loaded ? 'opacity-0' : 'opacity-100'}`}
+            className={`absolute inset-0 skeleton pointer-events-none ${loaded ? 'opacity-0' : 'opacity-100'}`}
           />
         )}
         {children}
@@ -117,13 +117,13 @@ const OptimizedImage = ({
           decoding="async"
           onLoad={handleImgLoad}
           onError={() => setLoaded(true)}
-          className={`w-full h-full object-cover ${instant ? '' : 'transition-opacity duration-500'} ${loaded ? 'opacity-100' : 'opacity-0'}`}
+          className={`w-full h-full object-cover ${loaded ? 'opacity-100' : 'opacity-0'}`}
         />
       )}
       {!instant && (
         <div
           aria-hidden
-          className={`absolute inset-0 skeleton pointer-events-none transition-opacity duration-500 ${loaded ? 'opacity-0' : 'opacity-100'}`}
+          className={`absolute inset-0 skeleton pointer-events-none ${loaded ? 'opacity-0' : 'opacity-100'}`}
         />
       )}
       {children}
