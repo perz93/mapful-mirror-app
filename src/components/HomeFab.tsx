@@ -53,7 +53,7 @@ const HomeFab = () => {
       type="button"
       onClick={goHome}
       aria-label={lang === 'fr' ? 'Retour à la carte' : 'Back to map'}
-      className="map-shadow fixed right-4 z-50 flex size-12 items-center justify-center rounded-full bg-ink text-lime animate-scale-in active:scale-95 transition-transform"
+      className="home-fab map-shadow fixed right-4 z-50 flex size-12 items-center justify-center rounded-full bg-ink text-lime animate-scale-in active:scale-95 transition-transform"
       style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 92px)' }}
     >
       <MapIcon size={20} strokeWidth={1.75} />

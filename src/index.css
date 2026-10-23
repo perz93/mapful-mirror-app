@@ -1222,3 +1222,6 @@ vercel-live-feedback,
   -webkit-box-decoration-break: clone;
   padding: 0 0.06em;
 }
+
+/* Menu des contacts ouvert : le bouton « carte » flottant se cache */
+.contact-menu-open .home-fab { display: none; }
