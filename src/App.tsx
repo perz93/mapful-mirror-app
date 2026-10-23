@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, type ComponentType } from "react";
+import { lazy, Suspense, useEffect, useState, type ComponentType } from "react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -20,9 +20,19 @@ import Index from "./pages/Index";
 // Pages secondaires chargées à la demande : le démarrage n'exécute que la carte.
 // Elles sont toutes préchargées juste après, en tâche de fond, pour s'ouvrir sans attente.
 const pageLoaders: Array<() => Promise<unknown>> = [];
-const lazyPage = <T extends ComponentType>(load: () => Promise<{ default: T }>) => {
-  pageLoaders.push(load);
-  return lazy(load);
+const lazyPage = (load: () => Promise<{ default: ComponentType }>) => {
+  // Une fois préchargée, la page est rendue directement : pas de passage par
+  // <Suspense> (React 18 suspend toujours un composant lazy au premier rendu).
+  let Loaded: ComponentType | null = null;
+  const loadOnce = () => load().then((m) => { Loaded = m.default; return m; });
+  pageLoaders.push(loadOnce);
+  const Lazy = lazy(loadOnce);
+  // Choix figé au montage : pas de bascule Lazy → Loaded en cours de route (qui remonterait la page)
+  const Page = () => {
+    const [Component] = useState<ComponentType>(() => Loaded ?? Lazy);
+    return <Component />;
+  };
+  return Page;
 };
 const preloadPages = () => pageLoaders.forEach((load) => { load().catch(() => {}); });
 
@@ -111,7 +121,7 @@ const AppContent = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <Sonner />
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true }}>
       <LanguageProvider>
       <AuthProvider>
         <SearchProvider>
