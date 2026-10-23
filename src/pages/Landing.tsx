@@ -90,7 +90,8 @@ const PhoneSection = ({ id, eyebrow, title, lead, highlight, bg, blob, highlight
       <Eyebrow>{eyebrow}</Eyebrow>
       <h2 className="mt-2.5 text-[38px] !font-[800] leading-[1] tracking-[-0.04em] lg:text-[52px]">{title}</h2>
       <p className="mt-3 text-[17px] leading-[1.5] text-stone-600 lg:text-[18px]">
-        {lead} <span className={`rounded-lg px-1.5 py-0.5 text-ink [box-decoration-break:clone] ${highlightClass}`}>{highlight}</span>
+        {/* Surlignage d'un seul bloc : jamais un mot isolé en fin de ligne */}
+        {lead} <span className={`inline-block rounded-lg px-1.5 py-0.5 text-ink ${highlightClass}`}>{highlight}</span>
       </p>
     </div>
     <div className="relative mx-auto mt-6 h-[360px] w-full max-w-[400px] lg:h-[460px] lg:max-w-[480px]">
@@ -270,7 +271,10 @@ const Landing = () => {
           blob="#a6e22e"
           phone="/landing/ecran-marketplace-2026-10.webp"
           alt="Le Marketplace Upvibe : lieux, traiteurs, matériel"
-          badges={[{ title: 'Appeler', accent: 'WhatsApp', className: 'left-0 top-[100px] lg:left-4' }]}
+          badges={[
+            { title: 'Appeler', accent: 'WhatsApp', className: 'left-0 top-[100px] lg:left-4' },
+            { title: 'E-mail', accent: 'direct', className: 'right-0 top-[230px] lg:right-4' },
+          ]}
         />
 
         <Wave top="#ffffff" bottom="#a6e22e" flip />
