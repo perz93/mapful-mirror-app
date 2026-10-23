@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { BellRing, ChevronDown, MapPin, Route, Smartphone } from 'lucide-react';
+import { ChevronDown, MapPin } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { openInstallGuide } from '@/components/InstallGuide';
 import ShimmerImage from '@/components/ShimmerImage';
@@ -7,30 +7,16 @@ import { focusPosition } from '@/lib/imageFocus';
 import { softCase } from '@/lib/softCase';
 
 /**
- * Page vitrine (« / » dans un navigateur). Elle s'adresse aux trois publics
+ * Page vitrine (« / » dans un navigateur), inspirée de Glovo : contenu centré,
+ * vagues entre les sections, puces arrondies. Elle s'adresse aux trois publics
  * d'Upvibe (ceux qui sortent, les organisateurs, les prestataires) et ne
- * propose qu'une action : installer l'app (en-tête et bandeau flottant).
+ * propose qu'une action : installer l'app. Aucune animation.
  */
 
 const AUDIENCES = [
   { href: '#sortir', label: 'Je sors' },
   { href: '#organiser', label: "J'organise" },
   { href: '#prestataires', label: 'Je propose mes services' },
-];
-
-const STEPS = ['Ouvre la carte', 'Choisis ton event', "Vas-y avec l'itinéraire"];
-
-/** Pastilles crème, comme les catégories de l'app : [avant, accent, après] */
-const ORGANIZER_PERKS = [
-  ['Publié en ', '2 min', ''],
-  ['Alerte ', 'autour', ''],
-  ['Standard · ', 'VIP', ' · VVIP'],
-];
-
-const PROVIDER_PERKS = [
-  { title: 'Ta vitrine', text: 'Photos, prix et quartier : ton annonce est vue par tous les organisateurs.' },
-  { title: 'Contact direct', text: 'Appel, WhatsApp ou e-mail. Pas d’intermédiaire, pas de commission.' },
-  { title: 'Un seul lien', text: 'Ton profil regroupe toutes tes annonces, prêt à partager.' },
 ];
 
 /** Réseaux sociaux d'Upvibe (pied de page) */
@@ -58,13 +44,6 @@ const SOCIALS = [
   },
 ];
 
-const REASONS = [
-  { icon: BellRing, title: 'Alertes près de toi', text: 'Un événement à 800 m ? Ton téléphone te prévient, et te rappelle 1 h avant.' },
-  { icon: MapPin, title: 'Tout sur la carte', text: 'Plus besoin de fouiller les statuts WhatsApp : lieu, heure et prix au même endroit.' },
-  { icon: Route, title: 'Itinéraire en un geste', text: 'Tu touches « Itinéraire », tu y vas. Même dans un quartier que tu ne connais pas.' },
-  { icon: Smartphone, title: 'Gratuit, sans store', text: 'Installé en une minute depuis ton navigateur, presque sans place sur ton téléphone.' },
-];
-
 const FAQ = [
   { q: 'Upvibe est gratuit ?', a: 'Oui, totalement gratuit pour découvrir les événements, publier tes événements et proposer tes services.' },
   { q: 'Je dois passer par le Play Store ?', a: "Non. Upvibe s'installe directement depuis ton navigateur (Chrome sur Android, Safari sur iPhone), en une minute. Pas de store, pas de téléchargement lourd." },
@@ -79,13 +58,52 @@ const FAQ_JSON_LD = JSON.stringify({
   mainEntity: FAQ.map(({ q, a }) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
 });
 
+const CATEGORIES = ['Soirées', 'Concerts', 'Festivals', 'Brunch', 'Meetups', 'Ateliers', 'Religieux', 'Sport'];
 
-type RevealEffect = 'up' | 'rise' | 'left' | 'right' | 'pop';
+/** Séparation en vague entre deux sections (couleur du haut → couleur du bas) */
+const Wave = ({ top, bottom, flip = false }: { top: string; bottom: string; flip?: boolean }) => (
+  <svg aria-hidden viewBox="0 0 390 60" preserveAspectRatio="none" className="block h-12 w-full lg:h-20" style={{ background: flip ? top : bottom }}>
+    {/* Sans flip : la couleur du haut descend en arrondi ; avec flip : celle du bas remonte */}
+    <path d={flip ? 'M0,60 L390,60 L390,10 C250,-10 120,10 0,50 Z' : 'M0,0 L390,0 L390,20 C260,70 120,70 0,30 Z'} fill={flip ? bottom : top} />
+  </svg>
+);
 
-/** Bloc de mise en page (plus d'animation d'apparition : le site s'affiche tel quel) */
-const Reveal = ({ children, className = '', as: Tag = 'div' }: {
-  children: React.ReactNode; effect?: RevealEffect; delay?: number; className?: string; as?: 'div' | 'li' | 'span';
-}) => <Tag className={className || undefined}>{children}</Tag>;
+const Logo = ({ className = 'h-8' }: { className?: string }) => (
+  <img src="/landing/logo.png" alt="Upvibe" width={278} height={96} className={`w-auto ${className}`} />
+);
+
+/** Pastille posée sur les téléphones, comme les marqueurs de la carte */
+const Badge = ({ title, accent, className = '' }: { title: string; accent: string; className?: string }) => (
+  <div className={`absolute z-10 flex items-center gap-2 whitespace-nowrap rounded-full bg-ink py-1.5 pl-1.5 pr-4 text-[14.5px] font-bold text-parchment shadow-[0_14px_30px_-12px_rgba(20,20,15,0.55)] lg:text-[16px] ${className}`}>
+    <span className="size-6 flex-shrink-0 rounded-full bg-lime" />
+    {title}<span className="text-lime">· {accent}</span>
+  </div>
+);
+
+/** Section centrée : titre, texte avec une partie surlignée, téléphone posé sur une forme arrondie */
+const PhoneSection = ({ id, eyebrow, title, lead, highlight, bg, blob, highlightClass = 'bg-lime', phone, alt, badges }: {
+  id: string; eyebrow: string; title: React.ReactNode; lead: string; highlight: string; bg: string; blob: string;
+  highlightClass?: string; phone: string; alt: string; badges: { title: string; accent: string; className: string }[];
+}) => (
+  <section id={id} className="scroll-mt-16 px-5 pb-6 pt-8 text-center" style={{ background: bg }}>
+    <div className="mx-auto max-w-xl">
+      <Eyebrow>{eyebrow}</Eyebrow>
+      <h2 className="mt-2.5 text-[38px] !font-[800] leading-[1] tracking-[-0.04em] lg:text-[52px]">{title}</h2>
+      <p className="mt-3 text-[17px] leading-[1.5] text-stone-600 lg:text-[18px]">
+        {lead} <span className={`rounded-lg px-1.5 py-0.5 text-ink [box-decoration-break:clone] ${highlightClass}`}>{highlight}</span>
+      </p>
+    </div>
+    <div className="relative mx-auto mt-6 h-[360px] w-full max-w-[400px] lg:h-[460px] lg:max-w-[480px]">
+      <div aria-hidden className="absolute inset-x-6 bottom-2 top-10" style={{ background: blob, borderRadius: '40% 60% 45% 55% / 50% 45% 55% 50%' }} />
+      <div className="absolute left-1/2 top-0 w-[180px] -translate-x-1/2 lg:w-[220px]">
+        <div className="rounded-[30px] bg-ink p-[6px] shadow-[0_26px_50px_-18px_rgba(20,20,15,0.55)]" style={{ rotate: '-4deg' }}>
+          <img src={phone} alt={alt} width={660} height={1431} loading="lazy" className="block w-full rounded-[25px]" />
+        </div>
+      </div>
+      {badges.map((b) => <Badge key={b.title} {...b} />)}
+    </div>
+  </section>
+);
 
 /** Défilement fluide vers une section (sous l'en-tête fixe) */
 const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -96,37 +114,6 @@ const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) =
   target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
   history.replaceState(null, '', href);
 };
-
-const Logo = ({ className = 'h-8' }: { className?: string }) => (
-  <img src="/landing/logo.png" alt="Upvibe" width={278} height={96} className={`w-auto ${className}`} />
-);
-
-/** Vraie capture de l'app dans un cadre de téléphone incliné, posé sur une scène */
-const TiltPhone = ({ src, alt, rotate, delay = 0, className = '' }: { src: string; alt: string; rotate: number; delay?: number; className?: string }) => (
-  <div className={`absolute ${className}`}>
-    <Reveal effect="rise" delay={delay}>
-      <div className="rounded-[30px] bg-ink p-[6px] shadow-[0_26px_50px_-18px_rgba(20,20,15,0.55)] lg:rounded-[40px] lg:p-[8px]" style={{ rotate: `${rotate}deg` }}>
-        <img src={src} alt={alt} width={660} height={1431} loading="lazy" className="block w-full rounded-[25px] lg:rounded-[33px]" />
-      </div>
-    </Reveal>
-  </div>
-);
-
-/** Pastille flottante posée sur les téléphones, comme les marqueurs de la carte */
-const Badge = ({ title, accent, dot = 'lime', light = false, delay = 0, className = '' }: {
-  title: string; accent: string; dot?: 'lime' | 'cream'; light?: boolean; delay?: number; className?: string;
-}) => (
-  <div className={`absolute z-10 ${className}`}>
-    <Reveal effect="pop" delay={delay}>
-      <div
-        className={`flex items-center gap-2.5 whitespace-nowrap rounded-full py-1.5 pl-1.5 pr-4 text-[14.5px] font-bold shadow-[0_14px_30px_-12px_rgba(20,20,15,0.55)] lg:py-2 lg:pl-2 lg:pr-5 lg:text-[17px] ${light ? 'bg-parchment text-ink' : 'bg-ink text-parchment'}`}
-      >
-        <span className={`size-6 flex-shrink-0 rounded-full lg:size-7 ${dot === 'lime' ? 'bg-lime' : light ? 'bg-ink' : 'bg-parchment'}`} />
-        {title}<span className={light ? 'text-[#6fae12]' : 'text-lime'}>· {accent}</span>
-      </div>
-    </Reveal>
-  </div>
-);
 
 const Eyebrow = ({ children, className = 'text-ink' }: { children: React.ReactNode; className?: string }) => (
   <p className={`text-[13px] font-bold uppercase tracking-[0.12em] ${className}`}>{children}</p>
@@ -168,187 +155,142 @@ const useUpcomingEvents = () =>
 
 const Landing = () => {
   const { data: events } = useUpcomingEvents();
+  const withImage = (events ?? []).filter((e) => e.image_url);
 
   return (
     <div className="min-h-[100dvh] overflow-x-clip bg-white text-ink">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: FAQ_JSON_LD }} />
 
       {/* En-tête fixe */}
-      <header className="sticky top-0 z-40 bg-ink" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+      <header className="sticky top-0 z-40 bg-parchment" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-          <Logo />
-          <button type="button" onClick={openInstallGuide} className="rounded-full bg-lime px-4 py-2.5 text-[15px] font-semibold text-ink active:scale-95 lg:hidden">
+          <span className="rounded-2xl bg-ink px-3 pb-1.5 pt-2"><Logo className="h-6" /></span>
+          <button type="button" onClick={openInstallGuide} className="rounded-full bg-lime px-4 py-2.5 text-[15px] font-semibold text-ink active:scale-95">
             Installer l'appli
           </button>
-          <span className="hidden text-[14px] text-stone-300 lg:block">Tous les événements d'Abidjan sur une carte</span>
         </div>
       </header>
 
       <main>
-        {/* 1. On fait quoi à Abidjan ? : titre à gauche, téléphones qui débordent d'un panneau vert */}
-        <section className="mx-auto max-w-6xl lg:grid lg:grid-cols-2 lg:items-center lg:gap-10 lg:px-5 lg:pt-14">
-          <div className="px-5 pt-7 lg:px-0 lg:pt-0">
-            <Reveal><h1 className="text-[58px] !font-[800] leading-[0.93] tracking-[-0.045em] lg:text-[84px]">
-              On fait quoi<br />à <span className="inline-block rounded-xl bg-lime px-2 pb-0.5">Abidjan&nbsp;?</span>
-            </h1></Reveal>
-            <Reveal delay={220}><p className="mt-4 max-w-[330px] text-[18px] leading-snug text-stone-500 lg:max-w-[440px] lg:text-[20px]">
+        {/* 1. Accueil : titre centré, barre de recherche, publics, événements à venir en ronds */}
+        <section className="bg-parchment pb-8 pt-6 text-center lg:pt-14">
+          <div className="mx-auto max-w-2xl px-5">
+            <h1 className="text-[46px] !font-[800] leading-[0.98] tracking-[-0.045em] lg:text-[76px]">
+              On fait quoi<br />à <span className="marker">Abidjan&nbsp;?</span>
+            </h1>
+            <p className="mx-auto mt-4 max-w-[460px] text-[17px] leading-[1.45] text-stone-600 lg:text-[19px]">
               Brunchs, concerts, meetups, ateliers, cultes, soirées : tous les événements de la ville, sur une seule carte.
-            </p></Reveal>
-            <nav aria-label="Pour qui ?" className="mt-4 flex flex-wrap gap-2">
-              {AUDIENCES.map(({ href, label }, i) => (
-                <Reveal as="span" key={href} effect="pop" delay={400 + i * 140}>
-                  <a href={href} onClick={(e) => scrollToSection(e, href)} className="block rounded-full border border-ink/15 bg-parchment px-4 py-2.5 text-[15px] font-semibold text-ink active:scale-95">
-                    {label}
-                  </a>
-                </Reveal>
+            </p>
+            {/* Barre de recherche : les événements se cherchent dans l'app, elle ouvre donc l'installation */}
+            <button
+              type="button"
+              onClick={openInstallGuide}
+              className="mx-auto mt-6 flex w-full max-w-[460px] items-center gap-3 rounded-2xl bg-white py-2.5 pl-4 pr-2.5 text-left shadow-[0_10px_30px_-18px_rgba(20,20,15,0.45)] active:scale-[0.99]"
+            >
+              <MapPin size={20} strokeWidth={1.9} className="flex-shrink-0 text-ink" />
+              <span className="flex-1 truncate text-[16px] text-stone-400">Concert, brunch, atelier…</span>
+              <span className="rounded-full bg-ink px-4 py-2 text-[14px] font-semibold text-parchment">Voir</span>
+            </button>
+            <nav aria-label="Pour qui ?" className="mt-5 flex flex-wrap justify-center gap-2">
+              {AUDIENCES.map(({ href, label }) => (
+                <a key={href} href={href} onClick={(e) => scrollToSection(e, href)} className="rounded-full bg-white px-4 py-2.5 text-[15px] font-bold text-ink active:scale-95">
+                  {label}
+                </a>
               ))}
             </nav>
-            <div className="mt-8"><QrCard /></div>
+            <div className="mt-6 flex justify-center"><QrCard /></div>
           </div>
-          <div className="relative mx-auto mt-8 w-full h-[440px] max-w-[420px] lg:mt-0 lg:h-[560px] lg:max-w-[520px]">
-            <div className="absolute bottom-0 left-[54px] right-0 top-[60px] overflow-hidden rounded-l-[34px] bg-lime lg:rounded-[40px]">
-              <div className="absolute -right-16 top-5 size-[260px] rounded-full border-[38px] border-white/30" />
-            </div>
-            <TiltPhone src="/landing/ecran-evenements.webp" alt="La liste des événements dans Upvibe" rotate={7} delay={250} className="left-[150px] top-0 w-[168px] lg:left-[230px] lg:w-[210px]" />
-            <TiltPhone src="/landing/ecran-carte-2026-10.webp" alt="La carte Upvibe avec les événements d'Abidjan" rotate={-5} delay={100} className="left-[22px] top-[26px] z-[2] w-[188px] lg:left-[40px] lg:w-[240px]" />
-            <Badge title="Brunch des débout" accent="13h" delay={1100} className="-left-1 top-[118px]" />
-            <Badge title="Fifa tournoi" accent="10h30" dot="cream" delay={1450} className="right-[6px] top-[236px]" />
-            <Badge title="Créative Meet'Up" accent="11h" delay={1800} className="bottom-[30px] left-[4px]" />
-          </div>
-        </section>
 
-        {/* 2. Pour sortir : panneau blanc à gauche, téléphone à droite */}
-        <section id="sortir" className="mx-auto max-w-6xl scroll-mt-16 pt-14 lg:grid lg:grid-cols-2 lg:items-center lg:gap-10 lg:px-5 lg:pt-24">
-          <Reveal className="px-5 lg:px-0">
-            <Eyebrow>01 · Pour sortir</Eyebrow>
-            <h2 className="mt-2.5 text-[46px] !font-[800] leading-[0.93] tracking-[-0.045em] lg:text-[64px]">Trouve.<br />Sors. Vibe.</h2>
-            <p className="mt-3 max-w-[460px] text-[17px] leading-[1.45] text-stone-500 lg:text-[18px]">Tout ce qui se passe autour de toi, en un coup d'œil : le lieu, l'heure et le prix.</p>
-            <ol className="mt-5 grid gap-2.5">
-              {STEPS.map((step, i) => (
-                <Reveal as="li" key={step} delay={300 + i * 220} className="flex items-center gap-3 font-display text-[21px] tracking-[-0.03em] lg:text-[24px]">
-                  <span className="flex size-8 flex-shrink-0 items-center justify-center rounded-full border-[1.5px] border-ink font-sans text-[13px] font-semibold">{i + 1}</span>
-                  {step}
-                </Reveal>
+          {withImage.length > 0 && (
+            <div className="mt-8 flex snap-x gap-4 overflow-x-auto px-5 pb-2 scrollbar-hide lg:justify-center">
+              {withImage.map((e) => (
+                <button key={e.id} type="button" onClick={openInstallGuide} className="w-[132px] flex-shrink-0 snap-start text-center active:scale-[0.98]">
+                  <ShimmerImage src={e.image_url!} alt={e.title} position={focusPosition(e.image_focus)} className="size-[132px] rounded-full" />
+                  <span className="relative -mt-4 inline-block max-w-full truncate rounded-lg bg-white px-2.5 py-1 text-[13.5px] font-bold">{softCase(e.title)}</span>
+                </button>
               ))}
-            </ol>
-          </Reveal>
-          <div className="relative mx-auto mt-8 w-full h-[400px] max-w-[420px] lg:mt-0 lg:h-[520px] lg:max-w-[520px]">
-            <div className="absolute bottom-[40px] left-0 right-[54px] top-0 rounded-r-[34px] bg-parchment lg:rounded-[40px]" />
-            <TiltPhone src="/landing/ecran-itineraire.webp" alt="L'itinéraire jusqu'à une soirée sur la carte Upvibe" rotate={4} className="right-[24px] top-[-10px] w-[190px] lg:right-[60px] lg:w-[240px]" />
-            <Badge title="Concerts" accent="live" delay={500} className="left-[12px] top-[70px]" />
-            <Badge title="Ateliers" accent="ce week-end" dot="cream" delay={800} className="left-[22px] top-[150px]" />
-            <Badge title="Itinéraire" accent="en 1 geste" delay={1100} className="left-[10px] top-[230px]" />
-          </div>
-        </section>
-
-        {/* 3. Pour les organisateurs : bloc bleu « eau de la carte » avec des terres crème */}
-        <section id="organiser" className="relative mx-2.5 mt-14 scroll-mt-16 overflow-hidden rounded-[34px] bg-[#b5d8f0] lg:mx-auto lg:max-w-6xl lg:rounded-[44px]">
-          <div aria-hidden className="absolute -bottom-24 -right-16 size-[300px] rounded-full bg-[#eef0e4] lg:-right-10 lg:size-[440px]" />
-          <div aria-hidden className="absolute -bottom-20 -left-20 size-[200px] rounded-full bg-[#eef0e4] lg:size-[260px]" />
-          <div className="relative px-5 pt-7 lg:grid lg:grid-cols-2 lg:items-center lg:gap-10 lg:px-14 lg:pt-14">
-            <Reveal>
-              <Eyebrow>02 · Pour les organisateurs</Eyebrow>
-              <h2 className="mt-2.5 text-[46px] !font-[800] leading-[0.93] tracking-[-0.045em] lg:text-[64px]">
-                Tu organises ?<br /><span className="marker">Fais-toi voir.</span>
-              </h2>
-              <p className="mt-3 max-w-[480px] text-[17px] leading-[1.45] text-ink/80 lg:text-[18px]">
-                Ton événement sur la carte, devant ceux qui cherchent où aller.
-              </p>
-              <ul className="mt-5 flex max-w-[480px] flex-wrap gap-2">
-                {ORGANIZER_PERKS.map(([before, accent, after], i) => (
-                  <Reveal as="li" key={accent} effect="pop" delay={200 + i * 160} className="rounded-full bg-parchment px-4 py-2.5 text-[15.5px] font-semibold">
-                    {before}<span className="text-[#6fae12]">{accent}</span>{after}
-                  </Reveal>
-                ))}
-              </ul>
-            </Reveal>
-            <div className="relative mt-5 h-[300px] lg:mt-0 lg:h-[500px]">
-              <TiltPhone src="/landing/ecran-organisateur.webp" alt="Fiche d'un concert avec ses places Standard, VIP et VVIP" rotate={-4} className="right-[-24px] top-[10px] w-[200px] lg:right-[30px] lg:w-[250px]" />
-              <Badge title="VIP" accent="20 000 F" delay={500} className="left-0 top-[46px]" />
-              <Badge title="Alerte" accent="envoyée" dot="cream" delay={850} className="left-[14px] top-[122px]" />
             </div>
-          </div>
+          )}
         </section>
 
-        {/* 4. Pour les prestataires : panneau vert à droite, téléphone à gauche */}
-        <section id="prestataires" className="mx-auto max-w-6xl scroll-mt-16 pt-14 lg:grid lg:grid-cols-2 lg:items-center lg:gap-10 lg:px-5 lg:pt-24">
-          <Reveal className="px-5 lg:order-2 lg:px-0">
-            <Eyebrow>03 · Pour les prestataires</Eyebrow>
-            <h2 className="mt-2.5 text-[46px] !font-[800] leading-[0.93] tracking-[-0.045em] lg:text-[64px]">
-              Abidjan fait la fête.<br /><span className="marker">Fais-en ton business.</span>
-            </h2>
-            <p className="mt-3 max-w-[480px] text-[17px] leading-[1.45] text-stone-500 lg:text-[18px]">
-              DJ, traiteur, déco, photo, location : les organisateurs te trouvent par catégorie et te contactent direct.
-            </p>
-            <ol className="mt-6 max-w-[520px] border-t-[1.5px] border-ink">
-              {PROVIDER_PERKS.map(({ title, text }, i) => (
-                <Reveal as="li" key={title} delay={i * 180} className="flex gap-4 border-b border-ink/15 py-4">
-                  <span className="w-7 flex-shrink-0 pt-1 font-display text-[15px] font-bold tabular-nums text-stone-400">0{i + 1}</span>
-                  <div>
-                    <p className="font-display text-[24px] font-bold leading-none tracking-[-0.03em]"><span className="marker">{title}</span></p>
-                    <p className="mt-1.5 text-[16.5px] leading-snug text-stone-500">{text}</p>
-                  </div>
-                </Reveal>
-              ))}
-            </ol>
-          </Reveal>
-          <div className="relative mx-auto mt-8 w-full h-[400px] max-w-[420px] lg:order-1 lg:mt-0 lg:h-[520px] lg:max-w-[520px]">
-            <div className="absolute bottom-[40px] left-[54px] right-0 top-0 rounded-l-[34px] bg-lime lg:rounded-[40px]" />
-            <TiltPhone src="/landing/ecran-marketplace-2026-10.webp" alt="Le Marketplace Upvibe : lieux, traiteurs, matériel" rotate={-4} className="left-[22px] top-[-6px] w-[190px] lg:left-[40px] lg:w-[240px]" />
-            <Badge title="Appeler" accent="WhatsApp" delay={500} className="right-[10px] top-[80px]" />
-            <Badge title="Ton annonce" accent="en ligne" dot="cream" delay={850} className="right-[18px] top-[160px]" />
-          </div>
-        </section>
+        <Wave top="#f5f5eb" bottom="#ffffff" />
 
-        {/* 5. Pourquoi Upvibe : petites cartes en quinconce */}
-        <section className="mx-auto max-w-6xl px-5 pb-14 pt-14 lg:py-24">
-          <Reveal><h2 className="max-w-[640px] text-[38px] !font-[800] leading-[0.98] tracking-[-0.04em] lg:text-[52px]">
-            Pourquoi tout Abidjan passe par <span className="rounded-xl bg-lime px-1.5">Upvibe</span>
-          </h2></Reveal>
-          <div className="mt-6 grid grid-cols-2 items-start gap-2.5 lg:grid-cols-4 lg:gap-4">
-            {REASONS.map(({ icon: Icon, title, text }, i) => (
-              <Reveal key={title} delay={i * 160} className={`rounded-[22px] bg-parchment p-4 lg:p-5 ${i % 2 ? 'mt-7 lg:mt-0' : ''}`}>
-                <span className="flex size-9 items-center justify-center rounded-full bg-white"><Icon size={18} strokeWidth={1.75} /></span>
-                <h3 className="mt-3 text-[18px] leading-[1.05] tracking-[-0.02em] lg:text-[21px]">{title}</h3>
-                <p className="mt-1.5 text-[14px] leading-snug text-stone-500 lg:text-[15px]">{text}</p>
-              </Reveal>
+        {/* 2. Pour sortir */}
+        <PhoneSection
+          id="sortir"
+          eyebrow="01 · Pour sortir"
+          title={<>Trouve. Sors. Vibe.</>}
+          lead="Tout ce qui se passe autour de toi, en un coup d'œil :"
+          highlight="le lieu, l'heure et le prix."
+          bg="#ffffff"
+          blob="#a6e22e"
+          phone="/landing/ecran-itineraire.webp"
+          alt="L'itinéraire jusqu'à une soirée sur la carte Upvibe"
+          badges={[
+            { title: 'Concerts', accent: 'live', className: 'left-0 top-[96px] lg:left-4' },
+            { title: 'Ateliers', accent: 'ce week-end', className: 'right-0 top-[220px] lg:right-4' },
+          ]}
+        />
+
+        <Wave top="#ffffff" bottom="#b5d8f0" flip />
+
+        {/* 3. Pour les organisateurs */}
+        <PhoneSection
+          id="organiser"
+          eyebrow="02 · Pour les organisateurs"
+          title={<>Tu organises&nbsp;? Fais-toi voir.</>}
+          lead="Ton événement sur la carte, devant ceux qui cherchent"
+          highlight="où aller."
+          highlightClass="bg-parchment"
+          bg="#b5d8f0"
+          blob="#eef0e4"
+          phone="/landing/ecran-organisateur.webp"
+          alt="Fiche d'un concert avec ses places Standard, VIP et VVIP"
+          badges={[
+            { title: 'VIP', accent: '20 000 F', className: 'left-0 top-[110px] lg:left-4' },
+            { title: 'Alerte', accent: 'envoyée', className: 'right-0 top-[230px] lg:right-4' },
+          ]}
+        />
+
+        <Wave top="#b5d8f0" bottom="#ffffff" />
+
+        {/* 4. Pour les prestataires */}
+        <PhoneSection
+          id="prestataires"
+          eyebrow="03 · Pour les prestataires"
+          title={<>Abidjan fait la fête. Fais-en ton business.</>}
+          lead="DJ, traiteur, déco, photo, location :"
+          highlight="les organisateurs te contactent direct."
+          bg="#ffffff"
+          blob="#a6e22e"
+          phone="/landing/ecran-marketplace-2026-10.webp"
+          alt="Le Marketplace Upvibe : lieux, traiteurs, matériel"
+          badges={[{ title: 'Appeler', accent: 'WhatsApp', className: 'left-0 top-[100px] lg:left-4' }]}
+        />
+
+        <Wave top="#ffffff" bottom="#a6e22e" flip />
+
+        {/* 5. Catégories populaires */}
+        <section className="bg-lime px-5 pb-10 pt-6 text-center">
+          <h2 className="text-[34px] !font-[800] leading-[1] tracking-[-0.04em] lg:text-[48px]">Catégories populaires</h2>
+          <div className="mx-auto mt-5 flex max-w-xl flex-wrap justify-center gap-2.5">
+            {CATEGORIES.map((c) => (
+              <button key={c} type="button" onClick={openInstallGuide} className="rounded-full bg-white px-5 py-3 text-[15px] font-bold text-ink active:scale-95">
+                {c}
+              </button>
             ))}
           </div>
+          <button type="button" onClick={openInstallGuide} className="mt-7 rounded-full bg-ink px-6 py-3.5 text-[16px] font-bold text-parchment active:scale-95">
+            Installer Upvibe
+          </button>
         </section>
 
-        {/* 6. Prochains événements (ouvrent l'installation) */}
-        {events && events.length > 0 && (
-          <section className="mx-auto max-w-6xl pb-12 lg:pb-20">
-            <Reveal><h2 className="px-5 text-[40px] !font-[800] tracking-[-0.04em] lg:text-[52px]">Bientôt à Abidjan</h2></Reveal>
-            <Reveal effect="right" delay={250} className="scrollbar-hide mt-5 flex gap-3 overflow-x-auto px-5 pb-1">
-              {events.map((e) => {
-                const d = new Date(`${e.date}T12:00:00`);
-                return (
-                  <button key={e.id} type="button" onClick={openInstallGuide} className="w-[240px] flex-shrink-0 rounded-[24px] bg-parchment p-[7px] text-left active:scale-[0.98]">
-                    {e.image_url
-                      ? <ShimmerImage src={e.image_url} alt={softCase(e.title)} position={focusPosition(e.image_focus)} className="h-[124px] w-full rounded-[18px]" />
-                      : <div className="h-[124px] rounded-[18px] bg-stone-200" />}
-                    <div className="flex items-center gap-3 px-1.5 pb-1.5 pt-2.5">
-                      <div className="border-r border-stone-200 pr-3 text-center leading-none">
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.1em]">{d.toLocaleDateString('fr-FR', { month: 'short' }).replace('.', '')}</p>
-                        <p className="mt-0.5 font-display text-[24px]">{d.getDate()}</p>
-                      </div>
-                      <div className="min-w-0">
-                        <p className="truncate font-display text-[18px] tracking-[-0.02em]">{softCase(e.title)}</p>
-                        <p className="truncate text-[13.5px] text-stone-500">{[e.venue?.split(',')[0], e.time?.slice(0, 5).replace(':', 'h')].filter(Boolean).join(' · ')}</p>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </Reveal>
-          </section>
-        )}
+        <Wave top="#a6e22e" bottom="#ffffff" />
 
-        {/* 7. FAQ */}
-        <section className="mx-auto max-w-3xl px-5 pb-12 pt-4 lg:pb-20">
-          <Reveal><h2 className="text-[40px] !font-[800] tracking-[-0.04em] lg:text-[52px]">Questions fréquentes</h2></Reveal>
-          <div className="mt-4">
+        {/* 6. FAQ */}
+        <section className="mx-auto max-w-3xl px-5 pb-12 pt-4">
+          <h2 className="text-center text-[34px] !font-[800] leading-[1] tracking-[-0.04em] lg:text-[44px]">Questions fréquentes</h2>
+          <div className="mt-5">
             {FAQ.map(({ q, a }, i) => (
               <details key={q} open={i === 0} className="group border-b border-stone-200 py-4">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[17.5px] font-semibold">
@@ -362,20 +304,34 @@ const Landing = () => {
         </section>
       </main>
 
-      <footer className="bg-black px-5 pb-10 pt-8 text-[14.5px] leading-7 text-stone-400">
-        <div className="mx-auto max-w-6xl">
-          <Logo className="h-7" />
-          <p>Tous les événements d'Abidjan sur une carte.</p>
-          <p><a href="mailto:contact@upvibe.app" className="hover:text-parchment">contact@upvibe.app</a> · Abidjan, Côte d'Ivoire</p>
-          <ul className="mt-4 flex gap-2.5">
-            {SOCIALS.map(({ name, href, icon }) => (
-              <li key={name}>
-                <a href={href} target="_blank" rel="noopener noreferrer" aria-label={`Upvibe sur ${name}`} className="flex size-11 items-center justify-center rounded-full bg-white/10 text-parchment hover:bg-lime hover:text-ink active:scale-95">
-                  <svg viewBox="0 0 24 24" className="size-5" fill="currentColor" aria-hidden>{icon}</svg>
-                </a>
-              </li>
+      <Wave top="#ffffff" bottom="#14140f" flip />
+      <footer className="bg-ink px-5 pb-10 pt-4 text-[15px] text-stone-300">
+        <div className="mx-auto max-w-6xl lg:grid lg:grid-cols-3 lg:gap-10">
+          <div>
+            <Logo className="h-8" />
+            <p className="mt-3 text-stone-400">Tous les événements d'Abidjan sur une carte.</p>
+            <ul className="mt-4 flex gap-2.5">
+              {SOCIALS.map(({ name, href, icon }) => (
+                <li key={name}>
+                  <a href={href} target="_blank" rel="noopener noreferrer" aria-label={`Upvibe sur ${name}`} className="flex size-11 items-center justify-center rounded-full bg-white/10 text-parchment hover:bg-lime hover:text-ink active:scale-95">
+                    <svg viewBox="0 0 24 24" className="size-5" fill="currentColor" aria-hidden>{icon}</svg>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p className="mt-8 font-display text-[19px] font-bold text-parchment lg:mt-0">Upvibe</p>
+            {AUDIENCES.map(({ href, label }) => (
+              <a key={href} href={href} onClick={(e) => scrollToSection(e, href)} className="mt-3 block hover:text-parchment">{label}</a>
             ))}
-          </ul>
+          </div>
+          <div>
+            <p className="mt-8 font-display text-[19px] font-bold text-parchment lg:mt-0">Liens utiles</p>
+            <button type="button" onClick={openInstallGuide} className="mt-3 block hover:text-parchment">Installer l'appli</button>
+            <a href="mailto:contact@upvibe.app" className="mt-3 block hover:text-parchment">contact@upvibe.app</a>
+            <p className="mt-3">Abidjan, Côte d'Ivoire</p>
+          </div>
         </div>
       </footer>
     </div>
