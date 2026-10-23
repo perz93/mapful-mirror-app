@@ -97,7 +97,11 @@ const PhoneSection = ({ id, eyebrow, title, lead, highlight, bg, blob, highlight
       <div aria-hidden className="absolute inset-x-6 bottom-2 top-10" style={{ background: blob, borderRadius: '40% 60% 45% 55% / 50% 45% 55% 50%' }} />
       <div className="absolute left-1/2 top-0 w-[180px] -translate-x-1/2 lg:w-[220px]">
         <div className="rounded-[30px] bg-ink p-[6px] shadow-[0_26px_50px_-18px_rgba(20,20,15,0.55)]" style={{ rotate: '-4deg' }}>
-          <img src={phone} alt={alt} width={660} height={1431} loading="lazy" className="block w-full rounded-[25px]" />
+          {/* Même format de téléphone pour toutes les captures (certaines sont plus courtes) :
+              pas d'effet « tablette », l'image n'est pas rognée et le bas reste couleur appli */}
+          <div className="aspect-[660/1431] overflow-hidden rounded-[25px] bg-parchment">
+            <img src={phone} alt={alt} width={660} loading="lazy" className="block w-full" />
+          </div>
         </div>
       </div>
       {badges.map((b) => <Badge key={b.title} {...b} />)}
@@ -175,23 +179,24 @@ const Landing = () => {
         {/* 1. Accueil : titre centré, barre de recherche, publics, événements à venir en ronds */}
         <section className="bg-parchment pb-8 pt-6 text-center lg:pt-14">
           <div className="mx-auto max-w-2xl px-5">
-            <h1 className="text-[46px] !font-[800] leading-[0.98] tracking-[-0.045em] lg:text-[76px]">
-              On fait quoi<br />à <span className="marker">Abidjan&nbsp;?</span>
-            </h1>
-            <p className="mx-auto mt-4 max-w-[460px] text-[17px] leading-[1.45] text-stone-600 lg:text-[19px]">
-              Brunchs, concerts, meetups, ateliers, cultes, soirées : tous les événements de la ville, sur une seule carte.
+            {/* Comme le modèle A : la liste des types d'événements, puis la recherche, puis le titre */}
+            <p className="mx-auto max-w-[460px] font-display text-[21px] font-bold leading-[1.2] tracking-[-0.02em] lg:text-[26px]">
+              Brunchs, concerts, meetups, ateliers, cultes, soirées…
             </p>
             {/* Barre de recherche : les événements se cherchent dans l'app, elle ouvre donc l'installation */}
             <button
               type="button"
               onClick={openInstallGuide}
-              className="mx-auto mt-6 flex w-full max-w-[460px] items-center gap-3 rounded-2xl bg-white py-2.5 pl-4 pr-2.5 text-left shadow-[0_10px_30px_-18px_rgba(20,20,15,0.45)] active:scale-[0.99]"
+              className="mx-auto mt-5 flex w-full max-w-[460px] items-center gap-3 rounded-2xl bg-white py-2.5 pl-4 pr-2.5 text-left shadow-[0_10px_30px_-18px_rgba(20,20,15,0.45)] active:scale-[0.99]"
             >
               <MapPin size={20} strokeWidth={1.9} className="flex-shrink-0 text-ink" />
               <span className="flex-1 truncate text-[16px] text-stone-400">Concert, brunch, atelier…</span>
               <span className="rounded-full bg-ink px-4 py-2 text-[14px] font-semibold text-parchment">Voir</span>
             </button>
-            <nav aria-label="Pour qui ?" className="mt-5 flex flex-wrap justify-center gap-2">
+            <h1 className="mt-9 text-[46px] !font-[800] leading-[0.98] tracking-[-0.045em] lg:text-[76px]">
+              On fait quoi<br />à <span className="marker">Abidjan&nbsp;?</span>
+            </h1>
+            <nav aria-label="Pour qui ?" className="mt-6 flex flex-wrap justify-center gap-2">
               {AUDIENCES.map(({ href, label }) => (
                 <a key={href} href={href} onClick={(e) => scrollToSection(e, href)} className="rounded-full bg-white px-4 py-2.5 text-[15px] font-bold text-ink active:scale-95">
                   {label}
