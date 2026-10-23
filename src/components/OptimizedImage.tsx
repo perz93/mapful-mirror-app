@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { markShown, wasShown } from '@/lib/imageMemory';
 
 interface OptimizedImageProps {
   src: string;
@@ -28,8 +29,10 @@ const OptimizedImage = ({
   onClick,
   style,
 }: OptimizedImageProps) => {
-  const [loaded, setLoaded] = useState(false);
-  const [inView, setInView] = useState(false);
+  // Déjà vue pendant la session : affichée directement, sans reflet ni fondu
+  const [instant] = useState(() => wasShown(src));
+  const [loaded, setLoaded] = useState(instant);
+  const [inView, setInView] = useState(instant);
   const ref = useRef<HTMLDivElement>(null);
 
   // IntersectionObserver for true lazy loading (works for bg images too)
@@ -64,14 +67,14 @@ const OptimizedImage = ({
     let cancelled = false;
     const img = new Image();
     img.src = src;
-    const done = () => { if (!cancelled) setLoaded(true); };
+    const done = () => { markShown(src); if (!cancelled) setLoaded(true); };
     img.decode().then(done, done);
     return () => { cancelled = true; };
   }, [asBackground, inView, src]);
 
   // Mode <img> : attendre le décodage (sur iOS `load` arrive avant la peinture).
   const handleImgLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const done = () => setLoaded(true);
+    const done = () => { markShown(src); setLoaded(true); };
     e.currentTarget.decode().then(done, done);
   };
 
@@ -89,10 +92,12 @@ const OptimizedImage = ({
         }}
         onClick={onClick}
       >
-        <div
-          aria-hidden
-          className={`absolute inset-0 skeleton pointer-events-none transition-opacity duration-500 ${loaded ? 'opacity-0' : 'opacity-100'}`}
-        />
+        {!instant && (
+          <div
+            aria-hidden
+            className={`absolute inset-0 skeleton pointer-events-none transition-opacity duration-500 ${loaded ? 'opacity-0' : 'opacity-100'}`}
+          />
+        )}
         {children}
       </div>
     );
@@ -112,13 +117,15 @@ const OptimizedImage = ({
           decoding="async"
           onLoad={handleImgLoad}
           onError={() => setLoaded(true)}
-          className={`w-full h-full object-cover transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+          className={`w-full h-full object-cover ${instant ? '' : 'transition-opacity duration-500'} ${loaded ? 'opacity-100' : 'opacity-0'}`}
         />
       )}
-      <div
-        aria-hidden
-        className={`absolute inset-0 skeleton pointer-events-none transition-opacity duration-500 ${loaded ? 'opacity-0' : 'opacity-100'}`}
-      />
+      {!instant && (
+        <div
+          aria-hidden
+          className={`absolute inset-0 skeleton pointer-events-none transition-opacity duration-500 ${loaded ? 'opacity-0' : 'opacity-100'}`}
+        />
+      )}
       {children}
     </div>
   );

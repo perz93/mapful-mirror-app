@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { markShown, wasShown } from '@/lib/imageMemory';
 
 interface ShimmerImageProps {
   src: string;
@@ -19,19 +20,24 @@ interface ShimmerImageProps {
  */
 const ShimmerImage = ({ src, alt, className = '', onClick, loading = 'lazy', position }: ShimmerImageProps) => {
   const imgRef = useRef<HTMLImageElement>(null);
-  const [ready, setReady] = useState(false);
+  // Déjà vue pendant la session : affichée directement, sans reflet ni fondu
+  const [instant, setInstant] = useState(() => wasShown(src));
+  const [ready, setReady] = useState(() => wasShown(src));
 
   const markReady = useCallback(() => {
     const img = imgRef.current;
     if (!img) return;
-    const done = () => setReady(true);
+    const done = () => { markShown(src); setReady(true); };
     if (typeof img.decode === 'function') img.decode().then(done, done);
     else done();
-  }, []);
+  }, [src]);
 
   // Image déjà en cache : `load` a pu se produire avant le montage de React.
   useEffect(() => {
-    setReady(false);
+    const seen = wasShown(src);
+    setInstant(seen);
+    setReady(seen);
+    if (seen) return;
     if (imgRef.current?.complete && imgRef.current.naturalWidth > 0) markReady();
   }, [src, markReady]);
 
@@ -46,12 +52,14 @@ const ShimmerImage = ({ src, alt, className = '', onClick, loading = 'lazy', pos
         onLoad={markReady}
         onError={() => setReady(true)}
         style={position ? { objectPosition: position } : undefined}
-        className={`w-full h-full object-cover transition-opacity duration-500 ${ready ? 'opacity-100' : 'opacity-0'}`}
+        className={`w-full h-full object-cover ${instant ? '' : 'transition-opacity duration-500'} ${ready ? 'opacity-100' : 'opacity-0'}`}
       />
-      <div
-        aria-hidden
-        className={`absolute inset-0 skeleton pointer-events-none transition-opacity duration-500 ${ready ? 'opacity-0' : 'opacity-100'}`}
-      />
+      {!instant && (
+        <div
+          aria-hidden
+          className={`absolute inset-0 skeleton pointer-events-none transition-opacity duration-500 ${ready ? 'opacity-0' : 'opacity-100'}`}
+        />
+      )}
     </div>
   );
 };
