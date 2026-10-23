@@ -1,3 +1,4 @@
+import { lazy, Suspense, useEffect, type ComponentType } from "react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -15,33 +16,43 @@ import { usePWATheme } from "@/hooks/usePWATheme";
 import { useProximityNotifications } from "@/hooks/useProximityNotifications";
 import { useNotificationSync } from "@/hooks/useNotificationInbox";
 import Index from "./pages/Index";
-import Concerts from "./pages/Concerts";
-import Sports from "./pages/Sports";
-import Nightlife from "./pages/Nightlife";
-import AllEvents from "./pages/AllEvents";
-import Family from "./pages/Family";
-import Conferences from "./pages/Conferences";
-import Workshops from "./pages/Workshops";
-import Festivals from "./pages/Festivals";
-import Shows from "./pages/Shows";
-import Exhibitions from "./pages/Exhibitions";
-import Brunch from "./pages/Brunch";
-import Religious from "./pages/Religious";
-import Other from "./pages/Other";
-import EventDetails from "./pages/EventDetails";
-import MyAccount from "./pages/MyAccount";
-import CreateEvent from "./pages/CreateEvent";
-import ManageEvents from "./pages/ManageEvents";
-import EditEvent from "./pages/EditEvent";
-import Settings from "./pages/Settings";
-import NotFound from "./pages/NotFound";
-import Auth from "./pages/Auth";
-import Marketplace from "./pages/Marketplace";
-import CreateListing from "./pages/CreateListing";
-import EditListing from "./pages/EditListing";
-import ListingDetails from "./pages/ListingDetails";
-import Notifications from "./pages/Notifications";
-import PublicProfile from "./pages/PublicProfile";
+
+// Pages secondaires chargées à la demande : le démarrage n'exécute que la carte.
+// Elles sont toutes préchargées juste après, en tâche de fond, pour s'ouvrir sans attente.
+const pageLoaders: Array<() => Promise<unknown>> = [];
+const lazyPage = <T extends ComponentType>(load: () => Promise<{ default: T }>) => {
+  pageLoaders.push(load);
+  return lazy(load);
+};
+const preloadPages = () => pageLoaders.forEach((load) => { load().catch(() => {}); });
+
+const Concerts = lazyPage(() => import("./pages/Concerts"));
+const Sports = lazyPage(() => import("./pages/Sports"));
+const Nightlife = lazyPage(() => import("./pages/Nightlife"));
+const AllEvents = lazyPage(() => import("./pages/AllEvents"));
+const Family = lazyPage(() => import("./pages/Family"));
+const Conferences = lazyPage(() => import("./pages/Conferences"));
+const Workshops = lazyPage(() => import("./pages/Workshops"));
+const Festivals = lazyPage(() => import("./pages/Festivals"));
+const Shows = lazyPage(() => import("./pages/Shows"));
+const Exhibitions = lazyPage(() => import("./pages/Exhibitions"));
+const Brunch = lazyPage(() => import("./pages/Brunch"));
+const Religious = lazyPage(() => import("./pages/Religious"));
+const Other = lazyPage(() => import("./pages/Other"));
+const EventDetails = lazyPage(() => import("./pages/EventDetails"));
+const MyAccount = lazyPage(() => import("./pages/MyAccount"));
+const CreateEvent = lazyPage(() => import("./pages/CreateEvent"));
+const ManageEvents = lazyPage(() => import("./pages/ManageEvents"));
+const EditEvent = lazyPage(() => import("./pages/EditEvent"));
+const Settings = lazyPage(() => import("./pages/Settings"));
+const NotFound = lazyPage(() => import("./pages/NotFound"));
+const Auth = lazyPage(() => import("./pages/Auth"));
+const Marketplace = lazyPage(() => import("./pages/Marketplace"));
+const CreateListing = lazyPage(() => import("./pages/CreateListing"));
+const EditListing = lazyPage(() => import("./pages/EditListing"));
+const ListingDetails = lazyPage(() => import("./pages/ListingDetails"));
+const Notifications = lazyPage(() => import("./pages/Notifications"));
+const PublicProfile = lazyPage(() => import("./pages/PublicProfile"));
 
 const queryClient = new QueryClient();
 
@@ -51,7 +62,14 @@ const AppContent = () => {
   useProximityNotifications();
   useNotificationSync();
 
+  useEffect(() => {
+    // requestIdleCallback n'existe pas sur Safari : simple délai à la place
+    if (typeof window.requestIdleCallback === 'function') window.requestIdleCallback(preloadPages, { timeout: 4000 });
+    else setTimeout(preloadPages, 2500);
+  }, []);
+
   return (
+    <Suspense fallback={null}>
     <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/concerts" element={<Concerts />} />
@@ -86,6 +104,7 @@ const AppContent = () => {
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
     </Routes>
+    </Suspense>
   );
 };
 
