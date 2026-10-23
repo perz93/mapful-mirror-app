@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { BellRing, ChevronDown, MapPin, Route, Smartphone } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -83,31 +82,10 @@ const FAQ_JSON_LD = JSON.stringify({
 
 type RevealEffect = 'up' | 'rise' | 'left' | 'right' | 'pop';
 
-/** Fait apparaître son contenu quand il entre à l'écran (une seule fois) */
-const Reveal = ({ children, effect = 'up', delay = 0, className = '', as: Tag = 'div' }: {
+/** Bloc de mise en page (plus d'animation d'apparition : le site s'affiche tel quel) */
+const Reveal = ({ children, className = '', as: Tag = 'div' }: {
   children: React.ReactNode; effect?: RevealEffect; delay?: number; className?: string; as?: 'div' | 'li' | 'span';
-}) => {
-  const ref = useRef<HTMLElement>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || typeof IntersectionObserver === 'undefined') { setVisible(true); return; }
-    const io = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setVisible(true); io.disconnect(); }
-    }, { threshold: 0, rootMargin: '0px 0px -12% 0px' });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-  return (
-    <Tag
-      ref={ref as React.Ref<never>}
-      className={`reveal reveal-${effect} ${visible ? 'is-visible' : ''} ${className}`}
-      style={{ '--reveal-delay': `${delay}ms` } as React.CSSProperties}
-    >
-      {children}
-    </Tag>
-  );
-};
+}) => <Tag className={className || undefined}>{children}</Tag>;
 
 /** Défilement fluide vers une section (sous l'en-tête fixe) */
 const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -141,8 +119,7 @@ const Badge = ({ title, accent, dot = 'lime', light = false, delay = 0, classNam
   <div className={`absolute z-10 ${className}`}>
     <Reveal effect="pop" delay={delay}>
       <div
-        className={`landing-float flex items-center gap-2.5 whitespace-nowrap rounded-full py-1.5 pl-1.5 pr-4 text-[14.5px] font-bold shadow-[0_14px_30px_-12px_rgba(20,20,15,0.55)] lg:py-2 lg:pl-2 lg:pr-5 lg:text-[17px] ${light ? 'bg-parchment text-ink' : 'bg-ink text-parchment'}`}
-        style={{ '--float-delay': `${delay / 1000}s` } as React.CSSProperties}
+        className={`flex items-center gap-2.5 whitespace-nowrap rounded-full py-1.5 pl-1.5 pr-4 text-[14.5px] font-bold shadow-[0_14px_30px_-12px_rgba(20,20,15,0.55)] lg:py-2 lg:pl-2 lg:pr-5 lg:text-[17px] ${light ? 'bg-parchment text-ink' : 'bg-ink text-parchment'}`}
       >
         <span className={`size-6 flex-shrink-0 rounded-full lg:size-7 ${dot === 'lime' ? 'bg-lime' : light ? 'bg-ink' : 'bg-parchment'}`} />
         {title}<span className={light ? 'text-[#6fae12]' : 'text-lime'}>· {accent}</span>
@@ -376,7 +353,7 @@ const Landing = () => {
               <details key={q} open={i === 0} className="group border-b border-stone-200 py-4">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[17.5px] font-semibold">
                   {q}
-                  <ChevronDown size={18} className="flex-shrink-0 transition-transform group-open:rotate-180" />
+                  <ChevronDown size={18} className="flex-shrink-0 group-open:rotate-180" />
                 </summary>
                 <p className="mt-2 text-[16px] leading-snug text-stone-500">{a}</p>
               </details>
@@ -393,7 +370,7 @@ const Landing = () => {
           <ul className="mt-4 flex gap-2.5">
             {SOCIALS.map(({ name, href, icon }) => (
               <li key={name}>
-                <a href={href} target="_blank" rel="noopener noreferrer" aria-label={`Upvibe sur ${name}`} className="flex size-11 items-center justify-center rounded-full bg-white/10 text-parchment transition-colors hover:bg-lime hover:text-ink active:scale-95">
+                <a href={href} target="_blank" rel="noopener noreferrer" aria-label={`Upvibe sur ${name}`} className="flex size-11 items-center justify-center rounded-full bg-white/10 text-parchment hover:bg-lime hover:text-ink active:scale-95">
                   <svg viewBox="0 0 24 24" className="size-5" fill="currentColor" aria-hidden>{icon}</svg>
                 </a>
               </li>
