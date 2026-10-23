@@ -1222,3 +1222,12 @@ vercel-live-feedback,
   -webkit-box-decoration-break: clone;
   padding: 0 0.06em;
 }
+
+/* Guide d'installation : sur les écrans peu hauts, l'illustration rétrécit
+   pour que toute la feuille tienne sans défiler */
+@media (max-height: 820px) {
+  .install-visual { zoom: 0.8; }
+}
+@media (max-height: 720px) {
+  .install-visual { zoom: 0.6; }
+}

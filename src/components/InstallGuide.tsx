@@ -19,9 +19,9 @@ function detectOS(): OS {
 
 /** Avantages affichés sous « Installe Upvibe » : pour ceux qui sortent et pour ceux qui publient */
 const PERKS = [
-  { icon: MapPin, strong: 'Les sorties', rest: 'autour de toi' },
-  { icon: BellRing, strong: 'Alertes', rest: 'près de chez toi' },
-  { icon: Megaphone, strong: 'Publie', rest: 'ton event en 2 min' },
+  { icon: MapPin, strong: 'Events', rest: 'autour de toi' },
+  { icon: BellRing, strong: 'Alertes', rest: 'près de toi' },
+  { icon: Megaphone, strong: 'Publie', rest: 'ton event' },
   { icon: Store, strong: 'Propose', rest: 'tes services' },
 ];
 
@@ -482,34 +482,33 @@ const InstallGuide = () => {
         style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       >
         <div className="overflow-y-auto overscroll-contain px-5 pt-5 pb-3">
-          {/* En-tête */}
-          <div className="flex items-center gap-3">
-            <img src="/icon-192.png" alt="" className="size-11 rounded-[13px] border border-stone-200 object-cover" />
-            <div className="min-w-0 flex-1">
-              <h2 id="install-title" className="text-[22px] leading-none tracking-tighter text-ink">Installe Upvibe</h2>
-              <p className="mt-1 text-[12.5px] text-stone-500">Gratuit · sans store · 1 minute</p>
-            </div>
-            <button type="button" onClick={close} aria-label="Fermer" className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-parchment text-ink active:scale-95">
+          {/* En-tête (modèle A du site) : bandeau lime, titre surligné, avantages sur deux lignes, vague */}
+          <div className="relative -mx-5 -mt-5 bg-lime px-5 pb-2 pt-3.5 text-center">
+            <button type="button" onClick={close} aria-label="Fermer" className="absolute right-3.5 top-3.5 flex size-9 items-center justify-center rounded-full bg-white/80 text-ink active:scale-95">
               <X size={18} strokeWidth={2} />
             </button>
+            <div className="flex items-center justify-center gap-2.5 pr-8 pl-8">
+              <img src="/icon-192.png" alt="" className="size-10 flex-shrink-0 rounded-[12px] object-cover" />
+              <h2 id="install-title" className="text-[27px] !font-[800] leading-none tracking-[-0.045em] text-ink">
+                Installe <span className="bg-[linear-gradient(to_top,transparent_0.05em,#fff_0.05em,#fff_0.42em,transparent_0.42em)] px-[0.06em]">Upvibe</span>
+              </h2>
+            </div>
+            <p className="mt-1.5 text-[13.5px] font-bold text-ink">Gratuit · sans store · 1 minute</p>
+            <ul className="mx-auto mt-2.5 grid max-w-[360px] grid-cols-2 gap-1.5">
+              {PERKS.map(({ icon: Icon, strong, rest }) => (
+                <li key={strong} className="flex items-center gap-1.5 whitespace-nowrap rounded-full bg-white px-2.5 py-[5px] text-left text-[12.5px] leading-none">
+                  <Icon size={15} strokeWidth={1.9} className="flex-shrink-0 text-ink" />
+                  <span className="truncate"><span className="font-bold text-ink">{strong}</span> <span className="text-stone-500">{rest}</span></span>
+                </li>
+              ))}
+            </ul>
           </div>
-
-          {/* Ce que Upvibe apporte (modèle B : une ligne d'icônes) */}
-          <ul className="mt-4 grid grid-cols-4 gap-1.5 text-center text-[11px] leading-[1.2] text-stone-500">
-            {PERKS.map(({ icon: Icon, strong, rest }) => (
-              <li key={strong} className="flex flex-col items-center gap-1.5">
-                <span className="flex size-10 items-center justify-center rounded-full bg-parchment text-ink">
-                  <Icon size={18} strokeWidth={1.75} />
-                </span>
-                <span>
-                  <span className="font-semibold text-ink">{strong}</span> {rest}
-                </span>
-              </li>
-            ))}
-          </ul>
+          <svg aria-hidden viewBox="0 0 390 30" preserveAspectRatio="none" className="-mx-5 block h-4 w-[calc(100%+2.5rem)]">
+            <path d="M0,0 L390,0 L390,8 C260,34 120,34 0,14 Z" fill="#a6e22e" />
+          </svg>
 
           {/* iPhone / Android */}
-          <div role="tablist" className="relative mt-4 grid grid-cols-2 rounded-full bg-parchment p-1">
+          <div role="tablist" className="relative mt-1 grid grid-cols-2 rounded-full bg-parchment p-1">
             <span
               aria-hidden
               className={`absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full bg-ink transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
@@ -562,7 +561,7 @@ const InstallGuide = () => {
           )}
 
           {/* Progression */}
-          <p className="eyebrow mt-5 text-stone-500">Étape {step + 1} sur {steps.length}</p>
+          <p className="eyebrow mt-4 text-stone-500">Étape {step + 1} sur {steps.length}</p>
           <div className="mt-2 flex gap-1.5">
             {steps.map((_, i) => (
               <button
@@ -605,8 +604,8 @@ const InstallGuide = () => {
                 className="w-full flex-shrink-0 px-5 pb-2 pt-2 transition-opacity duration-500"
                 style={{ opacity: i === step ? 1 : 0.35 }}
               >
-                {s.visual}
-                <h3 className="mt-4 text-center font-display text-[22px] leading-[1.05] tracking-[-0.03em] text-ink">{s.title}</h3>
+                <div className="install-visual">{s.visual}</div>
+                <h3 className="mt-3 text-center font-display text-[22px] leading-[1.05] tracking-[-0.03em] text-ink">{s.title}</h3>
                 <p className="mx-auto mt-1.5 max-w-[300px] text-center text-[13.5px] leading-snug text-stone-500">{s.hint}</p>
                 {tab === 'ios' && i === steps.length - 1 && (
                   <p className="mx-auto mt-3 max-w-[320px] rounded-2xl bg-parchment px-3.5 py-2.5 text-center text-[11.5px] leading-snug text-stone-600">
@@ -619,7 +618,7 @@ const InstallGuide = () => {
         </div>
 
         {/* Navigation (pas de fermeture : l'installation est requise) */}
-        <div className="flex gap-2 px-5 pb-4 pt-3">
+        <div className="flex gap-2 px-5 pb-3 pt-2">
           <button
             onClick={() => go(step - 1)}
             disabled={step === 0}
