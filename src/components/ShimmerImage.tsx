@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { markShown, wasShown } from '@/lib/imageMemory';
 
 interface ShimmerImageProps {
   src: string;
@@ -12,37 +11,33 @@ interface ShimmerImageProps {
 }
 
 /**
- * Image avec le chargement crème du site (.skeleton) tant qu'elle n'est pas prête.
+ * Image avec le chargement crème du site (.skeleton).
  *
- * Le bloc crème reste affiché jusqu'au DÉCODAGE de l'image, pas seulement jusqu'à
- * l'événement `load` : sur iOS, `load` arrive avant que l'image soit peinte, ce qui
- * laissait apparaître le fond blanc de la carte. L'image apparaît ensuite d'un coup, sans fondu.
+ * Le bloc crème est posé SOUS l'image : tant qu'elle n'est pas peinte on voit le
+ * crème (jamais de blanc), et dès qu'elle l'est elle le recouvre d'un coup, sans
+ * fondu. Le bloc est retiré après le décodage (sur iOS, `load` arrive avant la peinture).
  */
 const ShimmerImage = ({ src, alt, className = '', onClick, loading = 'lazy', position }: ShimmerImageProps) => {
   const imgRef = useRef<HTMLImageElement>(null);
-  // Déjà vue pendant la session : affichée directement, sans reflet ni fondu
-  const [instant, setInstant] = useState(() => wasShown(src));
-  const [ready, setReady] = useState(() => wasShown(src));
+  const [ready, setReady] = useState(false);
 
   const markReady = useCallback(() => {
     const img = imgRef.current;
     if (!img) return;
-    const done = () => { markShown(src); setReady(true); };
+    const done = () => setReady(true);
     if (typeof img.decode === 'function') img.decode().then(done, done);
     else done();
-  }, [src]);
+  }, []);
 
   // Image déjà en cache : `load` a pu se produire avant le montage de React.
   useEffect(() => {
-    const seen = wasShown(src);
-    setInstant(seen);
-    setReady(seen);
-    if (seen) return;
+    setReady(false);
     if (imgRef.current?.complete && imgRef.current.naturalWidth > 0) markReady();
   }, [src, markReady]);
 
   return (
     <div className={`relative overflow-hidden ${className}`} onClick={onClick}>
+      {!ready && <div aria-hidden className="absolute inset-0 skeleton pointer-events-none" />}
       <img
         ref={imgRef}
         src={src}
@@ -52,14 +47,8 @@ const ShimmerImage = ({ src, alt, className = '', onClick, loading = 'lazy', pos
         onLoad={markReady}
         onError={() => setReady(true)}
         style={position ? { objectPosition: position } : undefined}
-        className={`w-full h-full object-cover ${ready ? 'opacity-100' : 'opacity-0'}`}
+        className="relative w-full h-full object-cover"
       />
-      {!instant && (
-        <div
-          aria-hidden
-          className={`absolute inset-0 skeleton pointer-events-none ${ready ? 'opacity-0' : 'opacity-100'}`}
-        />
-      )}
     </div>
   );
 };
