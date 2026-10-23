@@ -31,7 +31,35 @@ export interface Event {
   updated_at: string;
 }
 
+/**
+ * Dernière liste d'événements gardée sur le téléphone : à l'ouverture, la carte
+ * affiche tout de suite les pastilles connues, puis la liste est rafraîchie en
+ * arrière-plan (elle est considérée comme ancienne, donc rechargée aussitôt).
+ */
+const EVENTS_CACHE_KEY = 'upvibe-events-cache-v1';
+const MAX_CACHE_CHARS = 2_000_000; // ~2 Mo : au-delà, on ne garde rien plutôt que saturer le stockage
+
+const readCachedEvents = (): { data: Event[]; savedAt: number } | undefined => {
+  try {
+    const raw = localStorage.getItem(EVENTS_CACHE_KEY);
+    if (!raw) return undefined;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed?.data) && typeof parsed.savedAt === 'number' ? parsed : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
+const writeCachedEvents = (data: Event[]) => {
+  try {
+    const raw = JSON.stringify({ data, savedAt: Date.now() });
+    if (raw.length <= MAX_CACHE_CHARS) localStorage.setItem(EVENTS_CACHE_KEY, raw);
+    else localStorage.removeItem(EVENTS_CACHE_KEY);
+  } catch { /* stockage plein ou indisponible : sans cache */ }
+};
+
 export const useEvents = () => {
+  const cached = readCachedEvents();
   return useQuery({
     queryKey: ['events'],
     queryFn: async () => {
@@ -49,8 +77,13 @@ export const useEvents = () => {
         throw error;
       }
 
-      return (data as Event[]).reverse(); // du plus ancien au plus récent, comme avant
+      const events = (data as Event[]).reverse(); // du plus ancien au plus récent, comme avant
+      writeCachedEvents(events);
+      return events;
     },
+    // Affichage immédiat depuis le téléphone ; daté de 0 pour forcer le rechargement en arrière-plan
+    initialData: cached?.data,
+    initialDataUpdatedAt: cached ? 0 : undefined,
     staleTime: 3 * 60 * 1000, // Fresh for 3 minutes
   });
 };
