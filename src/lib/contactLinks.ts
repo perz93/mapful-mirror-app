@@ -79,3 +79,28 @@ export function openInApp(platform: SocialPlatform, value: string): boolean {
   }
   return false;
 }
+
+/**
+ * E-mail : ouvre directement l'app Gmail (iPhone : app installée en PWA ; Android :
+ * Gmail est presque toujours présente). Sans Gmail, repli sur l'app Mail par défaut.
+ * Renvoie true si l'ouverture est prise en charge (le lien mailto: est alors annulé).
+ */
+export function openGmail(email: string, subject?: string): boolean {
+  const to = encodeURIComponent(email.trim());
+  const su = subject ? encodeURIComponent(subject) : '';
+  const mailto = `mailto:${email.trim()}${su ? `?subject=${su}` : ''}`;
+  if (isAndroid()) {
+    window.location.href = `intent:${mailto}#Intent;action=android.intent.action.SENDTO;package=com.google.android.gm;end`;
+    return true;
+  }
+  if (isIOS() && isStandalone()) {
+    const timer = window.setTimeout(() => {
+      if (!document.hidden) window.location.href = mailto;
+    }, 1200);
+    const cancel = () => { if (document.hidden) window.clearTimeout(timer); };
+    document.addEventListener('visibilitychange', cancel, { once: true });
+    window.location.href = `googlegmail:///co?to=${to}${su ? `&subject=${su}` : ''}`;
+    return true;
+  }
+  return false;
+}

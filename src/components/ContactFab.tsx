@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Phone, Instagram, Facebook, MessageCircle, X, MessageSquare, Mail } from 'lucide-react';
 import { emailProviderLabel, mailtoHref } from '@/lib/emailProvider';
 import { cn } from '@/lib/utils';
-import { webLink, openInApp, type SocialPlatform } from '@/lib/contactLinks';
+import { webLink, openInApp, openGmail, type SocialPlatform } from '@/lib/contactLinks';
 import TikTokIcon from '@/components/icons/TikTokIcon';
 
 interface ContactFabProps {
@@ -26,6 +26,8 @@ interface ContactItem {
   href: string;
   /** Réseau social : ouvert dans son application quand c'est possible */
   app?: { platform: SocialPlatform; value: string };
+  /** Adresse e-mail : ouverte dans Gmail */
+  email?: string;
   bgColor: string;
   label: string;
 }
@@ -46,6 +48,12 @@ const ContactFab = ({
   const [isOpen, setIsOpen] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
   const [animateIn, setAnimateIn] = useState(false);
+
+  // Contacts ouverts : le bouton « carte » flottant se cache (il se mélangeait aux contacts)
+  useEffect(() => {
+    document.documentElement.classList.toggle('contact-menu-open', isOpen);
+    return () => document.documentElement.classList.remove('contact-menu-open');
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen) {
@@ -128,6 +136,7 @@ const ContactFab = ({
     contacts.push({
       icon: <Mail className="w-5 h-5 text-white" />,
       href: mailtoHref(contactEmail, emailSubject),
+      email: contactEmail,
       bgColor: 'bg-ink',
       label: emailProviderLabel(contactEmail)
     });
@@ -164,6 +173,7 @@ const ContactFab = ({
             onClick={(e) => {
               e.stopPropagation();
               if (contact.app && openInApp(contact.app.platform, contact.app.value)) e.preventDefault();
+              else if (contact.email && openGmail(contact.email, emailSubject)) e.preventDefault();
               setIsOpen(false);
             }}
             className={cn(
