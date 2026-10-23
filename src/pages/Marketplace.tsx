@@ -141,7 +141,7 @@ const Marketplace = () => {
                   key={listing.id}
                   to={`/listing/${listing.id}`}
                   style={{ animationDelay: `${Math.min(index * 60, 360)}ms`, animationFillMode: 'backwards' }}
-                  className="group block no-press animate-fade-in"
+                  className="group block no-press"
                 >
                   {/* Cadre calqué sur les événements (K1) */}
                   <article className="card-shadow overflow-hidden rounded-[26px] bg-white p-2">
