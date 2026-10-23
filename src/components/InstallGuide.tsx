@@ -18,7 +18,12 @@ function detectOS(): OS {
 }
 
 /** Avantages affichés sous « Installe Upvibe » : pour ceux qui sortent et pour ceux qui publient */
-const PERKS = ['Événements', 'Alertes', 'Publier', 'Services'];
+const PERKS = [
+  { strong: 'Événements', rest: 'autour de toi' },
+  { strong: 'Alertes', rest: 'près de toi' },
+  { strong: 'Publie', rest: 'ton event' },
+  { strong: 'Propose', rest: 'tes services' },
+];
 
 function isStandalone(): boolean {
   return (
@@ -232,7 +237,7 @@ const ChromeDialog = () => (
 const IOS_STEPS = [
   {
     title: 'Touche ≡ dans la barre d\'adresse',
-    hint: "En bas de Safari, à gauche de « upvibe.app ». Sur un iPhone plus ancien, touche directement Partager.",
+    hint: "En bas de Safari, à gauche de « upvibe.app » (iPhone plus ancien : touche Partager).",
     visual: (
       <Pair
         phone={<MiniPhone><SafariBar mark /></MiniPhone>}
@@ -471,7 +476,7 @@ const InstallGuide = () => {
 
       {/* Feuille */}
       <div
-        className={`relative flex max-h-[94dvh] w-full max-w-md flex-col overflow-hidden rounded-t-[28px] bg-white shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] sm:rounded-[28px] ${
+        className={`relative flex max-h-[calc(100dvh-8px)] w-full max-w-md flex-col overflow-hidden rounded-t-[28px] bg-white shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] sm:rounded-[28px] ${
           shown ? 'translate-y-0' : 'translate-y-full sm:translate-y-8'
         }`}
         style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
@@ -489,9 +494,11 @@ const InstallGuide = () => {
               </h2>
             </div>
             <p className="mt-1.5 text-[13.5px] font-bold text-ink">Gratuit · sans store · 1 minute</p>
-            <ul className="mx-auto mt-2.5 flex max-w-[260px] flex-wrap justify-center gap-1.5">
-              {PERKS.map((label) => (
-                <li key={label} className="rounded-full bg-white px-3.5 py-1.5 text-[13.5px] font-bold leading-none text-ink">{label}</li>
+            <ul className="mx-auto mt-2.5 flex max-w-[370px] flex-wrap justify-center gap-1.5">
+              {PERKS.map(({ strong, rest }) => (
+                <li key={strong} className="rounded-full bg-white px-3.5 py-1.5 text-[13.5px] leading-none text-ink">
+                  <span className="font-bold">{strong}</span> <span className="text-stone-500">{rest}</span>
+                </li>
               ))}
             </ul>
           </div>
@@ -553,8 +560,8 @@ const InstallGuide = () => {
           )}
 
           {/* Progression */}
-          <p className="eyebrow mt-4 text-stone-500">Étape {step + 1} sur {steps.length}</p>
-          <div className="mt-2 flex gap-1.5">
+          <p className="sr-only">Étape {step + 1} sur {steps.length}</p>
+          <div className="mt-3.5 flex gap-1.5">
             {steps.map((_, i) => (
               <button
                 key={i}
@@ -596,14 +603,9 @@ const InstallGuide = () => {
                 className="w-full flex-shrink-0 px-5 pb-2 pt-2 transition-opacity duration-500"
                 style={{ opacity: i === step ? 1 : 0.35 }}
               >
-                <div className="install-visual">{s.visual}</div>
+                {s.visual}
                 <h3 className="mt-3 text-center font-display text-[22px] leading-[1.05] tracking-[-0.03em] text-ink">{s.title}</h3>
                 <p className="mx-auto mt-1.5 max-w-[300px] text-center text-[13.5px] leading-snug text-stone-500">{s.hint}</p>
-                {tab === 'ios' && i === steps.length - 1 && (
-                  <p className="mx-auto mt-3 max-w-[320px] rounded-2xl bg-parchment px-3.5 py-2.5 text-center text-[11.5px] leading-snug text-stone-600">
-                    Sur iPhone, les notifications ne fonctionnent qu'une fois l'app installée (iOS 16.4+).
-                  </p>
-                )}
               </div>
             ))}
           </div>
