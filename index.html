@@ -39,9 +39,10 @@
     <style>
       /* Pendant le splash, fond noir partout (sinon iOS teinte la barre d'état en clair) */
       html.splashing,html.splashing body,html.modal-open,html.modal-open body{background:#000!important}
-      /* Upvibe se tient en portrait : en paysage sur téléphone, message plein écran */
+      /* L'app installée se tient en portrait : en paysage sur téléphone, message plein écran.
+         Pas sur le site dans le navigateur (page vitrine) : il s'affiche normalement. */
       #rotate-hint{display:none}
-      @media (orientation:landscape) and (max-height:500px) and (pointer:coarse){
+      @media (display-mode:standalone) and (orientation:landscape) and (max-height:500px) and (pointer:coarse){
         #rotate-hint{display:flex;position:fixed;inset:0;z-index:100000;background:#000;color:#f5f5eb;flex-direction:column;align-items:center;justify-content:center;gap:14px;font:600 15px/1.4 -apple-system,system-ui,sans-serif;text-align:center}
         #rotate-hint img{width:150px;height:auto}
       }
