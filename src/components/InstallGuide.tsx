@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Share, SquarePlus, EllipsisVertical, Download, Copy, Check, AlertCircle, MapPin, BellRing, Megaphone, Store, X } from 'lucide-react';
+import { Share, SquarePlus, EllipsisVertical, Download, Copy, Check, AlertCircle, X } from 'lucide-react';
 
 const INSTALLED_KEY = 'pwa_installed';
 const OPEN_EVENT = 'upvibe:install';
@@ -18,12 +18,7 @@ function detectOS(): OS {
 }
 
 /** Avantages affichés sous « Installe Upvibe » : pour ceux qui sortent et pour ceux qui publient */
-const PERKS = [
-  { icon: MapPin, strong: 'Events', rest: 'autour de toi' },
-  { icon: BellRing, strong: 'Alertes', rest: 'près de toi' },
-  { icon: Megaphone, strong: 'Publie', rest: 'ton event' },
-  { icon: Store, strong: 'Propose', rest: 'tes services' },
-];
+const PERKS = ['Événements', 'Alertes', 'Publier', 'Services'];
 
 function isStandalone(): boolean {
   return (
@@ -483,7 +478,7 @@ const InstallGuide = () => {
       >
         <div className="overflow-y-auto overscroll-contain px-5 pt-5 pb-3">
           {/* En-tête (modèle A du site) : bandeau lime, titre surligné, avantages sur deux lignes, vague */}
-          <div className="relative -mx-5 -mt-5 bg-lime px-5 pb-2 pt-3.5 text-center">
+          <div className="relative -mx-5 -mt-5 bg-lime px-5 pb-2 pt-3 text-center">
             <button type="button" onClick={close} aria-label="Fermer" className="absolute right-3.5 top-3.5 flex size-9 items-center justify-center rounded-full bg-white/80 text-ink active:scale-95">
               <X size={18} strokeWidth={2} />
             </button>
@@ -494,12 +489,9 @@ const InstallGuide = () => {
               </h2>
             </div>
             <p className="mt-1.5 text-[13.5px] font-bold text-ink">Gratuit · sans store · 1 minute</p>
-            <ul className="mx-auto mt-2.5 grid max-w-[360px] grid-cols-2 gap-1.5">
-              {PERKS.map(({ icon: Icon, strong, rest }) => (
-                <li key={strong} className="flex items-center gap-1.5 whitespace-nowrap rounded-full bg-white px-2.5 py-[5px] text-left text-[12.5px] leading-none">
-                  <Icon size={15} strokeWidth={1.9} className="flex-shrink-0 text-ink" />
-                  <span className="truncate"><span className="font-bold text-ink">{strong}</span> <span className="text-stone-500">{rest}</span></span>
-                </li>
+            <ul className="mx-auto mt-2.5 flex max-w-[260px] flex-wrap justify-center gap-1.5">
+              {PERKS.map((label) => (
+                <li key={label} className="rounded-full bg-white px-3.5 py-1.5 text-[13.5px] font-bold leading-none text-ink">{label}</li>
               ))}
             </ul>
           </div>
