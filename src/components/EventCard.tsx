@@ -118,7 +118,7 @@ const EventCard = () => {
   return <div className="fixed bottom-36 left-0 right-0 max-w-md mx-auto px-4 pointer-events-none z-10 touch-none">
       <div className="pointer-events-auto touch-auto">
         <div
-          className="relative h-[164px] overflow-hidden rounded-3xl bg-white shadow-[0_14px_32px_-14px_rgba(20,20,15,0.45)] [isolation:isolate] transform-gpu will-change-[opacity,transform] motion-reduce:transition-none"
+          className="map-float-strong relative h-[164px] overflow-hidden rounded-3xl bg-white [isolation:isolate] transform-gpu will-change-[opacity,transform] motion-reduce:transition-none"
           style={{
             // Animation d'origine (fondu + léger rétrécissement + glissement),
             // limitée à opacity/transform pour rester sur le GPU.

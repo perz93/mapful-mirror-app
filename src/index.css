@@ -1225,3 +1225,10 @@ vercel-live-feedback,
 
 /* Menu des contacts ouvert : le bouton « carte » flottant se cache */
 .contact-menu-open .home-fab { display: none; }
+
+/* Carte d'événement et barre du bas posées sur la carte : ombre marquée pour
+   qu'elles se détachent d'un fond de carte clair (modèle A).
+   Spécificité renforcée pour passer devant la règle « pas d'ombre ». */
+.map-float-strong.map-float-strong.map-float-strong {
+  box-shadow: 0 2px 6px rgb(20 20 15 / 0.18), 0 18px 40px -10px rgb(20 20 15 / 0.55) !important;
+}
