@@ -717,6 +717,8 @@ const MapView = () => {
       const matchesSearch = !query ||
         fuzzyMatch(eventData.title, query) ||
         fuzzyMatch(eventData.venue, query) ||
+        fuzzyMatch(eventCity(eventData) ?? '', query) ||
+        fuzzyMatch(eventData.city ?? '', query) ||
         fuzzyMatch(eventData.type, query);
 
       const matchesCategory = selectedCategories.length === 0 ||

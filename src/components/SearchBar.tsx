@@ -9,6 +9,7 @@ import {
 import { useSearch } from '@/contexts/SearchContext';
 import { useEvents } from '@/hooks/useEvents';
 import { fuzzyMatch } from '@/lib/fuzzyMatch';
+import { eventCity } from '@/lib/cities';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const HISTORY_KEY = 'search_history';
@@ -80,6 +81,8 @@ const SearchBar = () => {
     if (!searchQuery.trim()) return false;
     return fuzzyMatch(e.title, searchQuery) ||
       fuzzyMatch(e.venue, searchQuery) ||
+      fuzzyMatch(eventCity(e) ?? '', searchQuery) ||
+      fuzzyMatch(e.city ?? '', searchQuery) ||
       fuzzyMatch(e.category, searchQuery);
   }).slice(0, 8);
 
