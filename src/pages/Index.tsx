@@ -17,6 +17,13 @@ const Index = () => {
         <div className="h-full w-full page-enter">
           <MapView />
         </div>
+        {/* Voile crème en dégradé derrière la carte d'événement et la barre du bas :
+            elles restent lisibles quel que soit le fond de carte (modèle B) */}
+        <div
+          aria-hidden
+          className="pointer-events-none fixed inset-x-0 bottom-0 z-[5] mx-auto h-[360px] max-w-md"
+          style={{ background: 'linear-gradient(to top, #f5f5eb 0%, rgb(245 245 235 / 0.93) 55%, rgb(245 245 235 / 0) 100%)' }}
+        />
         <TopMenu />
         <MapControls />
         <EventCard />
