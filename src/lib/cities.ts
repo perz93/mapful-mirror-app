@@ -57,6 +57,24 @@ export const CITIES: City[] = [
 /** Au-delà de cette distance (en plus de l'étendue de la ville), on ne devine pas. */
 const MAX_GUESS_KM = 8;
 
+/**
+ * Ville connue dont l'étendue contient le point (Stade de Yamoussoukro → Yamoussoukro).
+ * Prioritaire sur le nom renvoyé par la carte, qui est parfois un quartier ou un village.
+ */
+export const knownCityAt = (lat: number, lng: number): string | null => {
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  let best: City | null = null;
+  let bestScore = Infinity;
+  for (const city of CITIES) {
+    const score = getDistanceKm(lat, lng, city.lat, city.lng) - city.radiusKm;
+    if (score <= 0 && score < bestScore) {
+      bestScore = score;
+      best = city;
+    }
+  }
+  return best ? best.name : null;
+};
+
 /** Ville d'une publication d'après ses coordonnées : la plus proche, si elle est assez près. */
 export const cityOf = (lat: number, lng: number): string | null => {
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
@@ -72,9 +90,15 @@ export const cityOf = (lat: number, lng: number): string | null => {
   return best && bestScore <= MAX_GUESS_KM ? best.name : null;
 };
 
-/** Ville d'un événement : celle enregistrée à la création, sinon déduite de la position. */
-export const eventCity = (e: { city?: string | null; latitude?: number; longitude?: number; lat?: number; lng?: number }) =>
-  e.city?.trim() || cityOf(Number(e.latitude ?? e.lat), Number(e.longitude ?? e.lng));
+/**
+ * Ville d'un événement : la ville connue qui contient sa position, sinon celle
+ * enregistrée à la création, sinon la ville connue la plus proche.
+ */
+export const eventCity = (e: { city?: string | null; latitude?: number; longitude?: number; lat?: number; lng?: number }) => {
+  const lat = Number(e.latitude ?? e.lat);
+  const lng = Number(e.longitude ?? e.lng);
+  return knownCityAt(lat, lng) || e.city?.trim() || cityOf(lat, lng);
+};
 
 /** Comparaison sans accents ni majuscules (« bouake » = « Bouaké »). */
 export const normalizeName = (text: string) =>

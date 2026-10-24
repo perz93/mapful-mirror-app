@@ -6,7 +6,7 @@ import ContactFields, { readContacts, writeContacts } from '@/components/Contact
 import EventScheduleFields from '@/components/EventScheduleFields';
 import { addBaseMap } from '@/lib/mapTiles';
 import { searchPlaces, reversePlace, type PlaceResult } from '@/lib/geocode';
-import { cityOf } from '@/lib/cities';
+import { cityOf, knownCityAt } from '@/lib/cities';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -284,8 +284,12 @@ const CreateEvent = () => {
     }, 700);
     return () => clearTimeout(timer);
   }, [coordKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Ville connue d'abord (la carte renvoie parfois un quartier ou un village), puis le nom
+  // renvoyé par la carte, puis la ville connue la plus proche
   const detectedCity =
-    (placeCity?.key === coordKey ? placeCity.name : null) ?? cityOf(coordinates.lat, coordinates.lng);
+    knownCityAt(coordinates.lat, coordinates.lng) ??
+    (placeCity?.key === coordKey ? placeCity.name : null) ??
+    cityOf(coordinates.lat, coordinates.lng);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
