@@ -115,14 +115,18 @@ interface EventRow {
   date: string; time: string | null; end_date: string | null; end_time: string | null;
   image_url: string | null; price: number | null; is_paid: boolean | null;
   ticket_types: { name: string; price: number }[] | null;
+  created_at: string; user_id: string;
 }
 
 const eventMeta = async (id: string, url: string): Promise<Meta | null> => {
   const rows = await supabase<EventRow[]>(
-    `events?id=eq.${id}&is_published=eq.true&select=id,title,description,category,venue,address,city,date,time,end_date,end_time,image_url,price,is_paid,ticket_types&limit=1`,
+    `events?id=eq.${id}&is_published=eq.true&select=id,title,description,category,venue,address,city,date,time,end_date,end_time,image_url,price,is_paid,ticket_types,created_at,user_id&limit=1`,
   );
   const e = rows?.[0];
   if (!e) return null;
+  // Organisateur : nom de son profil (sert d'« artiste » si rien de plus précis)
+  const owner = (await supabase<{ full_name: string | null }[]>(`rpc/get_public_profile?p_user_id=${e.user_id}`))?.[0];
+  const organizerName = owner?.full_name?.trim() || 'Upvibe';
   const name = softCase(e.title);
   const label = CATEGORY_LABEL[e.category ?? ''] ?? 'Événement';
   const when = frDate(e.date, e.time);
@@ -132,6 +136,14 @@ const eventMeta = async (id: string, url: string): Promise<Meta | null> => {
   const priceText = !e.is_paid || !minPrice ? 'Gratuit' : `dès ${minPrice.toLocaleString('fr-FR')} FCFA`;
   const intro = `${label} · ${when}${venue ? ` · ${venue}` : ''} · ${priceText}.`;
   const iso = (d: string, t: string | null) => (t ? `${d}T${t.slice(0, 5)}:00+00:00` : d);
+  // Fin : celle saisie, sinon 6 h après le début (même règle que l'app), sinon la journée
+  const endDate = (() => {
+    if (e.end_date || e.end_time) return iso(e.end_date ?? e.date, e.end_time);
+    if (!e.time) return e.date;
+    const end = new Date(`${e.date}T${e.time.slice(0, 5)}:00Z`);
+    end.setUTCHours(end.getUTCHours() + 6);
+    return end.toISOString().replace('.000Z', '+00:00');
+  })();
 
   return {
     title: `${name} — ${when}${venue ? `, ${venue}` : ''} | Upvibe`,
@@ -144,7 +156,7 @@ const eventMeta = async (id: string, url: string): Promise<Meta | null> => {
       name,
       description: clip(e.description ?? intro, 500),
       startDate: iso(e.date, e.time),
-      ...(e.end_date || e.end_time ? { endDate: iso(e.end_date ?? e.date, e.end_time) } : {}),
+      endDate,
       eventStatus: 'https://schema.org/EventScheduled',
       eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
       location: {
@@ -164,8 +176,10 @@ const eventMeta = async (id: string, url: string): Promise<Meta | null> => {
         price: e.is_paid ? minPrice : 0,
         priceCurrency: 'XOF',
         availability: 'https://schema.org/InStock',
+        validFrom: e.created_at,
       },
-      organizer: { '@type': 'Organization', name: 'Upvibe', url: SITE },
+      performer: { '@type': 'PerformingGroup', name: organizerName },
+      organizer: { '@type': 'Organization', name: organizerName, url },
     },
   };
 };
