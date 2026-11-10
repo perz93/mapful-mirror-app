@@ -14,24 +14,24 @@ export default {
     },
     extend: {
       colors: {
-        /* Upvibe — encre, parchemin et un seul accent lime (Perk × Notion) */
+        /* Upvibe — encre, gris léger et un seul accent lime (Perk × Notion) */
         ink: "#14140f",
         lime: {
           DEFAULT: "#a6e22e",
           deep: "#93cc1f",
         },
-        parchment: "#f5f5eb",
-        ash: "#d2d2c8",
+        parchment: "#f2f2f2",
+        ash: "#cfcfcf",
         graphite: "#6e6e64",
         charcoal: "#30302a",
-        /* Neutres chauds : on remappe "stone" pour que tout le site
-           bascule sur la gamme parchemin → encre sans toucher chaque classe. */
+        /* Neutres gris : on remappe "stone" pour que tout le site
+           bascule sur la gamme gris clair → encre sans toucher chaque classe. */
         stone: {
-          50: "#f5f5eb",
-          100: "#edede2",
-          200: "#e2e2d7",
-          300: "#d2d2c8",
-          400: "#919183",
+          50: "#f2f2f2",
+          100: "#ebebeb",
+          200: "#e0e0e0",
+          300: "#cfcfcf",
+          400: "#8f8f8f",
           500: "#6e6e64",
           600: "#55554c",
           700: "#3d3d36",
@@ -43,7 +43,7 @@ export default {
           DEFAULT: "#a6e22e",
           foreground: "#14140f",
         },
-        "background-light": "#f5f5eb",
+        "background-light": "#f2f2f2",
         "background-dark": "#14140f",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

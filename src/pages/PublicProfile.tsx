@@ -179,7 +179,7 @@ const PublicProfile = () => {
               </div>
             </div>
           )}
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(20,20,15,0.35)_0%,rgba(20,20,15,0)_35%,rgba(245,245,235,0)_60%,#f5f5eb_100%)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(20,20,15,0.35)_0%,rgba(20,20,15,0)_35%,rgba(245,245,235,0)_60%,#f2f2f2_100%)]" />
         </div>
 
         <div

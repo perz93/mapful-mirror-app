@@ -132,7 +132,7 @@ const EventCard = () => {
           {/* C2 : photo en bandeau, puis date « MAI 8 », titre et pastilles (comme les listes) */}
           {/* Seul le bouton noir ouvre les détails : toucher le cadre ne fait rien */}
           <div className="flex h-full flex-col p-[7px]">
-            <div className="relative h-[96px] flex-shrink-0 overflow-hidden rounded-[18px] bg-[#ebe9dd]">
+            <div className="relative h-[96px] flex-shrink-0 overflow-hidden rounded-[18px] bg-[#e8e8e8]">
               <ShimmerImage
                 key={currentEvent.id}
                 src={currentEvent.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=640&q=75&fm=webp'}

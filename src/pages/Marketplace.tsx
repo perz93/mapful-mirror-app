@@ -145,7 +145,7 @@ const Marketplace = () => {
                 >
                   {/* Cadre calqué sur les événements (K1) */}
                   <article className="card-shadow overflow-hidden rounded-[26px] bg-white p-2">
-                    <div className="relative h-44 overflow-hidden rounded-[20px] bg-[#ebe9dd]">
+                    <div className="relative h-44 overflow-hidden rounded-[20px] bg-[#e8e8e8]">
                       {listing.image_url ? (
                         <ShimmerImage
                           src={listing.image_url}
