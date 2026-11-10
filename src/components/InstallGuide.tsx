@@ -66,7 +66,7 @@ const MiniPhone = ({ children, android = false }: { children?: React.ReactNode; 
       </>
     )}
     <div
-      className={`relative h-full w-full overflow-hidden bg-[#ece8d6] bg-cover bg-top ${android ? 'rounded-[13px]' : 'rounded-[18px]'}`}
+      className={`relative h-full w-full overflow-hidden bg-[#e9e9e9] bg-cover bg-top ${android ? 'rounded-[13px]' : 'rounded-[18px]'}`}
       style={{ backgroundImage: 'url(/guide-screen.jpg)' }}
     >
       {android ? (
@@ -93,7 +93,7 @@ const MARK = 'rounded-[5px] ring-2 ring-lime ring-offset-1 ring-offset-white/0 s
 
 /** Loupe : la zone utile en grand */
 const Loupe = ({ children }: { children: React.ReactNode }) => (
-  <div className="relative flex size-[148px] flex-shrink-0 items-center justify-center overflow-hidden rounded-full border-[3px] border-lime bg-[#f5f5f0] shadow-[0_16px_32px_-14px_rgba(20,20,15,0.45)]">
+  <div className="relative flex size-[148px] flex-shrink-0 items-center justify-center overflow-hidden rounded-full border-[3px] border-lime bg-[#f3f3f3] shadow-[0_16px_32px_-14px_rgba(20,20,15,0.45)]">
     {children}
   </div>
 );
@@ -161,7 +161,7 @@ const ShareSheet = () => (
   <div className="absolute inset-x-0 bottom-0 rounded-t-[10px] bg-[#f2f2f7] pb-2 pt-1.5">
     <div className="mb-1.5 flex justify-between px-1.5">
       {[0, 1, 2, 3].map((i) => (
-        <span key={i} className={`size-[16px] rounded-full ${i === 3 ? `flex items-center justify-center bg-white text-[7px] ${MARK}` : 'bg-[#e6e3d3]'}`}>{i === 3 ? '⌄' : ''}</span>
+        <span key={i} className={`size-[16px] rounded-full ${i === 3 ? `flex items-center justify-center bg-white text-[7px] ${MARK}` : 'bg-[#e4e4e4]'}`}>{i === 3 ? '⌄' : ''}</span>
       ))}
     </div>
     <div className="mx-1 overflow-hidden rounded-[6px] bg-white">

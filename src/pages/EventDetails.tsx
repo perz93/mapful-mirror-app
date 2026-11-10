@@ -222,7 +222,7 @@ const EventDetails = () => {
         <article className="card-shadow overflow-hidden rounded-[28px] bg-white dark:bg-stone-900">
           <div
             onClick={() => event.image_url && setLightboxOpen(true)}
-            className="relative m-2 h-[240px] cursor-zoom-in overflow-hidden rounded-[22px] bg-[#ebe9dd]"
+            className="relative m-2 h-[240px] cursor-zoom-in overflow-hidden rounded-[22px] bg-[#e8e8e8]"
           >
             <ShimmerImage
               src={event.image_url || 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=640&q=75&fm=webp'}

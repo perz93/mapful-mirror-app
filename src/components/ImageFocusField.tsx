@@ -46,7 +46,7 @@ const ImageFocusField = ({ src, focus, onFocusChange, autoDetect = true }: Image
           <Crosshair size={14} strokeWidth={1.75} /> Ajuster
         </button>
       </div>
-      <div className="relative h-[96px] overflow-hidden rounded-[18px] bg-[#ebe9dd]">
+      <div className="relative h-[96px] overflow-hidden rounded-[18px] bg-[#e8e8e8]">
         <img src={src} alt="" className="absolute inset-0 h-full w-full object-cover" style={{ objectPosition: focusPosition(focus) }} />
         {detecting && (
           <span className="absolute inset-0 flex items-center justify-center gap-2 bg-white/60 text-[12.5px] font-medium text-ink">
@@ -115,7 +115,7 @@ const FocusDialog = ({ src, focus, onCancel, onDone }: { src: string; focus: str
         />
       </div>
       <div className="space-y-2 px-4 pt-4" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)' }}>
-        <div className="relative h-[96px] overflow-hidden rounded-[18px] bg-[#ebe9dd]">
+        <div className="relative h-[96px] overflow-hidden rounded-[18px] bg-[#e8e8e8]">
           <img src={src} alt="" className="absolute inset-0 h-full w-full object-cover" style={{ objectPosition: position }} />
         </div>
         <p className="text-center text-xs text-white/50">Fais glisser l'affiche : la partie dans le cadre vert s'affiche sur la carte</p>

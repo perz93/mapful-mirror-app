@@ -124,12 +124,12 @@ body {
     border-radius: 28px;
   }
   .surface-parchment {
-    background: #f5f5eb;
+    background: #f2f2f2;
     border-radius: 28px;
   }
   .surface-island {
     background: #30302a;
-    color: #f5f5eb;
+    color: #f2f2f2;
     border-radius: 28px;
   }
 
@@ -146,7 +146,7 @@ body {
 
   .btn-ink {
     background: #14140f;
-    color: #f5f5eb;
+    color: #f2f2f2;
     font-weight: 500;
     border-radius: 9999px;
     transition: background-color 150ms ease, transform 150ms ease;
@@ -175,7 +175,7 @@ body {
     border-color: #14140f !important;
   }
   ::placeholder {
-    color: #919183;
+    color: #8f8f8f;
   }
   ::selection {
     background: #a6e22e;
@@ -297,7 +297,7 @@ body {
   border-radius: 50%;
   overflow: hidden;
   /* Ton de chargement crème, recouvert par la photo une fois chargée */
-  background: #ebe9dd;
+  background: #e8e8e8;
   border: none;
   box-shadow:
     0 0 0 2.5px white,
@@ -339,7 +339,7 @@ body {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: linear-gradient(100deg, rgb(251 250 243 / 0) 20%, rgb(251 250 243 / 0.6) 50%, rgb(251 250 243 / 0) 80%);
+  background: linear-gradient(100deg, rgb(250 250 250 / 0) 20%, rgb(250 250 250 / 0.6) 50%, rgb(250 250 250 / 0) 80%);
   background-size: 300% 100%;
   animation: map-shimmer 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   z-index: 0;
@@ -576,7 +576,7 @@ body {
 .popup-date-box {
   text-align: center;
   padding-right: 12px;
-  border-right: 1px solid rgb(245 245 235 / 0.2);
+  border-right: 1px solid rgb(242 242 242 / 0.2);
   flex-shrink: 0;
 }
 
@@ -589,7 +589,7 @@ body {
 }
 
 .popup-date-day {
-  color: #f5f5eb;
+  color: #f2f2f2;
   font-size: 26px;
   line-height: 1;
   letter-spacing: -0.035em;
@@ -602,7 +602,7 @@ body {
 }
 
 .popup-card-title {
-  color: #f5f5eb;
+  color: #f2f2f2;
   font-size: 20px;
   margin: 0;
   line-height: 1.05;
@@ -614,7 +614,7 @@ body {
 }
 
 .popup-card-meta {
-  color: rgb(245 245 235 / 0.72);
+  color: rgb(242 242 242 / 0.72);
   font-size: 12.5px;
   margin-top: 4px;
   white-space: nowrap;
@@ -643,8 +643,8 @@ body {
 
 .popup-route-btn {
   background: rgb(20 20 15 / 0.35);
-  color: #f5f5eb;
-  border: 1px solid rgb(245 245 235 / 0.28);
+  color: #f2f2f2;
+  border: 1px solid rgb(242 242 242 / 0.28);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
@@ -671,7 +671,7 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Upvibe — Encre & Parchemin, accent lime unique (Perk × Notion) */
-    --background: 60 33% 94%;         /* #f5f5eb parchemin */
+    --background: 0 0% 95%;          /* #f2f2f2 gris léger (ex-parchemin) */
     --foreground: 60 14% 7%;          /* #14140f encre */
 
     --card: 0 0% 100%;
@@ -683,19 +683,19 @@ All colors MUST be HSL.
     --primary: 80 76% 53%;            /* #a6e22e lime */
     --primary-foreground: 60 14% 7%;
 
-    --secondary: 60 22% 91%;          /* #edede2 */
+    --secondary: 0 0% 91%;           /* #e8e8e8 */
     --secondary-foreground: 60 14% 7%;
 
-    --muted: 60 22% 91%;
+    --muted: 0 0% 91%;
     --muted-foreground: 60 5% 41%;    /* #6e6e64 graphite */
 
-    --accent: 60 22% 91%;
+    --accent: 0 0% 91%;
     --accent-foreground: 60 14% 7%;
 
     --destructive: 4 70% 46%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 60 10% 80%;             /* #d2d2c8 cendre */
+    --border: 60 10% 80%;             /* #cfcfcf cendre */
     --input: 60 10% 80%;
     --ring: 60 14% 7%;
 
@@ -877,7 +877,7 @@ All colors MUST be HSL.
     top: calc(env(safe-area-inset-top, 0px) + 57px);
     z-index: 30;
     padding: 8px 0 10px;
-    background: hsl(60 33% 94% / 0.92);
+    background: hsl(0 0% 95% / 0.92);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
   }
@@ -996,7 +996,7 @@ h2 { font-size: 28px; }
 
 input::placeholder,
 textarea::placeholder {
-  color: #919183;
+  color: #8f8f8f;
   opacity: 1;
 }
 
@@ -1043,12 +1043,12 @@ h1.eyebrow, h2.eyebrow, h3.eyebrow {
 }
 
 
-/* ===== Chargement : bloc parchemin + reflet crème discret =====
+/* ===== Chargement : bloc gris + reflet clair discret =====
    Une seule classe pour tout le site (squelettes, images, carte). */
 .skeleton {
   overflow: hidden;
   isolation: isolate;
-  background-color: #ebe9dd;
+  background-color: #e8e8e8;
 }
 .skeleton::after {
   content: '';
@@ -1057,9 +1057,9 @@ h1.eyebrow, h2.eyebrow, h3.eyebrow {
   transform: translateX(-100%);
   background: linear-gradient(
     100deg,
-    rgb(251 250 243 / 0) 20%,
-    rgb(251 250 243 / 0.55) 50%,
-    rgb(251 250 243 / 0) 80%
+    rgb(250 250 250 / 0) 20%,
+    rgb(250 250 250 / 0.55) 50%,
+    rgb(250 250 250 / 0) 80%
   );
   animation: skeleton-shimmer 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   pointer-events: none;
@@ -1067,7 +1067,7 @@ h1.eyebrow, h2.eyebrow, h3.eyebrow {
 /* Positionné pour le reflet, SAUF si le bloc est déjà en absolute/fixed
    (calque posé sur une image) : sinon il perdait sa taille et devenait invisible. */
 .skeleton:where(:not(.absolute):not(.fixed)) { position: relative; }
-.skeleton-on-white { background-color: #f1efe6; }
+.skeleton-on-white { background-color: #efefef; }
 @keyframes skeleton-shimmer {
   100% { transform: translateX(100%); }
 }
@@ -1142,7 +1142,7 @@ vercel-live-feedback,
   padding: 3px 11px 3px 3px;
   border-radius: 9999px;
   background: #14140f;
-  color: #f5f5eb;
+  color: #f2f2f2;
   white-space: nowrap;
   box-shadow: 0 3px 10px rgb(20 20 15 / 0.2);
   font-family: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif;
@@ -1166,13 +1166,13 @@ vercel-live-feedback,
   height: 24px;
   border-radius: 50%;
   overflow: hidden;
-  background: #ebe9dd;
+  background: #e8e8e8;
 }
 .pin-label-img img { width: 100% !important; height: 100% !important; object-fit: cover; display: block; }
 .pin-label-title { font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
 .pin-label-time { display: none; font-style: normal; font-weight: 600; color: #a6e22e; }
 .custom-marker.is-selected { z-index: 1000 !important; }
-.custom-marker.is-selected .pin-label { background: #14140f; color: #f5f5eb; box-shadow: 0 4px 14px rgb(20 20 15 / 0.35); }
+.custom-marker.is-selected .pin-label { background: #14140f; color: #f2f2f2; box-shadow: 0 4px 14px rgb(20 20 15 / 0.35); }
 .custom-marker.is-selected .pin-label::after { border-top-color: #14140f; }
 .custom-marker.is-selected .pin-label-img { box-shadow: 0 0 0 2px #a6e22e; }
 .custom-marker.is-selected .pin-label-time { display: inline; }

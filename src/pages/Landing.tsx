@@ -220,7 +220,7 @@ const Landing = () => {
           )}
         </section>
 
-        <Wave top="#f5f5eb" bottom="#ffffff" />
+        <Wave top="#f2f2f2" bottom="#ffffff" />
 
         {/* 2. Pour sortir */}
         <PhoneSection
@@ -250,7 +250,7 @@ const Landing = () => {
           highlight="où aller."
           highlightClass="bg-parchment"
           bg="#b5d8f0"
-          blob="#eef0e4"
+          blob="#ececec"
           phone="/landing/ecran-organisateur.webp"
           alt="Fiche d'un concert avec ses places Standard, VIP et VVIP"
           badges={[

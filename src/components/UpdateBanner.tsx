@@ -71,7 +71,7 @@ const UpdateBanner = () => {
           ))}
         </div>
         <div className="absolute inset-x-0 top-1/2 mt-16 flex flex-col items-center">
-          <p className="text-[15px] font-semibold text-[#f5f5eb]">{t('update.installing')}</p>
+          <p className="text-[15px] font-semibold text-[#f2f2f2]">{t('update.installing')}</p>
           <div className="mt-3.5 flex gap-1.5" aria-hidden>
             {[0, 1, 2].map((i) => (
               <span
