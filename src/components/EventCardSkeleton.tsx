@@ -1,9 +1,9 @@
 const EventCardSkeleton = () => {
   return (
-    <div className="fixed bottom-36 left-0 right-0 max-w-md mx-auto px-4 pointer-events-none z-10 touch-none">
+    <div className="map-card-slot fixed left-0 right-0 max-w-md mx-auto px-4 pointer-events-none z-10 touch-none">
       <div>
         {/* Même gabarit que la mini affiche */}
-        <div className="neo-white-bottom map-float-strong relative h-[164px] overflow-hidden rounded-3xl bg-white/90 p-4">
+        <div className="neo-white-bottom map-float-strong relative h-[var(--map-card-h)] overflow-hidden rounded-3xl bg-white/90 p-4">
           <div className="flex justify-between">
             <div className="h-6 w-20 rounded-full skeleton skeleton-on-white" />
             <div className="h-6 w-20 rounded-full skeleton skeleton-on-white" />

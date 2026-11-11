@@ -115,10 +115,10 @@ const EventCard = () => {
   }
   const currentEvent = events[Math.min(currentIndex, events.length - 1)];
   const status = eventStatus(currentEvent);
-  return <div className="fixed bottom-36 left-0 right-0 max-w-md mx-auto px-4 pointer-events-none z-10 touch-none">
+  return <div className="map-card-slot fixed left-0 right-0 max-w-md mx-auto px-4 pointer-events-none z-10 touch-none">
       <div className="pointer-events-auto touch-auto">
         <div
-          className="map-float-strong relative h-[164px] overflow-hidden rounded-3xl bg-white [isolation:isolate] transform-gpu will-change-[opacity,transform] motion-reduce:transition-none"
+          className="map-float-strong relative h-[var(--map-card-h)] overflow-hidden rounded-3xl bg-white [isolation:isolate] transform-gpu will-change-[opacity,transform] motion-reduce:transition-none"
           style={{
             // Animation d'origine (fondu + léger rétrécissement + glissement),
             // limitée à opacity/transform pour rester sur le GPU.
@@ -132,7 +132,7 @@ const EventCard = () => {
           {/* C2 : photo en bandeau, puis date « MAI 8 », titre et pastilles (comme les listes) */}
           {/* Seul le bouton noir ouvre les détails : toucher le cadre ne fait rien */}
           <div className="flex h-full flex-col p-[7px]">
-            <div className="relative h-[96px] flex-shrink-0 overflow-hidden rounded-[18px] bg-[#e8e8e8]">
+            <div className="relative h-[var(--map-card-img)] flex-shrink-0 overflow-hidden rounded-[18px] bg-[#e8e8e8]">
               <ShimmerImage
                 key={currentEvent.id}
                 src={currentEvent.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=640&q=75&fm=webp'}
