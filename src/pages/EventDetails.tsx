@@ -187,28 +187,28 @@ const EventDetails = () => {
   const multiTickets = tickets.length > 1;
 
   return (
-    <div className="min-h-screen bg-parchment dark:bg-background-dark page-enter">
+    <div className="min-h-screen bg-white dark:bg-background-dark page-enter">
       {/* Actions */}
       <div
         className="fixed inset-x-0 z-30 mx-auto flex max-w-md items-center justify-between px-4"
         style={{ top: 'calc(env(safe-area-inset-top, 0px) + 12px)' }}
       >
-        <button onClick={() => navigate(-1)} aria-label="Retour" className={`${roundBtn} bg-white text-ink`}>
+        <button onClick={() => navigate(-1)} aria-label="Retour" className={`${roundBtn} bg-parchment text-ink`}>
           <ArrowLeft size={20} strokeWidth={1.75} />
         </button>
         <div className="flex gap-2">
           {/* Pas de rappel pour un événement terminé */}
           {!isOver && (
-            <button onClick={toggleReminder} aria-label={t('reminder.set')} className={`${roundBtn} ${reminderSet ? 'bg-lime text-ink' : 'bg-white text-ink'}`}>
+            <button onClick={toggleReminder} aria-label={t('reminder.set')} className={`${roundBtn} ${reminderSet ? 'bg-lime text-ink' : 'bg-parchment text-ink'}`}>
               {reminderSet ? <BellRing size={18} strokeWidth={1.75} /> : <Bell size={18} strokeWidth={1.75} />}
             </button>
           )}
           {!isOwner && (
-            <button onClick={handleFavorite} disabled={favLoading} aria-label="Favori" className={`${roundBtn} disabled:opacity-50 ${isFavorite ? 'bg-ink text-lime' : 'bg-white text-ink'}`}>
+            <button onClick={handleFavorite} disabled={favLoading} aria-label="Favori" className={`${roundBtn} disabled:opacity-50 ${isFavorite ? 'bg-ink text-lime' : 'bg-parchment text-ink'}`}>
               <Heart size={18} strokeWidth={1.75} fill={isFavorite ? 'currentColor' : 'none'} />
             </button>
           )}
-          <button onClick={share} aria-label={t('event.share')} className={`${roundBtn} bg-white text-ink`}>
+          <button onClick={share} aria-label={t('event.share')} className={`${roundBtn} bg-parchment text-ink`}>
             <Share2 size={18} strokeWidth={1.75} />
           </button>
         </div>
@@ -219,7 +219,7 @@ const EventDetails = () => {
         style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 76px)' }}
       >
         {/* D3 : la page est un billet */}
-        <article className="card-shadow overflow-hidden rounded-[28px] bg-white dark:bg-stone-900">
+        <article className="card-shadow overflow-hidden rounded-[28px] bg-parchment dark:bg-stone-900">
           <div
             onClick={() => event.image_url && setLightboxOpen(true)}
             className="relative m-2 h-[240px] cursor-zoom-in overflow-hidden rounded-[22px] bg-[#e8e8e8]"
@@ -231,7 +231,7 @@ const EventDetails = () => {
               loading="eager"
             />
             {status && (
-              <span className={`absolute left-3 top-3 inline-flex h-7 items-center gap-2 rounded-full px-3 text-[11px] font-semibold uppercase tracking-[0.08em] ${status.live ? 'bg-lime text-ink' : 'bg-white text-ink'}`}>
+              <span className={`absolute left-3 top-3 inline-flex h-7 items-center gap-2 rounded-full px-3 text-[11px] font-semibold uppercase tracking-[0.08em] ${status.live ? 'bg-lime text-ink' : 'bg-parchment text-ink'}`}>
                 {status.live && (
                   <span className="relative flex size-2">
                     <span className="absolute inline-flex size-full animate-ping rounded-full bg-ink opacity-50" />
@@ -246,12 +246,12 @@ const EventDetails = () => {
           <div className="px-5 pb-5 pt-2">
             {/* Catégorie (pastille noire) + places (pastille crème) */}
             <div className="flex flex-wrap gap-1.5">
-              <span className="inline-flex h-7 items-center gap-1.5 rounded-full bg-parchment px-3 text-xs font-semibold text-ink">
+              <span className="inline-flex h-7 items-center gap-1.5 rounded-full bg-white px-3 text-xs font-semibold text-ink">
                 {category && <img src={category.icon} alt="" className="size-4 object-contain" />}
                 {categoryLabel}
               </span>
               {event.capacity ? (
-                <span className="inline-flex h-7 items-center gap-1.5 rounded-full bg-parchment px-3 text-xs font-semibold text-ink">
+                <span className="inline-flex h-7 items-center gap-1.5 rounded-full bg-white px-3 text-xs font-semibold text-ink">
                   <Users size={13} strokeWidth={2} />
                   {event.capacity} {lang === 'fr' ? 'places' : 'spots'}
                 </span>
@@ -262,8 +262,8 @@ const EventDetails = () => {
 
           {/* Ligne détachable du billet */}
           <div className="relative mx-5 border-t-2 border-dashed border-stone-200 dark:border-stone-700">
-            <span className="absolute -left-[30px] -top-[11px] size-5 rounded-full bg-parchment dark:bg-background-dark" />
-            <span className="absolute -right-[30px] -top-[11px] size-5 rounded-full bg-parchment dark:bg-background-dark" />
+            <span className="absolute -left-[30px] -top-[11px] size-5 rounded-full bg-white dark:bg-background-dark" />
+            <span className="absolute -right-[30px] -top-[11px] size-5 rounded-full bg-white dark:bg-background-dark" />
           </div>
 
           <dl className="grid grid-cols-2 gap-x-4 gap-y-4 px-5 pb-5 pt-4">
@@ -272,7 +272,7 @@ const EventDetails = () => {
               return (
               <div key={cell.label} className="min-w-0 border-l border-stone-300 dark:border-stone-600 pl-3">
                 <dt className="eyebrow flex items-center gap-2 text-stone-500">
-                  <span className="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-parchment text-ink dark:bg-stone-800 dark:text-white">
+                  <span className="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-white text-ink dark:bg-stone-800 dark:text-white">
                     <cell.icon size={13} strokeWidth={1.75} />
                   </span>
                   {cell.label}
@@ -304,10 +304,10 @@ const EventDetails = () => {
           {keyPoints && keyPoints.length > 0 && (
             <section>
               <h2 className="eyebrow text-stone-500 mb-3">{t('event.keyPoints')}</h2>
-              <ol className="card-shadow rounded-3xl bg-white dark:bg-stone-900 px-5 divide-y divide-stone-200 dark:divide-stone-800">
+              <ol className="card-shadow rounded-3xl bg-parchment dark:bg-stone-900 px-5 divide-y divide-stone-200 dark:divide-stone-800">
                 {keyPoints.map((point, index) => (
                   <li key={index} className="flex items-center gap-4 py-4">
-                    <span className="tabular flex size-8 flex-shrink-0 items-center justify-center rounded-full bg-parchment text-[13px] font-semibold text-ink dark:bg-stone-800 dark:text-stone-200">{index + 1}</span>
+                    <span className="tabular flex size-8 flex-shrink-0 items-center justify-center rounded-full bg-white text-[13px] font-semibold text-ink dark:bg-stone-800 dark:text-stone-200">{index + 1}</span>
                     <p className="text-[15px] leading-relaxed text-ink dark:text-stone-200">{point}</p>
                   </li>
                 ))}

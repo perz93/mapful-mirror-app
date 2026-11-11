@@ -113,11 +113,11 @@ const PublicProfile = () => {
     }
   };
 
-  const roundBtn = 'inline-flex size-12 btn-float items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform';
+  const roundBtn = 'inline-flex size-12 btn-float items-center justify-center rounded-full bg-parchment text-ink active:scale-95 transition-transform';
 
   if (!loaded) {
     return (
-      <div className="min-h-screen bg-parchment">
+      <div className="min-h-screen bg-white">
         <div className="mx-auto max-w-md">
           <div className="skeleton h-[230px]" />
           <div className="px-4">
@@ -134,7 +134,7 @@ const PublicProfile = () => {
 
   if (!profile) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-parchment p-6 text-center">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-white p-6 text-center">
         <p className="text-lg font-medium text-ink">{fr ? 'Profil introuvable' : 'Profile not found'}</p>
         <button onClick={() => navigate(-1)} className="h-11 rounded-full bg-ink px-5 text-sm font-medium text-parchment">
           {fr ? 'Retour' : 'Back'}
@@ -144,7 +144,7 @@ const PublicProfile = () => {
   }
 
   const Row = ({ to, image, title, sub }: { to: string; image: string | null; title: string; sub: string }) => (
-    <Link to={to} className="no-press card-shadow flex items-center gap-3 rounded-[20px] bg-white p-2.5">
+    <Link to={to} className="no-press card-shadow flex items-center gap-3 rounded-[20px] bg-parchment p-2.5">
       <div className="size-14 flex-shrink-0 overflow-hidden rounded-2xl bg-stone-200">
         {image && <ShimmerImage src={image} alt="" className="h-full w-full" />}
       </div>
@@ -161,7 +161,7 @@ const PublicProfile = () => {
       .join(' · ');
 
   return (
-    <div className="min-h-screen bg-parchment page-enter">
+    <div className="min-h-screen bg-white page-enter">
       <div className="relative mx-auto max-w-md pb-32">
         {/* Bannière faite des affiches de la personne */}
         <div className="relative h-[230px] overflow-hidden">
@@ -195,24 +195,24 @@ const PublicProfile = () => {
         </div>
 
         <div className="relative -mt-12 px-4">
-          <span className="flex size-20 items-center justify-center overflow-hidden rounded-full bg-white text-2xl font-semibold text-ink ring-4 ring-parchment">
+          <span className="flex size-20 items-center justify-center overflow-hidden rounded-full bg-parchment text-2xl font-semibold text-ink ring-4 ring-parchment">
             {profile.avatar_url ? <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" /> : initials(name)}
           </span>
           <h1 className="mt-3 text-[32px] leading-[1] tracking-tighter text-ink">{name}</h1>
 
           <div className="mt-3 flex flex-wrap gap-1.5">
             {events.length > 0 && (
-              <span className="inline-flex h-7 items-center rounded-full bg-white px-3 text-xs font-medium text-ink">
+              <span className="inline-flex h-7 items-center rounded-full bg-parchment px-3 text-xs font-medium text-ink">
                 {plural(events.length, fr ? 'événement' : 'event', fr ? 'événements' : 'events')}
               </span>
             )}
             {listings.length > 0 && (
-              <span className="inline-flex h-7 items-center rounded-full bg-white px-3 text-xs font-medium text-ink">
+              <span className="inline-flex h-7 items-center rounded-full bg-parchment px-3 text-xs font-medium text-ink">
                 {plural(listings.length, fr ? 'annonce' : 'listing', fr ? 'annonces' : 'listings')}
               </span>
             )}
             {since && (
-              <span className="inline-flex h-7 items-center rounded-full bg-white px-3 text-xs font-medium text-stone-600">
+              <span className="inline-flex h-7 items-center rounded-full bg-parchment px-3 text-xs font-medium text-stone-600">
                 {fr ? `Membre depuis ${since}` : `Member since ${since}`}
               </span>
             )}
@@ -257,7 +257,7 @@ const PublicProfile = () => {
             )}
 
             {events.length === 0 && listings.length === 0 && (
-              <p className="rounded-[20px] bg-white p-5 text-center text-sm text-stone-500">
+              <p className="rounded-[20px] bg-parchment p-5 text-center text-sm text-stone-500">
                 {fr ? 'Aucune publication pour le moment.' : 'Nothing published yet.'}
               </p>
             )}

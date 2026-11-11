@@ -19,7 +19,7 @@ type MarketplaceListing = Tables<'marketplace_listings'>;
 const ListSkeleton = ({ tall = false }: { tall?: boolean }) => (
   <div className="space-y-3">
     {[1, 2].map((i) => (
-      <div key={i} className="rounded-3xl bg-white p-3">
+      <div key={i} className="rounded-3xl bg-parchment p-3">
         {tall ? (
           <>
             <div className="h-28 w-full rounded-2xl skeleton" />
@@ -191,13 +191,13 @@ const MyAccount = () => {
   const isProfileLoading = !profile && !!user;
 
   return (
-    <div className="min-h-screen relative overflow-hidden page-enter bg-parchment">
+    <div className="min-h-screen relative overflow-hidden page-enter bg-white">
 
       {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
-          <Link to="/" aria-label="Retour" className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform">
+          <Link to="/" aria-label="Retour" className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-parchment text-ink active:scale-95 transition-transform">
             <ArrowLeft size={20} strokeWidth={1.75} className="text-ink" />
           </Link>
           <h1 className="eyebrow text-stone-500">
@@ -284,8 +284,8 @@ const MyAccount = () => {
                   </Link>
                 </div>
                 {eventsLoading ? <ListSkeleton /> : userEvents.length === 0 ? (
-                  <div className="rounded-3xl bg-white p-6">
-                    <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-parchment">
+                  <div className="rounded-3xl bg-parchment p-6">
+                    <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-white">
                       <Calendar size={18} strokeWidth={1.75} className="text-ink" />
                     </span>
                     <p className="text-stone-500 text-sm mb-3">{t('account.noEvents')}</p>
@@ -319,8 +319,8 @@ const MyAccount = () => {
                   </Link>
                 </div>
                 {!listingsLoaded ? <ListSkeleton tall /> : userListings.length === 0 ? (
-                  <div className="rounded-3xl bg-white p-6">
-                    <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-parchment">
+                  <div className="rounded-3xl bg-parchment p-6">
+                    <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-white">
                       <ShoppingBag size={18} strokeWidth={1.75} className="text-ink" />
                     </span>
                     <p className="text-stone-500 text-sm mb-3">{t('account.noListings')}</p>
@@ -336,7 +336,7 @@ const MyAccount = () => {
                     {userListings.map(listing => (
                       <div
                         key={listing.id}
-                        className="rounded-2xl bg-white dark:bg-stone-900/80 overflow-hidden shadow-lg"
+                        className="rounded-2xl bg-parchment dark:bg-stone-900/80 overflow-hidden shadow-lg"
                       >
                         {listing.image_url && (
                           <ShimmerImage src={listing.image_url} alt={listing.title} className="w-full h-28" />
@@ -379,8 +379,8 @@ const MyAccount = () => {
                   {t('account.myFavorites')}
                 </h3>
                 {!favoritesLoaded ? <ListSkeleton /> : favoriteEvents.length === 0 ? (
-                  <div className="rounded-3xl bg-white p-6">
-                    <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-parchment">
+                  <div className="rounded-3xl bg-parchment p-6">
+                    <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-white">
                       <Heart size={18} strokeWidth={1.75} className="text-ink" />
                     </span>
                     <p className="text-ink font-medium mb-1">{t('account.noFavorites')}</p>

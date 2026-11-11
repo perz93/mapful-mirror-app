@@ -83,7 +83,7 @@ const PasswordField = ({ id, value, onChange, placeholder, autoComplete, visible
       onClick={onToggle}
       aria-label={visible ? "Masquer le mot de passe" : "Afficher le mot de passe"}
       aria-pressed={visible}
-      className="absolute right-1.5 top-1/2 -translate-y-1/2 flex size-9 items-center justify-center rounded-full text-stone-500 hover:text-ink hover:bg-parchment transition-colors"
+      className="absolute right-1.5 top-1/2 -translate-y-1/2 flex size-9 items-center justify-center rounded-full text-stone-500 hover:text-ink hover:bg-white transition-colors"
     >
       {visible ? <EyeOff size={18} strokeWidth={1.75} /> : <Eye size={18} strokeWidth={1.75} />}
     </button>
@@ -311,27 +311,27 @@ const Auth = () => {
   };
 
   return (
-    <div className="fixed inset-0 w-full h-[100dvh] overflow-y-auto overscroll-none bg-parchment page-enter">
+    <div className="fixed inset-0 w-full h-[100dvh] overflow-y-auto overscroll-none bg-white page-enter">
       <div
         className="mx-auto flex min-h-full w-full max-w-md flex-col justify-center px-4 py-8 [perspective:1400px]"
         style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 24px)", paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 24px)" }}
       >
         <div
-          className="relative w-full rounded-3xl bg-white p-6 pt-5 shadow-2xl transform-gpu will-change-transform [backface-visibility:hidden]"
+          className="relative w-full rounded-3xl bg-parchment p-6 pt-5 shadow-2xl transform-gpu will-change-transform [backface-visibility:hidden]"
           style={flipStyle}
         >
           {/* Fermer */}
           <button
             onClick={() => navigate("/")}
             aria-label={t("close")}
-            className="absolute top-5 right-5 z-10 flex size-10 items-center justify-center rounded-full bg-parchment text-ink hover:bg-stone-200 active:scale-95 transition-colors"
+            className="absolute top-5 right-5 z-10 flex size-10 items-center justify-center rounded-full bg-white text-ink hover:bg-stone-200 active:scale-95 transition-colors"
           >
             <X className="h-4 w-4" strokeWidth={1.75} />
           </button>
 
           {/* Onglets Connexion / Inscription */}
           {(mode === "login" || mode === "signup") && !sentTo && (
-            <div role="tablist" className="relative mb-6 inline-grid grid-cols-2 rounded-full bg-parchment p-1">
+            <div role="tablist" className="relative mb-6 inline-grid grid-cols-2 rounded-full bg-white p-1">
               {/* Pastille qui glisse sous l'onglet actif */}
               <span
                 aria-hidden

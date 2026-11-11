@@ -67,8 +67,8 @@ const ContactFields = ({ value, onChange }: Props) => {
   );
   const hidden = EXTRAS.filter((e) => !visible.includes(e) && !(e.key === 'whatsapp' && sameWhatsapp));
 
-  const field = 'h-12 w-full rounded-xl border border-stone-300 bg-white pl-12 pr-11 text-[15px] text-ink placeholder:text-stone-400 focus:outline-none focus:border-ink';
-  const iconWrap = 'pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 flex size-8 items-center justify-center rounded-full bg-parchment text-ink';
+  const field = 'h-12 w-full rounded-xl border border-stone-300 bg-parchment pl-12 pr-11 text-[15px] text-ink placeholder:text-stone-400 focus:outline-none focus:border-ink';
+  const iconWrap = 'pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 flex size-8 items-center justify-center rounded-full bg-white text-ink';
 
   return (
     <div className="space-y-4">
@@ -98,7 +98,7 @@ const ContactFields = ({ value, onChange }: Props) => {
             onClick={() => onChange({ whatsapp: sameWhatsapp ? '' : value.phone })}
             className={`relative h-7 w-12 flex-shrink-0 rounded-full transition-colors disabled:opacity-40 ${sameWhatsapp ? 'bg-lime' : 'bg-stone-200'}`}
           >
-            <span className={`absolute top-1 size-5 rounded-full bg-white transition-all ${sameWhatsapp ? 'left-6' : 'left-1'}`} />
+            <span className={`absolute top-1 size-5 rounded-full bg-parchment transition-all ${sameWhatsapp ? 'left-6' : 'left-1'}`} />
           </button>
         </label>
       </div>
@@ -139,7 +139,7 @@ const ContactFields = ({ value, onChange }: Props) => {
                 key={key}
                 type="button"
                 onClick={() => setOpened((o) => [...o, key])}
-                className="inline-flex h-9 items-center gap-1.5 rounded-full border border-dashed border-stone-300 bg-white px-3 text-[13px] font-semibold text-ink active:scale-95"
+                className="inline-flex h-9 items-center gap-1.5 rounded-full border border-dashed border-stone-300 bg-parchment px-3 text-[13px] font-semibold text-ink active:scale-95"
               >
                 <Plus className="size-3.5" strokeWidth={2.2} />
                 <Icon className="size-3.5" />

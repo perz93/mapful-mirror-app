@@ -29,7 +29,7 @@ const priceTypes = [
 ];
 
 const labelClass = "text-sm text-stone-600 font-normal";
-const cardClass = "rounded-3xl bg-white p-5 space-y-3";
+const cardClass = "rounded-3xl bg-parchment p-5 space-y-3";
 const inputClass = "h-12 px-4 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] focus:outline-none focus:ring-0 focus:border-ink";
 
 
@@ -158,13 +158,13 @@ const CreateListing = () => {
   };
 
   return (
-    <div className="relative mx-auto flex min-h-screen max-w-md flex-col bg-parchment page-enter">
+    <div className="relative mx-auto flex min-h-screen max-w-md flex-col bg-white page-enter">
 
       {/* Header */}
       <div className="relative z-10 px-4 pb-6" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         <Link
           to="/marketplace"
-          className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform mb-6"
+          className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-parchment text-ink active:scale-95 transition-transform mb-6"
         >
           <ArrowLeft size={20} strokeWidth={1.75} className="text-ink" />
         </Link>
@@ -184,7 +184,7 @@ const CreateListing = () => {
                   type="button"
                   onClick={removeImage}
                   aria-label="Retirer la photo"
-                  className="absolute right-3 top-3 flex size-8 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform"
+                  className="absolute right-3 top-3 flex size-8 items-center justify-center rounded-full bg-parchment text-ink active:scale-95 transition-transform"
                 >
                   <X size={16} strokeWidth={1.75} />
                 </button>
@@ -224,7 +224,7 @@ const CreateListing = () => {
                 <SelectTrigger className={inputClass}>
                   <SelectValue placeholder={t('market.selectCategory')} />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-stone-200">
+                <SelectContent className="bg-parchment border-stone-200">
                   {categories.map((cat) => (
                     <SelectItem key={cat.value} value={cat.value}>
                       <span className="flex items-center gap-2.5">
@@ -275,7 +275,7 @@ const CreateListing = () => {
                   <SelectTrigger className={inputClass}>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-stone-200">
+                  <SelectContent className="bg-parchment border-stone-200">
                     {priceTypes.map((type) => (
                       <SelectItem key={type.value} value={type.value}>
                         {type.label}

@@ -44,7 +44,7 @@ const CategoryPage = ({
   const header = <>
       <div className="px-4 pb-5" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         <div className="flex items-center justify-between">
-          <Link to="/" aria-label="Retour" className="flex size-12 btn-float items-center justify-center rounded-full bg-white dark:bg-stone-900 text-ink dark:text-white active:scale-95 transition-transform">
+          <Link to="/" aria-label="Retour" className="flex size-12 btn-float items-center justify-center rounded-full bg-parchment dark:bg-stone-900 text-ink dark:text-white active:scale-95 transition-transform">
             <ArrowLeft size={20} strokeWidth={1.75} />
           </Link>
           {iconSrc && <div className="flex size-12 btn-float items-center justify-center rounded-full bg-lime">
@@ -59,7 +59,7 @@ const CategoryPage = ({
       <EventCategoryChips active={category} />
     </>;
   if (isLoading) {
-    return <div className={`min-h-screen bg-parchment dark:bg-stone-950 ${enter}`}>
+    return <div className={`min-h-screen bg-white dark:bg-stone-950 ${enter}`}>
         <div className="mx-auto max-w-md">
           {header}
           <CategoryPageSkeleton />
@@ -67,7 +67,7 @@ const CategoryPage = ({
       </div>;
   }
   if (error) {
-    return <div className={`min-h-screen bg-parchment dark:bg-stone-950 ${enter}`}>
+    return <div className={`min-h-screen bg-white dark:bg-stone-950 ${enter}`}>
         <div className="mx-auto max-w-md">
           {header}
           <div className="p-4 flex items-center justify-center min-h-[50vh]">
@@ -76,7 +76,7 @@ const CategoryPage = ({
         </div>
       </div>;
   }
-  return <div className={`min-h-screen bg-parchment dark:bg-stone-950 ${enter}`}>
+  return <div className={`min-h-screen bg-white dark:bg-stone-950 ${enter}`}>
       <div className="mx-auto max-w-md">
         {header}
 
@@ -89,7 +89,7 @@ const CategoryPage = ({
                   const showStatus = status && (status.live || ['status.soon', 'status.inHours', 'status.tomorrow'].includes(status.key));
                   return (
                     <article
-                      className="card-shadow overflow-hidden rounded-[26px] bg-white p-2 text-ink"
+                      className="card-shadow overflow-hidden rounded-[26px] bg-parchment p-2 text-ink"
                       style={{ animationDelay: `${i * 0.06}s` }}
                     >
                       <div className="relative h-44 overflow-hidden rounded-[20px]">
@@ -100,7 +100,7 @@ const CategoryPage = ({
                           className="h-full w-full"
                         />
                         {showStatus && (
-                          <span className={`absolute left-2.5 top-2.5 inline-flex h-7 items-center gap-1.5 rounded-full px-3 text-xs font-medium ${status!.live ? 'bg-parchment text-ink' : 'bg-white text-ink'}`}>
+                          <span className={`absolute left-2.5 top-2.5 inline-flex h-7 items-center gap-1.5 rounded-full px-3 text-xs font-medium ${status!.live ? 'bg-white text-ink' : 'bg-parchment text-ink'}`}>
                             {status!.live && <span className="size-1.5 rounded-full bg-ink" />}
                             {t(status!.key).replace('{n}', String(status!.n ?? ''))}
                           </span>
@@ -123,12 +123,12 @@ const CategoryPage = ({
                           <h3 className="font-display text-[20px] leading-[1.05] tracking-tight text-ink line-clamp-2">{softCase(event.title)}</h3>
                           {/* Q2 : quartier et heure en pastilles crème, plus lisibles */}
                           <div className="mt-2 flex min-w-0 flex-wrap gap-1.5">
-                            <span className="inline-flex h-[26px] min-w-0 max-w-full items-center gap-1 rounded-full bg-parchment px-2.5 text-[12px] font-semibold text-ink">
+                            <span className="inline-flex h-[26px] min-w-0 max-w-full items-center gap-1 rounded-full bg-white px-2.5 text-[12px] font-semibold text-ink">
                               <MapPin size={13} strokeWidth={2.2} className="flex-shrink-0" />
                               <span className="truncate">{softCase(event.venue)}</span>
                             </span>
                             {event.time && (
-                              <span className="inline-flex h-[26px] flex-shrink-0 items-center gap-1 rounded-full bg-parchment px-2.5 text-[12px] font-semibold text-ink tabular">
+                              <span className="inline-flex h-[26px] flex-shrink-0 items-center gap-1 rounded-full bg-white px-2.5 text-[12px] font-semibold text-ink tabular">
                                 <Clock size={13} strokeWidth={2.2} />
                                 {timeRangeLabel(event)}
                               </span>

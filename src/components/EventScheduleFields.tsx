@@ -39,7 +39,7 @@ const EventScheduleFields = ({ value, onChange, inputClass, labelClass }: Props)
   return (
     <div className="space-y-4">
       {/* Un jour / plusieurs jours */}
-      <div className="flex gap-1.5 p-1 rounded-full bg-parchment w-fit">
+      <div className="flex gap-1.5 p-1 rounded-full bg-white w-fit">
         {[false, true].map((multi) => (
           <button
             key={String(multi)}

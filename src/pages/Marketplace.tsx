@@ -50,13 +50,13 @@ const Marketplace = () => {
   };
 
   return (
-    <div className="relative mx-auto flex min-h-screen max-w-md flex-col bg-parchment page-enter">
+    <div className="relative mx-auto flex min-h-screen max-w-md flex-col bg-white page-enter">
 
       {/* Header */}
       <div className="relative z-10 flex items-center justify-between px-4 pb-6" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         <Link
           to="/"
-          className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform"
+          className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-parchment text-ink active:scale-95 transition-transform"
         >
           <ArrowLeft size={20} strokeWidth={1.75} className="text-ink" />
         </Link>
@@ -93,7 +93,7 @@ const Marketplace = () => {
             className={`snap-start flex-shrink-0 inline-flex items-center h-12 rounded-full px-4 text-[13px] font-medium btn-float transition-colors duration-200 active:scale-95 ${
               selectedCategory === 'all'
                 ? 'bg-ink text-parchment'
-                : 'bg-white text-ink'
+                : 'bg-parchment text-ink'
             }`}
           >
             {t('market.all')}
@@ -109,10 +109,10 @@ const Marketplace = () => {
                 className={`snap-start flex-shrink-0 inline-flex items-center gap-2 h-12 rounded-full pl-1.5 pr-4 text-[13px] font-medium btn-float transition-colors duration-200 active:scale-95 ${
                   active
                     ? 'bg-ink text-parchment'
-                    : 'bg-white text-ink'
+                    : 'bg-parchment text-ink'
                 }`}
               >
-                <span className={`flex size-9 flex-shrink-0 items-center justify-center rounded-full ${active ? 'bg-lime text-ink' : 'bg-parchment text-ink'}`}>
+                <span className={`flex size-9 flex-shrink-0 items-center justify-center rounded-full ${active ? 'bg-lime text-ink' : 'bg-white text-ink'}`}>
                   <Icon size={20} strokeWidth={1.75} />
                 </span>
                 {/* Nom sur deux lignes, comme les pages événements */}
@@ -144,7 +144,7 @@ const Marketplace = () => {
                   className="group block no-press"
                 >
                   {/* Cadre calqué sur les événements (K1) */}
-                  <article className="card-shadow overflow-hidden rounded-[26px] bg-white p-2">
+                  <article className="card-shadow overflow-hidden rounded-[26px] bg-parchment p-2">
                     <div className="relative h-44 overflow-hidden rounded-[20px] bg-[#e8e8e8]">
                       {listing.image_url ? (
                         <ShimmerImage
@@ -153,8 +153,8 @@ const Marketplace = () => {
                           className="h-full w-full"
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-parchment">
-                          <span className="flex size-16 items-center justify-center rounded-3xl bg-white">
+                        <div className="flex h-full w-full items-center justify-center bg-white">
+                          <span className="flex size-16 items-center justify-center rounded-3xl bg-parchment">
                             <Icon size={28} strokeWidth={1.5} className="text-ink" />
                           </span>
                         </div>
@@ -170,7 +170,7 @@ const Marketplace = () => {
                     {/* K1 : catégorie (icône + nom) à la place de la date */}
                     <div className="flex items-center gap-3.5 px-2 pb-1.5 pt-3">
                       <div className="flex w-[66px] flex-shrink-0 flex-col items-center border-r border-stone-200 pr-3.5 text-center">
-                        <span className="flex size-8 items-center justify-center rounded-[10px] bg-parchment">
+                        <span className="flex size-8 items-center justify-center rounded-[10px] bg-white">
                           <Icon size={16} strokeWidth={1.75} className="text-ink" />
                         </span>
                         <span className="mt-1.5 text-[9.5px] font-semibold uppercase leading-[1.15] tracking-[0.06em] text-ink">
@@ -181,13 +181,13 @@ const Marketplace = () => {
                         <h3 className="font-display text-[20px] leading-[1.05] tracking-tight text-ink line-clamp-2">{softCase(listing.title)}</h3>
                         <div className="mt-2 flex min-w-0 flex-wrap gap-1.5">
                           {listing.location && (
-                            <span className="inline-flex h-[26px] min-w-0 max-w-full items-center gap-1 rounded-full bg-parchment px-2.5 text-[12px] font-semibold text-ink">
+                            <span className="inline-flex h-[26px] min-w-0 max-w-full items-center gap-1 rounded-full bg-white px-2.5 text-[12px] font-semibold text-ink">
                               <MapPin size={13} strokeWidth={2.2} className="flex-shrink-0" />
                               <span className="truncate">{softCase(listing.location)}</span>
                             </span>
                           )}
                           {listing.price !== null && listing.price_type === 'negotiable' && (
-                            <span className="inline-flex h-[26px] flex-shrink-0 items-center rounded-full bg-parchment px-2.5 text-[12px] font-semibold text-ink">
+                            <span className="inline-flex h-[26px] flex-shrink-0 items-center rounded-full bg-white px-2.5 text-[12px] font-semibold text-ink">
                               {t('market.negotiable')}
                             </span>
                           )}

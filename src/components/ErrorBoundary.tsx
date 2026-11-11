@@ -37,8 +37,8 @@ class ErrorBoundary extends Component<{ children: ReactNode }, State> {
   render() {
     if (!this.state.hasError) return this.props.children;
     return (
-      <div className="flex min-h-[100dvh] items-center justify-center bg-parchment px-4">
-        <div className="w-full max-w-md rounded-3xl bg-white p-6">
+      <div className="flex min-h-[100dvh] items-center justify-center bg-white px-4">
+        <div className="w-full max-w-md rounded-3xl bg-parchment p-6">
           <p className="eyebrow mb-3 text-stone-500">Upvibe</p>
           <h1 className="text-[36px] leading-[0.95] tracking-tighter text-ink">Oups, un souci est survenu</h1>
           <p className="mt-3 text-[15px] text-stone-500">
@@ -53,7 +53,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, State> {
             </button>
             <button
               onClick={() => { window.location.href = '/'; }}
-              className="h-12 flex-1 rounded-full border border-stone-300 bg-white text-[15px] font-medium text-ink hover:border-ink transition-colors"
+              className="h-12 flex-1 rounded-full border border-stone-300 bg-parchment text-[15px] font-medium text-ink hover:border-ink transition-colors"
             >
               Accueil
             </button>
