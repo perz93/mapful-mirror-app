@@ -36,7 +36,7 @@ const TicketFields = ({ price, onPriceChange, tiers, onTiersChange, inputClass, 
 
   return (
     <div className="space-y-3">
-      <div role="tablist" className="grid grid-cols-2 rounded-full bg-parchment p-1">
+      <div role="tablist" className="grid grid-cols-2 rounded-full bg-white p-1">
         {[false, true].map((m) => (
           <button
             key={String(m)}
@@ -88,7 +88,7 @@ const TicketFields = ({ price, onPriceChange, tiers, onTiersChange, inputClass, 
                 type="button"
                 onClick={() => remove(i)}
                 aria-label="Retirer cette place"
-                className="flex size-9 items-center justify-center rounded-full bg-parchment text-stone-600 active:scale-95"
+                className="flex size-9 items-center justify-center rounded-full bg-white text-stone-600 active:scale-95"
               >
                 <X size={16} strokeWidth={1.75} />
               </button>

@@ -23,7 +23,7 @@ const TopBar = ({ right = 0 }: { right?: number }) => (
 
 /** Cadre d'événement / d'annonce des listes : photo, bloc gauche, titre + pastilles */
 export const ListCardSkeleton = () => (
-  <div className="card-shadow rounded-[26px] bg-white p-2">
+  <div className="card-shadow rounded-[26px] bg-parchment p-2">
     <ShimmerBlock className="h-44 rounded-[20px]" />
     <div className="flex items-center gap-3.5 px-2 pb-1.5 pt-3">
       <div className="flex w-[52px] flex-shrink-0 flex-col items-center gap-1.5 border-r border-stone-200 pr-3.5">
@@ -43,12 +43,12 @@ export const ListCardSkeleton = () => (
 
 /** Skeleton for EventDetails page */
 export const EventDetailsSkeleton = () => (
-  <div className="min-h-screen bg-parchment dark:bg-background-dark">
+  <div className="min-h-screen bg-white dark:bg-background-dark">
     <div className="mx-auto max-w-md">
       <TopBar right={3} />
       {/* Billet : photo, pastilles, titre, pointillés, grille date / heure / lieu / prix */}
       <div className="px-4 pt-4">
-        <div className="card-shadow overflow-hidden rounded-[28px] bg-white">
+        <div className="card-shadow overflow-hidden rounded-[28px] bg-parchment">
           <ShimmerBlock className="m-2 h-[240px] rounded-[22px]" />
           <div className="space-y-3 px-5 pb-5 pt-2">
             <div className="flex gap-1.5">
@@ -86,13 +86,13 @@ export const CategoryPageSkeleton = () => (
 
 /** Skeleton for CreateEvent / form pages */
 export const FormPageSkeleton = () => (
-  <div className="min-h-screen bg-parchment">
+  <div className="min-h-screen bg-white">
     <div className="mx-auto max-w-md px-4 space-y-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
       <ShimmerBlock className="h-10 w-10 rounded-full" />
       <ShimmerBlock className="h-9 w-3/4 rounded-xl" />
       <ShimmerBlock className="h-4 w-1/2" />
       {[1, 2, 3].map((i) => (
-        <div key={i} className="rounded-3xl bg-white p-5 space-y-3">
+        <div key={i} className="rounded-3xl bg-parchment p-5 space-y-3">
           <div className="flex items-center gap-3">
             <ShimmerBlock className="size-10 rounded-2xl skeleton-on-white" />
             <ShimmerBlock className="h-5 w-40 skeleton-on-white" />
@@ -109,7 +109,7 @@ export const FormPageSkeleton = () => (
 export const SettingsSkeleton = () => (
   <div className="mx-auto max-w-md px-4 pt-20 space-y-4">
     {[1, 2, 3, 4].map((i) => (
-      <div key={i} className="rounded-3xl bg-white p-5 space-y-4">
+      <div key={i} className="rounded-3xl bg-parchment p-5 space-y-4">
         <div className="flex items-center gap-3">
           <ShimmerBlock className="size-10 rounded-2xl skeleton-on-white" />
           <ShimmerBlock className="h-5 w-32 rounded-md skeleton-on-white" />
@@ -145,7 +145,7 @@ export const AccountSkeleton = () => (
     {/* Liste : texte à gauche, photo à droite */}
     <div className="w-full space-y-3">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="flex items-center gap-4 rounded-3xl bg-white p-3">
+        <div key={i} className="flex items-center gap-4 rounded-3xl bg-parchment p-3">
           <div className="flex-1 space-y-2 pl-1">
             <ShimmerBlock className="h-3 w-24 rounded-full skeleton-on-white" />
             <ShimmerBlock className="h-4 w-3/4 rounded-md skeleton-on-white" />
@@ -162,7 +162,7 @@ export const AccountSkeleton = () => (
 export const ManageEventsSkeleton = () => (
   <div className="space-y-4">
     {[1, 2, 3].map((i) => (
-      <div key={i} className="rounded-3xl bg-white p-4 space-y-3">
+      <div key={i} className="rounded-3xl bg-parchment p-4 space-y-3">
         <div className="flex items-center gap-3">
           <ShimmerBlock className="w-16 h-16 rounded-xl flex-shrink-0" />
           <div className="flex-1 space-y-2">
@@ -185,7 +185,7 @@ export const EditEventSkeleton = () => (
   <div className="mx-auto max-w-md px-4 pt-20 space-y-4">
     <ShimmerBlock className="h-48 rounded-2xl" />
     {[1, 2, 3].map((i) => (
-      <div key={i} className="rounded-3xl bg-white p-4 space-y-3">
+      <div key={i} className="rounded-3xl bg-parchment p-4 space-y-3">
         <ShimmerBlock className="h-5 w-32" />
         <ShimmerBlock className="h-9 w-full rounded-xl" />
         <ShimmerBlock className="h-9 w-full rounded-xl" />

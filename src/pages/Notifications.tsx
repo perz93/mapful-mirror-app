@@ -63,15 +63,15 @@ const Notifications = () => {
 
   if (!user) {
     return (
-      <div className="relative min-h-screen bg-parchment max-w-md mx-auto page-enter">
+      <div className="relative min-h-screen bg-white max-w-md mx-auto page-enter">
         <div className="px-4 pb-6" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
-          <button onClick={goBack} aria-label="Retour" className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform mb-6">
+          <button onClick={goBack} aria-label="Retour" className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-parchment text-ink active:scale-95 transition-transform mb-6">
             <ArrowLeft size={20} strokeWidth={1.75} className="text-ink" />
           </button>
           <LargeTitle className="text-[40px] leading-[0.95] tracking-tighter text-ink">{t('notif.title')}</LargeTitle>
         </div>
-        <div className="mx-4 rounded-3xl bg-white p-6">
-          <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-parchment">
+        <div className="mx-4 rounded-3xl bg-parchment p-6">
+          <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-white">
             <BellOff size={18} strokeWidth={1.75} className="text-ink" />
           </span>
           <p className="text-ink font-medium mb-4">{t('auth.loginToSee')}</p>
@@ -84,17 +84,17 @@ const Notifications = () => {
   }
 
   return (
-    <div className="relative min-h-screen bg-parchment max-w-md mx-auto page-enter">
+    <div className="relative min-h-screen bg-white max-w-md mx-auto page-enter">
       {/* En-tête : même structure que les autres pages */}
       <div className="px-4 pb-6" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         <div className="flex items-center justify-between mb-6">
-          <button onClick={goBack} aria-label="Retour" className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform">
+          <button onClick={goBack} aria-label="Retour" className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-parchment text-ink active:scale-95 transition-transform">
             <ArrowLeft size={20} strokeWidth={1.75} className="text-ink" />
           </button>
           {unreadCount > 0 && (
             <button
               onClick={markAllAsRead}
-              className="inline-flex items-center gap-1.5 h-10 px-4 rounded-full bg-white text-ink text-sm font-medium hover:bg-stone-100 transition-colors"
+              className="inline-flex items-center gap-1.5 h-10 px-4 rounded-full bg-parchment text-ink text-sm font-medium hover:bg-stone-100 transition-colors"
             >
               <CheckCheck size={16} strokeWidth={1.75} />
               {t('notif.markAllRead')}
@@ -112,7 +112,7 @@ const Notifications = () => {
         {loading ? (
           <div className="flex flex-col gap-3">
             {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="flex items-center gap-3.5 rounded-3xl bg-white p-3">
+              <div key={i} className="flex items-center gap-3.5 rounded-3xl bg-parchment p-3">
                 <div className="size-14 flex-shrink-0 rounded-2xl skeleton relative overflow-hidden" />
                 <div className="flex-1 space-y-2">
                   <div className="h-3 w-1/3 rounded-md skeleton relative overflow-hidden" />
@@ -145,9 +145,9 @@ const Notifications = () => {
                           aria-expanded={isOpen}
                           onClick={() => toggle(notif)}
                           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(notif); } }}
-                          className={`flex w-full gap-3.5 rounded-3xl bg-white p-3 text-left transition-transform active:scale-[0.99] ${isOpen ? 'items-start' : 'items-center'}`}
+                          className={`flex w-full gap-3.5 rounded-3xl bg-parchment p-3 text-left transition-transform active:scale-[0.99] ${isOpen ? 'items-start' : 'items-center'}`}
                         >
-                          <div className="relative size-14 flex-shrink-0 overflow-hidden rounded-2xl bg-parchment">
+                          <div className="relative size-14 flex-shrink-0 overflow-hidden rounded-2xl bg-white">
                             {notif.image_url ? (
                               <ShimmerImage src={notif.image_url} alt="" className="h-full w-full" />
                             ) : (

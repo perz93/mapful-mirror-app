@@ -189,7 +189,7 @@ const Settings = () => {
 
   if (loading || loadingPreferences) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-parchment">
+      <div className="min-h-screen relative overflow-hidden bg-white">
         <div className="relative z-10">
           <SettingsSkeleton />
         </div>
@@ -200,7 +200,7 @@ const Settings = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen relative overflow-hidden pb-32 page-enter bg-parchment">
+    <div className="min-h-screen relative overflow-hidden pb-32 page-enter bg-white">
 
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-md px-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
@@ -208,7 +208,7 @@ const Settings = () => {
         <div className="mb-8">
           <Link
             to="/"
-            className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform mb-6"
+            className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-parchment text-ink active:scale-95 transition-transform mb-6"
           >
             <ArrowLeft size={20} strokeWidth={1.75} className="text-ink" />
           </Link>
@@ -220,7 +220,7 @@ const Settings = () => {
 
         <div className="space-y-6">
           {/* Profil public */}
-          <div className="rounded-3xl bg-white p-5">
+          <div className="rounded-3xl bg-parchment p-5">
             <div className="mb-1 -mt-1">
               <SectionTitle icon={UserRound}>{lang === 'fr' ? 'Profil public' : 'Public profile'}</SectionTitle>
             </div>
@@ -240,7 +240,7 @@ const Settings = () => {
                   maxLength={60}
                   onChange={e => setPublicName(e.target.value)}
                   placeholder={lang === 'fr' ? 'Ex. Kofi Events' : 'e.g. Kofi Events'}
-                  className="w-full h-12 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 focus:outline-none focus:ring-0 focus:border-ink"
+                  className="w-full h-12 rounded-xl bg-parchment border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 focus:outline-none focus:ring-0 focus:border-ink"
                 />
               </div>
               <div>
@@ -252,7 +252,7 @@ const Settings = () => {
                   rows={3}
                   onChange={e => setBio(e.target.value)}
                   placeholder={lang === 'fr' ? 'Soirées, brunchs et pool parties à Cocody…' : 'Parties, brunches and pool parties in Abidjan…'}
-                  className="w-full rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 py-3 resize-none focus:outline-none focus:ring-0 focus:border-ink"
+                  className="w-full rounded-xl bg-parchment border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 py-3 resize-none focus:outline-none focus:ring-0 focus:border-ink"
                 />
                 <p className="mt-1 text-right text-xs text-stone-400 tabular">{bio.length}/160</p>
               </div>
@@ -272,7 +272,7 @@ const Settings = () => {
           </div>
 
           {/* Email Section */}
-          <div className="rounded-3xl bg-white p-5">
+          <div className="rounded-3xl bg-parchment p-5">
             <div className="mb-1 -mt-1">
               <SectionTitle icon={Mail}>{t('settings.email')}</SectionTitle>
             </div>
@@ -295,7 +295,7 @@ const Settings = () => {
                 placeholder={t('auth.codePlaceholder')}
                 value={emailCode}
                 onChange={e => setEmailCode(e.target.value.replace(/\D/g, '').slice(0, 8))}
-                className="w-full h-14 rounded-xl bg-white border border-stone-300 text-ink text-center text-2xl font-semibold tracking-[0.4em] placeholder:text-base placeholder:font-normal placeholder:tracking-normal placeholder:text-stone-400 px-4 focus:outline-none focus:ring-0 focus:border-ink"
+                className="w-full h-14 rounded-xl bg-parchment border border-stone-300 text-ink text-center text-2xl font-semibold tracking-[0.4em] placeholder:text-base placeholder:font-normal placeholder:tracking-normal placeholder:text-stone-400 px-4 focus:outline-none focus:ring-0 focus:border-ink"
               />
               <div className="flex items-center gap-3">
                 <button
@@ -322,7 +322,7 @@ const Settings = () => {
                   value={newEmail}
                   onChange={e => setNewEmail(e.target.value)}
                   placeholder="nouvelle@email.com"
-                  className="w-full h-12 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 focus:outline-none focus:ring-0 focus:border-ink"
+                  className="w-full h-12 rounded-xl bg-parchment border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 focus:outline-none focus:ring-0 focus:border-ink"
                 />
               </div>
               <button
@@ -337,7 +337,7 @@ const Settings = () => {
           </div>
 
           {/* Password Section */}
-          <div className="rounded-3xl bg-white p-5">
+          <div className="rounded-3xl bg-parchment p-5">
             <div className="mb-1 -mt-1">
               <SectionTitle icon={Lock}>{t('settings.password')}</SectionTitle>
             </div>
@@ -355,7 +355,7 @@ const Settings = () => {
                   value={newPassword}
                   onChange={e => setNewPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full h-12 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 focus:outline-none focus:ring-0 focus:border-ink"
+                  className="w-full h-12 rounded-xl bg-parchment border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 focus:outline-none focus:ring-0 focus:border-ink"
                 />
               </div>
               <div>
@@ -368,7 +368,7 @@ const Settings = () => {
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full h-12 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 focus:outline-none focus:ring-0 focus:border-ink"
+                  className="w-full h-12 rounded-xl bg-parchment border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 focus:outline-none focus:ring-0 focus:border-ink"
                 />
               </div>
               <button
@@ -385,7 +385,7 @@ const Settings = () => {
           <PushNotificationSection />
 
           {/* Notification Preferences Section */}
-          <div className="rounded-3xl bg-white p-5">
+          <div className="rounded-3xl bg-parchment p-5">
             <div className="mb-1 -mt-1">
               <SectionTitle icon={Bell}>{t('settings.notifPrefs')}</SectionTitle>
             </div>
@@ -434,7 +434,7 @@ const Settings = () => {
           </div>
 
           {/* Langue : une ligne, la langue actuelle en pastille (L3) */}
-          <div className="rounded-3xl bg-white px-5 py-4">
+          <div className="rounded-3xl bg-parchment px-5 py-4">
             <div className="flex items-center justify-between gap-3">
               <div className="-my-1">
                 <SectionTitle icon={Globe}>{t('settings.language')}</SectionTitle>
@@ -444,7 +444,7 @@ const Settings = () => {
                   <button
                     type="button"
                     aria-label={t('settings.languageDesc')}
-                    className="inline-flex h-9 flex-shrink-0 items-center gap-1.5 rounded-full bg-parchment px-3.5 text-sm font-semibold text-ink active:scale-95 transition-transform"
+                    className="inline-flex h-9 flex-shrink-0 items-center gap-1.5 rounded-full bg-white px-3.5 text-sm font-semibold text-ink active:scale-95 transition-transform"
                   >
                     <span>{lang === 'fr' ? '🇫🇷' : '🇬🇧'}</span>
                     {lang === 'fr' ? 'Français' : 'English'}
@@ -464,7 +464,7 @@ const Settings = () => {
                         setLang(option.id);
                         toast.success(option.id === 'fr' ? 'Langue changée en français' : 'Language changed to English');
                       }}
-                      className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-ink transition-colors ${lang === option.id ? 'bg-parchment' : 'hover:bg-parchment/60'}`}
+                      className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-ink transition-colors ${lang === option.id ? 'bg-white' : 'hover:bg-parchment/60'}`}
                     >
                       <span className="text-base">{option.flag}</span>
                       <span className="flex-1 text-left">{option.label}</span>
@@ -477,7 +477,7 @@ const Settings = () => {
           </div>
 
           {/* Legal Section */}
-          <div className="rounded-3xl bg-white overflow-hidden">
+          <div className="rounded-3xl bg-parchment overflow-hidden">
             <div className="p-5 pb-3">
               <div className="mb-1 -mt-1">
                 <SectionTitle icon={Shield}>{t('settings.legal')}</SectionTitle>
@@ -552,7 +552,7 @@ const PushNotificationSection = () => {
   };
 
   return (
-    <div className="rounded-3xl bg-white p-5">
+    <div className="rounded-3xl bg-parchment p-5">
       <div className="mb-1 -mt-1">
         <SectionTitle icon={Smartphone}>{t('settings.push')}</SectionTitle>
       </div>

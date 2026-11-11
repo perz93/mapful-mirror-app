@@ -22,7 +22,7 @@ import { EditEventSkeleton } from '@/components/PageSkeleton';
 
 const inputClass = "h-12 px-4 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] focus:outline-none focus:ring-0 focus:border-ink w-full";
 const labelClass = "text-sm text-stone-600 font-normal";
-const cardClass = "rounded-3xl bg-white p-5 space-y-3";
+const cardClass = "rounded-3xl bg-parchment p-5 space-y-3";
 
 const EditEvent = () => {
   const { id } = useParams();
@@ -196,7 +196,7 @@ const EditEvent = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-parchment">
+      <div className="min-h-screen relative overflow-hidden bg-white">
         <div className="relative z-10">
           <EditEventSkeleton />
         </div>
@@ -205,7 +205,7 @@ const EditEvent = () => {
   }
 
   return (
-    <div className="relative min-h-screen pb-32 page-enter overflow-hidden overscroll-none bg-parchment">
+    <div className="relative min-h-screen pb-32 page-enter overflow-hidden overscroll-none bg-white">
 
       {/* Content */}
       <div className="relative mx-auto max-w-md">
@@ -213,7 +213,7 @@ const EditEvent = () => {
         <div className="px-4 pb-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
           <Link
             to="/manage-events"
-            className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform mb-6"
+            className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-parchment text-ink active:scale-95 transition-transform mb-6"
           >
             <ArrowLeft size={20} strokeWidth={1.75} className="text-ink" />
           </Link>
@@ -235,7 +235,7 @@ const EditEvent = () => {
               >
                 {imagePreview ? (
                   <div className="relative">
-                    <img src={imagePreview} alt="Preview" className="w-full max-h-72 object-contain rounded-xl bg-parchment" />
+                    <img src={imagePreview} alt="Preview" className="w-full max-h-72 object-contain rounded-xl bg-white" />
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-center py-4">
@@ -260,7 +260,7 @@ const EditEvent = () => {
 
               <div className="space-y-2">
                 <label className={labelClass}>{t('form.description')}</label>
-                <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} rows={4} className="rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 py-3 focus:outline-none focus:ring-0 focus:border-ink w-full px-3 py-2 resize-none" />
+                <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} rows={4} className="rounded-xl bg-parchment border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 py-3 focus:outline-none focus:ring-0 focus:border-ink w-full px-3 py-2 resize-none" />
               </div>
 
               <div className="space-y-2">

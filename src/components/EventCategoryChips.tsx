@@ -16,7 +16,7 @@ const EventCategoryChips = ({ active }: { active: string }) => {
 
   const chip = (on: boolean) =>
     `snap-start flex-shrink-0 inline-flex items-center gap-2 h-12 rounded-full text-[13px] font-medium btn-float transition-colors duration-200 active:scale-95 ${
-      on ? 'bg-ink text-parchment' : 'bg-white text-ink'
+      on ? 'bg-ink text-parchment' : 'bg-parchment text-ink'
     }`;
 
   return (
@@ -29,7 +29,7 @@ const EventCategoryChips = ({ active }: { active: string }) => {
           const on = active === c.value;
           return (
             <Link key={c.value} to={c.path} replace state={{ chip: true }} data-active={on} className={`${chip(on)} pl-1.5 pr-4`}>
-              <span className={`flex size-9 flex-shrink-0 items-center justify-center rounded-full ${on ? 'bg-lime' : 'bg-parchment'}`}>
+              <span className={`flex size-9 flex-shrink-0 items-center justify-center rounded-full ${on ? 'bg-lime' : 'bg-white'}`}>
                 <img src={c.icon} alt="" className="size-5" />
               </span>
               {/* Nom sur deux lignes (comme la barre du bas) ; « bien-être » ne se coupe pas */}

@@ -11,7 +11,7 @@ interface SectionTitleProps {
  */
 const SectionTitle = ({ icon: Icon, children }: SectionTitleProps) => (
   <h2 className="mb-4 flex items-center gap-3 text-[19px] text-ink">
-    <span className="flex size-10 flex-shrink-0 items-center justify-center rounded-2xl bg-parchment">
+    <span className="flex size-10 flex-shrink-0 items-center justify-center rounded-2xl bg-white">
       <Icon size={18} strokeWidth={1.75} className="text-ink" />
     </span>
     {children}

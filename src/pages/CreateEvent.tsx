@@ -34,7 +34,7 @@ import { EVENT_CATEGORIES } from '@/lib/eventCategories';
 
 const inputClass = "h-12 px-4 rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] focus:outline-none focus:ring-0 focus:border-ink [&]:ring-0 [&]:outline-none";
 const labelClass = "text-sm text-stone-600 font-normal";
-const cardClass = "rounded-3xl bg-white p-5 space-y-3";
+const cardClass = "rounded-3xl bg-parchment p-5 space-y-3";
 
 const CreateEvent = () => {
   const { user, loading } = useAuth();
@@ -438,7 +438,7 @@ const CreateEvent = () => {
   }
 
   return (
-    <div className="relative min-h-screen pb-32 page-enter overflow-hidden overscroll-none bg-parchment">
+    <div className="relative min-h-screen pb-32 page-enter overflow-hidden overscroll-none bg-white">
 
 
       {/* Content */}
@@ -447,7 +447,7 @@ const CreateEvent = () => {
         <div className="px-4 sm:px-6 pb-6" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
           <Link
             to="/"
-            className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform mb-6"
+            className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-parchment text-ink active:scale-95 transition-transform mb-6"
           >
             <ArrowLeft size={20} strokeWidth={1.75} className="text-ink" />
           </Link>
@@ -479,7 +479,7 @@ const CreateEvent = () => {
                     <img
                       src={imagePreview}
                       alt="Preview"
-                      className="w-full max-h-72 object-contain rounded-lg bg-parchment"
+                      className="w-full max-h-72 object-contain rounded-lg bg-white"
                     />
                     <div className="absolute inset-0 bg-black/30 rounded-lg flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                       <p className="text-white text-sm">{t('form.clickToChange')}</p>
@@ -523,7 +523,7 @@ const CreateEvent = () => {
                   <SelectTrigger className={inputClass}>
                     <SelectValue placeholder={t('form.selectCategory')} />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-stone-200">
+                  <SelectContent className="bg-parchment border-stone-200">
                     {EVENT_CATEGORIES.map((c) => (
                       <SelectItem key={c.value} value={c.value}>
                         <span className="flex items-center gap-2">
@@ -560,16 +560,16 @@ const CreateEvent = () => {
                     className={inputClass}
                   />
                   {showSuggestions && suggestions.length > 0 && (
-                    <div className="absolute left-0 right-0 top-full mt-2 z-20 rounded-2xl bg-white border border-stone-200 shadow-xl overflow-hidden">
+                    <div className="absolute left-0 right-0 top-full mt-2 z-20 rounded-2xl bg-parchment border border-stone-200 shadow-xl overflow-hidden">
                       {suggestions.map((place, i) => (
                         <button
                           key={`${place.lat},${place.lng},${i}`}
                           type="button"
                           onMouseDown={(e) => e.preventDefault()}
                           onClick={() => pickSuggestion(place)}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-left border-b border-stone-100 last:border-b-0 active:bg-parchment"
+                          className="w-full flex items-center gap-3 px-4 py-3 text-left border-b border-stone-100 last:border-b-0 active:bg-white"
                         >
-                          <span className="h-8 w-8 rounded-full bg-parchment flex items-center justify-center flex-shrink-0">
+                          <span className="h-8 w-8 rounded-full bg-white flex items-center justify-center flex-shrink-0">
                             <MapPin size={15} className="text-ink" />
                           </span>
                           <span className="min-w-0">
@@ -585,7 +585,7 @@ const CreateEvent = () => {
                   type="button"
                   onClick={locateMe}
                   disabled={locatingMe}
-                  className="inline-flex items-center gap-2 h-9 px-3.5 rounded-full bg-parchment text-ink text-[13px] font-medium active:scale-95 transition-transform disabled:opacity-60"
+                  className="inline-flex items-center gap-2 h-9 px-3.5 rounded-full bg-white text-ink text-[13px] font-medium active:scale-95 transition-transform disabled:opacity-60"
                 >
                   {locatingMe ? <Loader2 size={14} className="animate-spin" /> : <LocateFixed size={14} />}
                   {t('form.useMyLocation')}
@@ -611,7 +611,7 @@ const CreateEvent = () => {
                     {t('form.mapHint')}
                   </p>
                   {detectedCity && (
-                    <span className="flex-shrink-0 inline-flex items-center gap-1 h-7 px-2.5 rounded-full bg-parchment text-ink text-xs font-medium">
+                    <span className="flex-shrink-0 inline-flex items-center gap-1 h-7 px-2.5 rounded-full bg-white text-ink text-xs font-medium">
                       <MapPin size={12} /> {detectedCity}
                     </span>
                   )}
@@ -667,7 +667,7 @@ const CreateEvent = () => {
                   value={formData.description}
                   onChange={e => setFormData({ ...formData, description: e.target.value })}
                   rows={5}
-                  className="rounded-xl bg-white border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 py-3 focus:outline-none focus:ring-0 focus:border-ink resize-none"
+                  className="rounded-xl bg-parchment border border-stone-300 text-ink placeholder:text-stone-400 text-[15px] px-4 py-3 focus:outline-none focus:ring-0 focus:border-ink resize-none"
                 />
               </div>
             </div>
