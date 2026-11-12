@@ -556,9 +556,9 @@ const Auth = () => {
                     />
                     <span className="text-xs leading-relaxed text-stone-600">
                       {t("auth.acceptTerms")}{" "}
-                      <a href="/settings" className="text-ink link-underline">{t("auth.termsOfUse")}</a>{" "}
+                      <a href="/legal/conditions" target="_blank" rel="noopener" className="text-ink link-underline">{t("auth.termsOfUse")}</a>{" "}
                       {t("auth.andThe")}{" "}
-                      <a href="/settings" className="text-ink link-underline">{t("auth.privacyPolicy")}</a>
+                      <a href="/legal/confidentialite" target="_blank" rel="noopener" className="text-ink link-underline">{t("auth.privacyPolicy")}</a>
                     </span>
                   </label>
                 )}

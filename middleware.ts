@@ -29,7 +29,7 @@ const CATEGORY_LABEL: Record<string, string> = {
 
 const STATIC_PAGES = [
   '/', '/evenements', '/soirees', '/concerts', '/festivals', '/shows', '/brunch', '/exhibitions',
-  '/conferences', '/workshops', '/sports', '/famille', '/religious', '/autres', '/marketplace',
+  '/conferences', '/workshops', '/sports', '/famille', '/religious', '/autres', '/marketplace', '/legal/mentions', '/legal/conditions', '/legal/confidentialite',
 ];
 
 const esc = (s: string) =>
