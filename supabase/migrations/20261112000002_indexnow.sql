@@ -12,7 +12,7 @@ BEGIN
   IF urls IS NULL OR array_length(urls, 1) IS NULL THEN RETURN; END IF;
   PERFORM net.http_post(
     url := 'https://api.indexnow.org/indexnow',
-    headers := '{"Content-Type": "application/json; charset=utf-8"}'::jsonb,
+    headers := '{"Content-Type": "application/json"}'::jsonb,
     body := jsonb_build_object(
       'host', 'upvibe.app',
       'key', '4d024a81cebcf6097bbd7a6da6501631',
