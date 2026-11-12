@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 import { ChevronDown, MapPin } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { openInstallGuide } from '@/components/InstallGuide';
@@ -45,11 +46,11 @@ const SOCIALS = [
 ];
 
 const FAQ = [
-  { q: 'Upvibe est gratuit ?', a: 'Oui, totalement gratuit pour découvrir les événements, publier tes événements et proposer tes services.' },
-  { q: 'Je dois passer par le Play Store ?', a: "Non. Upvibe s'installe directement depuis ton navigateur (Chrome sur Android, Safari sur iPhone), en une minute. Pas de store, pas de téléchargement lourd." },
-  { q: 'Ça marche sur iPhone et Android ?', a: "Oui, sur tous les smartphones récents. Sur iPhone, ouvre upvibe.app dans Safari pour l'installer." },
-  { q: 'Comment publier mon événement ?', a: "Installe l'app, crée ton compte puis touche « Créer un événement » : titre, date, lieu, photo et prix des places. Il apparaît aussitôt sur la carte." },
-  { q: 'Je suis prestataire, comment être visible ?', a: "Crée ton compte puis publie une annonce sur le Marketplace : photos, prix, quartier et contacts. Les organisateurs te trouvent par catégorie (DJ, traiteur, déco, photo…)." },
+  { q: 'Upvibe est gratuit ?', a: "Oui. Tu ne paies rien pour voir les événements, en publier ou mettre une annonce." },
+  { q: 'Je dois passer par le Play Store ?', a: "Non. Tu l'installes depuis cette page, avec Chrome sur Android ou Safari sur iPhone. Ça prend une minute et presque pas de place." },
+  { q: 'Ça marche sur iPhone et Android ?', a: "Oui. Sur iPhone, ouvre upvibe.app dans Safari pour pouvoir l'installer." },
+  { q: 'Comment publier mon événement ?', a: "Installe l'appli, crée ton compte et touche « Créer un événement ». Tu mets le titre, la date, le lieu, l'affiche et les prix. Il est sur la carte tout de suite." },
+  { q: 'Je suis prestataire, comment être visible ?', a: "Crée ton compte et publie une annonce dans le Marketplace avec tes photos, ton prix, ton quartier et tes contacts. Les organisateurs cherchent par catégorie : DJ, traiteur, déco, photo, salle." },
 ];
 
 const FAQ_JSON_LD = JSON.stringify({
@@ -226,8 +227,8 @@ const Landing = () => {
         <PhoneSection
           id="sortir"
           eyebrow="01 · Pour sortir"
-          title={<>Trouve. Sors. Vibe.</>}
-          lead="Tout ce qui se passe autour de toi, en un coup d'œil :"
+          title={<>Tout est sur la carte.</>}
+          lead="Ouvre l'appli et regarde autour de toi. Pour chaque événement, tu as"
           highlight="le lieu, l'heure et le prix."
           bg="#ffffff"
           blob="#a6e22e"
@@ -245,9 +246,9 @@ const Landing = () => {
         <PhoneSection
           id="organiser"
           eyebrow="02 · Pour les organisateurs"
-          title={<>Tu organises&nbsp;? Fais-toi voir.</>}
-          lead="Ton événement sur la carte, devant ceux qui cherchent"
-          highlight="où aller."
+          title={<>Tu organises<br />un événement&nbsp;?</>}
+          lead="Publie-le en 2 minutes. Il apparaît sur la carte et"
+          highlight="les gens autour sont prévenus."
           highlightClass="bg-parchment"
           bg="#b5d8f0"
           blob="#ececec"
@@ -265,9 +266,9 @@ const Landing = () => {
         <PhoneSection
           id="prestataires"
           eyebrow="03 · Pour les prestataires"
-          title={<>Abidjan fait la fête. Fais-en ton business.</>}
-          lead="DJ, traiteur, déco, photo, location :"
-          highlight="les organisateurs te contactent direct."
+          title={<>DJ, traiteur,<br />photographe&nbsp;?</>}
+          lead="Mets ton annonce sur le Marketplace."
+          highlight="Les organisateurs t'appellent directement."
           bg="#ffffff"
           blob="#a6e22e"
           phone="/landing/ecran-marketplace-2026-10.webp"
@@ -342,6 +343,12 @@ const Landing = () => {
             <a href="mailto:contact@upvibe.app" className="mt-3 block hover:text-parchment">contact@upvibe.app</a>
             <p className="mt-3">Abidjan, Côte d'Ivoire</p>
           </div>
+        </div>
+        <div className="mx-auto mt-9 flex max-w-6xl flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/10 pt-5 text-[13.5px] text-stone-400">
+          <span>© {new Date().getFullYear()} Upvibe. Tous droits réservés.</span>
+          <Link to="/legal/mentions" className="hover:text-parchment">Mentions légales</Link>
+          <Link to="/legal/conditions" className="hover:text-parchment">Conditions d'utilisation</Link>
+          <Link to="/legal/confidentialite" className="hover:text-parchment">Confidentialité</Link>
         </div>
       </footer>
     </div>

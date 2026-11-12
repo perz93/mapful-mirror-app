@@ -56,6 +56,7 @@ const ManageEvents = lazyPage(() => import("./pages/ManageEvents"));
 const EditEvent = lazyPage(() => import("./pages/EditEvent"));
 const Settings = lazyPage(() => import("./pages/Settings"));
 const NotFound = lazyPage(() => import("./pages/NotFound"));
+const Legal = lazyPage(() => import("./pages/Legal"));
 const Auth = lazyPage(() => import("./pages/Auth"));
 const Marketplace = lazyPage(() => import("./pages/Marketplace"));
 const CreateListing = lazyPage(() => import("./pages/CreateListing"));
@@ -112,6 +113,8 @@ const AppContent = () => {
         <Route path="/u/:id" element={<PublicProfile />} />
         <Route path="/notifications" element={<Notifications />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="/legal/:doc" element={<Legal />} />
+        <Route path="/legal" element={<Navigate to="/legal/mentions" replace />} />
         <Route path="*" element={<NotFound />} />
     </Routes>
     </Suspense>

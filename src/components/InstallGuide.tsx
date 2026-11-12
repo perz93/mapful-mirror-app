@@ -389,7 +389,7 @@ const InstallGuide = () => {
   // Ouverture automatique sur téléphone, sauf sur la page vitrine (« / »)
   // qui a ses propres boutons d'installation
   useEffect(() => {
-    if (isStandalone() || window.location.pathname === '/') return;
+    if (isStandalone() || window.location.pathname === '/' || window.location.pathname.startsWith('/legal')) return;
     try {
       if (localStorage.getItem(INSTALLED_KEY)) return;
     } catch { /* stockage indisponible : on affiche */ }

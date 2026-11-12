@@ -37,7 +37,7 @@ const HomeFab = () => {
   const here = stack[stack.length - 1];
   const previous = stack[stack.length - 2];
   // Pas sur la page de connexion : elle a déjà son bouton fermer, et le bouton gênerait le formulaire
-  const visible = !!here && here !== '/' && here !== '/auth' && previous !== '/';
+  const visible = !!here && here !== '/' && here !== '/auth' && !here.startsWith('/legal') && previous !== '/';
   if (!visible) return null;
 
   const goHome = () => {
