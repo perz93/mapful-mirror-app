@@ -618,7 +618,7 @@ const MapView = () => {
     const destIcon = L.divIcon({
       className: 'route-destination-marker',
       html: `<div style="position:relative;width:24px;height:24px">
-        <div style="position:absolute;bottom:84px;left:50%;transform:translateX(-50%);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:#14140f;color:#f2f2f2;border-radius:999px;padding:5px 11px;font:600 12.5px 'Instrument Sans',sans-serif;box-shadow:0 6px 16px rgba(20,20,15,.3)">${safeLabel}</div>
+        <div style="position:absolute;bottom:84px;left:50%;transform:translateX(-50%);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:#14140f;color:#f2f2f2;border-radius:999px;padding:5px 11px;font:600 12.5px 'Onest Variable',sans-serif;box-shadow:0 6px 16px rgba(20,20,15,.3)">${safeLabel}</div>
         <div style="width:24px;height:24px;border-radius:50%;background:#a6e22e;border:4px solid #fff;box-shadow:0 4px 12px rgba(20,20,15,.35)"></div>
       </div>`,
       iconSize: [24, 24],

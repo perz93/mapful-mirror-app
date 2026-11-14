@@ -41,6 +41,18 @@ export const ListCardSkeleton = () => (
   </div>
 );
 
+/** Carte d'annonce sur deux colonnes (Marketplace) */
+export const GridCardSkeleton = () => (
+  <div className="card-shadow rounded-[22px] bg-parchment p-1.5">
+    <ShimmerBlock className="aspect-square w-full rounded-[17px]" />
+    <div className="space-y-2 px-1.5 pb-1.5 pt-2.5">
+      <ShimmerBlock className="h-2.5 w-14 rounded-full skeleton-on-white" />
+      <ShimmerBlock className="h-4 w-11/12 rounded-md skeleton-on-white" />
+      <ShimmerBlock className="h-3 w-2/3 rounded-full skeleton-on-white" />
+    </div>
+  </div>
+);
+
 /** Skeleton for EventDetails page */
 export const EventDetailsSkeleton = () => (
   <div className="min-h-screen bg-white dark:bg-background-dark">

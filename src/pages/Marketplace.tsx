@@ -9,7 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ShimmerImage from '@/components/ShimmerImage';
-import { ListCardSkeleton } from '@/components/PageSkeleton';
+import { GridCardSkeleton } from '@/components/PageSkeleton';
 import { softCase } from '@/lib/softCase';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
@@ -128,11 +128,11 @@ const Marketplace = () => {
       {/* Listings */}
       <div className="flex-1 px-4 pt-1 pb-24">
         {isLoading ? (
-          <div className="grid gap-4">
-            {[1, 2, 3].map((i) => <ListCardSkeleton key={i} />)}
+          <div className="grid grid-cols-2 gap-3">
+            {[1, 2, 3, 4].map((i) => <GridCardSkeleton key={i} />)}
           </div>
         ) : listings && listings.length > 0 ? (
-          <div key={selectedCategory} className="grid gap-4">
+          <div key={selectedCategory} className="grid grid-cols-2 gap-3">
             {listings.map((listing, index) => {
               const config = getMarketplaceCategory(listing.category);
               const Icon = config.icon;
@@ -141,11 +141,11 @@ const Marketplace = () => {
                   key={listing.id}
                   to={`/listing/${listing.id}`}
                   style={{ animationDelay: `${Math.min(index * 60, 360)}ms`, animationFillMode: 'backwards' }}
-                  className="group block no-press"
+                  className="group block h-full no-press"
                 >
-                  {/* Cadre calqué sur les événements (K1) */}
-                  <article className="card-shadow overflow-hidden rounded-[26px] bg-parchment p-2">
-                    <div className="relative h-44 overflow-hidden rounded-[20px] bg-[#e8e8e8]">
+                  {/* Carte compacte sur deux colonnes : photo carrée, prix, puis titre et lieu */}
+                  <article className="card-shadow flex h-full flex-col overflow-hidden rounded-[22px] bg-parchment p-1.5">
+                    <div className="relative aspect-square overflow-hidden rounded-[17px] bg-[#e8e8e8]">
                       {listing.image_url ? (
                         <ShimmerImage
                           src={listing.image_url}
@@ -154,45 +154,31 @@ const Marketplace = () => {
                         />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center bg-white">
-                          <span className="flex size-16 items-center justify-center rounded-3xl bg-parchment">
-                            <Icon size={28} strokeWidth={1.5} className="text-ink" />
+                          <span className="flex size-14 items-center justify-center rounded-3xl bg-parchment">
+                            <Icon size={24} strokeWidth={1.5} className="text-ink" />
                           </span>
                         </div>
                       )}
-                      {/* Prix en pastille verte, comme sur les cadres d'événement */}
-                      <span className="absolute right-2.5 top-2.5 inline-flex h-7 items-center rounded-full bg-lime px-3 text-xs font-medium text-ink tabular">
-                        {listing.price !== null
-                          ? `${listing.price.toLocaleString('fr-FR')} FCFA${listing.price_type === 'hourly' ? ' / h' : listing.price_type === 'daily' ? ' / jour' : ''}`
-                          : t('market.negotiable')}
+                      <span className="absolute bottom-2 left-2 inline-flex h-6 max-w-[calc(100%-16px)] items-center rounded-full bg-lime px-2.5 text-[11px] font-semibold text-ink tabular">
+                        <span className="truncate">
+                          {listing.price !== null
+                            ? `${listing.price.toLocaleString('fr-FR')} F${listing.price_type === 'hourly' ? ' / h' : listing.price_type === 'daily' ? ' / jour' : ''}`
+                            : t('market.negotiable')}
+                        </span>
                       </span>
                     </div>
-
-                    {/* K1 : catégorie (icône + nom) à la place de la date */}
-                    <div className="flex items-center gap-3.5 px-2 pb-1.5 pt-3">
-                      <div className="flex w-[66px] flex-shrink-0 flex-col items-center border-r border-stone-200 pr-3.5 text-center">
-                        <span className="flex size-8 items-center justify-center rounded-[10px] bg-white">
-                          <Icon size={16} strokeWidth={1.75} className="text-ink" />
+                    <div className="flex flex-1 flex-col px-1.5 pb-1.5 pt-2.5">
+                      <span className="inline-flex items-center gap-1 text-[9.5px] font-semibold uppercase tracking-[0.06em] text-stone-500">
+                        <Icon size={11} strokeWidth={2} className="flex-shrink-0" />
+                        <span className="truncate">{lang === 'en' ? config.en : config.fr}</span>
+                      </span>
+                      <h3 className="mt-1 font-display text-[16px] leading-[1.1] tracking-tight text-ink line-clamp-2">{softCase(listing.title)}</h3>
+                      {listing.location && (
+                        <span className="mt-auto flex min-w-0 items-center gap-1 pt-2 text-[11.5px] font-medium text-stone-600">
+                          <MapPin size={12} strokeWidth={2.2} className="flex-shrink-0" />
+                          <span className="truncate">{softCase(listing.location)}</span>
                         </span>
-                        <span className="mt-1.5 text-[9.5px] font-semibold uppercase leading-[1.15] tracking-[0.06em] text-ink">
-                          {lang === 'en' ? config.en : config.fr}
-                        </span>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="font-display text-[20px] leading-[1.05] tracking-tight text-ink line-clamp-2">{softCase(listing.title)}</h3>
-                        <div className="mt-2 flex min-w-0 flex-wrap gap-1.5">
-                          {listing.location && (
-                            <span className="inline-flex h-[26px] min-w-0 max-w-full items-center gap-1 rounded-full bg-white px-2.5 text-[12px] font-semibold text-ink">
-                              <MapPin size={13} strokeWidth={2.2} className="flex-shrink-0" />
-                              <span className="truncate">{softCase(listing.location)}</span>
-                            </span>
-                          )}
-                          {listing.price !== null && listing.price_type === 'negotiable' && (
-                            <span className="inline-flex h-[26px] flex-shrink-0 items-center rounded-full bg-white px-2.5 text-[12px] font-semibold text-ink">
-                              {t('market.negotiable')}
-                            </span>
-                          )}
-                        </div>
-                      </div>
+                      )}
                     </div>
                   </article>
                 </Link>
