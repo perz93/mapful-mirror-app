@@ -132,13 +132,13 @@ const CategoryPage = ({
                           <h3 className="font-display text-[20px] leading-[1.05] tracking-tight text-ink line-clamp-2">{softCase(event.title)}</h3>
                           {/* Q2 : quartier et heure en pastilles crème, plus lisibles */}
                           <div className="mt-2 flex min-w-0 flex-wrap gap-1.5">
-                            <span className="inline-flex h-[26px] min-w-0 max-w-full items-center gap-1 rounded-full bg-white px-2.5 text-[12px] font-semibold text-ink">
-                              <MapPin size={13} strokeWidth={2.2} className="flex-shrink-0" />
+                            <span className="inline-flex h-6 min-w-0 max-w-full items-center gap-1 rounded-full bg-ink/[0.06] px-2.5 text-[11.5px] font-medium text-stone-700">
+                              <MapPin size={11} strokeWidth={2.4} className="flex-shrink-0" />
                               <span className="truncate">{softCase(event.venue)}</span>
                             </span>
                             {event.time && (
-                              <span className="inline-flex h-[26px] flex-shrink-0 items-center gap-1 rounded-full bg-white px-2.5 text-[12px] font-semibold text-ink tabular">
-                                <Clock size={13} strokeWidth={2.2} />
+                              <span className="inline-flex h-6 flex-shrink-0 items-center gap-1 rounded-full bg-ink/[0.06] px-2.5 text-[11.5px] font-medium text-stone-700 tabular">
+                                <Clock size={11} strokeWidth={2.4} />
                                 {timeRangeLabel(event)}
                               </span>
                             )}
