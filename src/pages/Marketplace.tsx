@@ -159,7 +159,7 @@ const Marketplace = () => {
                           </span>
                         </div>
                       )}
-                      <span className="absolute bottom-2 left-2 inline-flex h-6 max-w-[calc(100%-16px)] items-center rounded-full bg-lime px-2.5 text-[11px] font-semibold text-ink tabular">
+                      <span className="absolute bottom-2 left-2 inline-flex h-6 max-w-[calc(100%-16px)] items-center rounded-full bg-white px-2.5 text-[11px] font-semibold text-ink tabular shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
                         <span className="truncate">
                           {listing.price !== null
                             ? `${listing.price.toLocaleString('fr-FR')} F${listing.price_type === 'hourly' ? ' / h' : listing.price_type === 'daily' ? ' / jour' : ''}`
@@ -168,14 +168,13 @@ const Marketplace = () => {
                       </span>
                     </div>
                     <div className="flex flex-1 flex-col px-1.5 pb-1.5 pt-2.5">
-                      <span className="inline-flex items-center gap-1 text-[9.5px] font-semibold uppercase tracking-[0.06em] text-stone-500">
-                        <Icon size={11} strokeWidth={2} className="flex-shrink-0" />
-                        <span className="truncate">{lang === 'en' ? config.en : config.fr}</span>
+                      <span className="truncate text-[9px] font-bold uppercase tracking-[0.07em] text-ink">
+                        {lang === 'en' ? config.en : config.fr}
                       </span>
                       <h3 className="mt-1 font-display text-[16px] leading-[1.1] tracking-tight text-ink line-clamp-2">{softCase(listing.title)}</h3>
                       {listing.location && (
-                        <span className="mt-auto flex min-w-0 items-center gap-1 pt-2 text-[11.5px] font-medium text-stone-600">
-                          <MapPin size={12} strokeWidth={2.2} className="flex-shrink-0" />
+                        <span className="mt-2 inline-flex h-6 min-w-0 max-w-full items-center gap-1 self-start rounded-full bg-ink/[0.06] px-2.5 text-[11.5px] font-medium text-stone-700">
+                          <MapPin size={11} strokeWidth={2.4} className="flex-shrink-0" />
                           <span className="truncate">{softCase(listing.location)}</span>
                         </span>
                       )}
