@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource-variable/gabarito": "^5.3.0",
     "@fontsource-variable/onest": "^5.3.1",
     "@hookform/resolvers": "^3.10.0",
     "@maplibre/maplibre-gl-leaflet": "^0.1.4",
