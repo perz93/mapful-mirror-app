@@ -86,9 +86,9 @@ export default {
         },
       },
       fontFamily: {
-        display: ['"Upvibe Display"', '"Onest Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['"Gabarito Variable"', '"Onest Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         sans: ['"Onest Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        heading: ['"Upvibe Display"', '"Onest Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        heading: ['"Gabarito Variable"', '"Onest Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       /* Deux voix seulement : 400 (texte) et 500 (titres, labels, CTA).
          "bold" reste un cran au-dessus pour les chiffres et gros titres. */
