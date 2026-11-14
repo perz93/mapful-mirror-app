@@ -133,7 +133,7 @@ body {
     border-radius: 28px;
   }
   .surface-parchment {
-    background: #f5f4f2;
+    background: #efeeeb;
     border-radius: 28px;
   }
   .surface-island {
@@ -692,13 +692,13 @@ All colors MUST be HSL.
     --primary: 80 76% 53%;            /* #a6e22e lime */
     --primary-foreground: 60 14% 7%;
 
-    --secondary: 40 10% 95%;         /* #f5f4f2 blocs gris */
+    --secondary: 45 10% 93%;         /* #efeeeb blocs gris */
     --secondary-foreground: 60 14% 7%;
 
-    --muted: 40 10% 95%;
+    --muted: 45 10% 93%;
     --muted-foreground: 60 5% 41%;    /* #6e6e64 graphite */
 
-    --accent: 40 10% 95%;
+    --accent: 45 10% 93%;
     --accent-foreground: 60 14% 7%;
 
     --destructive: 4 70% 46%;
@@ -1076,7 +1076,7 @@ h1.eyebrow, h2.eyebrow, h3.eyebrow {
 /* Positionné pour le reflet, SAUF si le bloc est déjà en absolute/fixed
    (calque posé sur une image) : sinon il perdait sa taille et devenait invisible. */
 .skeleton:where(:not(.absolute):not(.fixed)) { position: relative; }
-.skeleton-on-white { background-color: #efefef; }
+.skeleton-on-white { background-color: #e3e2de; }
 @keyframes skeleton-shimmer {
   100% { transform: translateX(100%); }
 }
