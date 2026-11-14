@@ -4,14 +4,22 @@
  * - /event/:id et /listing/:id : renvoie l'app (index.html) avec titre,
  *   description, image et données structurées propres à la fiche, pour que
  *   WhatsApp, Facebook et Google voient le vrai contenu sans exécuter le JS.
+ * - /concerts, /soirees… : titre, description et liste des événements à venir
+ *   de la catégorie (textes partagés avec l'app : src/lib/categorySeo.ts).
  * - /sitemap.xml : plan du site généré depuis les fiches publiées.
  *
  * En cas d'échec (fiche introuvable, Supabase indisponible), on sert
  * index.html tel quel : l'app s'affiche normalement.
  */
 
+import { CATEGORY_LEGACY, categoryDescription, categorySeoByPath, type CategorySeo } from './src/lib/categorySeo';
+
 export const config = {
-  matcher: ['/event/:id', '/listing/:id', '/sitemap.xml'],
+  matcher: [
+    '/event/:id', '/listing/:id', '/sitemap.xml',
+    '/evenements', '/soirees', '/concerts', '/festivals', '/shows', '/brunch', '/exhibitions',
+    '/conferences', '/workshops', '/sports', '/famille', '/religious', '/autres',
+  ],
 };
 
 const SITE = 'https://upvibe.app';
@@ -73,6 +81,8 @@ interface Meta {
   image?: string | null;
   url: string;
   jsonLd?: Record<string, unknown>;
+  /** og:type (par défaut « article ») */
+  type?: string;
 }
 
 /** Remplace les balises du <head> d'index.html par celles de la fiche */
@@ -90,7 +100,7 @@ const withMeta = (html: string, m: Meta) => {
   set('property', 'og:title', title);
   set('property', 'og:description', desc);
   set('property', 'og:url', esc(m.url));
-  set('property', 'og:type', 'article');
+  set('property', 'og:type', m.type ?? 'article');
   set('name', 'twitter:title', title);
   set('name', 'twitter:description', desc);
   if (m.image) {
@@ -205,6 +215,47 @@ const listingMeta = async (id: string, url: string): Promise<Meta | null> => {
   };
 };
 
+/** Page catégorie : textes + liste des événements à venir (données structurées) */
+const categoryMeta = async (seo: CategorySeo): Promise<Meta> => {
+  const url = `${SITE}${seo.path}`;
+  const today = new Date().toISOString().slice(0, 10);
+  const keys = seo.category === 'all'
+    ? null
+    : [seo.category, ...Object.entries(CATEGORY_LEGACY).filter(([, to]) => to === seo.category).map(([from]) => from)];
+  const filter = keys ? `&category=in.(${keys.join(',')})` : '';
+  const events = await supabase<{ id: string; title: string }[]>(
+    `events?is_published=eq.true&or=(date.gte.${today},end_date.gte.${today})${filter}&select=id,title&order=date.asc&limit=30`,
+  ).catch(() => null);
+  return {
+    title: `${seo.title} | Upvibe`,
+    description: categoryDescription(seo),
+    url,
+    type: 'website',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: seo.title,
+      description: seo.intro,
+      url,
+      inLanguage: 'fr-CI',
+      isPartOf: { '@type': 'WebSite', name: 'Upvibe', url: `${SITE}/` },
+      ...(events?.length
+        ? {
+            mainEntity: {
+              '@type': 'ItemList',
+              itemListElement: events.map((e, i) => ({
+                '@type': 'ListItem',
+                position: i + 1,
+                url: `${SITE}/event/${e.id}`,
+                name: softCase(e.title),
+              })),
+            },
+          }
+        : {}),
+    },
+  };
+};
+
 const sitemap = async () => {
   const today = new Date().toISOString().slice(0, 10);
   const [events, listings] = await Promise.all([
@@ -231,7 +282,14 @@ export default async function middleware(request: Request) {
   const shell = await fetch(new URL('/index.html', url));
   let html = await shell.text();
   const [, kind, id] = url.pathname.split('/');
-  if (ID.test(id ?? '')) {
+  const seo = categorySeoByPath(url.pathname);
+  if (seo) {
+    try {
+      html = withMeta(html, await categoryMeta(seo));
+    } catch {
+      // On sert l'app telle quelle
+    }
+  } else if (ID.test(id ?? '')) {
     try {
       const canonical = `${SITE}/${kind}/${id}`;
       const meta = kind === 'event' ? await eventMeta(id, canonical) : await listingMeta(id, canonical);
