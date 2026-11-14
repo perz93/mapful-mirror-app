@@ -162,13 +162,13 @@ const EventCard = () => {
                 <p className="font-display truncate text-[17px] leading-[1.1] tracking-tight text-ink">{softCase(currentEvent.title)}</p>
                 <div className="mt-1.5 flex min-w-0 gap-1.5">
                   {currentEvent.venue && (
-                    <span className="inline-flex h-[22px] min-w-0 items-center gap-1 rounded-full bg-ink/[0.06] px-2 text-[11px] font-medium text-stone-700">
+                    <span className="inline-flex h-[22px] min-w-0 items-center gap-1 rounded-full bg-ink/[0.05] px-2 text-[11px] font-medium text-stone-700">
                       <MapPin size={11} strokeWidth={2.4} className="flex-shrink-0" />
                       <span className="truncate">{softCase(currentEvent.venue)}</span>
                     </span>
                   )}
                   {currentEvent.time && (
-                    <span className="inline-flex h-[22px] flex-shrink-0 items-center gap-1 rounded-full bg-ink/[0.06] px-2 text-[11px] font-medium text-stone-700 tabular">
+                    <span className="inline-flex h-[22px] flex-shrink-0 items-center gap-1 rounded-full bg-ink/[0.05] px-2 text-[11px] font-medium text-stone-700 tabular">
                       <Clock size={11} strokeWidth={2.4} />
                       {timeRangeLabel(currentEvent)}
                     </span>

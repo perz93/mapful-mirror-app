@@ -173,7 +173,7 @@ const Marketplace = () => {
                       </span>
                       <h3 className="mt-1 font-display text-[16px] leading-[1.1] tracking-tight text-ink line-clamp-2">{softCase(listing.title)}</h3>
                       {listing.location && (
-                        <span className="mt-2 inline-flex h-6 min-w-0 max-w-full items-center gap-1 self-start rounded-full bg-ink/[0.06] px-2.5 text-[11.5px] font-medium text-stone-700">
+                        <span className="mt-2 inline-flex h-6 min-w-0 max-w-full items-center gap-1 self-start rounded-full bg-ink/[0.05] px-2.5 text-[11.5px] font-medium text-stone-700">
                           <MapPin size={11} strokeWidth={2.4} className="flex-shrink-0" />
                           <span className="truncate">{softCase(listing.location)}</span>
                         </span>
