@@ -20,7 +20,7 @@ export default {
           DEFAULT: "#a6e22e",
           deep: "#93cc1f",
         },
-        parchment: "#efeeeb",
+        parchment: "#eceef2",
         ash: "#cfcfcf",
         graphite: "#6e6e64",
         charcoal: "#30302a",
