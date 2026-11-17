@@ -172,7 +172,7 @@ const Marketplace = () => {
                       </span>
                     </div>
                     <div className="flex flex-1 flex-col px-1.5 pb-1.5 pt-2.5">
-                      <span className="truncate text-[9px] font-bold uppercase tracking-[0.07em] text-ink">
+                      <span className="line-clamp-2 text-[11px] font-semibold uppercase leading-tight tracking-[0.05em] text-ink">
                         {lang === 'en' ? config.en : config.fr}
                       </span>
                       <h3 className="mt-1 font-display text-[16px] leading-[1.1] tracking-tight text-ink line-clamp-2">{softCase(listing.title)}</h3>
