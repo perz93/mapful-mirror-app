@@ -95,7 +95,7 @@ const CategoryPage = ({
                 {(() => {
                   const d = new Date(`${event.date}T00:00:00`);
                   const status = eventStatus(event);
-                  const showStatus = status && (status.live || ['status.soon', 'status.inHours', 'status.tomorrow'].includes(status.key));
+                  const showStatus = status && (status.live || ['status.soon', 'status.inHours', 'status.tomorrow', 'status.ended'].includes(status.key));
                   return (
                     <article
                       className="card-shadow overflow-hidden rounded-[26px] bg-parchment p-2 text-ink"
@@ -109,7 +109,7 @@ const CategoryPage = ({
                           className="h-full w-full"
                         />
                         {showStatus && (
-                          <span className={`absolute left-2.5 top-2.5 inline-flex h-7 items-center gap-1.5 rounded-full px-3 text-xs font-medium ${status!.live ? 'bg-white text-ink' : 'bg-white/90 text-ink'}`}>
+                          <span className={`absolute left-2.5 top-2.5 inline-flex h-7 items-center gap-1.5 rounded-full px-3 text-xs font-medium ${status!.live ? 'bg-white text-ink' : status!.key === 'status.ended' ? 'bg-ink/85 text-white' : 'bg-white/90 text-ink'}`}>
                             {status!.live && <span className="size-1.5 rounded-full bg-ink" />}
                             {t(status!.key).replace('{n}', String(status!.n ?? ''))}
                           </span>
