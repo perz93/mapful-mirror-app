@@ -109,7 +109,7 @@ const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) 
             
             <button
               onClick={handleTogglePublish}
-              className="inline-flex items-center justify-center gap-1.5 rounded-full h-8 px-3.5 bg-white text-ink text-xs font-medium hover:bg-stone-200 transition-colors"
+              className="inline-flex items-center justify-center gap-1.5 rounded-full h-8 px-3.5 bg-canvas text-ink text-xs font-medium hover:bg-stone-200 transition-colors"
             >
               {event.is_published ? (
                 <>
@@ -126,7 +126,7 @@ const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) 
             
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <button className="inline-flex items-center justify-center rounded-full size-8 bg-white text-ink hover:bg-destructive hover:text-white transition-colors">
+                <button className="inline-flex items-center justify-center rounded-full size-8 bg-canvas text-ink hover:bg-destructive hover:text-white transition-colors">
                   <Trash2 className="w-3.5 h-3.5" strokeWidth={1.75} />
                 </button>
               </AlertDialogTrigger>

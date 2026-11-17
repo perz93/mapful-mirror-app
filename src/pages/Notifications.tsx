@@ -63,7 +63,7 @@ const Notifications = () => {
 
   if (!user) {
     return (
-      <div className="relative min-h-screen bg-white max-w-md mx-auto page-enter">
+      <div className="relative min-h-screen bg-canvas max-w-md mx-auto page-enter">
         <div className="px-4 pb-6" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
           <button onClick={goBack} aria-label="Retour" className="inline-flex size-12 btn-float items-center justify-center rounded-full bg-parchment text-ink active:scale-95 transition-transform mb-6">
             <ArrowLeft size={20} strokeWidth={1.75} className="text-ink" />
@@ -71,7 +71,7 @@ const Notifications = () => {
           <LargeTitle className="text-[40px] leading-[0.95] tracking-tighter text-ink">{t('notif.title')}</LargeTitle>
         </div>
         <div className="mx-4 rounded-3xl bg-parchment p-6">
-          <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-white">
+          <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-canvas">
             <BellOff size={18} strokeWidth={1.75} className="text-ink" />
           </span>
           <p className="text-ink font-medium mb-4">{t('auth.loginToSee')}</p>
@@ -84,7 +84,7 @@ const Notifications = () => {
   }
 
   return (
-    <div className="relative min-h-screen bg-white max-w-md mx-auto page-enter">
+    <div className="relative min-h-screen bg-canvas max-w-md mx-auto page-enter">
       {/* En-tête : même structure que les autres pages */}
       <div className="px-4 pb-6" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         <div className="flex items-center justify-between mb-6">
@@ -147,7 +147,7 @@ const Notifications = () => {
                           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(notif); } }}
                           className={`flex w-full gap-3.5 rounded-3xl bg-parchment p-3 text-left transition-transform active:scale-[0.99] ${isOpen ? 'items-start' : 'items-center'}`}
                         >
-                          <div className="relative size-14 flex-shrink-0 overflow-hidden rounded-2xl bg-white">
+                          <div className="relative size-14 flex-shrink-0 overflow-hidden rounded-2xl bg-canvas">
                             {notif.image_url ? (
                               <ShimmerImage src={notif.image_url} alt="" className="h-full w-full" />
                             ) : (

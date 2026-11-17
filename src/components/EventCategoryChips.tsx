@@ -29,7 +29,7 @@ const EventCategoryChips = ({ active }: { active: string }) => {
           const on = active === c.value;
           return (
             <Link key={c.value} to={c.path} replace state={{ chip: true }} data-active={on} className={`${chip(on)} pl-1.5 pr-4`}>
-              <span className={`flex size-9 flex-shrink-0 items-center justify-center rounded-full ${on ? 'bg-lime' : 'bg-white'}`}>
+              <span className={`flex size-9 flex-shrink-0 items-center justify-center rounded-full ${on ? 'bg-lime' : 'bg-canvas'}`}>
                 <img src={c.icon} alt="" className="size-5" />
               </span>
               {/* Nom sur deux lignes (comme la barre du bas) ; « bien-être » ne se coupe pas */}

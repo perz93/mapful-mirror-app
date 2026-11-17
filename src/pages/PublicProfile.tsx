@@ -117,11 +117,11 @@ const PublicProfile = () => {
 
   if (!loaded) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-canvas">
         <div className="mx-auto max-w-md">
           <div className="skeleton h-[230px]" />
           <div className="px-4">
-            <div className="skeleton -mt-10 size-20 rounded-full ring-4 ring-parchment" />
+            <div className="skeleton -mt-10 size-20 rounded-full ring-4 ring-canvas" />
             <div className="skeleton mt-4 h-8 w-2/3 rounded-xl" />
             <div className="skeleton mt-3 h-6 w-1/2 rounded-full" />
             <div className="skeleton mt-8 h-20 rounded-[20px]" />
@@ -134,7 +134,7 @@ const PublicProfile = () => {
 
   if (!profile) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-white p-6 text-center">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-canvas p-6 text-center">
         <p className="text-lg font-medium text-ink">{fr ? 'Profil introuvable' : 'Profile not found'}</p>
         <button onClick={() => navigate(-1)} className="h-11 rounded-full bg-ink px-5 text-sm font-medium text-parchment">
           {fr ? 'Retour' : 'Back'}
@@ -161,7 +161,7 @@ const PublicProfile = () => {
       .join(' · ');
 
   return (
-    <div className="min-h-screen bg-white page-enter">
+    <div className="min-h-screen bg-canvas page-enter">
       <div className="relative mx-auto max-w-md pb-32">
         {/* Bannière faite des affiches de la personne */}
         <div className="relative h-[230px] overflow-hidden">
@@ -195,7 +195,7 @@ const PublicProfile = () => {
         </div>
 
         <div className="relative -mt-12 px-4">
-          <span className="flex size-20 items-center justify-center overflow-hidden rounded-full bg-parchment text-2xl font-semibold text-ink ring-4 ring-parchment">
+          <span className="flex size-20 items-center justify-center overflow-hidden rounded-full bg-parchment text-2xl font-semibold text-ink ring-4 ring-canvas">
             {profile.avatar_url ? <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" /> : initials(name)}
           </span>
           <h1 className="mt-3 text-[32px] leading-[1] tracking-tighter text-ink">{name}</h1>

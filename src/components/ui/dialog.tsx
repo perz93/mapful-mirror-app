@@ -65,7 +65,7 @@ const DialogContent = React.forwardRef<
     >
       <DarkStatusBar />
       {children}
-      <DialogPrimitive.Close className="absolute right-4 top-4 flex size-10 items-center justify-center rounded-full bg-parchment text-ink hover:bg-stone-200 active:scale-95 transition-colors">
+      <DialogPrimitive.Close className="absolute right-4 top-4 flex size-10 items-center justify-center rounded-full bg-canvas text-ink hover:bg-stone-200 active:scale-95 transition-colors">
         <X className="h-4 w-4" strokeWidth={1.75} />
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>

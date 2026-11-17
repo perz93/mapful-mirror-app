@@ -13,7 +13,7 @@ interface EmptyStateProps {
  */
 const EmptyState = ({ icon: Icon, title, hint, action }: EmptyStateProps) => (
   <div className="rounded-3xl bg-white dark:bg-stone-900 p-6">
-    <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-parchment dark:bg-stone-800">
+    <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-canvas dark:bg-stone-800">
       <Icon size={18} strokeWidth={1.75} className="text-ink dark:text-white" />
     </span>
     <p className="font-medium text-ink dark:text-white">{title}</p>

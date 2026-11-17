@@ -52,7 +52,7 @@ const ManageEvents = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden page-enter bg-white">
+    <div className="min-h-screen relative overflow-hidden page-enter bg-canvas">
 
       {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col">

@@ -124,7 +124,7 @@ body {
     border-radius: 28px;
   }
   .surface-parchment {
-    background: #f2f2f2;
+    background: #ffffff;
     border-radius: 28px;
   }
   .surface-island {
@@ -671,7 +671,7 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Upvibe — Encre & Parchemin, accent lime unique (Perk × Notion) */
-    --background: 0 0% 100%;         /* fond blanc (style Yango) */
+    --background: 240 7% 95%;        /* #f1f1f3 fond des pages (gris clair) */
     --foreground: 60 14% 7%;          /* #14140f encre */
 
     --card: 0 0% 100%;
@@ -683,13 +683,13 @@ All colors MUST be HSL.
     --primary: 80 76% 53%;            /* #a6e22e lime */
     --primary-foreground: 60 14% 7%;
 
-    --secondary: 0 0% 95%;           /* #f2f2f2 blocs gris (neutre) */
+    --secondary: 240 7% 95%;         /* #f1f1f3 éléments posés sur les cartes blanches */
     --secondary-foreground: 60 14% 7%;
 
-    --muted: 0 0% 95%;
+    --muted: 240 7% 95%;
     --muted-foreground: 60 5% 41%;    /* #6e6e64 graphite */
 
-    --accent: 0 0% 95%;
+    --accent: 240 7% 95%;
     --accent-foreground: 60 14% 7%;
 
     --destructive: 4 70% 46%;
@@ -877,7 +877,7 @@ All colors MUST be HSL.
     top: calc(env(safe-area-inset-top, 0px) + 57px);
     z-index: 30;
     padding: 8px 0 10px;
-    background: rgb(255 255 255 / 0.92);
+    background: rgb(241 241 243 / 0.92);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
   }

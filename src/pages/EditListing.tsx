@@ -216,7 +216,7 @@ const EditListing = () => {
   }
 
   return (
-    <div className="relative mx-auto flex min-h-screen max-w-md flex-col bg-white page-enter">
+    <div className="relative mx-auto flex min-h-screen max-w-md flex-col bg-canvas page-enter">
       {/* Header */}
       <div className="relative z-10 px-4 pb-5" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
         <Link
@@ -378,7 +378,7 @@ const EditListing = () => {
       </form>
 
       {/* Background */}
-      <div className="fixed inset-0 -z-10 bg-white" />
+      <div className="fixed inset-0 -z-10 bg-canvas" />
     </div>
   );
 };

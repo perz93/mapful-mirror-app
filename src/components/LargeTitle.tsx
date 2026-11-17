@@ -38,12 +38,12 @@ const LargeTitle = ({ children, className = '', compactTitle, backTo, right }: L
 
   const label = compactTitle ?? (typeof children === 'string' ? children : '');
   const backClass =
-    'inline-flex size-12 btn-float flex-shrink-0 items-center justify-center rounded-full bg-white text-ink active:scale-95 transition-transform';
+    'inline-flex size-12 btn-float flex-shrink-0 items-center justify-center rounded-full bg-parchment text-ink active:scale-95 transition-transform';
 
   const bar = (
     <div
       aria-hidden={!collapsed}
-      className={`fixed inset-x-0 top-0 z-40 mx-auto max-w-md border-b bg-white/90 backdrop-blur-md transition-[opacity,transform,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+      className={`fixed inset-x-0 top-0 z-40 mx-auto max-w-md border-b bg-canvas/90 backdrop-blur-md transition-[opacity,transform,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
         collapsed
           ? 'translate-y-0 opacity-100 border-stone-200'
           : 'pointer-events-none -translate-y-2 opacity-0 border-transparent'

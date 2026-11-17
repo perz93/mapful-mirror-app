@@ -11,7 +11,7 @@ const Legal = () => {
   if (!key) return <Navigate to="/legal/mentions" replace />;
 
   return (
-    <div className="min-h-[100dvh] bg-white text-ink">
+    <div className="min-h-[100dvh] bg-canvas text-ink">
       <div className="mx-auto max-w-2xl px-5 pb-16 pt-5" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 20px)' }}>
         <Link to="/" aria-label="Retour" className="flex size-11 items-center justify-center rounded-full bg-parchment active:scale-95">
           <ArrowLeft size={18} strokeWidth={1.9} />

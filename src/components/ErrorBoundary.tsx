@@ -37,7 +37,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, State> {
   render() {
     if (!this.state.hasError) return this.props.children;
     return (
-      <div className="flex min-h-[100dvh] items-center justify-center bg-white px-4">
+      <div className="flex min-h-[100dvh] items-center justify-center bg-canvas px-4">
         <div className="w-full max-w-md rounded-3xl bg-parchment p-6">
           <p className="eyebrow mb-3 text-stone-500">Upvibe</p>
           <h1 className="text-[36px] leading-[0.95] tracking-tighter text-ink">Oups, un souci est survenu</h1>

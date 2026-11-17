@@ -137,7 +137,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
               <button
                 onClick={() => setSearchOpen(false)}
                 aria-label={t('nav.clearBtn')}
-                className="h-11 w-11 rounded-full bg-parchment flex items-center justify-center hover:bg-stone-200 transition-all active:scale-95"
+                className="h-11 w-11 rounded-full bg-canvas flex items-center justify-center hover:bg-stone-200 transition-all active:scale-95"
               >
                 <X size={20} strokeWidth={2} className="text-ink" />
               </button>
@@ -155,7 +155,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                   onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
                   onFocus={(e) => e.currentTarget.select()}
                   enterKeyHint="search"
-                  className="w-full h-12 pl-10 pr-12 rounded-full bg-parchment border border-transparent text-ink placeholder:text-stone-400 focus:outline-none focus:bg-white focus:border-stone-300 text-[15px]"
+                  className="w-full h-12 pl-10 pr-12 rounded-full bg-canvas border border-transparent text-ink placeholder:text-stone-400 focus:outline-none focus:bg-white focus:border-stone-300 text-[15px]"
                   autoFocus
                 />
                 {searchQuery && (
@@ -287,7 +287,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                       <button
                         key={name}
                         onClick={() => chooseCity(name)}
-                        className="w-full flex items-center justify-between px-4 h-11 text-left text-[15px] text-ink border-b border-stone-100 last:border-b-0 active:bg-parchment"
+                        className="w-full flex items-center justify-between px-4 h-11 text-left text-[15px] text-ink border-b border-stone-100 last:border-b-0 active:bg-canvas"
                       >
                         <span>{name}</span>
                         <span className="text-xs text-stone-400">
@@ -333,7 +333,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
               {activeFilterCount > 0 && (
                 <button
                   onClick={clearFilters}
-                  className="h-12 px-5 rounded-full bg-parchment text-ink text-[15px] font-medium hover:bg-stone-200 transition-colors active:scale-[0.98]"
+                  className="h-12 px-5 rounded-full bg-canvas text-ink text-[15px] font-medium hover:bg-stone-200 transition-colors active:scale-[0.98]"
                 >
                   {t('nav.reset')}
                 </button>
@@ -370,7 +370,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                   to="/evenements"
                   aria-label={t('category.allTitle')}
                   className={`no-press flex-shrink-0 flex size-[60px] flex-col items-center justify-center gap-[3px] rounded-full transition-colors duration-300 active:scale-95 ${
-                    location.pathname === '/evenements' ? 'bg-ink text-parchment' : 'bg-parchment text-ink dark:bg-stone-800 dark:text-stone-200'
+                    location.pathname === '/evenements' ? 'bg-ink text-parchment' : 'bg-canvas text-ink dark:bg-stone-800 dark:text-stone-200'
                   }`}
                 >
                   {/* Grille : même trait que les icônes de catégories */}
@@ -393,7 +393,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                       to={item.path}
                       aria-label={item.label}
                       className={`no-press flex-shrink-0 flex size-[60px] flex-col items-center justify-center gap-[3px] rounded-full transition-colors duration-300 active:scale-95 ${
-                        isActive ? 'bg-ink text-parchment' : 'bg-parchment text-ink dark:bg-stone-800 dark:text-stone-200'
+                        isActive ? 'bg-ink text-parchment' : 'bg-canvas text-ink dark:bg-stone-800 dark:text-stone-200'
                       }`}
                     >
                       <img

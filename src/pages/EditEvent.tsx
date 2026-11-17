@@ -196,7 +196,7 @@ const EditEvent = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-white">
+      <div className="min-h-screen relative overflow-hidden bg-canvas">
         <div className="relative z-10">
           <EditEventSkeleton />
         </div>
@@ -205,7 +205,7 @@ const EditEvent = () => {
   }
 
   return (
-    <div className="relative min-h-screen pb-32 page-enter overflow-hidden overscroll-none bg-white">
+    <div className="relative min-h-screen pb-32 page-enter overflow-hidden overscroll-none bg-canvas">
 
       {/* Content */}
       <div className="relative mx-auto max-w-md">
@@ -231,11 +231,11 @@ const EditEvent = () => {
               <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="border border-dashed border-stone-300/50 rounded-2xl p-6 hover:border-stone-400/60 transition-colors cursor-pointer bg-white/30"
+                className="border border-dashed border-stone-300/50 rounded-2xl p-6 hover:border-stone-400/60 transition-colors cursor-pointer bg-canvas/60"
               >
                 {imagePreview ? (
                   <div className="relative">
-                    <img src={imagePreview} alt="Preview" className="w-full max-h-72 object-contain rounded-xl bg-white" />
+                    <img src={imagePreview} alt="Preview" className="w-full max-h-72 object-contain rounded-xl bg-canvas" />
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-center py-4">
