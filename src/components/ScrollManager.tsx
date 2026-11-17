@@ -58,6 +58,9 @@ const ScrollManager = () => {
 
   useLayoutEffect(() => {
     currentKey.current = location.key;
+    // Retour arrière (geste ou bouton) : pas d'animation d'entrée, la page
+    // réapparaît telle qu'on l'avait laissée (sinon elle « scintille »)
+    document.documentElement.classList.toggle('nav-pop', navigationType === 'POP');
     if (location.hash) return; // ancre (#faq…) : le navigateur s'en charge
 
     if (navigationType !== 'POP') {

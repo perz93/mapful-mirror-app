@@ -865,6 +865,9 @@ All colors MUST be HSL.
     .page-enter { animation-duration: 0.01ms; }
   }
 
+  /* Retour arrière : la page revient sans animation (voir ScrollManager) */
+  .nav-pop .page-enter { animation: none !important; }
+
   /* Ombre douce des cadres de liste (annonces, événements) : sépare
      chaque cadre du fond parchemin sans effet « flottant » appuyé */
   .card-shadow {
