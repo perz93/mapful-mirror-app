@@ -50,7 +50,7 @@ const Marketplace = () => {
   };
 
   return (
-    <div className="relative mx-auto flex min-h-screen max-w-md flex-col bg-white page-enter">
+    <div className="relative mx-auto flex min-h-screen max-w-md flex-col bg-canvas page-enter">
 
       {/* Header */}
       <div className="relative z-10 flex items-center justify-between px-4 pb-6" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
@@ -112,7 +112,7 @@ const Marketplace = () => {
                     : 'bg-parchment text-ink'
                 }`}
               >
-                <span className={`flex size-9 flex-shrink-0 items-center justify-center rounded-full ${active ? 'bg-lime text-ink' : 'bg-white text-ink'}`}>
+                <span className={`flex size-9 flex-shrink-0 items-center justify-center rounded-full ${active ? 'bg-lime text-ink' : 'bg-canvas text-ink'}`}>
                   <Icon size={20} strokeWidth={1.75} />
                 </span>
                 {/* Nom sur deux lignes, comme les pages événements */}
@@ -153,8 +153,8 @@ const Marketplace = () => {
                           className="h-full w-full"
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-white">
-                          <span className="flex size-14 items-center justify-center rounded-3xl bg-parchment">
+                        <div className="flex h-full w-full items-center justify-center bg-canvas">
+                          <span className="flex size-14 items-center justify-center rounded-3xl bg-white">
                             <Icon size={24} strokeWidth={1.5} className="text-ink" />
                           </span>
                         </div>

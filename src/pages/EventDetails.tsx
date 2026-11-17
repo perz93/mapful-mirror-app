@@ -187,7 +187,7 @@ const EventDetails = () => {
   const multiTickets = tickets.length > 1;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-background-dark page-enter">
+    <div className="min-h-screen bg-canvas dark:bg-background-dark page-enter">
       {/* Actions */}
       <div
         className="fixed inset-x-0 z-30 mx-auto flex max-w-md items-center justify-between px-4"
@@ -246,12 +246,12 @@ const EventDetails = () => {
           <div className="px-5 pb-5 pt-2">
             {/* Catégorie (pastille noire) + places (pastille crème) */}
             <div className="flex flex-wrap gap-1.5">
-              <span className="inline-flex h-7 items-center gap-1.5 rounded-full bg-white px-3 text-xs font-semibold text-ink">
+              <span className="inline-flex h-7 items-center gap-1.5 rounded-full bg-canvas px-3 text-xs font-semibold text-ink">
                 {category && <img src={category.icon} alt="" className="size-4 object-contain" />}
                 {categoryLabel}
               </span>
               {event.capacity ? (
-                <span className="inline-flex h-7 items-center gap-1.5 rounded-full bg-white px-3 text-xs font-semibold text-ink">
+                <span className="inline-flex h-7 items-center gap-1.5 rounded-full bg-canvas px-3 text-xs font-semibold text-ink">
                   <Users size={13} strokeWidth={2} />
                   {event.capacity} {lang === 'fr' ? 'places' : 'spots'}
                 </span>
@@ -262,8 +262,8 @@ const EventDetails = () => {
 
           {/* Ligne détachable du billet */}
           <div className="relative mx-5 border-t-2 border-dashed border-stone-200 dark:border-stone-700">
-            <span className="absolute -left-[30px] -top-[11px] size-5 rounded-full bg-white dark:bg-background-dark" />
-            <span className="absolute -right-[30px] -top-[11px] size-5 rounded-full bg-white dark:bg-background-dark" />
+            <span className="absolute -left-[30px] -top-[11px] size-5 rounded-full bg-canvas dark:bg-background-dark" />
+            <span className="absolute -right-[30px] -top-[11px] size-5 rounded-full bg-canvas dark:bg-background-dark" />
           </div>
 
           <dl className="grid grid-cols-2 gap-x-4 gap-y-4 px-5 pb-5 pt-4">
@@ -272,7 +272,7 @@ const EventDetails = () => {
               return (
               <div key={cell.label} className="min-w-0 border-l border-stone-300 dark:border-stone-600 pl-3">
                 <dt className="eyebrow flex items-center gap-2 text-stone-500">
-                  <span className="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-white text-ink dark:bg-stone-800 dark:text-white">
+                  <span className="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-canvas text-ink dark:bg-stone-800 dark:text-white">
                     <cell.icon size={13} strokeWidth={1.75} />
                   </span>
                   {cell.label}
@@ -307,7 +307,7 @@ const EventDetails = () => {
               <ol className="card-shadow rounded-3xl bg-parchment dark:bg-stone-900 px-5 divide-y divide-stone-200 dark:divide-stone-800">
                 {keyPoints.map((point, index) => (
                   <li key={index} className="flex items-center gap-4 py-4">
-                    <span className="tabular flex size-8 flex-shrink-0 items-center justify-center rounded-full bg-white text-[13px] font-semibold text-ink dark:bg-stone-800 dark:text-stone-200">{index + 1}</span>
+                    <span className="tabular flex size-8 flex-shrink-0 items-center justify-center rounded-full bg-canvas text-[13px] font-semibold text-ink dark:bg-stone-800 dark:text-stone-200">{index + 1}</span>
                     <p className="text-[15px] leading-relaxed text-ink dark:text-stone-200">{point}</p>
                   </li>
                 ))}

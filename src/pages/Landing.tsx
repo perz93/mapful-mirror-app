@@ -128,7 +128,7 @@ const Eyebrow = ({ children, className = 'text-ink' }: { children: React.ReactNo
 
 /** Sur ordinateur : on installe depuis son téléphone en scannant le QR code */
 const QrCard = () => (
-  <div className="hidden items-center gap-4 rounded-[24px] bg-parchment p-4 lg:flex">
+  <div className="hidden items-center gap-4 rounded-[24px] bg-canvas p-4 lg:flex">
     <img src="/landing/qr.svg" alt="QR code vers upvibe.app" className="size-[104px] rounded-xl bg-white p-1.5" />
     <div>
       <p className="font-display text-[20px] leading-tight tracking-[-0.03em] text-ink">Scanne avec ton téléphone</p>
@@ -169,7 +169,7 @@ const Landing = () => {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: FAQ_JSON_LD }} />
 
       {/* En-tête fixe */}
-      <header className="sticky top-0 z-40 bg-parchment" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+      <header className="sticky top-0 z-40 bg-canvas" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
           <span className="rounded-2xl bg-ink px-3 pb-1.5 pt-2"><Logo className="h-6" /></span>
           <button type="button" onClick={openInstallGuide} className="rounded-full bg-lime px-4 py-2.5 text-[15px] font-semibold text-ink active:scale-95">
@@ -180,7 +180,7 @@ const Landing = () => {
 
       <main>
         {/* 1. Accueil : titre centré, barre de recherche, publics, événements à venir en ronds */}
-        <section className="bg-parchment pb-8 pt-6 text-center lg:pt-14">
+        <section className="bg-canvas pb-8 pt-6 text-center lg:pt-14">
           <div className="mx-auto max-w-2xl px-5">
             {/* Comme le modèle A : la liste des types d'événements, puis la recherche, puis le titre */}
             <p className="mx-auto max-w-[460px] font-display text-[21px] font-bold leading-[1.2] tracking-[-0.02em] lg:text-[26px]">
@@ -221,7 +221,7 @@ const Landing = () => {
           )}
         </section>
 
-        <Wave top="#f2f2f2" bottom="#ffffff" />
+        <Wave top="#f1f1f3" bottom="#ffffff" />
 
         {/* 2. Pour sortir */}
         <PhoneSection
@@ -249,7 +249,7 @@ const Landing = () => {
           title={<>Tu organises<br />un événement&nbsp;?</>}
           lead="Publie-le en 2 minutes. Il apparaît sur la carte et"
           highlight="les gens autour sont prévenus."
-          highlightClass="bg-parchment"
+          highlightClass="bg-canvas"
           bg="#b5d8f0"
           blob="#ececec"
           phone="/landing/ecran-organisateur.webp"

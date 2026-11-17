@@ -68,7 +68,7 @@ const CategoryPage = ({
       <EventCategoryChips active={category} />
     </>;
   if (isLoading) {
-    return <div className={`min-h-screen bg-white dark:bg-stone-950 ${enter}`}>
+    return <div className={`min-h-screen bg-canvas dark:bg-stone-950 ${enter}`}>
         <div className="mx-auto max-w-md">
           {header}
           <CategoryPageSkeleton />
@@ -76,7 +76,7 @@ const CategoryPage = ({
       </div>;
   }
   if (error) {
-    return <div className={`min-h-screen bg-white dark:bg-stone-950 ${enter}`}>
+    return <div className={`min-h-screen bg-canvas dark:bg-stone-950 ${enter}`}>
         <div className="mx-auto max-w-md">
           {header}
           <div className="p-4 flex items-center justify-center min-h-[50vh]">
@@ -85,7 +85,7 @@ const CategoryPage = ({
         </div>
       </div>;
   }
-  return <div className={`min-h-screen bg-white dark:bg-stone-950 ${enter}`}>
+  return <div className={`min-h-screen bg-canvas dark:bg-stone-950 ${enter}`}>
       <div className="mx-auto max-w-md">
         {header}
 
@@ -109,7 +109,7 @@ const CategoryPage = ({
                           className="h-full w-full"
                         />
                         {showStatus && (
-                          <span className={`absolute left-2.5 top-2.5 inline-flex h-7 items-center gap-1.5 rounded-full px-3 text-xs font-medium ${status!.live ? 'bg-white text-ink' : 'bg-parchment text-ink'}`}>
+                          <span className={`absolute left-2.5 top-2.5 inline-flex h-7 items-center gap-1.5 rounded-full px-3 text-xs font-medium ${status!.live ? 'bg-white text-ink' : 'bg-white/90 text-ink'}`}>
                             {status!.live && <span className="size-1.5 rounded-full bg-ink" />}
                             {t(status!.key).replace('{n}', String(status!.n ?? ''))}
                           </span>

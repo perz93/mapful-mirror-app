@@ -189,7 +189,7 @@ const Settings = () => {
 
   if (loading || loadingPreferences) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-white">
+      <div className="min-h-screen relative overflow-hidden bg-canvas">
         <div className="relative z-10">
           <SettingsSkeleton />
         </div>
@@ -200,7 +200,7 @@ const Settings = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen relative overflow-hidden pb-32 page-enter bg-white">
+    <div className="min-h-screen relative overflow-hidden pb-32 page-enter bg-canvas">
 
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-md px-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
@@ -444,7 +444,7 @@ const Settings = () => {
                   <button
                     type="button"
                     aria-label={t('settings.languageDesc')}
-                    className="inline-flex h-9 flex-shrink-0 items-center gap-1.5 rounded-full bg-white px-3.5 text-sm font-semibold text-ink active:scale-95 transition-transform"
+                    className="inline-flex h-9 flex-shrink-0 items-center gap-1.5 rounded-full bg-canvas px-3.5 text-sm font-semibold text-ink active:scale-95 transition-transform"
                   >
                     <span>{lang === 'fr' ? '🇫🇷' : '🇬🇧'}</span>
                     {lang === 'fr' ? 'Français' : 'English'}
@@ -464,7 +464,7 @@ const Settings = () => {
                         setLang(option.id);
                         toast.success(option.id === 'fr' ? 'Langue changée en français' : 'Language changed to English');
                       }}
-                      className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-ink transition-colors ${lang === option.id ? 'bg-white' : 'hover:bg-parchment/60'}`}
+                      className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-ink transition-colors ${lang === option.id ? 'bg-canvas' : 'hover:bg-canvas/60'}`}
                     >
                       <span className="text-base">{option.flag}</span>
                       <span className="flex-1 text-left">{option.label}</span>
@@ -492,12 +492,12 @@ const Settings = () => {
                 <div key={key}>
                   <button
                     onClick={() => setOpenLegal(openLegal === key ? null : key)}
-                    className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-white/30 transition-colors"
+                    className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-canvas/60 transition-colors"
                   >
                     <span className="text-sm font-medium text-stone-700">{LEGAL_TITLES[key]}</span>
                     <ChevronRight size={16} className={`text-stone-400 transition-transform ${openLegal === key ? 'rotate-90' : ''}`} />
                   </button>
-                  {openLegal === key && <LegalDoc doc={key} className="bg-white/40 px-5 pb-5 pt-3" />}
+                  {openLegal === key && <LegalDoc doc={key} className="bg-canvas/50 px-5 pb-5 pt-3" />}
                 </div>
               ))}
             </div>

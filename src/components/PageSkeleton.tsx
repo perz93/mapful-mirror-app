@@ -55,7 +55,7 @@ export const GridCardSkeleton = () => (
 
 /** Skeleton for EventDetails page */
 export const EventDetailsSkeleton = () => (
-  <div className="min-h-screen bg-white dark:bg-background-dark">
+  <div className="min-h-screen bg-canvas dark:bg-background-dark">
     <div className="mx-auto max-w-md">
       <TopBar right={3} />
       {/* Billet : photo, pastilles, titre, pointillés, grille date / heure / lieu / prix */}
@@ -98,7 +98,7 @@ export const CategoryPageSkeleton = () => (
 
 /** Skeleton for CreateEvent / form pages */
 export const FormPageSkeleton = () => (
-  <div className="min-h-screen bg-white">
+  <div className="min-h-screen bg-canvas">
     <div className="mx-auto max-w-md px-4 space-y-4" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
       <ShimmerBlock className="h-10 w-10 rounded-full" />
       <ShimmerBlock className="h-9 w-3/4 rounded-xl" />

@@ -61,7 +61,7 @@ const ListingDetails = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-white page-enter">
+      <div className="min-h-screen relative overflow-hidden bg-canvas page-enter">
         <div className="relative z-10 mx-auto max-w-md">
           <div className="h-[52vh] min-h-[340px] max-h-[480px] rounded-b-[32px] skeleton" />
           <div className="px-4 pt-5 space-y-4">
@@ -97,7 +97,7 @@ const ListingDetails = () => {
 
   if (error || !listing) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-white page-enter">
+      <div className="min-h-screen relative overflow-hidden bg-canvas page-enter">
         <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 gap-4">
           <Tag size={48} className="text-stone-300" />
           <p className="text-stone-600">{lang === 'fr' ? 'Annonce introuvable' : 'Listing not found'}</p>
@@ -121,7 +121,7 @@ const ListingDetails = () => {
   const roundBtn = 'inline-flex size-12 btn-float items-center justify-center rounded-full active:scale-95 transition-transform';
 
   return (
-    <div className="min-h-screen bg-white page-enter">
+    <div className="min-h-screen bg-canvas page-enter">
       <div className="relative mx-auto max-w-md pb-32">
         {/* Affiche : photo plein écran, titre posé dessus (comme les événements) */}
         <div
@@ -160,18 +160,18 @@ const ListingDetails = () => {
           {/* Prix · Lieu */}
           <div className="grid grid-cols-2 gap-2">
             <div className="card-shadow rounded-[20px] bg-parchment p-3.5">
-              <p className="eyebrow flex items-center gap-2 text-stone-500"><span className="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-white text-ink"><Banknote size={13} strokeWidth={1.75} /></span>{lang === 'fr' ? 'Prix' : 'Price'}</p>
+              <p className="eyebrow flex items-center gap-2 text-stone-500"><span className="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-canvas text-ink"><Banknote size={13} strokeWidth={1.75} /></span>{lang === 'fr' ? 'Prix' : 'Price'}</p>
               <p className="font-display mt-1.5 text-[22px] leading-none tracking-tight text-ink tabular">{priceValue}</p>
               <p className="mt-1 truncate text-xs text-stone-500">{priceSub}</p>
             </div>
             {listing.location ? (
               <div className="card-shadow rounded-[20px] bg-parchment p-3.5">
-                <p className="eyebrow flex items-center gap-2 text-stone-500"><span className="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-white text-ink"><MapPin size={13} strokeWidth={1.75} /></span>{lang === 'fr' ? 'Lieu' : 'Location'}</p>
+                <p className="eyebrow flex items-center gap-2 text-stone-500"><span className="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-canvas text-ink"><MapPin size={13} strokeWidth={1.75} /></span>{lang === 'fr' ? 'Lieu' : 'Location'}</p>
                 <p className="font-display mt-1.5 text-[19px] leading-[1.05] tracking-tight text-ink line-clamp-2">{softCase(listing.location)}</p>
               </div>
             ) : (
               <div className="card-shadow rounded-[20px] bg-parchment p-3.5">
-                <p className="eyebrow flex items-center gap-2 text-stone-500"><span className="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-white text-ink"><Tag size={13} strokeWidth={1.75} /></span>{lang === 'fr' ? 'Catégorie' : 'Category'}</p>
+                <p className="eyebrow flex items-center gap-2 text-stone-500"><span className="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-canvas text-ink"><Tag size={13} strokeWidth={1.75} /></span>{lang === 'fr' ? 'Catégorie' : 'Category'}</p>
                 <p className="font-display mt-1.5 text-[19px] leading-[1.05] tracking-tight text-ink">{catLabel}</p>
               </div>
             )}

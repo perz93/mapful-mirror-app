@@ -191,7 +191,7 @@ const MyAccount = () => {
   const isProfileLoading = !profile && !!user;
 
   return (
-    <div className="min-h-screen relative overflow-hidden page-enter bg-white">
+    <div className="min-h-screen relative overflow-hidden page-enter bg-canvas">
 
       {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto">
@@ -285,7 +285,7 @@ const MyAccount = () => {
                 </div>
                 {eventsLoading ? <ListSkeleton /> : userEvents.length === 0 ? (
                   <div className="rounded-3xl bg-parchment p-6">
-                    <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-white">
+                    <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-canvas">
                       <Calendar size={18} strokeWidth={1.75} className="text-ink" />
                     </span>
                     <p className="text-stone-500 text-sm mb-3">{t('account.noEvents')}</p>
@@ -320,7 +320,7 @@ const MyAccount = () => {
                 </div>
                 {!listingsLoaded ? <ListSkeleton tall /> : userListings.length === 0 ? (
                   <div className="rounded-3xl bg-parchment p-6">
-                    <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-white">
+                    <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-canvas">
                       <ShoppingBag size={18} strokeWidth={1.75} className="text-ink" />
                     </span>
                     <p className="text-stone-500 text-sm mb-3">{t('account.noListings')}</p>
@@ -380,7 +380,7 @@ const MyAccount = () => {
                 </h3>
                 {!favoritesLoaded ? <ListSkeleton /> : favoriteEvents.length === 0 ? (
                   <div className="rounded-3xl bg-parchment p-6">
-                    <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-white">
+                    <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-canvas">
                       <Heart size={18} strokeWidth={1.75} className="text-ink" />
                     </span>
                     <p className="text-ink font-medium mb-1">{t('account.noFavorites')}</p>

@@ -438,7 +438,7 @@ const CreateEvent = () => {
   }
 
   return (
-    <div className="relative min-h-screen pb-32 page-enter overflow-hidden overscroll-none bg-white">
+    <div className="relative min-h-screen pb-32 page-enter overflow-hidden overscroll-none bg-canvas">
 
 
       {/* Content */}
@@ -472,14 +472,14 @@ const CreateEvent = () => {
 
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="border border-dashed border-stone-300/50 rounded-2xl p-8 hover:border-stone-400/60 transition-colors cursor-pointer bg-white/30"
+                className="border border-dashed border-stone-300/50 rounded-2xl p-8 hover:border-stone-400/60 transition-colors cursor-pointer bg-canvas/60"
               >
                 {imagePreview ? (
                   <div className="relative">
                     <img
                       src={imagePreview}
                       alt="Preview"
-                      className="w-full max-h-72 object-contain rounded-lg bg-white"
+                      className="w-full max-h-72 object-contain rounded-lg bg-canvas"
                     />
                     <div className="absolute inset-0 bg-black/30 rounded-lg flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                       <p className="text-white text-sm">{t('form.clickToChange')}</p>
@@ -567,9 +567,9 @@ const CreateEvent = () => {
                           type="button"
                           onMouseDown={(e) => e.preventDefault()}
                           onClick={() => pickSuggestion(place)}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-left border-b border-stone-100 last:border-b-0 active:bg-white"
+                          className="w-full flex items-center gap-3 px-4 py-3 text-left border-b border-stone-100 last:border-b-0 active:bg-canvas"
                         >
-                          <span className="h-8 w-8 rounded-full bg-white flex items-center justify-center flex-shrink-0">
+                          <span className="h-8 w-8 rounded-full bg-canvas flex items-center justify-center flex-shrink-0">
                             <MapPin size={15} className="text-ink" />
                           </span>
                           <span className="min-w-0">
@@ -585,7 +585,7 @@ const CreateEvent = () => {
                   type="button"
                   onClick={locateMe}
                   disabled={locatingMe}
-                  className="inline-flex items-center gap-2 h-9 px-3.5 rounded-full bg-white text-ink text-[13px] font-medium active:scale-95 transition-transform disabled:opacity-60"
+                  className="inline-flex items-center gap-2 h-9 px-3.5 rounded-full bg-canvas text-ink text-[13px] font-medium active:scale-95 transition-transform disabled:opacity-60"
                 >
                   {locatingMe ? <Loader2 size={14} className="animate-spin" /> : <LocateFixed size={14} />}
                   {t('form.useMyLocation')}
@@ -611,7 +611,7 @@ const CreateEvent = () => {
                     {t('form.mapHint')}
                   </p>
                   {detectedCity && (
-                    <span className="flex-shrink-0 inline-flex items-center gap-1 h-7 px-2.5 rounded-full bg-white text-ink text-xs font-medium">
+                    <span className="flex-shrink-0 inline-flex items-center gap-1 h-7 px-2.5 rounded-full bg-canvas text-ink text-xs font-medium">
                       <MapPin size={12} /> {detectedCity}
                     </span>
                   )}

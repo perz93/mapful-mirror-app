@@ -507,7 +507,7 @@ const InstallGuide = () => {
           </svg>
 
           {/* iPhone / Android */}
-          <div role="tablist" className="relative mt-1 grid grid-cols-2 rounded-full bg-parchment p-1">
+          <div role="tablist" className="relative mt-1 grid grid-cols-2 rounded-full bg-canvas p-1">
             <span
               aria-hidden
               className={`absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full bg-ink transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
@@ -531,7 +531,7 @@ const InstallGuide = () => {
 
           {/* Navigateur intégré (Instagram, TikTok…) */}
           {inApp && onThisDevice && (
-            <div className="mt-4 flex gap-3 rounded-2xl bg-parchment p-3.5">
+            <div className="mt-4 flex gap-3 rounded-2xl bg-canvas p-3.5">
               <AlertCircle size={18} strokeWidth={1.75} className="mt-0.5 flex-shrink-0 text-ink" />
               <div className="min-w-0 flex-1">
                 <p className="text-[13px] font-medium text-ink">Ouvre d'abord le site dans {tab === 'ios' ? 'Safari' : 'Chrome'}</p>
@@ -616,7 +616,7 @@ const InstallGuide = () => {
           <button
             onClick={() => go(step - 1)}
             disabled={step === 0}
-            className="h-12 flex-1 rounded-full bg-parchment text-[15px] font-medium text-ink active:scale-[0.98] transition disabled:opacity-40"
+            className="h-12 flex-1 rounded-full bg-canvas text-[15px] font-medium text-ink active:scale-[0.98] transition disabled:opacity-40"
           >
             ← Retour
           </button>

@@ -68,7 +68,7 @@ const ContactFields = ({ value, onChange }: Props) => {
   const hidden = EXTRAS.filter((e) => !visible.includes(e) && !(e.key === 'whatsapp' && sameWhatsapp));
 
   const field = 'h-12 w-full rounded-xl border border-stone-300 bg-parchment pl-12 pr-11 text-[15px] text-ink placeholder:text-stone-400 focus:outline-none focus:border-ink';
-  const iconWrap = 'pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 flex size-8 items-center justify-center rounded-full bg-white text-ink';
+  const iconWrap = 'pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 flex size-8 items-center justify-center rounded-full bg-canvas text-ink';
 
   return (
     <div className="space-y-4">
