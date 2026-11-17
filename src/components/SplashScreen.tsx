@@ -1,45 +1,50 @@
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect } from 'react';
 
 const SPLASH_SHOWN_KEY = 'splash_shown_session';
+/** Durée totale minimale du splash, comptée depuis l'ouverture de l'app
+ *  (l'animation du logo se termine vers 1,6 s). */
+const MIN_SPLASH_MS = 2600;
+/** Sur un téléphone lent, l'app arrive après l'animation : on laisse quand
+ *  même un court instant avant de faire glisser le splash. */
+const MIN_AFTER_READY_MS = 400;
 
 const SplashScreenWrapper = ({ children }: { children: React.ReactNode }) => {
-  const [ready, setReady] = useState(false);
-
   useEffect(() => {
     const splash = document.getElementById('instant-splash');
     // Fond noir le temps du splash (barre d'état comprise), puis fond normal
     const endSplash = () => document.documentElement.classList.remove('splashing');
-    if (!splash) { endSplash(); setReady(true); return; }
+    if (!splash) { endSplash(); return; }
 
     const isStandalone =
       window.matchMedia('(display-mode: standalone)').matches ||
-      (navigator as any).standalone === true;
+      (navigator as Navigator & { standalone?: boolean }).standalone === true;
     const alreadyShown = sessionStorage.getItem(SPLASH_SHOWN_KEY);
 
-    if (isStandalone && !alreadyShown) {
-      sessionStorage.setItem(SPLASH_SHOWN_KEY, 'true');
-      // Hold 3s then slide up
-      setTimeout(() => {
-        splash.style.transform = 'translateY(-100%)';
-        setTimeout(() => {
-          splash.remove();
-          endSplash();
-          setReady(true);
-        }, 700);
-      }, 3000);
-    } else {
-      // No splash — remove immediately
+    if (!isStandalone || alreadyShown) {
       splash.remove();
       endSplash();
-      setReady(true);
+      return;
     }
+
+    sessionStorage.setItem(SPLASH_SHOWN_KEY, 'true');
+    // L'app est déjà affichée sous le splash : quand il glisse, on la voit
+    // directement (avant, elle restait invisible et laissait un écran noir).
+    // Le temps compte depuis l'ouverture, pas depuis la fin du chargement,
+    // sinon l'attente s'ajoutait au chargement sur les téléphones lents.
+    const wait = Math.max(MIN_AFTER_READY_MS, MIN_SPLASH_MS - performance.now());
+    let removeTimer = 0;
+    const slideTimer = window.setTimeout(() => {
+      endSplash();
+      splash.style.transform = 'translateY(-100%)';
+      removeTimer = window.setTimeout(() => splash.remove(), 750);
+    }, wait);
+    return () => {
+      window.clearTimeout(slideTimer);
+      window.clearTimeout(removeTimer);
+    };
   }, []);
 
-  return (
-    <div className={ready ? 'opacity-100' : 'opacity-0'} style={{ transition: 'opacity 0.3s' }}>
-      {children}
-    </div>
-  );
+  return <>{children}</>;
 };
 
 export default SplashScreenWrapper;
