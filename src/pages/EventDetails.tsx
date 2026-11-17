@@ -231,7 +231,7 @@ const EventDetails = () => {
               loading="eager"
             />
             {status && (
-              <span className={`absolute left-3 top-3 inline-flex h-7 items-center gap-2 rounded-full px-3 text-[11px] font-semibold uppercase tracking-[0.08em] ${status.live ? 'bg-lime text-ink' : 'bg-parchment text-ink'}`}>
+              <span className={`absolute left-3 top-3 inline-flex h-7 items-center gap-2 rounded-full px-3 text-[11px] font-semibold uppercase tracking-[0.08em] ${status.live ? 'bg-lime text-ink' : status.key === 'status.ended' ? 'bg-ink/85 text-white' : 'bg-parchment text-ink'}`}>
                 {status.live && (
                   <span className="relative flex size-2">
                     <span className="absolute inline-flex size-full animate-ping rounded-full bg-ink opacity-50" />

@@ -35,6 +35,7 @@ const ScrollManager = () => {
   // défiler la nouvelle page : sinon le saut en haut de la page suivante
   // était enregistré sur la page qu'on quitte (retour en haut au 2e passage).
   const currentKey = useRef(location.key);
+  const lastPath = useRef(location.pathname);
 
   useEffect(() => {
     if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
@@ -63,8 +64,12 @@ const ScrollManager = () => {
     document.documentElement.classList.toggle('nav-pop', navigationType === 'POP');
     if (location.hash) return; // ancre (#faq…) : le navigateur s'en charge
 
+    const samePage = lastPath.current === location.pathname;
+    lastPath.current = location.pathname;
+
     if (navigationType !== 'POP') {
-      window.scrollTo(0, 0);
+      // Simple changement de filtre sur la même page (?cat=…) : on ne bouge pas
+      if (!(navigationType === 'REPLACE' && samePage)) window.scrollTo(0, 0);
       return;
     }
 
@@ -99,7 +104,7 @@ const ScrollManager = () => {
       window.removeEventListener('touchstart', stop);
       window.removeEventListener('wheel', stop);
     };
-  }, [location.key, location.hash, navigationType]);
+  }, [location.key, location.hash, location.pathname, navigationType]);
 
   return null;
 };

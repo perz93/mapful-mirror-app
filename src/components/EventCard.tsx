@@ -142,7 +142,7 @@ const EventCard = () => {
                 className="absolute inset-0 h-full w-full"
               />
               {status && (
-                <span className={`absolute left-2.5 top-2.5 inline-flex h-6 items-center gap-1.5 rounded-full px-2.5 text-[10px] font-semibold uppercase tracking-[0.08em] ${status.live ? 'bg-lime text-ink' : 'bg-white text-ink'}`}>
+                <span className={`absolute left-2.5 top-2.5 inline-flex h-6 items-center gap-1.5 rounded-full px-2.5 text-[10px] font-semibold uppercase tracking-[0.08em] ${status.live ? 'bg-lime text-ink' : status.key === 'status.ended' ? 'bg-ink/85 text-white' : 'bg-white text-ink'}`}>
                   {status.live && <span className="size-1.5 rounded-full bg-ink" />}
                   {t(status.key).replace('{n}', String(status.n ?? ''))}
                 </span>

@@ -1,7 +1,6 @@
 import LargeTitle from '@/components/LargeTitle';
-import { useState } from 'react';
 import EmptyState from '@/components/EmptyState';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, ArrowUpRight, Plus, MapPin, Phone, Mail, Shapes } from 'lucide-react';
 import { MARKETPLACE_CATEGORIES, getMarketplaceCategory } from '@/lib/marketplaceCategories';
 import { useQuery } from '@tanstack/react-query';
@@ -19,7 +18,11 @@ const Marketplace = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t, lang } = useLanguage();
-  const [selectedCategory, setSelectedCategory] = useState<CategoryKey | 'all'>('all');
+  // Catégorie dans l'adresse (?cat=…) : on la retrouve en revenant d'une annonce
+  const [params, setParams] = useSearchParams();
+  const selectedCategory = (params.get('cat') as CategoryKey | null) ?? 'all';
+  const setSelectedCategory = (key: CategoryKey | 'all') =>
+    setParams(key === 'all' ? {} : { cat: key }, { replace: true, preventScrollReset: true });
   usePageMeta('Prestataires et services à Abidjan', "DJ, traiteurs, photographes, matériel, location : trouve les prestataires pour tes événements à Abidjan sur Upvibe.");
 
   const { data: listings, isLoading } = useQuery({
@@ -39,6 +42,7 @@ const Marketplace = () => {
       if (error) throw error;
       return data;
     },
+    staleTime: 3 * 60 * 1000,
   });
 
   const handleCreateListing = () => {
