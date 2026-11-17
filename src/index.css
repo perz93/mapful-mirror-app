@@ -1251,4 +1251,4 @@ vercel-live-feedback,
   }
 }
 .map-card-slot { bottom: var(--map-card-bottom); }
-.map-controls-slot { bottom: calc(var(--map-card-bottom) + var(--map-card-h) + 18px); }
+.map-controls-slot { bottom: calc(var(--map-card-bottom) + var(--map-card-h) + 32px); }

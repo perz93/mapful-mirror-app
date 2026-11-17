@@ -31,6 +31,10 @@ const ScrollManager = () => {
   const location = useLocation();
   const navigationType = useNavigationType();
   const positions = useRef<Record<string, number>>(readStore());
+  // Page à laquelle on attribue le défilement. Mise à jour AVANT de faire
+  // défiler la nouvelle page : sinon le saut en haut de la page suivante
+  // était enregistré sur la page qu'on quitte (retour en haut au 2e passage).
+  const currentKey = useRef(location.key);
 
   useEffect(() => {
     if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
@@ -38,11 +42,10 @@ const ScrollManager = () => {
 
   // Mémorise la position de la page affichée pendant qu'on fait défiler
   useEffect(() => {
-    const key = location.key;
     let frame = 0;
     const save = () => {
       frame = 0;
-      positions.current[key] = window.scrollY;
+      positions.current[currentKey.current] = window.scrollY;
       writeStore(positions.current);
     };
     const onScroll = () => { if (!frame) frame = requestAnimationFrame(save); };
@@ -51,9 +54,10 @@ const ScrollManager = () => {
       window.removeEventListener('scroll', onScroll);
       if (frame) cancelAnimationFrame(frame);
     };
-  }, [location.key]);
+  }, []);
 
   useLayoutEffect(() => {
+    currentKey.current = location.key;
     if (location.hash) return; // ancre (#faq…) : le navigateur s'en charge
 
     if (navigationType !== 'POP') {
