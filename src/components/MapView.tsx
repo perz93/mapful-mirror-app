@@ -195,6 +195,23 @@ const MapView = () => {
     (L.MarkerCluster.prototype as unknown as {
       _generatePointsCircle: (count: number, centerPt: L.Point) => L.Point[];
     })._generatePointsCircle = (count, centerPt) => {
+      // Petit écran (iPhone 7, SE…) : l'étoile déborderait sous les boutons.
+      // On empile les étiquettes en colonne au centre (deux colonnes si besoin).
+      const size = map.getSize();
+      if (size.x < 480) {
+        const ROW = 46;
+        const perColumn = Math.max(3, Math.floor((size.y - 460) / ROW));
+        const columns = count > perColumn ? 2 : 1;
+        const rows = Math.ceil(count / columns);
+        const dx = columns === 2 ? Math.min(size.x / 4, 95) : 0;
+        return Array.from({ length: count }, (_, i) => {
+          const col = columns === 2 ? i % 2 : 0;
+          const row = columns === 2 ? Math.floor(i / 2) : i;
+          const x = centerPt.x + (columns === 2 ? (col === 0 ? -dx : dx) : 0);
+          const y = centerPt.y + (row - (rows - 1) / 2) * ROW;
+          return L.point(x, y).round();
+        });
+      }
       const radius = Math.min(120, 50 + count * 9);
       const step = (Math.PI * 2) / count;
       return Array.from({ length: count }, (_, i) => {
