@@ -9,6 +9,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import NotificationPrompt from "@/components/NotificationPrompt";
 import InstallGuide from "@/components/InstallGuide";
 import UpdateBanner from "@/components/UpdateBanner";
+import ScrollManager from "@/components/ScrollManager";
 import HomeFab from "@/components/HomeFab";
 import SplashScreenWrapper from "@/components/SplashScreen";
 import { useStatusBarColor } from "@/hooks/useStatusBarColor";
@@ -125,6 +126,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <Sonner />
     <BrowserRouter future={{ v7_startTransition: true }}>
+      <ScrollManager />
       <LanguageProvider>
       <AuthProvider>
         <SearchProvider>
