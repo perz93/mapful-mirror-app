@@ -233,22 +233,45 @@ const MapView = () => {
     markerClusterGroup.on('clusterclick', (e: L.LeafletEvent) => {
       const cluster = (e as L.LeafletEvent & { layer: L.MarkerCluster }).layer;
       const bounds = cluster.getBounds();
-      const fitZoom = Math.min(map.getBoundsZoom(bounds, false, L.point(80, 500)), STAR_ZOOM);
-      if (fitZoom <= map.getZoom()) {
+      const children = cluster.getAllChildMarkers();
+      // Marges proportionnelles à l'écran : avec des marges fixes (500 px en hauteur),
+      // un petit écran (iPhone 7) n'avait plus de place, l'app ne zoomait pas et
+      // ouvrait directement l'étoile reliée au lieu de séparer les pilules.
+      const size = map.getSize();
+      const padTop = Math.min(120, Math.round(size.y * 0.16));
+      const padBottom = Math.min(380, Math.round(size.y * 0.42));
+      const zoom = map.getZoom();
+      const fit = Math.min(map.getBoundsZoom(bounds, false, L.point(80, padTop + padBottom)), STAR_ZOOM);
+      // Toujours zoomer un peu pour séparer, même si le calcul dit « assez près »
+      const target = fit > zoom ? fit : Math.min(zoom + 2, STAR_ZOOM);
+      if (target <= zoom) {
+        // Déjà au zoom maximal : événements au même endroit → étoile
         openStar(cluster);
         return;
       }
-      const children = cluster.getAllChildMarkers();
       map.once('moveend', () => {
         // Laisse le regroupement se recalculer après le zoom
         setTimeout(() => {
           const parent = markerClusterGroup.getVisibleParent(children[0]) as L.Marker | L.MarkerCluster | null;
-          if (parent && parent !== children[0] && 'getChildCount' in parent && parent.getChildCount() === children.length) {
-            openStar(parent);
+          const stillGrouped = parent && parent !== children[0] && 'getChildCount' in parent && parent.getChildCount() === children.length;
+          if (!stillGrouped) return;
+          if (map.getZoom() < STAR_ZOOM) {
+            // Encore groupés : on rapproche jusqu'au zoom maximal avant l'étoile
+            map.once('moveend', () => setTimeout(() => {
+              const p2 = markerClusterGroup.getVisibleParent(children[0]) as L.Marker | L.MarkerCluster | null;
+              if (p2 && p2 !== children[0] && 'getChildCount' in p2 && p2.getChildCount() === children.length) openStar(p2);
+            }, 300));
+            map.flyTo((parent as L.MarkerCluster).getLatLng(), STAR_ZOOM, { duration: 0.5 });
+            return;
           }
+          openStar(parent as L.MarkerCluster);
         }, 300);
       });
-      map.flyToBounds(bounds, { paddingTopLeft: [40, 120], paddingBottomRight: [40, 380], maxZoom: STAR_ZOOM, duration: 0.7 });
+      if (fit > zoom) {
+        map.flyToBounds(bounds, { paddingTopLeft: [40, padTop], paddingBottomRight: [40, padBottom], maxZoom: target, duration: 0.7 });
+      } else {
+        map.flyTo(cluster.getLatLng(), target, { duration: 0.6 });
+      }
     });
     // Dans l'étoile, l'étiquette est centrée sur le bout de son trait (et non posée au-dessus)
     markerClusterGroup.on('spiderfied', (e: L.LeafletEvent) => {
