@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Camera, Users, Calendar, Heart, ShoppingBag, Trash2, Edit } from 'lucide-react';
+import { ArrowLeft, Camera, Users, Calendar, Heart, ShoppingBag } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { compressImage, IMMUTABLE_CACHE } from '@/lib/compressImage';
 import type { Event } from '@/hooks/useEvents';
-import EventListCard from '@/components/EventListCard';
+import ManageEventCard from '@/components/ManageEventCard';
+import ManageListingCard from '@/components/ManageListingCard';
+import FavoriteEventCard from '@/components/FavoriteEventCard';
 import { toast } from '@/components/PillToast';
 import { Tables } from '@/integrations/supabase/types';
 import ShimmerImage from '@/components/ShimmerImage';
@@ -16,28 +18,16 @@ import { AccountSkeleton } from '@/components/PageSkeleton';
 type MarketplaceListing = Tables<'marketplace_listings'>;
 
 /** Squelette crème des listes de Mon compte (même forme que les cartes) */
-const ListSkeleton = ({ tall = false }: { tall?: boolean }) => (
+const ListSkeleton = () => (
   <div className="space-y-3">
     {[1, 2].map((i) => (
-      <div key={i} className="rounded-3xl bg-parchment p-3">
-        {tall ? (
-          <>
-            <div className="h-28 w-full rounded-2xl skeleton" />
-            <div className="mt-3 space-y-2 px-1">
-              <div className="h-4 w-2/3 rounded-md skeleton skeleton-on-white" />
-              <div className="h-3 w-1/3 rounded-md skeleton skeleton-on-white" />
-            </div>
-          </>
-        ) : (
-          <div className="flex items-center gap-4">
-            <div className="flex-1 space-y-2 pl-1">
-              <div className="h-3 w-24 rounded-full skeleton skeleton-on-white" />
-              <div className="h-4 w-3/4 rounded-md skeleton skeleton-on-white" />
-              <div className="h-3 w-1/2 rounded-md skeleton skeleton-on-white" />
-            </div>
-            <div className="size-20 flex-shrink-0 rounded-2xl skeleton" />
-          </div>
-        )}
+      <div key={i} className="flex items-center gap-3 rounded-[24px] bg-parchment p-2">
+        <div className="size-[84px] flex-shrink-0 rounded-[18px] skeleton" />
+        <div className="flex-1 space-y-2">
+          <div className="h-3 w-24 rounded-full skeleton skeleton-on-white" />
+          <div className="h-4 w-3/4 rounded-md skeleton skeleton-on-white" />
+          <div className="h-5 w-1/3 rounded-full skeleton skeleton-on-white" />
+        </div>
       </div>
     ))}
   </div>
@@ -131,7 +121,6 @@ const MyAccount = () => {
   };
 
   const handleDeleteListing = async (listingId: string) => {
-    if (!confirm(t('account.deleteListingConfirm'))) return;
     const { error } = await supabase.from('marketplace_listings').delete().eq('id', listingId);
     if (error) {
       toast.error(t('account.deleteListingError'));
@@ -141,6 +130,35 @@ const MyAccount = () => {
     queryClient.invalidateQueries();
     loadUserListings();
   };
+
+  // Masquer / afficher une annonce : elle quitte (ou retrouve) la Marketplace sans être supprimée
+  const handleToggleListing = async (listing: MarketplaceListing) => {
+    const next = !listing.is_published;
+    setUserListings((all) => all.map((l) => (l.id === listing.id ? { ...l, is_published: next } : l)));
+    const { error } = await supabase.from('marketplace_listings').update({ is_published: next }).eq('id', listing.id);
+    if (error) {
+      toast.error(t('event.publishError'));
+      loadUserListings();
+      return;
+    }
+    toast.success(next ? t('listing.shown') : t('listing.hiddenToast'));
+    queryClient.invalidateQueries({ queryKey: ['marketplace-listings'] });
+  };
+
+  const handleRemoveFavorite = async (eventId: string) => {
+    if (!user) return;
+    queryClient.setQueryData<Event[]>(['my-favorites', user.id], (old) => old?.filter((e) => e.id !== eventId));
+    const { error } = await supabase.from('event_favorites').delete().eq('event_id', eventId).eq('user_id', user.id);
+    if (error) {
+      toast.error(t('event.publishError'));
+      queryClient.invalidateQueries({ queryKey: ['my-favorites', user.id] });
+      return;
+    }
+    toast.success(t('favorite.removed'));
+    setStats((st) => ({ ...st, favorites: Math.max(0, st.favorites - 1) }));
+  };
+
+  const refreshMyEvents = () => queryClient.invalidateQueries({ queryKey: ['my-events', user?.id] });
 
   const handleAvatarClick = () => {
     document.getElementById('avatar-upload')?.click();
@@ -299,9 +317,7 @@ const MyAccount = () => {
                 ) : (
                   <div className="space-y-3">
                     {userEvents.map(event => (
-                      <div key={event.id} className="relative">
-                        <EventListCard event={event} />
-                      </div>
+                      <ManageEventCard key={event.id} event={event} onDeleted={refreshMyEvents} onUpdated={refreshMyEvents} />
                     ))}
                   </div>
                 )}
@@ -318,7 +334,7 @@ const MyAccount = () => {
                     {t('account.createListing')}
                   </Link>
                 </div>
-                {!listingsLoaded ? <ListSkeleton tall /> : userListings.length === 0 ? (
+                {!listingsLoaded ? <ListSkeleton /> : userListings.length === 0 ? (
                   <div className="rounded-3xl bg-parchment p-6">
                     <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-canvas">
                       <ShoppingBag size={18} strokeWidth={1.75} className="text-ink" />
@@ -334,39 +350,7 @@ const MyAccount = () => {
                 ) : (
                   <div className="space-y-3">
                     {userListings.map(listing => (
-                      <div
-                        key={listing.id}
-                        className="rounded-2xl bg-parchment dark:bg-stone-900/80 overflow-hidden shadow-lg"
-                      >
-                        {listing.image_url && (
-                          <ShimmerImage src={listing.image_url} alt={listing.title} className="w-full h-28" />
-                        )}
-                        <div className="p-3.5">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1 min-w-0">
-                              <h4 className="font-bold text-stone-900 dark:text-white text-sm truncate">{listing.title}</h4>
-                              <p className="text-xs text-stone-500 capitalize ">{listing.category}</p>
-                              {listing.price && (
-                                <p className="text-ink font-bold text-sm mt-1">{listing.price.toLocaleString()} FCFA</p>
-                              )}
-                            </div>
-                            <div className="flex gap-1.5 ml-2">
-                              <button
-                                onClick={() => navigate(`/edit-listing/${listing.id}`)}
-                                className="p-2 rounded-full bg-lime/30 hover:bg-lime/60 transition-colors"
-                              >
-                                <Edit className="w-3.5 h-3.5 text-ink" />
-                              </button>
-                              <button
-                                onClick={() => handleDeleteListing(listing.id)}
-                                className="p-2 rounded-full bg-red-100 hover:bg-red-200 transition-colors"
-                              >
-                                <Trash2 className="w-3.5 h-3.5 text-red-500" />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                      <ManageListingCard key={listing.id} listing={listing} onToggle={handleToggleListing} onDelete={handleDeleteListing} />
                     ))}
                   </div>
                 )}
@@ -389,9 +373,7 @@ const MyAccount = () => {
                 ) : (
                   <div className="space-y-3">
                     {favoriteEvents.map(event => (
-                      <div key={event.id} className="relative">
-                        <EventListCard event={event} />
-                      </div>
+                      <FavoriteEventCard key={event.id} event={event} onRemove={handleRemoveFavorite} />
                     ))}
                   </div>
                 )}

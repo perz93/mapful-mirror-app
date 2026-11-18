@@ -1,9 +1,10 @@
 import ShimmerImage from './ShimmerImage';
 import { Link } from 'react-router-dom';
-import { Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
+import { Pencil, Trash2, Eye, EyeOff, MapPin } from 'lucide-react';
 import { Event } from '@/hooks/useEvents';
 import { softCase } from '@/lib/softCase';
-import { dateRangeLabel, timeRangeLabel } from '@/lib/eventStatus';
+import { dateRangeLabel, eventStatus } from '@/lib/eventStatus';
+import { focusPosition } from '@/lib/imageFocus';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/PillToast';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -51,7 +52,7 @@ const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) 
       toast.success(t('event.deleted'));
       queryClient.invalidateQueries();
       onDeleted(event.id);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error deleting event:', error);
       toast.error(t('event.deleteError'));
     }
@@ -69,88 +70,82 @@ const ManageEventCard = ({ event, onDeleted, onUpdated }: ManageEventCardProps) 
       toast.success(event.is_published ? t('event.unpublished') : t('event.published'));
       queryClient.invalidateQueries();
       onUpdated();
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error toggling publish:', error);
       toast.error(t('event.publishError'));
     }
   };
 
+  const ended = eventStatus(event)?.key === 'status.ended';
+  const iconBtn = 'inline-flex size-8 items-center justify-center rounded-full transition-transform active:scale-90';
+
   return (
-    <div className="w-full pointer-events-auto touch-auto">
-      <div className="flex items-stretch justify-between gap-3 rounded-3xl bg-parchment dark:bg-stone-900/80 p-4 shadow-2xl">
-        <div className="flex flex-col justify-between gap-2 flex-[2_2_0px]">
-          <div className="flex flex-col gap-0.5">
-            <div className="flex items-center gap-2">
-              <p className="text-stone-900 dark:text-white text-sm font-bold leading-tight">
-                {softCase(event.title)}
-              </p>
-              {!event.is_published && (
-                <span className="px-2 py-0.5 text-xs bg-muted text-muted-foreground rounded-full">
-                  {t('event.unpublishedBadge')}
-                </span>
-              )}
-            </div>
-            <p className="text-stone-500 dark:text-stone-400 text-xs font-normal leading-normal">
-              {softCase(event.venue)}
-            </p>
-            <p className="text-stone-500 dark:text-stone-400 text-xs font-normal leading-normal">
-              {dateRangeLabel(event)} • {timeRangeLabel(event)}
-            </p>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <Link 
-              to={`/edit-event/${event.id}`}
-              className="inline-flex items-center justify-center gap-1.5 rounded-full h-8 px-3.5 bg-lime text-ink text-xs font-medium hover:bg-lime-deep transition-colors"
-            >
-              <Pencil className="w-3.5 h-3.5" strokeWidth={1.75} />
-              <span>{t('event.editBtn')}</span>
-            </Link>
-            
-            <button
-              onClick={handleTogglePublish}
-              className="inline-flex items-center justify-center gap-1.5 rounded-full h-8 px-3.5 bg-canvas text-ink text-xs font-medium hover:bg-stone-200 transition-colors"
-            >
-              {event.is_published ? (
-                <>
-                  <EyeOff className="w-3.5 h-3.5" strokeWidth={1.75} />
-                  <span>{t('event.unpublishBtn')}</span>
-                </>
-              ) : (
-                <>
-                  <Eye className="w-3.5 h-3.5" strokeWidth={1.75} />
-                  <span>{t('event.publishBtn')}</span>
-                </>
-              )}
-            </button>
-            
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <button className="inline-flex items-center justify-center rounded-full size-8 bg-canvas text-ink hover:bg-destructive hover:text-white transition-colors">
-                  <Trash2 className="w-3.5 h-3.5" strokeWidth={1.75} />
-                </button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>{t('event.deleteConfirm')}</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    {t('event.deleteConfirmDesc')}
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDelete}>{t('delete')}</AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-        </div>
-        
+    // Carte compacte : photo, statut et date, titre, lieu ; boutons ronds à droite
+    <div className="card-shadow flex items-center gap-3 rounded-[24px] bg-parchment p-2 dark:bg-stone-900/80">
+      <Link to={`/event/${event.id}`} className="flex min-w-0 flex-1 items-center gap-3 no-press">
         <ShimmerImage
           src={event.image_url || 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&h=400&fit=crop'}
+          position={focusPosition(event.image_focus)}
           alt=""
-          className="w-20 h-20 flex-shrink-0 rounded-2xl"
+          className={`size-[84px] flex-shrink-0 rounded-[18px] ${ended ? 'grayscale-[.75]' : ''}`}
         />
+        <div className="min-w-0 flex-1">
+          <div className="flex min-w-0 items-center gap-2">
+            {ended ? (
+              <span className="inline-flex h-[22px] flex-shrink-0 items-center rounded-full bg-ink/85 px-2.5 text-[11px] font-semibold text-white">{t('status.ended')}</span>
+            ) : !event.is_published ? (
+              <span className="inline-flex h-[22px] flex-shrink-0 items-center rounded-full bg-stone-200 px-2.5 text-[11px] font-semibold text-stone-600">{t('event.unpublishedBadge')}</span>
+            ) : (
+              <span className="inline-flex flex-shrink-0 items-center gap-1.5 text-[11px] font-semibold text-ink">
+                <span className="size-1.5 rounded-full bg-ink" />{t('manage.online')}
+              </span>
+            )}
+            <span className="truncate text-[11.5px] font-semibold text-stone-500 tabular">
+              {dateRangeLabel(event, 'fr', false)}{event.time ? ` · ${event.time.slice(0, 5)}` : ''}
+            </span>
+          </div>
+          <p className={`mt-1 truncate font-display text-[16px] leading-tight tracking-tight text-ink dark:text-white ${ended ? 'opacity-55' : ''}`}>
+            {softCase(event.title)}
+          </p>
+          <span className={`mt-1.5 inline-flex h-6 max-w-full items-center gap-1 rounded-full bg-ink/[0.05] px-2.5 text-[11.5px] font-medium text-stone-700 ${ended ? 'opacity-55' : ''}`}>
+            <MapPin size={11} strokeWidth={2.4} className="flex-shrink-0" />
+            <span className="truncate">{softCase(event.venue)}</span>
+          </span>
+        </div>
+      </Link>
+
+      <div className="flex flex-shrink-0 flex-col gap-1.5 pr-0.5">
+        <Link to={`/edit-event/${event.id}`} aria-label={t('event.editBtn')} className={`${iconBtn} bg-lime text-ink`}>
+          <Pencil size={14} strokeWidth={2} />
+        </Link>
+        {!ended && (
+          <button
+            onClick={handleTogglePublish}
+            aria-label={event.is_published ? t('event.unpublishBtn') : t('event.publishBtn')}
+            className={`${iconBtn} bg-canvas text-ink`}
+          >
+            {event.is_published ? <EyeOff size={14} strokeWidth={2} /> : <Eye size={14} strokeWidth={2} />}
+          </button>
+        )}
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <button aria-label={t('delete')} className={`${iconBtn} bg-canvas text-ink`}>
+              <Trash2 size={14} strokeWidth={2} />
+            </button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('event.deleteConfirm')}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t('event.deleteConfirmDesc')}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete}>{t('delete')}</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );

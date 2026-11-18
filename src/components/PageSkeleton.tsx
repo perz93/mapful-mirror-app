@@ -172,20 +172,14 @@ export const AccountSkeleton = () => (
 
 /** Skeleton for ManageEvents list */
 export const ManageEventsSkeleton = () => (
-  <div className="space-y-4">
+  <div className="space-y-3">
     {[1, 2, 3].map((i) => (
-      <div key={i} className="rounded-3xl bg-parchment p-4 space-y-3">
-        <div className="flex items-center gap-3">
-          <ShimmerBlock className="w-16 h-16 rounded-xl flex-shrink-0" />
-          <div className="flex-1 space-y-2">
-            <ShimmerBlock className="h-4 w-3/4" />
-            <ShimmerBlock className="h-3 w-1/2" />
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <ShimmerBlock className="h-8 w-20 rounded-full" />
-          <ShimmerBlock className="h-8 w-24 rounded-full" />
-          <ShimmerBlock className="h-8 w-20 rounded-full" />
+      <div key={i} className="flex items-center gap-3 rounded-[24px] bg-parchment p-2">
+        <ShimmerBlock className="size-[84px] flex-shrink-0 rounded-[18px]" />
+        <div className="flex-1 space-y-2">
+          <ShimmerBlock className="h-3 w-24" />
+          <ShimmerBlock className="h-4 w-3/4" />
+          <ShimmerBlock className="h-5 w-1/3 rounded-full" />
         </div>
       </div>
     ))}
