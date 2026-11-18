@@ -24,15 +24,15 @@ const pngIcon = (src: string): CategoryIcon => {
  * Les clés correspondent à l'enum Postgres `marketplace_category` ;
  * les 4 premières gardent leur ancienne clé pour ne pas toucher aux annonces existantes.
  */
-export const MARKETPLACE_CATEGORIES: { value: string; fr: string; en: string; icon: CategoryIcon }[] = [
-  { value: 'location_espaces', fr: 'Lieux & salles', en: 'Venues', icon: pngIcon(lieuxPng) },
-  { value: 'traiteurs', fr: 'Traiteurs & boissons', en: 'Catering & drinks', icon: pngIcon(traiteursPng) },
-  { value: 'animation_dj', fr: 'Musique & animation', en: 'Music & entertainment', icon: pngIcon(animationPng) },
-  { value: 'decoration', fr: 'Décoration & fleurs', en: 'Decor & flowers', icon: pngIcon(decorationPng) },
-  { value: 'materiel', fr: 'Matériel & location', en: 'Equipment rental', icon: pngIcon(materielPng) },
-  { value: 'photo_video', fr: 'Photo & vidéo', en: 'Photo & video', icon: pngIcon(photoPng) },
-  { value: 'beaute_tenues', fr: 'Beauté & tenues', en: 'Beauty & outfits', icon: pngIcon(beautePng) },
-  { value: 'autre', fr: 'Autre', en: 'Other', icon: pngIcon(autrePng) },
+export const MARKETPLACE_CATEGORIES: { value: string; fr: string; en: string; icon: CategoryIcon; src: string }[] = [
+  { value: 'location_espaces', fr: 'Lieux & salles', en: 'Venues', icon: pngIcon(lieuxPng), src: lieuxPng },
+  { value: 'traiteurs', fr: 'Traiteurs & boissons', en: 'Catering & drinks', icon: pngIcon(traiteursPng), src: traiteursPng },
+  { value: 'animation_dj', fr: 'Musique & animation', en: 'Music & entertainment', icon: pngIcon(animationPng), src: animationPng },
+  { value: 'decoration', fr: 'Décoration & fleurs', en: 'Decor & flowers', icon: pngIcon(decorationPng), src: decorationPng },
+  { value: 'materiel', fr: 'Matériel & location', en: 'Equipment rental', icon: pngIcon(materielPng), src: materielPng },
+  { value: 'photo_video', fr: 'Photo & vidéo', en: 'Photo & video', icon: pngIcon(photoPng), src: photoPng },
+  { value: 'beaute_tenues', fr: 'Beauté & tenues', en: 'Beauty & outfits', icon: pngIcon(beautePng), src: beautePng },
+  { value: 'autre', fr: 'Autre', en: 'Other', icon: pngIcon(autrePng), src: autrePng },
 ];
 
 export const getMarketplaceCategory = (value: string | null | undefined) =>

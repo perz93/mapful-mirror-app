@@ -8,6 +8,7 @@ import ContactFab from '@/components/ContactFab';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from '@/components/PillToast';
 import ImageLightbox from '@/components/ImageLightbox';
+import ListingPlaceholder from '@/components/ListingPlaceholder';
 import ShimmerImage from '@/components/ShimmerImage';
 import { marketplaceCategoryLabel } from '@/lib/marketplaceCategories';
 import { useDarkPageBackground } from '@/hooks/useDarkPageBackground';
@@ -131,9 +132,7 @@ const ListingDetails = () => {
           {listing.image_url ? (
             <ShimmerImage src={listing.image_url} alt={listing.title} className="absolute inset-0 w-full h-full" loading="eager" />
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Tag size={44} className="text-stone-300" />
-            </div>
+            <ListingPlaceholder category={listing.category} className="absolute inset-0" />
           )}
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,20,15,0.4)_0%,transparent_28%,transparent_45%,rgba(20,20,15,0.88)_100%)]" />
 

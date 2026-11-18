@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
 import ShimmerImage from './ShimmerImage';
+import ListingPlaceholder from './ListingPlaceholder';
 import { Tables } from '@/integrations/supabase/types';
 import { getMarketplaceCategory } from '@/lib/marketplaceCategories';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -28,7 +29,6 @@ interface ManageListingCardProps {
 const ManageListingCard = ({ listing, onToggle, onDelete }: ManageListingCardProps) => {
   const { t, lang } = useLanguage();
   const config = getMarketplaceCategory(listing.category);
-  const Icon = config.icon;
   const hidden = !listing.is_published;
   const price = listing.price !== null
     ? `${listing.price.toLocaleString('fr-FR')} F${listing.price_type === 'hourly' ? ' / h' : listing.price_type === 'daily' ? ' / jour' : ''}`
@@ -41,9 +41,7 @@ const ManageListingCard = ({ listing, onToggle, onDelete }: ManageListingCardPro
         {listing.image_url ? (
           <ShimmerImage src={listing.image_url} alt="" className={`size-[84px] flex-shrink-0 rounded-[18px] ${hidden ? 'grayscale-[.75]' : ''}`} />
         ) : (
-          <span className="flex size-[84px] flex-shrink-0 items-center justify-center rounded-[18px] bg-canvas">
-            <Icon size={24} strokeWidth={1.5} className="text-ink" />
-          </span>
+          <ListingPlaceholder category={listing.category} small className={`size-[84px] flex-shrink-0 rounded-[18px] ${hidden ? 'grayscale-[.75]' : ''}`} />
         )}
         <div className={`min-w-0 flex-1 ${hidden ? 'opacity-60' : ''}`}>
           <p className="truncate text-[10.5px] font-semibold uppercase tracking-[0.05em] text-ink">
