@@ -163,7 +163,7 @@ const Marketplace = () => {
                           </span>
                         </div>
                       )}
-                      <span className="absolute bottom-2 left-2 inline-flex h-6 max-w-[calc(100%-16px)] items-center rounded-full bg-lime px-2.5 text-[11px] font-semibold text-ink tabular">
+                      <span className="absolute right-2 top-2 inline-flex h-6 max-w-[calc(100%-16px)] items-center rounded-full bg-lime px-2.5 text-[11px] font-semibold text-ink tabular">
                         <span className="truncate">
                           {listing.price !== null
                             ? `${listing.price.toLocaleString('fr-FR')} F${listing.price_type === 'hourly' ? ' / h' : listing.price_type === 'daily' ? ' / jour' : ''}`
