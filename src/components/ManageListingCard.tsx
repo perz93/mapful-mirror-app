@@ -64,7 +64,7 @@ const ManageListingCard = ({ listing, onToggle, onDelete }: ManageListingCardPro
       </Link>
 
       <div className="flex flex-shrink-0 flex-col gap-1.5 pr-0.5">
-        <Link to={`/edit-listing/${listing.id}`} aria-label={t('event.editBtn')} className={`${iconBtn} bg-lime text-ink`}>
+        <Link to={`/edit-listing/${listing.id}`} aria-label={t('event.editBtn')} className={`${iconBtn} bg-ink text-white`}>
           <Pencil size={14} strokeWidth={2} />
         </Link>
         <button

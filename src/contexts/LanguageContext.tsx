@@ -239,6 +239,7 @@ const translations: Record<string, Record<Lang, string>> = {
   'account.listings': { fr: 'Annonces', en: 'Listings' },
   'account.favorites': { fr: 'Favoris', en: 'Favorites' },
   'account.activity': { fr: 'Activité', en: 'Activity' },
+  'account.all': { fr: 'Tout', en: 'All' },
   'account.upcoming': { fr: 'À venir', en: 'Upcoming' },
   'account.ended': { fr: 'Terminés', en: 'Ended' },
   'account.noUpcoming': { fr: 'Aucun événement à venir.', en: 'No upcoming events.' },
