@@ -221,7 +221,7 @@ const Landing = () => {
           )}
         </section>
 
-        <Wave top="#f1f1f3" bottom="#ffffff" />
+        <Wave top="#f4f3ef" bottom="#ffffff" />
 
         {/* 2. Pour sortir */}
         <PhoneSection
