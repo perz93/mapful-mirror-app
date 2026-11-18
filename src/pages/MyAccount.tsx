@@ -79,11 +79,11 @@ const MyAccount = () => {
       return ids.map((id) => byId.get(id)).filter((e): e is Event => !!e);
     },
   });
-  // Mes événements : à venir (le plus proche en premier) ou terminés (le plus récent en premier)
-  const [eventFilter, setEventFilter] = useState<'upcoming' | 'ended'>('upcoming');
+  // Mes événements : tout (à venir puis terminés), à venir (le plus proche en premier) ou terminés (le plus récent en premier)
+  const [eventFilter, setEventFilter] = useState<'all' | 'upcoming' | 'ended'>('all');
   const upcomingEvents = userEvents.filter(isUpcomingOrLive).sort((a, b) => eventStart(a).getTime() - eventStart(b).getTime());
   const endedEvents = userEvents.filter((e) => !isUpcomingOrLive(e)).sort((a, b) => eventStart(b).getTime() - eventStart(a).getTime());
-  const shownEvents = eventFilter === 'upcoming' ? upcomingEvents : endedEvents;
+  const shownEvents = eventFilter === 'all' ? [...upcomingEvents, ...endedEvents] : eventFilter === 'upcoming' ? upcomingEvents : endedEvents;
   const [listingsLoaded, setListingsLoaded] = useState(false);
   const [userListings, setUserListings] = useState<MarketplaceListing[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -307,7 +307,7 @@ const MyAccount = () => {
                 {userEvents.length > 0 && (
                   // À venir / Terminés : chaque liste séparée, avec son nombre
                   <div className="mb-4 flex gap-2">
-                    {([['upcoming', 'account.upcoming', upcomingEvents.length], ['ended', 'account.ended', endedEvents.length]] as const).map(([key, label, n]) => (
+                    {([['all', 'account.all', userEvents.length], ['upcoming', 'account.upcoming', upcomingEvents.length], ['ended', 'account.ended', endedEvents.length]] as const).map(([key, label, n]) => (
                       <button
                         key={key}
                         onClick={() => setEventFilter(key)}
