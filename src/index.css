@@ -671,7 +671,7 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Upvibe — Encre & Parchemin, accent lime unique (Perk × Notion) */
-    --background: 48 18% 95%;       /* #f4f3ef fond des pages (gris chaud léger) */
+    --background: 218 80% 98%;      /* #f6f9fe fond des pages (blanc bleuté) */
     --foreground: 60 14% 7%;          /* #14140f encre */
 
     --card: 0 0% 100%;
@@ -683,13 +683,13 @@ All colors MUST be HSL.
     --primary: 80 76% 53%;            /* #a6e22e lime */
     --primary-foreground: 60 14% 7%;
 
-    --secondary: 48 18% 95%;        /* #f4f3ef éléments posés sur les cartes blanches */
+    --secondary: 218 80% 98%;       /* #f6f9fe éléments posés sur les cartes blanches */
     --secondary-foreground: 60 14% 7%;
 
-    --muted: 48 18% 95%;
+    --muted: 218 80% 98%;
     --muted-foreground: 60 5% 41%;    /* #6e6e64 graphite */
 
-    --accent: 48 18% 95%;
+    --accent: 218 80% 98%;
     --accent-foreground: 60 14% 7%;
 
     --destructive: 4 70% 46%;
@@ -880,7 +880,7 @@ All colors MUST be HSL.
     top: calc(env(safe-area-inset-top, 0px) + 57px);
     z-index: 30;
     padding: 8px 0 10px;
-    background: rgb(244 243 239 / 0.92);
+    background: rgb(246 249 254 / 0.92);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
   }
