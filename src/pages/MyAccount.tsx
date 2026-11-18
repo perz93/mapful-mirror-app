@@ -7,6 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { compressImage, IMMUTABLE_CACHE } from '@/lib/compressImage';
 import type { Event } from '@/hooks/useEvents';
+import { eventStart, isUpcomingOrLive } from '@/lib/eventStatus';
 import ManageEventCard from '@/components/ManageEventCard';
 import ManageListingCard from '@/components/ManageListingCard';
 import FavoriteEventCard from '@/components/FavoriteEventCard';
@@ -78,6 +79,11 @@ const MyAccount = () => {
       return ids.map((id) => byId.get(id)).filter((e): e is Event => !!e);
     },
   });
+  // Mes événements : à venir (le plus proche en premier) ou terminés (le plus récent en premier)
+  const [eventFilter, setEventFilter] = useState<'upcoming' | 'ended'>('upcoming');
+  const upcomingEvents = userEvents.filter(isUpcomingOrLive).sort((a, b) => eventStart(a).getTime() - eventStart(b).getTime());
+  const endedEvents = userEvents.filter((e) => !isUpcomingOrLive(e)).sort((a, b) => eventStart(b).getTime() - eventStart(a).getTime());
+  const shownEvents = eventFilter === 'upcoming' ? upcomingEvents : endedEvents;
   const [listingsLoaded, setListingsLoaded] = useState(false);
   const [userListings, setUserListings] = useState<MarketplaceListing[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -297,10 +303,22 @@ const MyAccount = () => {
                   <h3 className="text-[20px] text-ink">
                     {t('account.myEvents')}
                   </h3>
-                  <Link to="/manage-events" className="text-ink text-xs font-semibold hover:underline">
-                    {t('account.manageAll')}
-                  </Link>
                 </div>
+                {userEvents.length > 0 && (
+                  // À venir / Terminés : chaque liste séparée, avec son nombre
+                  <div className="mb-4 flex gap-2">
+                    {([['upcoming', 'account.upcoming', upcomingEvents.length], ['ended', 'account.ended', endedEvents.length]] as const).map(([key, label, n]) => (
+                      <button
+                        key={key}
+                        onClick={() => setEventFilter(key)}
+                        className={`inline-flex h-9 items-center gap-2 rounded-full px-4 text-[13.5px] font-semibold transition-colors ${eventFilter === key ? 'bg-ink text-white' : 'bg-parchment text-ink'}`}
+                      >
+                        {t(label)}
+                        <span className={`inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] tabular ${eventFilter === key ? 'bg-lime text-ink' : 'bg-canvas text-stone-600'}`}>{n}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
                 {eventsLoading ? <ListSkeleton /> : userEvents.length === 0 ? (
                   <div className="rounded-3xl bg-parchment p-6">
                     <span className="mb-4 flex size-10 items-center justify-center rounded-2xl bg-canvas">
@@ -316,7 +334,12 @@ const MyAccount = () => {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {userEvents.map(event => (
+                    {shownEvents.length === 0 && (
+                      <p className="rounded-3xl bg-parchment p-5 text-sm text-stone-500">
+                        {t(eventFilter === 'upcoming' ? 'account.noUpcoming' : 'account.noEnded')}
+                      </p>
+                    )}
+                    {shownEvents.map(event => (
                       <ManageEventCard key={event.id} event={event} onDeleted={refreshMyEvents} onUpdated={refreshMyEvents} />
                     ))}
                   </div>
