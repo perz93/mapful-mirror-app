@@ -76,7 +76,7 @@ const ManageEvents = () => {
         <LargeTitle className="px-5 pt-4 pb-2 text-[40px] leading-[0.95] tracking-tighter text-ink" backTo="/my-account">{t('manage.title')}</LargeTitle>
 
         {/* Events List */}
-        <div className="flex-1 px-6 pb-8 pt-4">
+        <div className="flex-1 px-4 pb-8 pt-4">
           {loading ? (
             <ManageEventsSkeleton />
           ) : events.length === 0 ? (
@@ -91,7 +91,7 @@ const ManageEvents = () => {
               }
             />
           ) : (
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 gap-3">
               {events.map((event) => (
                 <ManageEventCard 
                   key={event.id} 
