@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import ListingPlaceholder from '@/components/ListingPlaceholder';
 import ShimmerImage from '@/components/ShimmerImage';
 import { GridCardSkeleton } from '@/components/PageSkeleton';
 import { softCase } from '@/lib/softCase';
@@ -157,11 +158,7 @@ const Marketplace = () => {
                           className="h-full w-full"
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-canvas">
-                          <span className="flex size-14 items-center justify-center rounded-3xl bg-white">
-                            <Icon size={24} strokeWidth={1.5} className="text-ink" />
-                          </span>
-                        </div>
+                        <ListingPlaceholder category={listing.category} className="h-full w-full" />
                       )}
                       <span className="absolute right-2 top-2 inline-flex h-6 max-w-[calc(100%-16px)] items-center rounded-full bg-lime px-2.5 text-[11px] font-semibold text-ink tabular">
                         <span className="truncate">

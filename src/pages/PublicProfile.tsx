@@ -8,6 +8,7 @@ import { usePublicProfile, profileDisplayName, initials } from '@/hooks/usePubli
 import { useDarkPageBackground } from '@/hooks/useDarkPageBackground';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ContactFab from '@/components/ContactFab';
+import ListingPlaceholder from '@/components/ListingPlaceholder';
 import ShimmerImage from '@/components/ShimmerImage';
 import { toast } from '@/components/PillToast';
 import { softCase } from '@/lib/softCase';
@@ -35,6 +36,7 @@ interface ProfileEvent {
 interface ProfileListing extends Omit<ProfileEvent, 'date' | 'time' | 'end_date' | 'end_time' | 'venue'> {
   location: string | null;
   price: number | null;
+  category: string;
 }
 
 const CONTACT_COLS =
@@ -67,7 +69,7 @@ const PublicProfile = () => {
           .order('date', { ascending: false }),
         supabase
           .from('marketplace_listings')
-          .select(`id, title, location, price, image_url, created_at, ${CONTACT_COLS}`)
+          .select(`id, title, location, price, image_url, category, created_at, ${CONTACT_COLS}`)
           .eq('user_id', id!)
           .eq('is_published', true)
           .order('created_at', { ascending: false }),
@@ -143,10 +145,10 @@ const PublicProfile = () => {
     );
   }
 
-  const Row = ({ to, image, title, sub }: { to: string; image: string | null; title: string; sub: string }) => (
+  const Row = ({ to, image, title, sub, category }: { to: string; image: string | null; title: string; sub: string; category?: string }) => (
     <Link to={to} className="no-press card-shadow flex items-center gap-3 rounded-[20px] bg-parchment p-2.5">
       <div className="size-14 flex-shrink-0 overflow-hidden rounded-2xl bg-stone-200">
-        {image && <ShimmerImage src={image} alt="" className="h-full w-full" />}
+        {image ? <ShimmerImage src={image} alt="" className="h-full w-full" /> : category && <ListingPlaceholder category={category} small className="h-full w-full" />}
       </div>
       <div className="min-w-0 flex-1">
         <p className="truncate font-medium text-ink">{title}</p>
@@ -239,6 +241,7 @@ const PublicProfile = () => {
                       key={l.id}
                       to={`/listing/${l.id}`}
                       image={l.image_url}
+                      category={l.category}
                       title={softCase(l.title)}
                       sub={[l.price != null ? `${l.price.toLocaleString('fr-FR')} FCFA` : null, softCase(l.location)].filter(Boolean).join(' · ')}
                     />
