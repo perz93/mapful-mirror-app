@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import OrganizerCard from '@/components/OrganizerCard';
 import { ArrowLeft, MapPin, Share2, Heart, Bell, BellRing, Users, Pencil, CalendarDays, Clock, Ticket } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
@@ -32,6 +32,19 @@ const EventDetails = () => {
   const { user } = useAuth();
   const { setRouteDestination } = useSearch();
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  // Encoches du billet : placées sur la ligne pointillée, quelle que soit la hauteur du titre
+  const tearRef = useRef<HTMLDivElement>(null);
+  const ticketObserver = useRef<ResizeObserver | null>(null);
+  const ticketRef = useCallback((el: HTMLElement | null) => {
+    ticketObserver.current?.disconnect();
+    if (!el) return;
+    const place = () => {
+      if (tearRef.current) el.style.setProperty('--notch-y', `${tearRef.current.offsetTop + 1}px`);
+    };
+    ticketObserver.current = new ResizeObserver(place);
+    ticketObserver.current.observe(el);
+    place();
+  }, []);
   const [reminderSet, setReminderSet] = useState(false);
 
   const { data: event, isLoading, error } = useQuery({
@@ -218,8 +231,9 @@ const EventDetails = () => {
         className="relative mx-auto max-w-md px-4 pb-32"
         style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 76px)' }}
       >
-        {/* D3 : la page est un billet */}
-        <article className="card-shadow overflow-hidden rounded-[28px] bg-parchment dark:bg-stone-900">
+        {/* D3 : la page est un billet, avec une ombre noire décalée qui suit les encoches */}
+        <div style={{ filter: 'drop-shadow(6px 7px 0 #14140f)' }}>
+        <article ref={ticketRef} className="ticket-notches relative overflow-hidden rounded-[28px] bg-parchment dark:bg-stone-900">
           <div
             onClick={() => event.image_url && setLightboxOpen(true)}
             className="relative m-2 h-[240px] cursor-zoom-in overflow-hidden rounded-[22px] bg-[#e8e8e8]"
@@ -261,10 +275,7 @@ const EventDetails = () => {
           </div>
 
           {/* Ligne détachable du billet */}
-          <div className="relative mx-5 border-t-2 border-dashed border-stone-200 dark:border-stone-700">
-            <span className="absolute -left-[30px] -top-[11px] size-5 rounded-full bg-canvas dark:bg-background-dark" />
-            <span className="absolute -right-[30px] -top-[11px] size-5 rounded-full bg-canvas dark:bg-background-dark" />
-          </div>
+          <div ref={tearRef} className="relative mx-5 border-t-2 border-dashed border-stone-200 dark:border-stone-700" />
 
           <dl className="grid grid-cols-2 gap-x-4 gap-y-4 px-5 pb-5 pt-4">
             {ticketCells.map((cell) => {
@@ -297,6 +308,7 @@ const EventDetails = () => {
           </dl>
           {showAddress && <p className="-mt-2 truncate px-5 pb-5 text-sm text-stone-500">{event.address}</p>}
         </article>
+        </div>
 
         <div className="mt-6 space-y-6">
 

@@ -870,6 +870,17 @@ All colors MUST be HSL.
 
   /* Ombre douce des cadres de liste (annonces, événements) : sépare
      chaque cadre du fond parchemin sans effet « flottant » appuyé */
+  /* Billet du détail événement : deux encoches rondes découpées sur la ligne pointillée */
+  .ticket-notches {
+    --notch-y: 50%;
+    -webkit-mask:
+      radial-gradient(circle 10px at 0 var(--notch-y), #0000 10px, #000 10.5px) left / 51% 100% no-repeat,
+      radial-gradient(circle 10px at 100% var(--notch-y), #0000 10px, #000 10.5px) right / 51% 100% no-repeat;
+    mask:
+      radial-gradient(circle 10px at 0 var(--notch-y), #0000 10px, #000 10.5px) left / 51% 100% no-repeat,
+      radial-gradient(circle 10px at 100% var(--notch-y), #0000 10px, #000 10.5px) right / 51% 100% no-repeat;
+  }
+
   .card-shadow {
     box-shadow: 0 1px 2px rgb(20 20 15 / 0.05), 0 10px 28px -14px rgb(20 20 15 / 0.22);
   }
