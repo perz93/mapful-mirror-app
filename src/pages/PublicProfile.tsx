@@ -8,11 +8,13 @@ import { usePublicProfile, profileDisplayName, initials } from '@/hooks/usePubli
 import { useDarkPageBackground } from '@/hooks/useDarkPageBackground';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ContactFab from '@/components/ContactFab';
+import EventPosterCard from '@/components/EventPosterCard';
+import { useState } from 'react';
 import ListingPlaceholder from '@/components/ListingPlaceholder';
 import ShimmerImage from '@/components/ShimmerImage';
 import { toast } from '@/components/PillToast';
 import { softCase } from '@/lib/softCase';
-import { dateRangeLabel, lastDay, timeRangeLabel } from '@/lib/eventStatus';
+import { lastDay } from '@/lib/eventStatus';
 
 interface ProfileEvent {
   id: string;
@@ -23,6 +25,10 @@ interface ProfileEvent {
   end_time?: string | null;
   venue: string | null;
   image_url: string | null;
+  image_focus?: string | null;
+  price?: number | null;
+  is_paid?: boolean | null;
+  ticket_types?: unknown;
   created_at: string;
   contact_phone: string | null;
   contact_whatsapp: string | null;
@@ -63,7 +69,7 @@ const PublicProfile = () => {
       const [ev, li] = await Promise.all([
         supabase
           .from('events')
-          .select(`id, title, date, time, end_date, end_time, venue, image_url, created_at, ${CONTACT_COLS}`)
+          .select(`id, title, date, time, end_date, end_time, venue, image_url, image_focus, price, is_paid, ticket_types, created_at, ${CONTACT_COLS}`)
           .eq('user_id', id!)
           .eq('is_published', true)
           .order('date', { ascending: false }),
@@ -81,6 +87,7 @@ const PublicProfile = () => {
     },
   });
 
+  const [tab, setTab] = useState<'events' | 'listings'>('events');
   const loaded = !isLoading && !loadingProfile;
   useDarkPageBackground(loaded);
 
@@ -88,7 +95,7 @@ const PublicProfile = () => {
   const events = data?.events ?? [];
   const listings = data?.listings ?? [];
   const today = format(new Date(), 'yyyy-MM-dd');
-  const upcoming = events.filter((e) => lastDay(e) >= today).sort((a, b) => b.created_at.localeCompare(a.created_at));
+  const upcoming = events.filter((e) => lastDay(e) >= today).sort((a, b) => a.date.localeCompare(b.date));
   const past = events.filter((e) => lastDay(e) < today).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6);
 
   // Bannière : les affiches les plus récentes (événements puis annonces)
@@ -104,6 +111,9 @@ const PublicProfile = () => {
     .find(hasContact);
 
   const since = profile?.created_at ? new Date(profile.created_at).getFullYear() : null;
+  const both = events.length > 0 && listings.length > 0;
+  const showEvents = !both || tab === 'events';
+  const showListings = !both || tab === 'listings';
   const plural = (n: number, one: string, many: string) => `${n} ${n > 1 ? many : one}`;
 
   const handleShare = () => {
@@ -156,11 +166,6 @@ const PublicProfile = () => {
       </div>
     </Link>
   );
-
-  const eventSub = (e: ProfileEvent) =>
-    [dateRangeLabel(e, lang), timeRangeLabel(e), softCase(e.venue)]
-      .filter(Boolean)
-      .join(' · ');
 
   return (
     <div className="min-h-screen bg-canvas page-enter">
@@ -222,17 +227,41 @@ const PublicProfile = () => {
 
           {profile.bio && <p className="mt-4 text-[15px] leading-[1.5] text-ink/80 whitespace-pre-line">{profile.bio}</p>}
 
-          <div className="mt-7 space-y-7">
-            {upcoming.length > 0 && (
+          {/* Onglets Événements / Annonces (seulement si la personne a les deux) */}
+          {events.length > 0 && listings.length > 0 && (
+            <div className="mt-7 flex gap-2">
+              {(['events', 'listings'] as const).map((k) => (
+                <button
+                  key={k}
+                  onClick={() => setTab(k)}
+                  className={`inline-flex h-10 items-center rounded-full px-4 text-[14px] font-semibold transition-colors ${tab === k ? 'bg-ink text-white' : 'bg-parchment text-ink'}`}
+                >
+                  {k === 'events' ? (fr ? 'Événements' : 'Events') : (fr ? 'Annonces' : 'Listings')}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-6 space-y-7">
+            {showEvents && upcoming.length > 0 && (
               <section>
-                <h2 className="eyebrow mb-3 text-stone-500">{fr ? 'Prochains événements' : 'Upcoming events'}</h2>
-                <div className="space-y-2">
-                  {upcoming.map((e) => <Row key={e.id} to={`/event/${e.id}`} image={e.image_url} title={softCase(e.title)} sub={eventSub(e)} />)}
+                <h2 className="eyebrow mb-3 text-stone-500">{fr ? 'À venir' : 'Upcoming'}</h2>
+                <div className="space-y-4">
+                  {upcoming.map((e) => <EventPosterCard key={e.id} event={e} />)}
                 </div>
               </section>
             )}
 
-            {listings.length > 0 && (
+            {showEvents && past.length > 0 && (
+              <section>
+                <h2 className="eyebrow mb-3 text-stone-500">{fr ? 'Passés' : 'Past'}</h2>
+                <div className="space-y-4">
+                  {past.map((e) => <EventPosterCard key={e.id} event={e} ended />)}
+                </div>
+              </section>
+            )}
+
+            {showListings && listings.length > 0 && (
               <section>
                 <h2 className="eyebrow mb-3 text-stone-500">{fr ? 'Annonces Market' : 'Market listings'}</h2>
                 <div className="space-y-2">
@@ -246,15 +275,6 @@ const PublicProfile = () => {
                       sub={[l.price != null ? `${l.price.toLocaleString('fr-FR')} FCFA` : null, softCase(l.location)].filter(Boolean).join(' · ')}
                     />
                   ))}
-                </div>
-              </section>
-            )}
-
-            {past.length > 0 && (
-              <section>
-                <h2 className="eyebrow mb-3 text-stone-500">{fr ? 'Événements passés' : 'Past events'}</h2>
-                <div className="space-y-2 opacity-80">
-                  {past.map((e) => <Row key={e.id} to={`/event/${e.id}`} image={e.image_url} title={softCase(e.title)} sub={eventSub(e)} />)}
                 </div>
               </section>
             )}
