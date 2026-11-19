@@ -76,48 +76,6 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
     if (target) window.dispatchEvent(new CustomEvent('map:flyto', { detail: target }));
   };
 
-  const [canScroll, setCanScroll] = useState(false);
-  const trackRef = useRef<HTMLDivElement | null>(null);
-  const thumbRef = useRef<HTMLDivElement | null>(null);
-
-  // Indicateur qui suit le doigt en temps réel : mis à jour directement (sans
-  // re-rendu React ni transition), à chaque image pendant le défilement.
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    let frame = 0;
-
-    const update = () => {
-      frame = 0;
-      const { scrollWidth, clientWidth, scrollLeft } = el;
-      const maxScroll = scrollWidth - clientWidth;
-      const scrollable = maxScroll > 1;
-      setCanScroll(scrollable);
-      const track = trackRef.current;
-      const thumb = thumbRef.current;
-      if (!scrollable || !track || !thumb) return;
-      const trackW = track.clientWidth;
-      const thumbW = Math.max(24, (clientWidth / scrollWidth) * trackW);
-      // Bornes : l'effet rebond d'iOS donne un scrollLeft < 0 ou > max
-      const progress = Math.min(1, Math.max(0, scrollLeft / maxScroll));
-      thumb.style.width = `${thumbW}px`;
-      thumb.style.transform = `translate3d(${progress * (trackW - thumbW)}px,0,0)`;
-    };
-    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
-
-    update();
-    const ro = new ResizeObserver(schedule);
-    ro.observe(el);
-    el.addEventListener('scroll', schedule, { passive: true });
-    window.addEventListener('resize', schedule);
-    return () => {
-      if (frame) cancelAnimationFrame(frame);
-      ro.disconnect();
-      el.removeEventListener('scroll', schedule);
-      window.removeEventListener('resize', schedule);
-    };
-  }, [canScroll]);
-
   const navItems = EVENT_CATEGORIES.map((c) => ({ icon: c.icon, label: t(c.tKey).replace(/-/g, '\u2011'), path: c.path }));
 
   const handleSearch = () => {
@@ -363,7 +321,7 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
             <div className="flex-1 relative h-full min-w-0">
               <div
                 ref={scrollRef}
-                className="flex items-center h-full overflow-x-auto overflow-y-hidden scrollbar-hide px-2 pb-1.5 gap-1.5 whitespace-nowrap"
+                className="flex items-center h-full overflow-x-auto overflow-y-hidden scrollbar-hide px-2 gap-1.5 whitespace-nowrap"
               >
                 {/* « Tout » en premier : la liste de tous les événements */}
                 <Link
@@ -407,11 +365,6 @@ const BottomNavigation = ({ className = "" }: BottomNavigationProps) => {
                 })}
               </div>
 
-              {canScroll && (
-                <div ref={trackRef} className="pointer-events-none absolute bottom-1.5 left-6 right-6 h-[2px] rounded-full bg-ink/[0.06]">
-                  <div ref={thumbRef} className="absolute left-0 top-0 h-full rounded-full bg-ink/40 will-change-transform" />
-                </div>
-              )}
             </div>
           </div>
         </div>
