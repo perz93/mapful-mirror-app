@@ -64,7 +64,7 @@ const translations: Record<string, Record<Lang, string>> = {
   'auth.joinUs': { fr: 'Ne rate plus aucune vibe.', en: 'Never miss a vibe again.' },
   // Inscription (M3 · V4) : titre avec « ta carte » en vert, avantages avec les mots clés en gras (**…**)
   'auth.loginPerk': { fr: '**Organisateur ou vendeur ?** Retrouve tes événements et annonces, et publie les prochains en 2 min.', en: '**Organiser or seller?** Find your events and listings, and post the next ones in 2 min.' },
-  'auth.signupTitle': { fr: 'La ville entière, sur **ta carte**.', en: 'The whole city, on **your map**.' },
+  'auth.signupTitle': { fr: 'Tous les événements, sur **ta carte**.', en: 'Every event, on **your map**.' },
   'auth.perkNearby': { fr: '**Les sorties** autour de toi', en: '**What’s on** around you' },
   'auth.perkAlert': { fr: '**Alertes** près de chez toi', en: '**Alerts** near you' },
   'auth.perkPublish': { fr: '**Publie** ton event en 2 min', en: '**Post** an event in 2 min' },
