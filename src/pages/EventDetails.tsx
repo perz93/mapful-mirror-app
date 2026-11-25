@@ -231,8 +231,8 @@ const EventDetails = () => {
         className="relative mx-auto max-w-md px-4 pb-32"
         style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 76px)' }}
       >
-        {/* D3 : la page est un billet, avec une ombre noire décalée qui suit les encoches */}
-        <div style={{ filter: 'drop-shadow(6px 7px 0 #14140f)' }}>
+        {/* D3 : la page est un billet qui flotte, l'ombre douce suit les encoches */}
+        <div style={{ filter: 'drop-shadow(0 26px 30px rgba(20,20,15,0.16)) drop-shadow(0 4px 6px rgba(20,20,15,0.06))' }}>
         <article ref={ticketRef} className="ticket-notches relative overflow-hidden rounded-[28px] bg-parchment dark:bg-stone-900">
           <div
             onClick={() => event.image_url && setLightboxOpen(true)}
