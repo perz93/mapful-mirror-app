@@ -53,7 +53,7 @@ const translations: Record<string, Record<Lang, string>> = {
   'auth.pwMatch': { fr: "Les mots de passe correspondent", en: "Passwords match" },
   'auth.errInvalid': { fr: "Email ou mot de passe incorrect.", en: "Incorrect email or password." },
   'auth.errNotConfirmed': { fr: "Confirmez d'abord votre email avec le code reçu.", en: "Please confirm your email first with the code you received." },
-  'auth.errExists': { fr: "Un compte existe déjà avec cet email.", en: "An account already exists with this email." },
+  'auth.errExists': { fr: "Un compte existe déjà avec cet email : connecte-toi, ou utilise « Mot de passe oublié ».", en: "An account already exists with this email: log in, or use “Forgot password”." },
   'auth.errWeak': { fr: "Mot de passe trop faible : 8 caractères minimum.", en: "Password too weak: at least 8 characters." },
   'auth.errRate': { fr: "Trop de tentatives. Réessayez dans quelques minutes.", en: "Too many attempts. Try again in a few minutes." },
   'auth.errNetwork': { fr: "Pas de connexion internet.", en: "No internet connection." },
