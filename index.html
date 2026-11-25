@@ -19,6 +19,7 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preload" href="/splash-logo.png" as="image" />
+    <link rel="preload" href="/splash-couple.webp" as="image" />
 
     
     <meta property="og:site_name" content="Upvibe" />
@@ -47,7 +48,14 @@
         #rotate-hint img{width:150px;height:auto}
       }
       /* Splash : logo découpé (pin, u, p, v, i, b, e, point) et animé pièce par pièce */
-      .sp-logo{position:absolute;left:50%;top:50%;width:240px;height:120px;transform:translate(-50%,-55%)}
+      .sp-logo{position:absolute;left:50%;top:21%;width:240px;height:120px;transform:translate(-50%,-50%)}
+      /* Puis l'image arrive par le bas, bord du haut en biais, et un trait vert se trace dessus */
+      .sp-imgw{position:absolute;left:0;right:0;bottom:0;height:62%;transform:translateY(105%);animation:sp-slide .9s cubic-bezier(.2,.85,.25,1) 1.45s forwards}
+      .sp-img{position:absolute;inset:0;overflow:hidden;clip-path:polygon(0 9%,100% 0,100% 100%,0 100%);-webkit-clip-path:polygon(0 9%,100% 0,100% 100%,0 100%)}
+      .sp-img img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;transform:scale(1.12);animation:sp-zoom 2.4s ease-out 1.45s forwards}
+      .sp-edge{position:absolute;left:0;top:0;width:100%;height:9.5%;overflow:visible}
+      .sp-edge line{stroke:#a6e22e;stroke-width:5;stroke-dasharray:500;stroke-dashoffset:500;animation:sp-draw .6s cubic-bezier(.6,0,.2,1) 2.25s forwards}
+      @keyframes sp-slide{to{transform:none}}@keyframes sp-zoom{to{transform:scale(1)}}@keyframes sp-draw{to{stroke-dashoffset:0}}
       .sp{position:absolute;inset:0;width:100%;height:100%;opacity:0;will-change:transform,opacity}
       .sp-pin{animation:sp-drop .7s cubic-bezier(.33,0,.67,1) .15s forwards}
       .sp-u,.sp-p,.sp-v,.sp-i,.sp-b,.sp-e{animation:sp-up .55s cubic-bezier(.2,.9,.3,1.25) forwards}
@@ -56,13 +64,13 @@
       @keyframes sp-drop{0%{opacity:1;transform:translateY(-55vh)}55%{transform:translateY(0)}70%{transform:translateY(-14%)}85%{transform:translateY(0)}93%{transform:translateY(-4%)}100%{opacity:1;transform:translateY(0)}}
       @keyframes sp-up{0%{opacity:0;transform:translateY(30%)}100%{opacity:1;transform:none}}
       @keyframes sp-pop{0%{opacity:0;transform:scale(0)}60%{opacity:1;transform:scale(1.5)}100%{opacity:1;transform:scale(1)}}
-      @media (prefers-reduced-motion:reduce){.sp{animation:none!important;opacity:1!important}}
+      @media (prefers-reduced-motion:reduce){.sp{animation:none!important;opacity:1!important}.sp-imgw,.sp-img img{animation:none!important;transform:none!important}.sp-edge line{animation:none!important;stroke-dashoffset:0}}
     </style>
   </head>
 
   <body>
     <!-- Splash animé : le pin tombe sur le « i », puis les lettres montent une à une -->
-    <div id="instant-splash" style="position:fixed;inset:0;z-index:9999;background:#000;overflow:hidden;transition:transform 0.7s cubic-bezier(0.4,0,0.2,1);">
+    <div id="instant-splash" style="position:fixed;inset:0;z-index:9999;background:#000;overflow:hidden;transition:transform 0.6s cubic-bezier(0.4,0,0.2,1),opacity 0.6s ease;">
       <div class="sp-logo" role="img" aria-label="Upvibe">
         <img src="/splash-logo.png" alt="" class="sp sp-u" style="clip-path:inset(0 75.53% 0 0);-webkit-clip-path:inset(0 75.53% 0 0)" />
         <img src="/splash-logo.png" alt="" class="sp sp-p" style="clip-path:inset(0 61.37% 0 24.47%);-webkit-clip-path:inset(0 61.37% 0 24.47%)" />
@@ -73,6 +81,7 @@
         <img src="/splash-logo.png" alt="" class="sp sp-pin" style="clip-path:inset(23.2% 42.69% 62.15% 51.05%);-webkit-clip-path:inset(23.2% 42.69% 62.15% 51.05%)" />
         <img src="/splash-logo.png" alt="" class="sp sp-dot" style="clip-path:inset(0 0 0 84.77%);-webkit-clip-path:inset(0 0 0 84.77%)" />
       </div>
+      <div class="sp-imgw"><div class="sp-img"><img src="/splash-couple.webp" alt="" /></div><svg class="sp-edge" viewBox="0 0 100 10" preserveAspectRatio="none"><line x1="0" y1="9.5" x2="100" y2="0" vector-effect="non-scaling-stroke" /></svg></div>
     </div>
     <!-- Téléphone tourné en paysage : on demande de revenir en portrait -->
     <div id="rotate-hint" aria-hidden="true"><img src="/splash-logo.png" alt="" /><p>Tourne ton téléphone<br />pour utiliser Upvibe</p></div>
