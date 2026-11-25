@@ -71,6 +71,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         },
       });
       if (error) return { error };
+      // Adresse déjà inscrite : Supabase répond « succès » sans envoyer d'e-mail
+      // (identities vide). On le dit clairement au lieu d'attendre un code qui n'arrivera pas.
+      if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+        return { error: { message: 'User already registered' } };
+      }
       // Confirmation d'email activée : pas de session tant que le lien n'est pas cliqué
       if (!data.session) return { error: null, needsConfirmation: true };
       toast.success('Compte créé avec succès !');
