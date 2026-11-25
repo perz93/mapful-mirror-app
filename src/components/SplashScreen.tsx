@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 
 const SPLASH_SHOWN_KEY = 'splash_shown_session';
 /** Durée totale minimale du splash, comptée depuis l'ouverture de l'app
- *  (l'animation du logo se termine vers 1,6 s). */
-const MIN_SPLASH_MS = 2600;
+ *  (logo vers 1,8 s, image et trait vert vers 2,9 s). */
+const MIN_SPLASH_MS = 3300;
 /** Sur un téléphone lent, l'app arrive après l'animation : on laisse quand
  *  même un court instant avant de faire glisser le splash. */
 const MIN_AFTER_READY_MS = 400;
@@ -35,8 +35,10 @@ const SplashScreenWrapper = ({ children }: { children: React.ReactNode }) => {
     let removeTimer = 0;
     const slideTimer = window.setTimeout(() => {
       endSplash();
-      splash.style.transform = 'translateY(-100%)';
-      removeTimer = window.setTimeout(() => splash.remove(), 750);
+      // Sortie en zoom : le splash grossit et s'efface, l'app apparaît derrière
+      splash.style.transform = 'scale(1.35)';
+      splash.style.opacity = '0';
+      removeTimer = window.setTimeout(() => splash.remove(), 650);
     }, wait);
     return () => {
       window.clearTimeout(slideTimer);
