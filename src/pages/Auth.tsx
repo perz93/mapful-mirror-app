@@ -311,7 +311,11 @@ const Auth = () => {
   };
 
   return (
-    <div className="fixed inset-0 w-full h-[100dvh] overflow-y-auto overscroll-none bg-canvas page-enter">
+    <div
+      // Motif dessiné très léger en fond (spirales, vagues, points…)
+      className="fixed inset-0 w-full h-[100dvh] overflow-y-auto overscroll-none bg-canvas page-enter"
+      style={{ backgroundImage: 'url(/auth-pattern.svg)', backgroundSize: '210px 210px' }}
+    >
       <div
         className="mx-auto flex min-h-full w-full max-w-md flex-col justify-center px-4 py-8 [perspective:1400px]"
         style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 24px)", paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 24px)" }}
